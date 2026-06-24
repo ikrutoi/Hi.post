@@ -35,6 +35,14 @@ $pie-center-cart-blocked-ring-right: $pie-center-indicator-size * 0.225;
   }
 }
 
+.hubContainerSectorsStatic {
+  .pieContent,
+  .sector {
+    pointer-events: none;
+    cursor: default;
+  }
+}
+
 .hubContainerRight {
   .pieCenterButton {
     background-color: $color-app-inner;

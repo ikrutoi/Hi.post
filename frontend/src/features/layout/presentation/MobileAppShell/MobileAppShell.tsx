@@ -12,6 +12,7 @@ import {
   setNotebookStripDateOverCart,
   setNotebookStripDateOverHistory,
   setNotebookStripTab,
+  updateLastViewedCalendarDate,
 } from '@date/calendar/infrastructure/state'
 import {
   selectIsCardPieListPanelOpen,
@@ -35,6 +36,7 @@ import { IconLogo } from '@shared/ui/icons'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { MobileCardPieGutterMinis } from './MobileCardPieGutterMinis'
+import { useMobilePlanCardPies } from './useMobilePlanCardPies'
 import { CardPieLeftSlot } from '@features/cardPie/presentation/CardPieLeftSlot'
 import { EditorPieListCardPieBadgeSync } from '@features/cardPie/presentation/EditorPieListCardPieBadgeSync'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
@@ -80,6 +82,52 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     () =>
       showMobileCardPie && cardPieListPanelOpen ? 'cardPie' : null,
     [showMobileCardPie, cardPieListPanelOpen],
+  )
+  const { planPies, selectedPlanPie, selectedPlanPieId, selectPlanPie } =
+    useMobilePlanCardPies()
+
+  const handleSelectPlanPie = useCallback(
+    (id: string) => {
+      const pie = planPies.find((entry) => entry.id === id)
+      if (pie == null) return
+
+      selectPlanPie(id)
+
+      const state = store.getState()
+      const notebookStripTab = selectNotebookStripTab(state)
+      if (notebookStripTab !== 'cart' && notebookStripTab !== 'history') {
+        return
+      }
+
+      if (selectIsCardPieListPanelOpen(state)) {
+        dispatch(setCardPieListPanelOpen(false))
+        dispatchCardPieToolbarIconState(dispatch, false)
+      }
+      if (selectCartListPanelOpen(state)) {
+        dispatch(setCartListPanelOpen(false))
+      }
+      if (selectIsHistoryListPanelOpen(state)) {
+        dispatch(setHistoryListPanelOpen(false))
+      }
+
+      if (notebookStripTab === 'cart') {
+        dispatch(setNotebookStripDateOverCart(true))
+      } else {
+        dispatch(setNotebookStripDateOverHistory(true))
+      }
+      dispatch(setNotebookStripTab('date'))
+      dispatch(setActiveSection('date'))
+
+      if (pie.dispatchDate != null) {
+        dispatch(
+          updateLastViewedCalendarDate({
+            year: pie.dispatchDate.year,
+            month: pie.dispatchDate.month,
+          }),
+        )
+      }
+    },
+    [dispatch, planPies, selectPlanPie],
   )
 
   const handleLeftPieSectorClick = useCallback(
@@ -165,7 +213,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
               <section className={styles.mobilePieSection} aria-label="Card pie">
                 <div className={styles.mobilePieSectionRow}>
                   <MobileCardPieGutterMinis
-                    onLeftPieSectorClick={handleLeftPieSectorClick}
+                    planPies={planPies}
+                    selectedPlanPieId={selectedPlanPieId}
+                    onSelectPlanPie={handleSelectPlanPie}
                   />
                   <div
                     className={styles.mobilePieStage}
@@ -174,9 +224,14 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                   <div className={styles.mobilePieWrap}>
                     {showMobileCardPie ? (
                       <CardPie
-                        isProcessed
                         fillContainer
                         station="left"
+                        {...(selectedPlanPie != null
+                          ? {
+                              pieInner: selectedPlanPie.inner,
+                              pieSections: selectedPlanPie.sections,
+                            }
+                          : { isProcessed: true })}
                         onLeftPieSectorClick={handleLeftPieSectorClick}
                         onLeftPieCenterClick={onLeftPieCenterClick}
                         leftPieCenterClickable={

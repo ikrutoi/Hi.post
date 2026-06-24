@@ -22,7 +22,7 @@
   --mobile-factory-toolbar-row-gap-share: calc(var(--mobile-factory-toolbar-gap) / 2);
   --mobile-factory-toolbar-inset-inline: 0.5rem;
   --mobile-pie-padding-top: 0.15rem;
-  --mobile-pie-gutter-mini-radius: 0.2rem;
+  --mobile-pie-gutter-mini-radius: 0.28rem;
   --mobile-section-inner-toolbar-height: #{iconButton.$toolbar-hit-size-mobile-section};
   --mobile-factory-toolbar-row-height: calc(
     #{$section-inner-toolbar-height-desktop} + var(--mobile-factory-toolbar-row-gap-share)
@@ -333,6 +333,18 @@
   width: 100%;
   aspect-ratio: 1;
   position: relative;
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  appearance: none;
+  box-sizing: border-box;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
 
   :global([class*='hubContainer']) {
     box-shadow: none;

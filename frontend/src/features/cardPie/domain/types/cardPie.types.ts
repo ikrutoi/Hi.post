@@ -38,6 +38,8 @@ export interface CardPieProps {
   pieSections?: CardPieSectionFlags
   /** Не рисовать иконки-плейсхолдеры в пустых секторах (мини-паи). */
   hideEmptySectorPlaceholders?: boolean
+  /** Отключить клики и hover по секторам (мини-паи: один клик по всему пирогу). */
+  sectorsInteractive?: boolean
   /** Правый пирог: центральная кнопка (напр. переход к календарю истории на месяц открытки). */
   onRightPieCenterClick?: () => void
 }

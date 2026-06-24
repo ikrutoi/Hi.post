@@ -68,6 +68,7 @@ export const CardPie: React.FC<CardPieProps> = ({
   pieInner,
   pieSections,
   hideEmptySectorPlaceholders = false,
+  sectorsInteractive = true,
   onRightPieCenterClick,
 }) => {
   const pieDefsUid = React.useId().replace(/:/g, '')
@@ -164,10 +165,23 @@ export const CardPie: React.FC<CardPieProps> = ({
     dates.every((d) => isDispatchDateDisabledForOrder(d, currentDate))
 
   const handleMouseEnter = (e: React.MouseEvent<SVGPathElement>) => {
+    if (!sectorsInteractive) return
     const sectionId = e.currentTarget.dataset.section as CardSection
     if (sectionId) setHovered(sectionId)
   }
-  const handleMouseLeave = () => setHovered(null)
+  const handleMouseLeave = () => {
+    if (!sectorsInteractive) return
+    setHovered(null)
+  }
+
+  const sectorPathProps = (section: CardSection) =>
+    sectorsInteractive
+      ? {
+          onClick: () => handleSectorClick(section),
+          onMouseEnter: handleMouseEnter,
+          onMouseLeave: handleMouseLeave,
+        }
+      : {}
 
   const envelopeSenderCircle = hasSenderAppliedData ? (
     <circle
@@ -186,6 +200,7 @@ export const CardPie: React.FC<CardPieProps> = ({
         station === 'right' && styles.hubContainerRight,
         allSectionsFilled && styles.pieAllComplete,
         fillContainer && styles.hubContainerFill,
+        !sectorsInteractive && styles.hubContainerSectorsStatic,
       )}
       data-right-list-source={
         station === 'right' ? (listSourceFromFacade ?? undefined) : undefined
@@ -627,15 +642,15 @@ export const CardPie: React.FC<CardPieProps> = ({
               className={clsx(
                 styles.sector,
                 !sections.aroma && styles.sectorEmpty,
-                hoveredSection === 'aroma' && styles.hovered,
+                sectorsInteractive &&
+                  hoveredSection === 'aroma' &&
+                  styles.hovered,
               )}
               fill={`url(#${aromaFillId})`}
               stroke={SECTOR_STROKE}
               strokeWidth={STROKE_WIDTH}
               d="M5110 5110H1261l1299-2550z"
-              onClick={() => handleSectorClick('aroma')}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
+              {...sectorPathProps('aroma')}
             />
             <path
               id={`${pieDefsUid}-sector-date`}
@@ -643,15 +658,15 @@ export const CardPie: React.FC<CardPieProps> = ({
               className={clsx(
                 styles.sector,
                 !sections.date && styles.sectorEmpty,
-                hoveredSection === 'date' && styles.hovered,
+                sectorsInteractive &&
+                  hoveredSection === 'date' &&
+                  styles.hovered,
               )}
               fill={`url(#${dateFillId})`}
               stroke={SECTOR_STROKE}
               strokeWidth={STROKE_WIDTH}
               d="M1261 5110H10V2156l2550 404z"
-              onClick={() => handleSectorClick('date')}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
+              {...sectorPathProps('date')}
             />
             <path
               id={`${pieDefsUid}-sector-envelope`}
@@ -659,15 +674,15 @@ export const CardPie: React.FC<CardPieProps> = ({
               className={clsx(
                 styles.sector,
                 !sections.envelope && styles.sectorEmpty,
-                hoveredSection === 'envelope' && styles.hovered,
+                sectorsInteractive &&
+                  hoveredSection === 'envelope' &&
+                  styles.hovered,
               )}
               fill={`url(#${envelopeFillId})`}
               stroke={SECTOR_STROKE}
               strokeWidth={STROKE_WIDTH}
               d={PIE_ENVELOPE_SECTOR_D}
-              onClick={() => handleSectorClick('envelope')}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
+              {...sectorPathProps('envelope')}
             />
             <path
               id={`${pieDefsUid}-sector-cardphoto`}
@@ -675,7 +690,9 @@ export const CardPie: React.FC<CardPieProps> = ({
               className={clsx(
                 styles.sector,
                 !sections.cardphoto && styles.sectorEmpty,
-                hoveredSection === 'cardphoto' && styles.hovered,
+                sectorsInteractive &&
+                  hoveredSection === 'cardphoto' &&
+                  styles.hovered,
               )}
               fill={
                 sections.cardphoto && photoUrl
@@ -685,9 +702,7 @@ export const CardPie: React.FC<CardPieProps> = ({
               stroke={SECTOR_STROKE}
               strokeWidth={STROKE_WIDTH}
               d="M10 2156V10h2146l404 2550z"
-              onClick={() => handleSectorClick('cardphoto')}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
+              {...sectorPathProps('cardphoto')}
             />
             <path
               id={`${pieDefsUid}-sector-cardtext`}
@@ -695,15 +710,15 @@ export const CardPie: React.FC<CardPieProps> = ({
               className={clsx(
                 styles.sector,
                 !sections.cardtext && styles.sectorEmpty,
-                hoveredSection === 'cardtext' && styles.hovered,
+                sectorsInteractive &&
+                  hoveredSection === 'cardtext' &&
+                  styles.hovered,
               )}
               fill={`url(#${cardtextFillId})`}
               stroke={SECTOR_STROKE}
               strokeWidth={STROKE_WIDTH}
               d="M5110 1261 2560 2560 2156 10h2954z"
-              onClick={() => handleSectorClick('cardtext')}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
+              {...sectorPathProps('cardtext')}
             />
 
             {/* <path
@@ -752,7 +767,9 @@ export const CardPie: React.FC<CardPieProps> = ({
       <div
         className={clsx(
           styles.pieOutlineOverlay,
-          hoveredSection && styles.pieOutlineOverlayHovered,
+          sectorsInteractive &&
+            hoveredSection &&
+            styles.pieOutlineOverlayHovered,
         )}
         aria-hidden
       />
