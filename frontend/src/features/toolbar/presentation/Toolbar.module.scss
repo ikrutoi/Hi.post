@@ -1857,6 +1857,13 @@
     align-self: auto;
   }
 
+  .toolbar .toolbarBadgeDot {
+    width: $toolbar-badge-dot-size-mobile;
+    height: $toolbar-badge-dot-size-mobile;
+    top: $toolbar-badge-dot-offset-mobile;
+    right: $toolbar-badge-dot-offset-mobile;
+  }
+
   // Uniform horizontal spacing: factory, template lists, address lists, aroma, …
   .toolbar:not(.toolbarRightSidebar):not(.toolbarSectionEditorMenuBottomBar) {
     .toolbarKey:not(.toolbarKeyFontSizeIndicator):not(.toolbarKeyCropQualityIndicator):not(
