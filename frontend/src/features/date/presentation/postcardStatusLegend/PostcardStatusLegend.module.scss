@@ -292,4 +292,25 @@
       height: 0.55rem;
     }
   }
+
+  .root-calendar.rootCalendarCartHistory {
+    .icon,
+    .item svg {
+      width: 1.125rem;
+      height: 1.125rem;
+      min-width: 1.125rem;
+      min-height: 1.125rem;
+    }
+
+    .iconSend {
+      width: 1.35rem;
+      min-width: 1.35rem;
+      height: 1.125rem;
+    }
+
+    .dot {
+      width: 0.625rem;
+      height: 0.625rem;
+    }
+  }
 }

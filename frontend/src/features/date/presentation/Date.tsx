@@ -324,6 +324,9 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
                 section === 'date' || section === 'cart'
               }
               calendarCartStripBlockedLegend={section === 'cart'}
+              calendarCartHistoryFooter={
+                section === 'cart' || section === 'history'
+              }
             />
           </div>
           {section === 'date' ? (

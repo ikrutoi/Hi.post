@@ -19,6 +19,8 @@ export type PostcardStatusLegendProps = {
   calendarDispatchDimmed?: boolean
   calendarCartStripLegendOnly?: boolean
   calendarCartStripBlockedLegend?: boolean
+  /** Mobile footer: cart / history strip — чуть крупнее точки и иконки. */
+  calendarCartHistoryFooter?: boolean
 }
 
 export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
@@ -28,6 +30,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
   calendarDispatchDimmed = false,
   calendarCartStripLegendOnly = false,
   calendarCartStripBlockedLegend = false,
+  calendarCartHistoryFooter = false,
 }) => {
   const { postcardStatuses, setPostcardStatuses } = useCalendarFacade()
 
@@ -76,6 +79,9 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
           calendarDispatchDimmed &&
           !calendarCartStripLegendOnly &&
           styles.rootCalendarDimmed,
+        spot === 'calendar' &&
+          calendarCartHistoryFooter &&
+          styles.rootCalendarCartHistory,
       )}
       aria-label="Postcard status colors"
     >
