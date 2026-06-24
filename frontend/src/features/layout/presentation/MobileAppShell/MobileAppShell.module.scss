@@ -165,13 +165,6 @@
   background-color: $color-app-inner;
   box-sizing: border-box;
   overflow: visible;
-  --mobile-left-sidebar-stack-gap-current: var(--mobile-right-sidebar-stack-gap);
-
-  &:has(:global([class*='sectionEditorRightHeaderStack']) [data-icon-key='userLogin'] :global([class*='toolbarUserChromeGlyph'])) {
-    --mobile-left-sidebar-stack-gap-current: var(
-      --mobile-right-sidebar-stack-gap-authed
-    );
-  }
 
   :global([class*='sectionEditorRightHeaderStack']) {
     overflow: visible;
@@ -263,58 +256,6 @@
     display: block;
     width: 100%;
     height: 100%;
-  }
-}
-
-.mobileHeaderCardPie {
-  position: absolute;
-  top: calc(100% + var(--mobile-left-sidebar-stack-gap-current));
-  left: 0;
-  right: 0;
-  z-index: 2;
-  display: flex;
-  justify-content: center;
-  pointer-events: auto;
-
-  :global([class*='toolbarSectionEditorMenuSidebarChrome']) {
-    :global([class*='toolbarKey']) {
-      @include iconButton.toolbar-icon-button-size-mobile-right-sidebar(true);
-      margin: 0;
-      background-color: transparent;
-
-      &[class*='toolbarKeyEnabled'] {
-        color: $color-font-enabled-light;
-
-        &:hover {
-          color: $color-font-enabled;
-          background-color: transparent;
-        }
-      }
-
-      &[class*='toolbarKeyActive'] {
-        color: $color-app-sidebar-icon-active;
-
-        &:hover {
-          color: $color-app-sidebar-icon-active;
-          background-color: transparent;
-        }
-      }
-
-      &[class*='toolbarKeyDisabled'] {
-        color: $color-font-disabled;
-
-        &:hover {
-          color: $color-font-disabled;
-          background-color: transparent;
-        }
-      }
-
-      &[class*='toolbarKeyEnabled']:hover,
-      &[class*='toolbarKeyActive']:hover,
-      &[class*='toolbarKeyDisabled']:hover {
-        background-color: transparent;
-      }
-    }
   }
 }
 

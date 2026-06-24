@@ -19,7 +19,6 @@ import {
   selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
 import { dispatchCardPieToolbarIconState } from '@toolbar/application/syncCardPieToolbarIcons'
-import { SECTION_EDITOR_MENU_CARD_PIE_TOOLBAR_GROUP } from '@toolbar/domain/types/sectionEditorMenu.types'
 import type { CardSection } from '@shared/config/constants'
 import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
 import { CardphotoListMobileSlot } from '@cardphoto/presentation/CardphotoListMobileSlot'
@@ -74,14 +73,12 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const notebookStripSection = useDateStripSectionForNotebookTabs()
 
   /** Mobile: только список CardPie перекрывает центр; Cart/History — календарь в фабрике. */
-  const mobileCentralListPanel = useMemo(
-    () => (cardPieListPanelOpen ? 'cardPie' : null),
-    [cardPieListPanelOpen],
-  )
+  const showMobileCardPie = notebookStripSection === 'date'
 
-  const cardPieMenuGroups = useMemo(
-    () => [{ ...SECTION_EDITOR_MENU_CARD_PIE_TOOLBAR_GROUP }],
-    [],
+  const mobileCentralListPanel = useMemo(
+    () =>
+      showMobileCardPie && cardPieListPanelOpen ? 'cardPie' : null,
+    [showMobileCardPie, cardPieListPanelOpen],
   )
 
   const handleLeftPieSectorClick = useCallback(
@@ -150,13 +147,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
               <div className={styles.mobileHeaderLogo} aria-hidden>
                 <IconLogo />
               </div>
-              <div className={styles.mobileHeaderCardPie}>
-                <Toolbar
-                  section="sectionEditorMenu"
-                  groupsOverride={cardPieMenuGroups}
-                  layout="sidebarChrome"
-                />
-              </div>
             </div>
             <SectionEditorRightSidebar
               variant="headerStack"
@@ -171,26 +161,34 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
               <RightSidebarHistoryBadgeSync />
               <CalendarModeToolbarBadgesSync />
 
-              <section className={styles.mobilePieSection} aria-label="Card pie">
+              <section
+                className={styles.mobilePieSection}
+                aria-label="Card pie"
+                aria-hidden={!showMobileCardPie}
+              >
                 <div className={styles.mobilePieStage}>
                   <div className={styles.mobilePieWrap}>
-                    <CardPie
-                      isProcessed
-                      fillContainer
-                      station="left"
-                      onLeftPieSectorClick={handleLeftPieSectorClick}
-                      onLeftPieCenterClick={onLeftPieCenterClick}
-                      leftPieCenterClickable={
-                        activePieSide === 'right' && !showTopCardStripFullSpan
-                      }
-                    />
+                    {showMobileCardPie ? (
+                      <CardPie
+                        isProcessed
+                        fillContainer
+                        station="left"
+                        onLeftPieSectorClick={handleLeftPieSectorClick}
+                        onLeftPieCenterClick={onLeftPieCenterClick}
+                        leftPieCenterClickable={
+                          activePieSide === 'right' && !showTopCardStripFullSpan
+                        }
+                      />
+                    ) : null}
                   </div>
-                  <div className={styles.mobilePieToolbar}>
-                    <Toolbar
-                      section="editorPie"
-                      onActionClick={onEditorPieToolbarAction}
-                    />
-                  </div>
+                  {showMobileCardPie ? (
+                    <div className={styles.mobilePieToolbar}>
+                      <Toolbar
+                        section="editorPie"
+                        onActionClick={onEditorPieToolbarAction}
+                      />
+                    </div>
+                  ) : null}
                 </div>
               </section>
 
