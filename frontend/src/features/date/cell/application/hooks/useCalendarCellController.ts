@@ -31,6 +31,8 @@ import {
 } from '../../../calendar/infrastructure/calendarDayPostcardCycle'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import { dispatchCardPieToolbarIconState } from '@toolbar/application/syncCardPieToolbarIcons'
+import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { shiftMonth } from '../../../calendar/application/helpers'
 import { useDateSwitcherController } from '../../../switcher/application/hooks'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
@@ -62,6 +64,7 @@ export const useCalendarCellController = ({
   const cartItems = useAppSelector(selectCartItems)
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const cardPieListPanelOpen = useAppSelector(selectIsCardPieListPanelOpen)
+  const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const postcardStatuses = useAppSelector(selectPostcardStatuses)
   const cartCalendarDatePickMode = useAppSelector(
     selectCartCalendarDatePickMode,
@@ -82,6 +85,13 @@ export const useCalendarCellController = ({
   /** Режим «Дата» на полосе календаря: открыть список CardPie при выборе даты, если панель была закрыта. */
   const maybeOpenCardPieListAfterDatePick = useCallback(
     (clickRemovesSelection: boolean) => {
+      if (isMobileLayout) {
+        if (cardPieListPanelOpen) {
+          dispatch(setCardPieListPanelOpen(false))
+          dispatchCardPieToolbarIconState(dispatch, false)
+        }
+        return
+      }
       if (
         activeSection !== 'date' ||
         notebookStripTab === 'cart' ||
@@ -96,6 +106,7 @@ export const useCalendarCellController = ({
       activeSection,
       cardPieListPanelOpen,
       dispatch,
+      isMobileLayout,
       notebookStripTab,
     ],
   )
