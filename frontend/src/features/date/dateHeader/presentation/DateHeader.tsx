@@ -1,16 +1,14 @@
 import React from 'react'
 import clsx from 'clsx'
-import { MONTH_NAMES } from '@entities/date/constants'
 import { useAppSelector } from '@app/hooks'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
-import { themeColors } from '@shared/config/theme/themeColors'
 import { DateHeaderNavigation } from './DateHeaderNavigation'
+import { DateHeaderToday } from './DateHeaderToday'
 import styles from './DateHeader.module.scss'
 import type {
   CalendarViewDate,
   Switcher as typeSwitcher,
 } from '@entities/date/domain/types'
-import { IconCalendarReturn } from '@/shared/ui/icons'
 import { getToolbarIcon } from '@shared/utils/icons'
 
 interface DateHeaderProps {
@@ -60,12 +58,7 @@ export const DateHeader: React.FC<DateHeaderProps> = ({
         : 'Calendar: dispatch dates mode'
 
   return (
-    <div
-      className={clsx(
-        styles.header,
-        isMobileLayout && styles.headerNavInToolbar,
-      )}
-    >
+    <div className={styles.header}>
       <div className={styles.headerSide}>
         <div
           className={clsx(
@@ -81,30 +74,18 @@ export const DateHeader: React.FC<DateHeaderProps> = ({
         </div>
       </div>
 
-      {!isMobileLayout ? (
-        <DateHeaderNavigation
-          calendarViewDate={calendarViewDate}
-          onDecrement={onDecrement}
-          onIncrement={onIncrement}
-        />
-      ) : null}
+      <DateHeaderNavigation
+        calendarViewDate={calendarViewDate}
+        onDecrement={onDecrement}
+        onIncrement={onIncrement}
+      />
 
       <div className={styles.headerSide}>
-        <div
-          className={clsx(styles.todaySelected, {
-            [styles.todaySelectedDisabled]: isCurrentMonth(),
-          })}
-          onClick={onGoToToday}
-          style={{
-            color: isCurrentMonth()
-              ? themeColors.color.font
-              : themeColors.color.font,
-            cursor: isCurrentMonth() ? 'default' : 'pointer',
-          }}
-        >
-          {`${currentDate.year} ${MONTH_NAMES[currentDate.month]} ${currentDate.day}`}
-          <IconCalendarReturn className={styles.iconTitle} />
-        </div>
+        <DateHeaderToday
+          currentDate={currentDate}
+          isCurrentMonth={isCurrentMonth}
+          onGoToToday={onGoToToday}
+        />
       </div>
     </div>
   )

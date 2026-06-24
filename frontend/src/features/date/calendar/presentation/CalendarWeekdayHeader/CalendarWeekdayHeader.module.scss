@@ -4,4 +4,9 @@
   grid-column: 1 / -1;
   grid-row: 1 / 2;
   margin-bottom: 0.25rem;
+
+  :global([data-shell-layout='mobile']) & {
+    gap: 0.125rem;
+    margin-bottom: 0.125rem;
+  }
 }

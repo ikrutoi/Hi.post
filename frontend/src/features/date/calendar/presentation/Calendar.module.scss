@@ -9,6 +9,15 @@
   width: 100%;
   max-width: 100%;
   min-height: 0;
+
+  :global([data-shell-layout='mobile']) & {
+    flex: 1 1 auto;
+    height: 100%;
+    min-height: 0;
+    grid-template-rows: auto 1fr;
+    row-gap: 0.125rem;
+    align-content: start;
+  }
 }
 
 .calendarDays {
@@ -19,4 +28,12 @@
   grid-template-rows: repeat(6, 1fr);
   gap: 0;
   min-height: 0;
+
+  :global([data-shell-layout='mobile']) & {
+    height: auto;
+    grid-template-rows: repeat(6, auto);
+    gap: 0.125rem;
+    align-content: start;
+    align-self: start;
+  }
 }

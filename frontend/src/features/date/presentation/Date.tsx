@@ -17,6 +17,7 @@ import { selectIsHistoryListPanelOpen } from '@date/calendar/infrastructure/sele
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { getCurrentDate } from '@shared/utils/date'
 import { DateHeader } from '../dateHeader/presentation/DateHeader'
+import { DateHeaderToday } from '../dateHeader/presentation/DateHeaderToday'
 import { Calendar } from '../calendar/presentation/Calendar'
 import { Slider } from '../slider/presentation/Slider'
 import { useDateFacade } from '../application/facades/useDateFacade'
@@ -286,18 +287,20 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
           tabIndex={0}
           aria-label="Calendar: left/right arrows - month, up/down - year"
         >
-        <DateHeader
-          dateSection={section}
-          currentDate={currentDate}
-          calendarViewDate={calendarViewDate}
-          formattedSelectedDate={null}
-          isCurrentMonth={isCurrentMonth}
-          onDecrement={handleDecrementArrow}
-          onIncrement={handleIncrementArrow}
-          onGoToToday={goToTodayDate}
-          onGoToSelected={goToSelectedDate}
-          flashParts={flashParts}
-        />
+        {!isMobileLayout ? (
+          <DateHeader
+            dateSection={section}
+            currentDate={currentDate}
+            calendarViewDate={calendarViewDate}
+            formattedSelectedDate={null}
+            isCurrentMonth={isCurrentMonth}
+            onDecrement={handleDecrementArrow}
+            onIncrement={handleIncrementArrow}
+            onGoToToday={goToTodayDate}
+            onGoToSelected={goToSelectedDate}
+            flashParts={flashParts}
+          />
+        ) : null}
 
         {!isMobileLayout ? (
           <div className={styles.slider}>
@@ -314,7 +317,13 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
         </div>
 
         <div className={styles.dateBottomToggle}>
-          <div className={styles.dateBottomToggleIndicators}>
+          <div
+            className={clsx(
+              styles.dateBottomToggleIndicators,
+              section === 'history' &&
+                styles.dateBottomToggleIndicatorsHistory,
+            )}
+          >
             <PostcardStatusLegend
               spot="calendar"
               isHistoryEmpty={false}
@@ -325,7 +334,14 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
               calendarCartStripBlockedLegend={section === 'cart'}
             />
           </div>
-          {section === 'date' ? (
+          {isMobileLayout ? (
+            <DateHeaderToday
+              className={styles.dateBottomToggleToday}
+              currentDate={currentDate}
+              isCurrentMonth={isCurrentMonth}
+              onGoToToday={goToTodayDate}
+            />
+          ) : section === 'date' ? (
             <div
               className={clsx(
                 styles.dateBottomToggleGroup,

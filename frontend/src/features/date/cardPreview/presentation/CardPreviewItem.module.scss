@@ -91,6 +91,12 @@
   align-items: flex-start;
   gap: 0.1rem;
   pointer-events: none;
+
+  :global([data-shell-layout='mobile']) & {
+    top: 0.2rem;
+    left: 0.2rem;
+    gap: 0.15rem;
+  }
 }
 
 .historyIndicatorStack .previewIndicator {
@@ -129,5 +135,13 @@
   }
   &.error {
     background-color: $color-preview-indicator-error;
+  }
+
+  :global([data-shell-layout='mobile']) & {
+    width: 0.75rem;
+    height: 0.75rem;
+    top: 0.2rem;
+    left: 0.2rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.32);
   }
 }

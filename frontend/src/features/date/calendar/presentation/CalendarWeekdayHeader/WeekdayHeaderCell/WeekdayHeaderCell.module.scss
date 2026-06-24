@@ -10,6 +10,10 @@
   font-weight: bold;
   margin: 0.2rem 0.75rem;
   text-transform: uppercase;
+
+  :global([data-shell-layout='mobile']) & {
+    margin: 0;
+  }
 }
 
 .cell:first-child {
@@ -42,6 +46,14 @@
   transition:
     border-color 0.2s ease,
     color 0.2s ease;
+
+  :global([data-shell-layout='mobile']) & {
+    min-width: 3.15rem;
+    height: 1.65rem;
+    padding: 0.08rem 0.5rem 0;
+    font-size: 0.75rem;
+    border-radius: 1.25rem;
+  }
 }
 
 .firstDayToggle:hover .firstDayToggleInner {

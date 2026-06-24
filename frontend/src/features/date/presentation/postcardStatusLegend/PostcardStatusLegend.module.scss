@@ -39,12 +39,16 @@
     }
 
     .icon {
+      flex-shrink: 0;
       width: 1rem;
       height: 1rem;
+      min-width: 1rem;
+      min-height: 1rem;
     }
 
     .iconSend {
       width: 1.25rem;
+      min-width: 1.25rem;
     }
   }
 
@@ -244,4 +248,37 @@
 .legendPhantom {
   visibility: hidden;
   pointer-events: none;
+}
+
+:global([data-shell-layout='mobile']) {
+  .root-calendar {
+    .row {
+      column-gap: 0.2rem;
+    }
+
+    .item {
+      gap: 0.25rem;
+    }
+
+    .icon,
+    .item svg {
+      flex-shrink: 0;
+      width: 1.2rem;
+      height: 1.2rem;
+      min-width: 1.2rem;
+      min-height: 1.2rem;
+    }
+
+    .iconSend {
+      width: 1.45rem;
+      min-width: 1.45rem;
+      height: 1.2rem;
+    }
+
+    .dot {
+      flex-shrink: 0;
+      width: 0.6rem;
+      height: 0.6rem;
+    }
+  }
 }
