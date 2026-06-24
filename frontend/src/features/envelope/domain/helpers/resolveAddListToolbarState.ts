@@ -95,14 +95,14 @@ export function resolveAddressAddToolbarState(params: {
   isAddressFormOpen: boolean
   formIsEmpty: boolean
   viewingFormDraftAddress: boolean
-}): { state: 'enabled' | 'disabled'; options: { badge: number | null } } {
+}): { state: 'enabled' | 'disabled' | 'active'; options: { badge: number | null } } {
   const { isAddressFormOpen, formIsEmpty, viewingFormDraftAddress } = params
   if (isAddressFormOpen) {
     return { state: 'disabled', options: { badge: null } }
   }
   const badge = !formIsEmpty ? 1 : null
   if (viewingFormDraftAddress) {
-    return { state: 'disabled', options: { badge } }
+    return { state: 'active', options: { badge } }
   }
   return { state: 'enabled', options: { badge } }
 }
