@@ -11,7 +11,10 @@ import type {
 } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import type { DispatchDate } from '@entities/date'
 import { useDispatchPlanListEntries } from '@date/application/hooks/useDispatchPlanListEntries'
-import { selectCardPieListSortDirection } from '@date/calendar/infrastructure/selectors'
+import {
+  selectCardPieListSortDirection,
+  selectNotebookDateTabPeekClearTick,
+} from '@date/calendar/infrastructure/selectors'
 import { selectEnvelopeSessionRecord } from '@envelope/infrastructure/selectors'
 import {
   selectRecipientEntriesState,
@@ -28,6 +31,9 @@ export type MobilePlanCardPie = {
 
 export function useMobilePlanCardPies() {
   const listSortDirection = useAppSelector(selectCardPieListSortDirection)
+  const notebookDateTabPeekClearTick = useAppSelector(
+    selectNotebookDateTabPeekClearTick,
+  )
   const entries = useDispatchPlanListEntries({
     activeModeOnly: true,
     listSortDirection,
@@ -83,6 +89,11 @@ export function useMobilePlanCardPies() {
       setSelectedPlanPieId(null)
     }
   }, [planPies, selectedPlanPieId])
+
+  useEffect(() => {
+    if (notebookDateTabPeekClearTick === 0) return
+    setSelectedPlanPieId(null)
+  }, [notebookDateTabPeekClearTick])
 
   return {
     planPies,
