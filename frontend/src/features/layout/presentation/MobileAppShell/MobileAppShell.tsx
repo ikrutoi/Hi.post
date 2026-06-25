@@ -86,6 +86,17 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const { planPies, selectedPlanPie, selectedPlanPieId, selectPlanPie } =
     useMobilePlanCardPies()
 
+  const showPlanPieOverviewBack =
+    planPies.length > 1 && selectedPlanPieId != null
+
+  const handleLeftPieCenterPress = useCallback(() => {
+    if (showPlanPieOverviewBack) {
+      selectPlanPie(null)
+      return
+    }
+    onLeftPieCenterClick()
+  }, [showPlanPieOverviewBack, onLeftPieCenterClick, selectPlanPie])
+
   const handleSelectPlanPie = useCallback(
     (id: string) => {
       const pie = planPies.find((entry) => entry.id === id)
@@ -233,9 +244,11 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                             }
                           : { isProcessed: true })}
                         onLeftPieSectorClick={handleLeftPieSectorClick}
-                        onLeftPieCenterClick={onLeftPieCenterClick}
+                        onLeftPieCenterClick={handleLeftPieCenterPress}
+                        leftPieCenterOverviewBack={showPlanPieOverviewBack}
                         leftPieCenterClickable={
-                          activePieSide === 'right' && !showTopCardStripFullSpan
+                          showPlanPieOverviewBack ||
+                          (activePieSide === 'right' && !showTopCardStripFullSpan)
                         }
                       />
                     ) : null}

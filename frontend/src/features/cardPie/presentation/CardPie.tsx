@@ -64,6 +64,7 @@ export const CardPie: React.FC<CardPieProps> = ({
   onLeftPieSectorClick,
   onLeftPieCenterClick,
   leftPieCenterClickable = false,
+  leftPieCenterOverviewBack = false,
   hideLeftPieCenterLogo = false,
   leftPieCenterDisc = false,
   leftPieCenterDiscColor,
@@ -799,7 +800,7 @@ export const CardPie: React.FC<CardPieProps> = ({
             styles.pieCenterButton,
             allSectionsFilled && styles.pieCenterButtonActive,
             station === 'left' &&
-              leftPieCenterClickable &&
+              (leftPieCenterClickable || leftPieCenterOverviewBack) &&
               styles.pieCenterButtonPointer,
             station === 'right' &&
               onRightPieCenterClick != null &&
@@ -807,17 +808,24 @@ export const CardPie: React.FC<CardPieProps> = ({
           )}
           disabled={
             station === 'left'
-              ? !leftPieCenterClickable
+              ? !leftPieCenterClickable && !leftPieCenterOverviewBack
               : onRightPieCenterClick != null
                 ? false
                 : !allSectionsFilled
           }
-          aria-label="Hidragonfly.com"
+          aria-label={
+            leftPieCenterOverviewBack
+              ? 'Показать общий вид плана'
+              : 'Hidragonfly.com'
+          }
           onMouseDown={(e) => {
             e.stopPropagation()
           }}
           onClick={() => {
-            if (station === 'left' && leftPieCenterClickable) {
+            if (
+              station === 'left' &&
+              (leftPieCenterClickable || leftPieCenterOverviewBack)
+            ) {
               onLeftPieCenterClick?.()
               return
             }

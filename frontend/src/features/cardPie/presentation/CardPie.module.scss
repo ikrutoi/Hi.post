@@ -231,6 +231,7 @@ $pie-center-disc-size-ratio: 20%;
   width: $pie-center-indicator-size;
   height: $pie-center-indicator-size;
   border-radius: 50%;
+  box-sizing: border-box;
   color: var(--pie-center-logo-color-incomplete);
 
   svg {
@@ -240,7 +241,17 @@ $pie-center-disc-size-ratio: 20%;
   }
 }
 
+.hubContainer:not(.hubContainerRight) .pieCenterButton {
+  background-color: transparent;
+}
+
 .hubContainer:not(.hubContainerRight) .pieCenterIcon {
+  width: $pie-center-indicator-size;
+  height: $pie-center-indicator-size;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #fff;
+  box-sizing: content-box;
   background-color: var(--pie-center-icon-fill);
 }
 
