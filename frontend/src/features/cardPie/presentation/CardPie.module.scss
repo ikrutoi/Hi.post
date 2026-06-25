@@ -4,6 +4,9 @@
 $pie-center-indicator-size: 1.75rem;
 /** Левый центр: лого 2rem + 1px белая обводка (content-box). */
 $pie-center-logo-size: 2rem;
+$pie-center-logo-size-pressed: 2.4rem;
+$pie-center-logo-hit-size: 3rem;
+$pie-center-logo-press-duration: 0.28s;
 /** Жёлтое кольцо вокруг красной заливки (`cartBlocked`), доля от размера индикатора. */
 $pie-center-cart-blocked-ring: $pie-center-indicator-size * 0.225;
 $pie-center-cart-blocked-ring-right: $pie-center-indicator-size * 0.225;
@@ -203,6 +206,7 @@ $pie-center-disc-size-ratio: 20%;
   box-sizing: border-box;
   appearance: none;
   -webkit-tap-highlight-color: transparent;
+  z-index: 2;
 
   &:disabled {
     cursor: default;
@@ -244,9 +248,10 @@ $pie-center-disc-size-ratio: 20%;
 }
 
 .hubContainer:not(.hubContainerRight) .pieCenterButton {
-  width: calc(#{$pie-center-logo-size} + 2px);
-  height: calc(#{$pie-center-logo-size} + 2px);
+  width: $pie-center-logo-hit-size;
+  height: $pie-center-logo-hit-size;
   background-color: transparent;
+  overflow: visible;
 }
 
 .hubContainer:not(.hubContainerRight) .pieCenterIcon {
@@ -262,6 +267,23 @@ $pie-center-disc-size-ratio: 20%;
 
 .hubContainer:not(.hubContainerRight) .pieCenterIconBrand {
   color: var(--logo-color, #008aed);
+}
+
+@keyframes pieCenterLogoPress {
+  0%,
+  100% {
+    width: $pie-center-logo-size;
+    height: $pie-center-logo-size;
+  }
+
+  50% {
+    width: $pie-center-logo-size-pressed;
+    height: $pie-center-logo-size-pressed;
+  }
+}
+
+.hubContainer:not(.hubContainerRight) .pieCenterIconPress {
+  animation: pieCenterLogoPress $pie-center-logo-press-duration ease-in-out;
 }
 
 .pieCenterDisc {

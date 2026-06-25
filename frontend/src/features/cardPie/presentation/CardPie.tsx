@@ -75,6 +75,7 @@ export const CardPie: React.FC<CardPieProps> = ({
   onRightPieCenterClick,
 }) => {
   const pieDefsUid = React.useId().replace(/:/g, '')
+  const [leftLogoPressSeq, setLeftLogoPressSeq] = React.useState(0)
   const photoFillId = `${pieDefsUid}-photo-apply`
   const photoEmptyFillId = `${pieDefsUid}-photo-empty`
   const cardtextFillId = `${pieDefsUid}-cardtext-fill`
@@ -196,6 +197,13 @@ export const CardPie: React.FC<CardPieProps> = ({
   ) : null
 
   const allSectionsFilled = isReady
+  const leftCenterActionEnabled =
+    leftPieCenterClickable || leftPieCenterOverviewBack
+
+  const triggerLeftLogoPress = React.useCallback(() => {
+    setLeftLogoPressSeq((seq) => seq + 1)
+  }, [])
+
   return (
     <div
       className={clsx(
@@ -799,34 +807,40 @@ export const CardPie: React.FC<CardPieProps> = ({
           className={clsx(
             styles.pieCenterButton,
             allSectionsFilled && styles.pieCenterButtonActive,
-            station === 'left' &&
-              (leftPieCenterClickable || leftPieCenterOverviewBack) &&
-              styles.pieCenterButtonPointer,
+            station === 'left' && styles.pieCenterButtonPointer,
             station === 'right' &&
               onRightPieCenterClick != null &&
               styles.pieCenterButtonPointer,
           )}
           disabled={
             station === 'left'
-              ? !leftPieCenterClickable && !leftPieCenterOverviewBack
+              ? false
               : onRightPieCenterClick != null
                 ? false
                 : !allSectionsFilled
+          }
+          aria-disabled={
+            station === 'left' ? !leftCenterActionEnabled : undefined
           }
           aria-label={
             leftPieCenterOverviewBack
               ? 'Показать общий вид плана'
               : 'Hidragonfly.com'
           }
+          onPointerDown={(e) => {
+            e.stopPropagation()
+            if (station === 'left') {
+              triggerLeftLogoPress()
+            }
+          }}
           onMouseDown={(e) => {
             e.stopPropagation()
           }}
           onClick={() => {
-            if (
-              station === 'left' &&
-              (leftPieCenterClickable || leftPieCenterOverviewBack)
-            ) {
-              onLeftPieCenterClick?.()
+            if (station === 'left') {
+              if (leftCenterActionEnabled) {
+                onLeftPieCenterClick?.()
+              }
               return
             }
             if (station === 'right') {
@@ -835,9 +849,17 @@ export const CardPie: React.FC<CardPieProps> = ({
           }}
         >
           <span
+            key={
+              station === 'left' && leftLogoPressSeq > 0
+                ? `left-logo-press-${leftLogoPressSeq}`
+                : undefined
+            }
             className={clsx(
               styles.pieCenterIcon,
               allSectionsFilled && styles.pieCenterIconBrand,
+              station === 'left' &&
+                leftLogoPressSeq > 0 &&
+                styles.pieCenterIconPress,
             )}
           >
             {station === 'left' ? (
