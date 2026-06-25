@@ -83,19 +83,30 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       showMobileCardPie && cardPieListPanelOpen ? 'cardPie' : null,
     [showMobileCardPie, cardPieListPanelOpen],
   )
-  const { planPies, selectedPlanPie, selectedPlanPieId, selectPlanPie } =
+  const { planPies, selectedPlanPie, selectedPlanPieId, selectPlanPie, cyclePlanPie } =
     useMobilePlanCardPies()
 
-  const showPlanPieOverviewBack =
-    planPies.length > 1 && selectedPlanPieId != null
+  const canCyclePlanPies = planPies.length > 0
 
   const handleLeftPieCenterPress = useCallback(() => {
-    if (showPlanPieOverviewBack) {
-      selectPlanPie(null)
+    if (canCyclePlanPies) {
+      const nextPlanPieId = cyclePlanPie()
+      if (nextPlanPieId == null) return
+
+      const pie = planPies.find((entry) => entry.id === nextPlanPieId)
+      if (pie?.dispatchDate != null) {
+        dispatch(
+          updateLastViewedCalendarDate({
+            year: pie.dispatchDate.year,
+            month: pie.dispatchDate.month,
+          }),
+        )
+      }
       return
     }
+
     onLeftPieCenterClick()
-  }, [showPlanPieOverviewBack, onLeftPieCenterClick, selectPlanPie])
+  }, [canCyclePlanPies, cyclePlanPie, planPies, dispatch, onLeftPieCenterClick])
 
   const handleSelectPlanPie = useCallback(
     (id: string) => {
@@ -245,9 +256,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                           : { isProcessed: true })}
                         onLeftPieSectorClick={handleLeftPieSectorClick}
                         onLeftPieCenterClick={handleLeftPieCenterPress}
-                        leftPieCenterOverviewBack={showPlanPieOverviewBack}
+                        leftPieCenterPlanCycle={canCyclePlanPies}
                         leftPieCenterClickable={
-                          showPlanPieOverviewBack ||
+                          canCyclePlanPies ||
                           (activePieSide === 'right' && !showTopCardStripFullSpan)
                         }
                       />

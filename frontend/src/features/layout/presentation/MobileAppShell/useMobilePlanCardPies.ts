@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAppSelector } from '@app/hooks'
 import { selectActiveCardFullData } from '@features/cardPie/infrastructure/selectors'
 import {
@@ -95,10 +95,34 @@ export function useMobilePlanCardPies() {
     setSelectedPlanPieId(null)
   }, [notebookDateTabPeekClearTick])
 
+  const cyclePlanPie = useCallback((): string | null => {
+    if (planPies.length === 0) return null
+
+    let nextId: string | null
+    if (selectedPlanPieId == null) {
+      nextId = planPies[0].id
+    } else {
+      const currentIndex = planPies.findIndex(
+        (pie) => pie.id === selectedPlanPieId,
+      )
+      if (currentIndex === -1) {
+        nextId = planPies[0].id
+      } else if (currentIndex >= planPies.length - 1) {
+        nextId = null
+      } else {
+        nextId = planPies[currentIndex + 1].id
+      }
+    }
+
+    setSelectedPlanPieId(nextId)
+    return nextId
+  }, [planPies, selectedPlanPieId])
+
   return {
     planPies,
     selectedPlanPie,
     selectedPlanPieId,
     selectPlanPie: setSelectedPlanPieId,
+    cyclePlanPie,
   }
 }

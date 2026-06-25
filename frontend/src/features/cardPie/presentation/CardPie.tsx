@@ -65,6 +65,7 @@ export const CardPie: React.FC<CardPieProps> = ({
   onLeftPieCenterClick,
   leftPieCenterClickable = false,
   leftPieCenterOverviewBack = false,
+  leftPieCenterPlanCycle = false,
   hideLeftPieCenterLogo = false,
   leftPieCenterDisc = false,
   leftPieCenterDiscColor,
@@ -198,7 +199,9 @@ export const CardPie: React.FC<CardPieProps> = ({
 
   const allSectionsFilled = isReady
   const leftCenterActionEnabled =
-    leftPieCenterClickable || leftPieCenterOverviewBack
+    leftPieCenterClickable ||
+    leftPieCenterOverviewBack ||
+    leftPieCenterPlanCycle
 
   const triggerLeftLogoPress = React.useCallback(() => {
     setLeftLogoPressSeq((seq) => seq + 1)
@@ -823,9 +826,11 @@ export const CardPie: React.FC<CardPieProps> = ({
             station === 'left' ? !leftCenterActionEnabled : undefined
           }
           aria-label={
-            leftPieCenterOverviewBack
-              ? 'Показать общий вид плана'
-              : 'Hidragonfly.com'
+            leftPieCenterPlanCycle
+              ? 'Переключить вид плана'
+              : leftPieCenterOverviewBack
+                ? 'Показать общий вид плана'
+                : 'Hidragonfly.com'
           }
           onPointerDown={(e) => {
             e.stopPropagation()

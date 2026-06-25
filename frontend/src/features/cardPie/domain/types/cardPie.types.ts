@@ -33,6 +33,8 @@ export interface CardPieProps {
   leftPieCenterClickable?: boolean
   /** Левый пирог: центр кликабелен — возврат к обобщённому виду (лого без смены). */
   leftPieCenterOverviewBack?: boolean
+  /** Левый пирог: клик по лого листает общий вид и мини-паи по кругу. */
+  leftPieCenterPlanCycle?: boolean
   /** Левый пирог: не рисовать центральный логотип (компактный превью). */
   hideLeftPieCenterLogo?: boolean
   /** Левый пирог: цветной круг в центре без логотипа (мини-паи). */
