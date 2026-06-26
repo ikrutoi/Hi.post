@@ -22,7 +22,7 @@
   --mobile-factory-toolbar-row-gap-share: calc(var(--mobile-factory-toolbar-gap) / 2);
   --mobile-factory-toolbar-inset-inline: 0.5rem;
   --mobile-pie-padding-top: 0.15rem;
-  --mobile-pie-gutter-mini-radius: 0.28rem;
+  --mobile-pie-gutter-mini-radius: 0.3rem;
   /** Зазор между мини-паями и центральным CardPie (база — `--mobile-section-inset`). */
   --mobile-pie-gutter-mini-gap-to-center: calc(var(--mobile-section-inset) * 2);
   --mobile-section-inner-toolbar-height: #{iconButton.$toolbar-hit-size-mobile-section};
@@ -423,7 +423,7 @@
   );
   box-sizing: border-box;
   border: 1px solid green;
-  border-radius: 0.3rem;
+  border-radius: var(--mobile-pie-gutter-mini-radius);
 }
 
 .mobilePieToolbar {
