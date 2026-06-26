@@ -1,16 +1,22 @@
 import { useEffect } from 'react'
-import { useLayoutFacade } from '@layout/application/facades'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
+import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { useDateFacade } from '../facades'
 
 export const useAutoActivateDateSection = () => {
+  const dispatch = useAppDispatch()
   const { selectedDate } = useDateFacade()
-
-  const { actions } = useLayoutFacade()
-  const { setActiveSection } = actions
+  const activeSection = useAppSelector(selectActiveSection)
 
   useEffect(() => {
-    if (selectedDate) {
-      setActiveSection('date')
+    if (!selectedDate) return
+    if (
+      activeSection == null ||
+      activeSection === 'date' ||
+      activeSection === 'history'
+    ) {
+      dispatch(setActiveSection('date'))
     }
-  }, [selectedDate])
+  }, [activeSection, dispatch, selectedDate])
 }

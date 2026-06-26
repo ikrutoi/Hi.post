@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { store } from '@app/state/store'
@@ -6,6 +6,7 @@ import { openCardphotoFromMiniStripRequested } from '@cardphoto/infrastructure/s
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
+import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import {
   setCardPieListPanelOpen,
   setHistoryListPanelOpen,
@@ -74,14 +75,33 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
   const addressListPanelOpen = senderListPanelOpen || recipientListPanelOpen
   const notebookStripSection = useDateStripSectionForNotebookTabs()
+  const activeSection = useAppSelector(selectActiveSection)
 
-  /** Mobile: только список CardPie перекрывает центр; Cart/History — календарь в фабрике. */
-  const showMobileCardPie = notebookStripSection === 'date'
+  /** Mobile: CardPie list overlay только на вкладке «Дата»; сам CardPie всегда виден для переключения секций. */
+  const showMobileCardPieListInFactory =
+    notebookStripSection === 'date' && cardPieListPanelOpen
+
+  useEffect(() => {
+    if (!showMobileCardPieListInFactory && cardPieListPanelOpen) {
+      dispatch(setCardPieListPanelOpen(false))
+      dispatchCardPieToolbarIconState(dispatch, false)
+    }
+  }, [showMobileCardPieListInFactory, cardPieListPanelOpen, dispatch])
+
+  useEffect(() => {
+    if (
+      activeSection != null &&
+      activeSection !== 'date' &&
+      cardPieListPanelOpen
+    ) {
+      dispatch(setCardPieListPanelOpen(false))
+      dispatchCardPieToolbarIconState(dispatch, false)
+    }
+  }, [activeSection, cardPieListPanelOpen, dispatch])
 
   const mobileCentralListPanel = useMemo(
-    () =>
-      showMobileCardPie && cardPieListPanelOpen ? 'cardPie' : null,
-    [showMobileCardPie, cardPieListPanelOpen],
+    () => (showMobileCardPieListInFactory ? 'cardPie' : null),
+    [showMobileCardPieListInFactory],
   )
   const { planPies, selectedPlanPie, selectedPlanPieId, selectPlanPie, cyclePlanPie } =
     useMobilePlanCardPies()
@@ -239,12 +259,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                     selectedPlanPieId={selectedPlanPieId}
                     onSelectPlanPie={handleSelectPlanPie}
                   />
-                  <div
-                    className={styles.mobilePieStage}
-                    aria-hidden={!showMobileCardPie}
-                  >
+                  <div className={styles.mobilePieStage}>
                   <div className={styles.mobilePieWrap}>
-                    {showMobileCardPie ? (
                       <CardPie
                         fillContainer
                         station="left"
@@ -262,17 +278,18 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                           (activePieSide === 'right' && !showTopCardStripFullSpan)
                         }
                       />
-                    ) : null}
                   </div>
-                  {showMobileCardPie ? (
                     <div className={styles.mobilePieToolbar}>
                       <Toolbar
                         section="editorPie"
                         onActionClick={onEditorPieToolbarAction}
                       />
                     </div>
-                  ) : null}
                   </div>
+                    <div className={styles.mobilePieRightSlot} aria-hidden>
+                      <div className={styles.mobilePieRightSlotItem} />
+                      <div className={styles.mobilePieRightSlotItem} />
+                    </div>
                 </div>
               </section>
 

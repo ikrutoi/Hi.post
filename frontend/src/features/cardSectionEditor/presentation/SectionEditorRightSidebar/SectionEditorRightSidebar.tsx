@@ -58,7 +58,11 @@ export const SectionEditorRightSidebar: React.FC<
     if (variant === 'headerStack') {
       return RIGHT_SIDEBAR_TOOLBAR.map((group) => ({
         ...group,
-        icons: group.icons.filter((icon) => icon.key !== 'listHistory'),
+        icons: group.icons.filter(
+          (icon) =>
+            icon.key !== 'listHistory' &&
+            !MOBILE_HEADER_BAR_HIDDEN_KEYS.has(icon.key),
+        ),
       }))
     }
     if (variant !== 'headerBar') return undefined

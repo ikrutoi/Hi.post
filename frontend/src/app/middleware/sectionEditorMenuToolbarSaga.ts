@@ -23,6 +23,7 @@ import {
 } from './sectionEditorMenuHandlers'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { toggleCardPieListPanelFromToolbar } from './cardPieToolbarSync'
+import { closeCardPieListPanelAndSyncIconsSaga } from './exclusiveListPanelsSaga'
 
 const SECTION_EDITOR_FACTORY_KEYS = [
   'cardphoto',
@@ -92,6 +93,10 @@ function* handleSectionEditorMenuActiveSectionChange(
   action: PayloadAction<SectionEditorMenuKey>,
 ): SagaIterator {
   const activeKey = action.payload
+
+  if (activeKey !== 'date') {
+    yield call(closeCardPieListPanelAndSyncIconsSaga)
+  }
 
   if (activeKey === 'history') {
     yield put(setHistoryListPanelOpen(true))
