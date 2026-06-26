@@ -287,8 +287,18 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                     </div>
                   </div>
                     <div className={styles.mobilePieRightSlot} aria-hidden>
-                      <div className={styles.mobilePieRightSlotItem} />
-                      <div className={styles.mobilePieRightSlotItem} />
+                      <div
+                        className={clsx(
+                          styles.mobilePieRightSlotItem,
+                          styles.mobilePieRightSlotItemCart,
+                        )}
+                      />
+                      <div
+                        className={clsx(
+                          styles.mobilePieRightSlotItem,
+                          styles.mobilePieRightSlotItemHistory,
+                        )}
+                      />
                     </div>
                 </div>
               </section>
