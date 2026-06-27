@@ -73,6 +73,17 @@
 }
 
 .rowLower {
+  // Нижний ряд: фон кнопок-тулбаров как у приложения (а не чисто-белый).
+  :global([class*='toolbarKey']) {
+    background-color: $color-app-inner;
+  }
+
+  :global([class*='toolbarKey'][class*='toolbarKeyEnabled']:hover),
+  :global([class*='toolbarKey'][class*='toolbarKeyActive']:hover),
+  :global([class*='toolbarKey'][class*='toolbarKeyDisabled']:hover) {
+    background-color: $color-app-inner;
+  }
+
   :global([class*='cardphotoToolbarRow']),
   :global([class*='cardtextToolbarRow']),
   :global([class*='envelopeToolbarRow']),

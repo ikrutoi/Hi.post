@@ -474,7 +474,7 @@ $mobile-header-history-tab-blue: color.mix(
 .mobilePieRightSlotItemHistory {
   border: none;
   background: linear-gradient(
-    to right,
+    to bottom,
     $mobile-header-history-tab-yellow 0 20%,
     $color-preview-indicator-ready 20% 40%,
     $mobile-header-history-tab-blue 40% 60%,
