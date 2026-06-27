@@ -615,6 +615,14 @@ $mobile-header-history-tab-blue: color.mix(
 }
 
 .mobilePieRightSlotItemHistory {
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  appearance: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  pointer-events: auto;
   border: none;
   background: linear-gradient(
     to bottom,

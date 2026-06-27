@@ -78,15 +78,8 @@ $tab-height-header-active-scale: 1.35;
 .tabIcon {
   display: block;
   flex-shrink: 0;
-  width: 1rem;
-  height: 1rem;
-  color: $color-app-sidebar-icon;
   pointer-events: none;
   transition: transform 0.18s ease;
-}
-
-.tabActive .tabIcon {
-  transform: scaleY(calc(1 / 1.5));
 }
 
 .tabActive {

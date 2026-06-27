@@ -89,7 +89,9 @@ export const CalendarNotebookTabs: React.FC<Props> = ({
             }
           }}
         >
-          <IconSectionMenuDate className={styles.tabIcon} aria-hidden />
+          {variant === 'header' ? (
+            <IconSectionMenuDate className={styles.tabIcon} aria-hidden />
+          ) : null}
         </li>
         <li
           role="tab"
@@ -110,7 +112,9 @@ export const CalendarNotebookTabs: React.FC<Props> = ({
             }
           }}
         >
-          <IconCart className={styles.tabIcon} aria-hidden />
+          {variant === 'header' ? (
+            <IconCart className={styles.tabIcon} aria-hidden />
+          ) : null}
         </li>
         <li
           role="tab"
@@ -131,7 +135,9 @@ export const CalendarNotebookTabs: React.FC<Props> = ({
             }
           }}
         >
-          <IconHistory className={styles.tabIcon} aria-hidden />
+          {variant === 'header' ? (
+            <IconHistory className={styles.tabIcon} aria-hidden />
+          ) : null}
         </li>
       </ul>
     </div>

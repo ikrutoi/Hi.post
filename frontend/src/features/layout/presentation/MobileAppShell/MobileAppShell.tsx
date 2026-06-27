@@ -8,6 +8,9 @@ import { selectCartListPanelOpen, selectActiveCartPostcardCount, selectBlockedCa
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import {
+  notebookTabHistoryClicked,
+} from '@date/calendar/application/orchestration/notebookOrchestration.events'
+import {
   setCardPieListPanelOpen,
   setHistoryListPanelOpen,
   setNotebookStripDateOverCart,
@@ -257,6 +260,24 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     [dispatch],
   )
 
+  const handleHistorySlotClick = useCallback(
+    (event: React.MouseEvent) => {
+      event.stopPropagation()
+      const state = store.getState()
+      if (selectNotebookStripTab(state) === 'history') {
+        dispatch(setNotebookStripDateOverHistory(true))
+        dispatch(setNotebookStripTab('date'))
+        dispatch(setActiveSection('date'))
+        dispatch(setHistoryListPanelOpen(false))
+        return
+      }
+      dispatch(notebookTabHistoryClicked())
+    },
+    [dispatch],
+  )
+
+  const historyStripActive = notebookStripSection === 'history'
+
   const cardWidthStyle =
     sizeCard?.width != null && sizeCard.width > 0
       ? ({
@@ -391,11 +412,15 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                           ) : null}
                         </div>
                       </button>
-                      <div
+                      <button
+                        type="button"
                         className={clsx(
                           styles.mobilePieRightSlotItem,
                           styles.mobilePieRightSlotItemHistory,
                         )}
+                        aria-label="History postcards"
+                        aria-pressed={historyStripActive}
+                        onClick={handleHistorySlotClick}
                       />
                     </div>
                 </div>
