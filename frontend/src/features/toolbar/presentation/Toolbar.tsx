@@ -258,7 +258,8 @@ export const Toolbar = ({
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
   const authUser = useAppSelector(selectAuthUser)
-  const { isAllComplete: editorPieComplete } = useAppSelector(selectPieProgress)
+  const { isAllComplete: editorPieComplete, progress: editorPieProgress } =
+    useAppSelector(selectPieProgress)
 
   useEffect(() => {
     if (groupRef.current) {
@@ -293,6 +294,11 @@ export const Toolbar = ({
       key === 'empty' &&
       iconIndex === 0 &&
       editorPieComplete
+    const editorPieDelete =
+      section === 'editorPie' &&
+      key === 'empty' &&
+      iconIndex === 2 &&
+      editorPieProgress > 0
     const templateInQuickList =
       section === 'senderView'
         ? senderTemplateInQuickList
@@ -312,6 +318,8 @@ export const Toolbar = ({
       createDraftInList
     const effectiveIconKey: IconKey = editorPieCartAdd
       ? 'addCart'
+      : editorPieDelete
+        ? 'delete'
       : showCreateListCheck
       ? 'listCheck'
       : showApplyMediumCheck

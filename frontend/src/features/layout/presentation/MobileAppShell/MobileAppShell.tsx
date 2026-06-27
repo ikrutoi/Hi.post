@@ -38,6 +38,7 @@ import { IconLogo } from '@shared/ui/icons'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { MobileCardPieGutterMinis } from './MobileCardPieGutterMinis'
+import { MobileCartListSlot } from './MobileCartListSlot'
 import { useMobilePlanCardPies } from './useMobilePlanCardPies'
 import { CardPieLeftSlot } from '@features/cardPie/presentation/CardPieLeftSlot'
 import { EditorPieListCardPieBadgeSync } from '@features/cardPie/presentation/EditorPieListCardPieBadgeSync'
@@ -65,6 +66,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   envelopeAddressCreateMode = false,
   cardPieListPanelOpen,
   onEditorPieToolbarAction,
+  onCartListSelectEntry,
+  onCartListDateEditEntry,
 }) => {
   const dispatch = useAppDispatch()
   const shellRef = useRef<HTMLDivElement>(null)
@@ -75,6 +78,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
   const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
   const addressListPanelOpen = senderListPanelOpen || recipientListPanelOpen
+  const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
   const notebookStripSection = useDateStripSectionForNotebookTabs()
   const activeSection = useAppSelector(selectActiveSection)
   const activeCartPostcardCount = useAppSelector(selectActiveCartPostcardCount)
@@ -111,10 +115,11 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     }
   }, [activeSection, cardPieListPanelOpen, dispatch])
 
-  const mobileCentralListPanel = useMemo(
-    () => (showMobileCardPieListInFactory ? 'cardPie' : null),
-    [showMobileCardPieListInFactory],
-  )
+  const mobileCentralListPanel = useMemo((): 'cardPie' | 'cart' | null => {
+    if (showMobileCardPieListInFactory) return 'cardPie'
+    if (cartListPanelOpen) return 'cart'
+    return null
+  }, [showMobileCardPieListInFactory, cartListPanelOpen])
   const { planPies, selectedPlanPie, selectedPlanPieId, selectPlanPie, cyclePlanPie } =
     useMobilePlanCardPies()
 
@@ -237,6 +242,21 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     [dispatch, onEditorPieToolbarAction, planPies, selectedPlanPie],
   )
 
+  const handleCartSlotClick = useCallback(
+    (event: React.MouseEvent) => {
+      event.stopPropagation()
+      const isOpen = selectCartListPanelOpen(store.getState())
+      if (isOpen) {
+        dispatch(setCartListPanelOpen(false))
+        return
+      }
+      dispatch(setNotebookStripTab('cart'))
+      dispatch(setActiveSection('date'))
+      dispatch(setCartListPanelOpen(true))
+    },
+    [dispatch],
+  )
+
   const cardWidthStyle =
     sizeCard?.width != null && sizeCard.width > 0
       ? ({
@@ -322,11 +342,14 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                       />
                     </div>
                   </div>
-                    <div className={styles.mobilePieRightSlot} aria-hidden>
-                      <div
+                    <div className={styles.mobilePieRightSlot}>
+                      <button
+                        type="button"
                         className={clsx(
                           styles.mobilePieRightSlotItem,
                           styles.mobilePieRightSlotItemCart,
+                          cartListPanelOpen &&
+                            styles.mobilePieRightSlotItemCartOpen,
                           cartSlotVisualMode === 'activeOnly' &&
                             styles.mobilePieRightSlotItemCartModeActiveOnly,
                           cartSlotVisualMode === 'mixed' &&
@@ -334,6 +357,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                           cartSlotVisualMode === 'blockedOnly' &&
                             styles.mobilePieRightSlotItemCartModeBlockedOnly,
                         )}
+                        aria-label="Cart postcards"
+                        aria-pressed={cartListPanelOpen}
+                        onClick={handleCartSlotClick}
                       >
                         <div
                           className={clsx(
@@ -364,7 +390,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                             </span>
                           ) : null}
                         </div>
-                      </div>
+                      </button>
                       <div
                         className={clsx(
                           styles.mobilePieRightSlotItem,
@@ -395,6 +421,14 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                   {mobileCentralListPanel === 'cardPie' ? (
                     <div className={styles.mobileFormListOverlay}>
                       <CardPieLeftSlot />
+                    </div>
+                  ) : null}
+                  {mobileCentralListPanel === 'cart' ? (
+                    <div className={styles.mobileFormListOverlay}>
+                      <MobileCartListSlot
+                        onSelectEntry={onCartListSelectEntry}
+                        onDateEditEntry={onCartListDateEditEntry}
+                      />
                     </div>
                   ) : null}
                 </div>

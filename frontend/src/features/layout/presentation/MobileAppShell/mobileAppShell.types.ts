@@ -1,5 +1,6 @@
 import type { RefObject } from 'react'
 import type { CardLayer } from '@cardphoto/domain/types'
+import type { CartListPanelItem } from '@cart/presentation/CartListPanel'
 import type { RightSidebarKey } from '@toolbar/domain/types/rightSidebar.types'
 import type { IconKey } from '@shared/config/constants'
 
@@ -16,4 +17,6 @@ export type MobileAppShellProps = {
   envelopeAddressCreateMode?: boolean
   cardPieListPanelOpen: boolean
   onEditorPieToolbarAction?: (key: IconKey) => void | false
+  onCartListSelectEntry: (item: CartListPanelItem) => void
+  onCartListDateEditEntry: (item: CartListPanelItem) => void
 }

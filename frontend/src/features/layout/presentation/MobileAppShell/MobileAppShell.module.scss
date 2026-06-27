@@ -475,11 +475,33 @@ $mobile-header-history-tab-blue: color.mix(
   border: none;
   display: flex;
   flex-direction: column;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  appearance: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  pointer-events: auto;
   box-shadow:
     0 1px 0 rgba(0, 0, 0, 0.05),
     0 2px 3px rgba(100, 75, 20, 0.09),
     inset 0 -1px 0 rgba(255, 255, 255, 0.38),
     inset 0 0 0 1px color.change($color-cart-list-border, $alpha: 0.5);
+
+  &:focus-visible {
+    outline: 2px solid $color-cart-list-entry-date-edit-border;
+    outline-offset: 1px;
+  }
+}
+
+.mobilePieRightSlotItemCartOpen {
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.05),
+    0 2px 3px rgba(100, 75, 20, 0.09),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.38),
+    inset 0 0 0 1px color.change($color-cart-list-border, $alpha: 0.5),
+    0 0 0 2px color.change($color-cart-list-entry-date-edit-border, $alpha: 0.55);
 }
 
 @mixin mobile-cart-tab-yellow-gradient {

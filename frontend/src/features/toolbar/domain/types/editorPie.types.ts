@@ -11,7 +11,7 @@ export const EDITOR_PIE_TOOLBAR: ToolbarConfig = [
     icons: [
       { key: 'empty', state: 'enabled' },
       { key: 'empty', state: 'enabled' },
-      { key: 'delete', state: 'disabled' },
+      { key: 'empty', state: 'enabled' },
     ],
     status: 'enabled',
   },

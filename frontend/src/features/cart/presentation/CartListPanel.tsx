@@ -419,13 +419,12 @@ export const CartListPanel: React.FC<Props> = ({
                   }
                   aria-pressed={listSegment === 'cart'}
                   onClick={handleSelectCartSegment}
-                >
-                  {cartSegmentCounts.cart > 0 ? (
-                    <span className={styles.headerBelowCount} aria-hidden>
-                      {cartSegmentCounts.cart}
-                    </span>
-                  ) : null}
-                </button>
+                />
+                {cartSegmentCounts.cart > 0 ? (
+                  <span className={styles.headerBelowCount} aria-hidden>
+                    {cartSegmentCounts.cart}
+                  </span>
+                ) : null}
               </div>
               <div className={styles.headerBelowSegmentSlot}>
                 <button
@@ -443,13 +442,12 @@ export const CartListPanel: React.FC<Props> = ({
                   onClick={() =>
                     dispatch(setCartListStatusSegment('cartBlocked'))
                   }
-                >
-                  {cartSegmentCounts.cartBlocked > 0 ? (
-                    <span className={styles.headerBelowCount} aria-hidden>
-                      {cartSegmentCounts.cartBlocked}
-                    </span>
-                  ) : null}
-                </button>
+                />
+                {cartSegmentCounts.cartBlocked > 0 ? (
+                  <span className={styles.headerBelowCount} aria-hidden>
+                    {cartSegmentCounts.cartBlocked}
+                  </span>
+                ) : null}
               </div>
             </div>
           ) : undefined

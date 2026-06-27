@@ -8,6 +8,7 @@ import {
   selectSenderListPanelOpen,
 } from '@envelope/infrastructure/selectors'
 import { selectIsCardPieListPanelOpen } from '@date/calendar/infrastructure/selectors'
+import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
 import { selectSenderView } from '@envelope/sender/infrastructure/selectors'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
@@ -27,6 +28,7 @@ export const MobileFactoryToolbarShell: React.FC = () => {
   const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
   const addressListPanelOpen = senderListPanelOpen || recipientListPanelOpen
   const cardPieListPanelOpen = useAppSelector(selectIsCardPieListPanelOpen)
+  const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
   const senderView = useAppSelector(selectSenderView)
   const recipientView = useAppSelector(selectRecipientView)
   const {
@@ -47,7 +49,8 @@ export const MobileFactoryToolbarShell: React.FC = () => {
       cardphotoListPanelOpen ||
       cardtextListPanelOpen ||
       addressListPanelOpen ||
-      cardPieListPanelOpen,
+      cardPieListPanelOpen ||
+      cartListPanelOpen,
     [
       rightPieCardphotoPeekNoToolbar,
       rightPieCardtextPeekNoToolbar,
@@ -58,6 +61,7 @@ export const MobileFactoryToolbarShell: React.FC = () => {
       cardtextListPanelOpen,
       addressListPanelOpen,
       cardPieListPanelOpen,
+      cartListPanelOpen,
     ],
   )
 

@@ -963,6 +963,8 @@ const App = () => {
         envelopeAddressCreateMode={mobileEnvelopeAddressFormOpen}
         cardPieListPanelOpen={cardPieListPanelOpen}
         onEditorPieToolbarAction={handleEditorPieToolbarAction}
+        onCartListSelectEntry={handleCartListSelectEntry}
+        onCartListDateEditEntry={handleCartListDateEditEntry}
       />
     )
   }

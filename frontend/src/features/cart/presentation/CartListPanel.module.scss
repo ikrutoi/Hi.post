@@ -8,11 +8,9 @@ $list-panel-scroll-inset: 0.35rem;
 /** 1px зазор: последняя строка списка не заходит под верхний бордер футера. */
 $list-panel-list-footer-gap: 1px;
 $cart-list-header-square-skew-deg: -15deg;
-$cart-list-header-square-w: 1.5rem;
-$cart-list-header-square-h: 1rem;
-/** Inactive: white ring; active: transparent (same 2px so size does not jump). */
-$cart-list-header-segment-border: 1px;
-$cart-list-header-segment-border-inactive: rgba(255, 255, 255, 0.92);
+$cart-list-header-square-w: 1.75rem;
+$cart-list-header-square-h: 1.35rem;
+$cart-list-header-square-w-selected: $cart-list-header-square-w * 1.5;
 
 .panel {
   position: relative;
@@ -63,19 +61,23 @@ $cart-list-header-segment-border-inactive: rgba(255, 255, 255, 0.92);
 }
 
 .headerBelowSegmentSlot {
-  display: flex;
+  position: relative;
   flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
   width: $cart-list-header-square-w;
   height: $cart-list-header-square-h;
+
+  :global([data-shell-layout='mobile']) & {
+    height: $list-panel-header-lead-row;
+  }
 }
 
 .headerBelowSquare {
+  position: absolute;
+  top: 0;
   display: flex;
   flex-shrink: 0;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   width: $cart-list-header-square-w;
   height: $cart-list-header-square-h;
   box-sizing: border-box;
@@ -87,44 +89,91 @@ $cart-list-header-segment-border-inactive: rgba(255, 255, 255, 0.92);
   appearance: none;
   -webkit-tap-highlight-color: transparent;
   background-color: transparent;
+  border: none;
   transform: skewX($cart-list-header-square-skew-deg);
   transform-origin: center center;
+  transition: width 0.15s ease;
+  touch-action: manipulation;
+
+  &[aria-pressed='true'] {
+    width: $cart-list-header-square-w-selected;
+    z-index: 1;
+  }
 
   &:focus-visible {
     outline: none;
   }
+
+  :global([data-shell-layout='mobile']) & {
+    top: 0;
+    bottom: 0;
+    height: auto;
+    z-index: 1;
+    transform: none;
+    background-color: transparent;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      height: $cart-list-header-square-h;
+      transform: translateY(-50%) skewX($cart-list-header-square-skew-deg);
+      transform-origin: center center;
+      transition: width 0.15s ease;
+      pointer-events: none;
+    }
+  }
 }
 
 .headerBelowCount {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
   color: $color-font-enabled-light-hover;
   font-family: sans-serif;
-  font-size: $list-panel-caption-font-size;
+  font-size: 0.75rem;
   font-weight: 700;
   line-height: 1;
   font-variant-numeric: tabular-nums;
-  transform: skewX(#{0deg - $cart-list-header-square-skew-deg});
-}
+  pointer-events: none;
+  transform: translate(-50%, -50%);
 
-.cart,
-.cartBlocked {
-  border: $cart-list-header-segment-border solid
-    $cart-list-header-segment-border-inactive;
-  transition: border-color 0.15s ease;
+  :global([data-shell-layout='mobile']) & {
+    font-size: 0.9rem;
+  }
 }
 
 .cart {
+  right: 0;
+  left: auto;
   background-color: $color-preview-indicator-cart;
 
-  &[aria-pressed='true'] {
-    border-color: transparent;
+  :global([data-shell-layout='mobile']) & {
+    background-color: transparent;
+
+    &::before {
+      right: 0;
+      left: auto;
+      background-color: $color-preview-indicator-cart;
+    }
   }
 }
 
 .cartBlocked {
+  left: 0;
+  right: auto;
   background-color: $color-preview-indicator-error;
 
-  &[aria-pressed='true'] {
-    border-color: transparent;
+  :global([data-shell-layout='mobile']) & {
+    background-color: transparent;
+
+    &::before {
+      left: 0;
+      right: auto;
+      background-color: $color-preview-indicator-error;
+    }
   }
 }
 
