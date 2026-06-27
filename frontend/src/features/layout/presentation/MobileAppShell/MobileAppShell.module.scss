@@ -375,7 +375,9 @@ $mobile-header-history-tab-blue: color.mix(
   display: block;
   margin: 0;
   padding: 0;
-  border: none;
+  // Резерв под рамку выбора, чтобы при выделении не было сдвига размера пая.
+  border: 1px solid transparent;
+  border-radius: var(--mobile-pie-gutter-mini-radius);
   background: transparent;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -407,6 +409,15 @@ $mobile-header-history-tab-blue: color.mix(
   :global([class*='pieOutlineOverlay']) {
     border-radius: var(--mobile-pie-gutter-mini-radius);
   }
+}
+
+// Выбранный мини-пай: внешний бордер в цвет центральной кнопки пая.
+.mobilePieGutterMiniItem[data-selected='true'] {
+  border-color: $color-app-substrate-border;
+}
+
+.mobilePieGutterMiniItem[data-selected='true'][data-ready='true'] {
+  border-color: var(--logo-color, #008aed);
 }
 
 // Centered on screen; minis sit in the left slot via absolute positioning.

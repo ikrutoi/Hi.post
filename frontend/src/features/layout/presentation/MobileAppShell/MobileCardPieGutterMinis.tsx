@@ -1,5 +1,6 @@
 import React from 'react'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
+import { isPostcardPieAllComplete } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import type { MobilePlanCardPie } from './useMobilePlanCardPies'
 import styles from './MobileAppShell.module.scss'
 
@@ -21,6 +22,7 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
             type="button"
             className={styles.mobilePieGutterMiniItem}
             data-selected={selectedPlanPieId === id ? 'true' : undefined}
+            data-ready={isPostcardPieAllComplete(sections) ? 'true' : undefined}
             aria-pressed={selectedPlanPieId === id}
             aria-label="Open plan CardPie"
             onClick={(event) => {
