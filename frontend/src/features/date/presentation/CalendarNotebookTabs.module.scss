@@ -31,6 +31,7 @@ $tab-yellow: color.mix($tab2-t, $tab2-b, 48%);
 
 $tab-height: 1.05rem;
 $tab-height-header: 1.75rem;
+$tab-height-header-icon: 1.2rem;
 // active ≈ 2.35rem
 $tab-height-header-active-scale: 1.35;
 
@@ -154,6 +155,12 @@ $tab-height-header-active-scale: 1.35;
 
 .trackHeader .tabActive .tabIcon {
   transform: scaleY(calc(1 / #{$tab-height-header-active-scale}));
+}
+
+.trackHeader .tabIcon {
+  width: $tab-height-header-icon;
+  height: $tab-height-header-icon;
+  color: $color-app-inner;
 }
 
 .tabHeader {
