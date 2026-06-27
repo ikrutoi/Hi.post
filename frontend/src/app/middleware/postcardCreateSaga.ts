@@ -42,6 +42,7 @@ import {
   excludeDispatchBranch,
   pickDispatchDate,
   setSelectedDates,
+  toggleCartForDispatchBranch,
 } from '@date/infrastructure/state'
 import { selectSelectedAroma } from '@aroma/infrastructure/selectors'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
@@ -635,6 +636,37 @@ export function* handleToggleCartForDispatchBranch(
   yield* focusCartNotebookOnDateSection(date)
   yield call(refreshRightSidebarBadgesFromPostcards)
   yield put(postcardLocalDataChanged())
+}
+
+export function* handleAddEditorPiePlanToCart(
+  action: PayloadAction<{ branchKeys?: string[] }>,
+): SagaIterator {
+  const isReadyForCart: boolean = yield select(selectIsCardReady)
+  if (!isReadyForCart) return
+
+  const branchKeys = (action.payload.branchKeys ?? []).filter(
+    (key): key is string => Boolean(key),
+  )
+
+  if (branchKeys.length === 0) {
+    yield call(createPostcardsFromEditor)
+    yield* clearCardPieWorkspaceAfterCartAdd()
+    return
+  }
+
+  for (let i = 0; i < branchKeys.length; i++) {
+    yield call(handleToggleCartForDispatchBranch, {
+      type: toggleCartForDispatchBranch.type,
+      payload: {
+        branchKey: branchKeys[i]!,
+        clearEditorAfterAdd: branchKeys.length === 1,
+      },
+    })
+  }
+
+  if (branchKeys.length > 1) {
+    yield* clearCardPieWorkspaceAfterCartAdd()
+  }
 }
 
 export function* refreshRightSidebarBadgesFromPostcards(): SagaIterator {

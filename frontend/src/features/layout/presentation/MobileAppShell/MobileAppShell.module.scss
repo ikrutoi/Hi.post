@@ -473,6 +473,8 @@ $mobile-header-history-tab-blue: color.mix(
   position: relative;
   overflow: hidden;
   border: none;
+  display: flex;
+  flex-direction: column;
   box-shadow:
     0 1px 0 rgba(0, 0, 0, 0.05),
     0 2px 3px rgba(100, 75, 20, 0.09),
@@ -488,9 +490,51 @@ $mobile-header-history-tab-blue: color.mix(
   );
 }
 
-// Режим 1: пустая или только активные — жёлтый фон + красный треугольник снизу.
-.mobilePieRightSlotItemCartModeActiveOnly {
+.mobilePieRightSlotCartHalf {
+  flex: 1 1 50%;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.mobilePieRightSlotCartCount {
+  position: relative;
+  z-index: 1;
+  color: $color-app-sidebar-icon;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.mobilePieRightSlotCartCountBlocked {
+  color: #fff;
+}
+
+.mobilePieRightSlotCartActive {
+  background: transparent;
+}
+
+.mobilePieRightSlotCartBlocked {
+  background-color: $color-preview-indicator-error;
+}
+
+// Единый жёлтый градиент на весь слот — без разрыва палитры между половинами.
+.mobilePieRightSlotItemCartModeActiveOnly,
+.mobilePieRightSlotItemCartModeMixed {
   @include mobile-cart-tab-yellow-gradient;
+}
+
+.mobilePieRightSlotItemCartModeBlockedOnly {
+  background-color: $color-preview-indicator-error;
+}
+
+// Режим 1: только активные — нижняя половина жёлтая + красный треугольник у нижнего края.
+.mobilePieRightSlotItemCartModeActiveOnly .mobilePieRightSlotCartBlocked {
+  background: transparent;
 
   &::after {
     content: '';
@@ -506,28 +550,14 @@ $mobile-header-history-tab-blue: color.mix(
   }
 }
 
-// Режим 2: активные + заблокированные — жёлтый сверху, красный снизу (граница 30°).
-.mobilePieRightSlotItemCartModeMixed {
+// Режим 2: активные + заблокированные — жёлтая верхняя половина, красная нижняя.
+.mobilePieRightSlotItemCartModeMixed .mobilePieRightSlotCartBlocked {
   background-color: $color-preview-indicator-error;
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    clip-path: polygon(
-      0 0,
-      100% 0,
-      100% calc(100% - 100cqw * tan(30deg)),
-      0 100%
-    );
-    @include mobile-cart-tab-yellow-gradient;
-    pointer-events: none;
-  }
 }
 
-// Режим 3: только заблокированные — минимальный жёлтый треугольник сверху (зеркало режима 1).
-.mobilePieRightSlotItemCartModeBlockedOnly {
-  background-color: $color-preview-indicator-error;
+// Режим 3: только заблокированные — минимальный жёлтый треугольник в верхней половине.
+.mobilePieRightSlotItemCartModeBlockedOnly .mobilePieRightSlotCartActive {
+  background: transparent;
 
   &::before {
     content: '';

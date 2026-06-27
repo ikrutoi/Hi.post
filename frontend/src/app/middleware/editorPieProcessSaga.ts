@@ -5,6 +5,7 @@ import { clearCardPieWorkspaceAfterCartAdd } from './editorPieHandlers'
 import {
   handleExcludeDispatchBranch,
   handleToggleCartForDispatchBranch,
+  handleAddEditorPiePlanToCart,
 } from './postcardCreateSaga'
 import { toolbarAction } from '@/features/toolbar/application/helpers'
 import {
@@ -24,6 +25,7 @@ import {
   toggleCartForDispatchBranch,
   clearCardPieEditorSession,
   excludeDispatchBranch,
+  addEditorPiePlanToCart,
 } from '@date/infrastructure/state'
 import { addItem } from '@cart/infrastructure/state'
 import { setAroma, clear as clearAroma } from '@aroma/infrastructure/state'
@@ -129,6 +131,7 @@ export function* editorPieProcessSaga(): SagaIterator {
       toggleCartForDispatchBranch.type,
       handleToggleCartForDispatchBranch,
     ),
+    takeLatest(addEditorPiePlanToCart.type, handleAddEditorPiePlanToCart),
     takeLatest(excludeDispatchBranch.type, handleExcludeDispatchBranch),
     takeLatest(clearCardPieEditorSession.type, handleClearCardPieEditorSession),
 

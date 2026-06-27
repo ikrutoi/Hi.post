@@ -24,6 +24,7 @@ import { selectRecipientsList } from '@envelope/infrastructure/selectors'
 
 export type MobilePlanCardPie = {
   id: string
+  dispatchBranchKey: string | null
   inner: CardPieInnerData
   sections: CardPieSectionFlags
   dispatchDate: DispatchDate | null
@@ -60,6 +61,7 @@ export function useMobilePlanCardPies() {
       .filter((entry) => entry.variant !== 'inactive')
       .map((entry) => ({
         id: entry.id,
+        dispatchBranchKey: entry.dispatchBranchKey ?? null,
         dispatchDate: entry.sourceDate ?? null,
         ...buildCardPieInnerDataForPlanEntry(entry, baseInner, {
           recipientState,

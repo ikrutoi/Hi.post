@@ -148,6 +148,14 @@ export const dateSlice = createSlice({
       }>,
     ) {},
 
+    /** Saga-only: addCart из editorPie — одна или несколько веток плана, либо bulk из редактора. */
+    addEditorPiePlanToCart(
+      _state,
+      _action: PayloadAction<{
+        branchKeys?: string[]
+      }>,
+    ) {},
+
     setFirstDayOfWeek(state, action: PayloadAction<FirstDayOfWeekPreference>) {
       state.firstDayOfWeek = action.payload
     },
@@ -267,6 +275,7 @@ export const {
   excludeDispatchBranch,
   clearCardPieEditorSession,
   toggleCartForDispatchBranch,
+  addEditorPiePlanToCart,
   // setHistoryListPanelOpen,
   // setDateListPanelOpen,
   // setHistoryMode,

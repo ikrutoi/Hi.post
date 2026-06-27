@@ -20,8 +20,9 @@ import {
   selectIsHistoryListPanelOpen,
   selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
+import { addEditorPiePlanToCart } from '@date/infrastructure/state'
 import { dispatchCardPieToolbarIconState } from '@toolbar/application/syncCardPieToolbarIcons'
-import type { CardSection } from '@shared/config/constants'
+import type { CardSection, IconKey } from '@shared/config/constants'
 import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
 import { CardphotoListMobileSlot } from '@cardphoto/presentation/CardphotoListMobileSlot'
 import { CardtextListMobileSlot } from '@cardtext/presentation/CardtextListMobileSlot'
@@ -212,6 +213,25 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     },
     [dispatch, onBeforeLeftPieInteraction],
   )
+
+  const handleEditorPieToolbarAction = useCallback(
+    (key: IconKey) => {
+      if (key === 'addCart') {
+        const branchKeys = selectedPlanPie?.dispatchBranchKey
+          ? [selectedPlanPie.dispatchBranchKey]
+          : planPies
+              .map((pie) => pie.dispatchBranchKey)
+              .filter((branchKey): branchKey is string => Boolean(branchKey))
+
+        dispatch(addEditorPiePlanToCart({ branchKeys }))
+        return false
+      }
+
+      return onEditorPieToolbarAction?.(key)
+    },
+    [dispatch, onEditorPieToolbarAction, planPies, selectedPlanPie],
+  )
+
   const cardWidthStyle =
     sizeCard?.width != null && sizeCard.width > 0
       ? ({
@@ -293,7 +313,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                     <div className={styles.mobilePieToolbar}>
                       <Toolbar
                         section="editorPie"
-                        onActionClick={onEditorPieToolbarAction}
+                        onActionClick={handleEditorPieToolbarAction}
                       />
                     </div>
                   </div>
@@ -309,7 +329,37 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                           cartSlotVisualMode === 'blockedOnly' &&
                             styles.mobilePieRightSlotItemCartModeBlockedOnly,
                         )}
-                      />
+                      >
+                        <div
+                          className={clsx(
+                            styles.mobilePieRightSlotCartHalf,
+                            styles.mobilePieRightSlotCartActive,
+                          )}
+                        >
+                          {activeCartPostcardCount > 0 ? (
+                            <span className={styles.mobilePieRightSlotCartCount}>
+                              {activeCartPostcardCount}
+                            </span>
+                          ) : null}
+                        </div>
+                        <div
+                          className={clsx(
+                            styles.mobilePieRightSlotCartHalf,
+                            styles.mobilePieRightSlotCartBlocked,
+                          )}
+                        >
+                          {blockedCartPostcardCount > 0 ? (
+                            <span
+                              className={clsx(
+                                styles.mobilePieRightSlotCartCount,
+                                styles.mobilePieRightSlotCartCountBlocked,
+                              )}
+                            >
+                              {blockedCartPostcardCount}
+                            </span>
+                          ) : null}
+                        </div>
+                      </div>
                       <div
                         className={clsx(
                           styles.mobilePieRightSlotItem,
