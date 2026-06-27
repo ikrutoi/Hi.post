@@ -469,17 +469,78 @@ $mobile-header-history-tab-blue: color.mix(
 }
 
 .mobilePieRightSlotItemCart {
+  container-type: size;
+  position: relative;
+  overflow: hidden;
   border: none;
-  background: linear-gradient(
-    0deg,
-    $mobile-header-cart-tab-top 0%,
-    $mobile-header-cart-tab-bottom 100%
-  );
   box-shadow:
     0 1px 0 rgba(0, 0, 0, 0.05),
     0 2px 3px rgba(100, 75, 20, 0.09),
     inset 0 -1px 0 rgba(255, 255, 255, 0.38),
     inset 0 0 0 1px color.change($color-cart-list-border, $alpha: 0.5);
+}
+
+@mixin mobile-cart-tab-yellow-gradient {
+  background: linear-gradient(
+    0deg,
+    $mobile-header-cart-tab-top 0%,
+    $mobile-header-cart-tab-bottom 100%
+  );
+}
+
+// Режим 1: пустая или только активные — жёлтый фон + красный треугольник снизу.
+.mobilePieRightSlotItemCartModeActiveOnly {
+  @include mobile-cart-tab-yellow-gradient;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    clip-path: polygon(
+      0 100%,
+      100% 100%,
+      100% calc(100% - 100cqw * tan(30deg))
+    );
+    background-color: $color-preview-indicator-error;
+    pointer-events: none;
+  }
+}
+
+// Режим 2: активные + заблокированные — жёлтый сверху, красный снизу (граница 30°).
+.mobilePieRightSlotItemCartModeMixed {
+  background-color: $color-preview-indicator-error;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      100% calc(100% - 100cqw * tan(30deg)),
+      0 100%
+    );
+    @include mobile-cart-tab-yellow-gradient;
+    pointer-events: none;
+  }
+}
+
+// Режим 3: только заблокированные — минимальный жёлтый треугольник сверху (зеркало режима 1).
+.mobilePieRightSlotItemCartModeBlockedOnly {
+  background-color: $color-preview-indicator-error;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      0 calc(100cqw * tan(30deg))
+    );
+    @include mobile-cart-tab-yellow-gradient;
+    pointer-events: none;
+  }
 }
 
 .mobilePieRightSlotItemHistory {

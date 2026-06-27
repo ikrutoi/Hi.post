@@ -1,6 +1,9 @@
 import type { RootState } from '@app/state'
 import type { CartAmount, CartListStatusSegment } from '@cart/domain/types'
 import type { PostcardHydrated } from '@entities/postcard'
+import { createSelector } from '@reduxjs/toolkit'
+import { getCurrentDate } from '@shared/utils/date'
+import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
 
 export const selectCartListPanelOpen = (state: RootState): boolean =>
   state.cart.isActive
@@ -15,6 +18,36 @@ export const selectCartListStatusSegment = (
 
 export const selectCartItems = (state: RootState): PostcardHydrated[] =>
   state.cart.items
+
+const selectCartPostcardsForBadge = createSelector(
+  [selectCartItems],
+  (cartItems) =>
+    cartItems.filter(
+      (item) => item.status === 'cart' || item.status === 'cartBlocked',
+    ),
+)
+
+/** Активные открытки корзины (дата отправки ещё доступна для заказа). */
+export const selectActiveCartPostcardCount = createSelector(
+  [selectCartPostcardsForBadge],
+  (cartItems) => {
+    const currentDate = getCurrentDate()
+    return cartItems.filter(
+      (item) => !isDispatchDateDisabledForOrder(item.date, currentDate),
+    ).length
+  },
+)
+
+/** Заблокированные открытки корзины (дата отправки уже недоступна). */
+export const selectBlockedCartPostcardCount = createSelector(
+  [selectCartPostcardsForBadge],
+  (cartItems) => {
+    const currentDate = getCurrentDate()
+    return cartItems.filter((item) =>
+      isDispatchDateDisabledForOrder(item.date, currentDate),
+    ).length
+  },
+)
 
 // export const selectCartAmount = (state: RootState): CartAmount => {
 //   const items: Postcard[] = state.cart.items.filter(

@@ -61,6 +61,9 @@ $tab-height-header-active-scale: 1.35;
   min-width: 0;
   max-width: 3.5rem;
   height: $tab-height;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   border-radius: 0.3rem 0.3rem 0 0;
   box-shadow:
@@ -69,6 +72,20 @@ $tab-height-header-active-scale: 1.35;
     inset 0 1px 0 rgba(255, 255, 255, 0.45);
   transform-origin: bottom center;
   transition: transform 0.18s ease;
+}
+
+.tabIcon {
+  display: block;
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  color: $color-app-sidebar-icon;
+  pointer-events: none;
+  transition: transform 0.18s ease;
+}
+
+.tabActive .tabIcon {
+  transform: scaleY(calc(1 / 1.5));
 }
 
 .tabActive {
@@ -133,6 +150,10 @@ $tab-height-header-active-scale: 1.35;
 
 .trackHeader .tabActive {
   transform: scaleY($tab-height-header-active-scale);
+}
+
+.trackHeader .tabActive .tabIcon {
+  transform: scaleY(calc(1 / #{$tab-height-header-active-scale}));
 }
 
 .tabHeader {

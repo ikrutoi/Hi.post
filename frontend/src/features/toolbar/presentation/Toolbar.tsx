@@ -44,6 +44,7 @@ import {
   selectAuthUser,
   selectIsAuthenticated,
 } from '@features/auth/infrastructure/selectors/authSelectors'
+import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors'
 import {
   selectRecipientAddressListPanelDensity,
   selectSenderAddressListPanelDensity,
@@ -257,6 +258,7 @@ export const Toolbar = ({
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
   const authUser = useAppSelector(selectAuthUser)
+  const { isAllComplete: editorPieComplete } = useAppSelector(selectPieProgress)
 
   useEffect(() => {
     if (groupRef.current) {
@@ -282,8 +284,15 @@ export const Toolbar = ({
     groupStatus: IconStateGroup,
     currentIconState?: IconState,
     iconOptions?: IconOptions,
+    iconIndex?: number,
   ) => {
     const rawData = sectionState[key]
+    // editorPie: первая иконка-дырка становится «добавить в корзину» у комплектной открытки.
+    const editorPieCartAdd =
+      section === 'editorPie' &&
+      key === 'empty' &&
+      iconIndex === 0 &&
+      editorPieComplete
     const templateInQuickList =
       section === 'senderView'
         ? senderTemplateInQuickList
@@ -301,7 +310,9 @@ export const Toolbar = ({
       key === 'applyMedium' &&
       (section === 'senderCreate' || section === 'recipientCreate') &&
       createDraftInList
-    const effectiveIconKey: IconKey = showCreateListCheck
+    const effectiveIconKey: IconKey = editorPieCartAdd
+      ? 'addCart'
+      : showCreateListCheck
       ? 'listCheck'
       : showApplyMediumCheck
         ? 'applyMediumCheck'
@@ -616,8 +627,14 @@ export const Toolbar = ({
             group.status === 'disabled' && styles.toolbarGroupDisabled,
           )}
         >
-          {group.icons.map((icon) =>
-            renderIcon(icon.key, group.status, icon.state, icon.options),
+          {group.icons.map((icon, iconIdx) =>
+            renderIcon(
+              icon.key,
+              group.status,
+              icon.state,
+              icon.options,
+              iconIdx,
+            ),
           )}
         </div>
       ))}

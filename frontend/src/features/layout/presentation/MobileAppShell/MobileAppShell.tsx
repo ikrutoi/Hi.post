@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { store } from '@app/state/store'
 import { openCardphotoFromMiniStripRequested } from '@cardphoto/infrastructure/state'
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
-import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
+import { selectCartListPanelOpen, selectActiveCartPostcardCount, selectBlockedCartPostcardCount } from '@cart/infrastructure/selectors'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import {
@@ -76,6 +76,17 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const addressListPanelOpen = senderListPanelOpen || recipientListPanelOpen
   const notebookStripSection = useDateStripSectionForNotebookTabs()
   const activeSection = useAppSelector(selectActiveSection)
+  const activeCartPostcardCount = useAppSelector(selectActiveCartPostcardCount)
+  const blockedCartPostcardCount = useAppSelector(selectBlockedCartPostcardCount)
+  const cartSlotVisualMode = useMemo(() => {
+    if (activeCartPostcardCount > 0 && blockedCartPostcardCount > 0) {
+      return 'mixed' as const
+    }
+    if (activeCartPostcardCount === 0 && blockedCartPostcardCount > 0) {
+      return 'blockedOnly' as const
+    }
+    return 'activeOnly' as const
+  }, [activeCartPostcardCount, blockedCartPostcardCount])
 
   /** Mobile: CardPie list overlay только на вкладке «Дата»; сам CardPie всегда виден для переключения секций. */
   const showMobileCardPieListInFactory =
@@ -291,6 +302,12 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                         className={clsx(
                           styles.mobilePieRightSlotItem,
                           styles.mobilePieRightSlotItemCart,
+                          cartSlotVisualMode === 'activeOnly' &&
+                            styles.mobilePieRightSlotItemCartModeActiveOnly,
+                          cartSlotVisualMode === 'mixed' &&
+                            styles.mobilePieRightSlotItemCartModeMixed,
+                          cartSlotVisualMode === 'blockedOnly' &&
+                            styles.mobilePieRightSlotItemCartModeBlockedOnly,
                         )}
                       />
                       <div

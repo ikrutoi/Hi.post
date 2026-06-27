@@ -8,6 +8,11 @@ import {
   notebookTabDateClicked,
   notebookTabHistoryClicked,
 } from '@date/calendar/application/orchestration/notebookOrchestration.events'
+import {
+  IconCart,
+  IconHistory,
+  IconSectionMenuDate,
+} from '@shared/ui/icons'
 import styles from './CalendarNotebookTabs.module.scss'
 import type { DateStripSection } from './dateStripSection.types'
 
@@ -68,6 +73,7 @@ export const CalendarNotebookTabs: React.FC<Props> = ({
         <li
           role="tab"
           aria-selected={tab1Active}
+          aria-label="Date"
           tabIndex={0}
           className={clsx(
             styles.tab,
@@ -82,10 +88,13 @@ export const CalendarNotebookTabs: React.FC<Props> = ({
               goDate()
             }
           }}
-        />
+        >
+          <IconSectionMenuDate className={styles.tabIcon} aria-hidden />
+        </li>
         <li
           role="tab"
           aria-selected={tab2Active}
+          aria-label="Cart"
           tabIndex={0}
           className={clsx(
             styles.tab,
@@ -100,10 +109,13 @@ export const CalendarNotebookTabs: React.FC<Props> = ({
               goCart()
             }
           }}
-        />
+        >
+          <IconCart className={styles.tabIcon} aria-hidden />
+        </li>
         <li
           role="tab"
           aria-selected={tab3Active}
+          aria-label="History"
           tabIndex={0}
           className={clsx(
             styles.tab,
@@ -118,7 +130,9 @@ export const CalendarNotebookTabs: React.FC<Props> = ({
               goHistory()
             }
           }}
-        />
+        >
+          <IconHistory className={styles.tabIcon} aria-hidden />
+        </li>
       </ul>
     </div>
   )
