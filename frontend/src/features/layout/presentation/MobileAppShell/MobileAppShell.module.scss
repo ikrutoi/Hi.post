@@ -511,7 +511,7 @@ $mobile-header-history-tab-blue: color.mix(
 }
 
 .mobilePieRightSlotCartCountBlocked {
-  color: #fff;
+  color: $color-app-sidebar-icon;
 }
 
 .mobilePieRightSlotCartActive {
@@ -523,8 +523,7 @@ $mobile-header-history-tab-blue: color.mix(
 }
 
 // Единый жёлтый градиент на весь слот — без разрыва палитры между половинами.
-.mobilePieRightSlotItemCartModeActiveOnly,
-.mobilePieRightSlotItemCartModeMixed {
+.mobilePieRightSlotItemCartModeActiveOnly {
   @include mobile-cart-tab-yellow-gradient;
 }
 
@@ -550,9 +549,29 @@ $mobile-header-history-tab-blue: color.mix(
   }
 }
 
-// Режим 2: активные + заблокированные — жёлтая верхняя половина, красная нижняя.
-.mobilePieRightSlotItemCartModeMixed .mobilePieRightSlotCartBlocked {
+// Режим 2: активные + заблокированные — граница −30° через центр кнопки.
+.mobilePieRightSlotItemCartModeMixed {
   background-color: $color-preview-indicator-error;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      100% calc(50cqh + 50cqw * tan(-30deg)),
+      0 calc(50cqh - 50cqw * tan(-30deg))
+    );
+    @include mobile-cart-tab-yellow-gradient;
+    pointer-events: none;
+  }
+
+  .mobilePieRightSlotCartActive,
+  .mobilePieRightSlotCartBlocked {
+    background: transparent;
+  }
 }
 
 // Режим 3: только заблокированные — минимальный жёлтый треугольник в верхней половине.
