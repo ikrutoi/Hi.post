@@ -223,7 +223,12 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
               .map((pie) => pie.dispatchBranchKey)
               .filter((branchKey): branchKey is string => Boolean(branchKey))
 
-        dispatch(addEditorPiePlanToCart({ branchKeys }))
+        dispatch(
+          addEditorPiePlanToCart({
+            branchKeys,
+            clearEditorAfterAdd: planPies.length === 1,
+          }),
+        )
         return false
       }
 

@@ -639,7 +639,10 @@ export function* handleToggleCartForDispatchBranch(
 }
 
 export function* handleAddEditorPiePlanToCart(
-  action: PayloadAction<{ branchKeys?: string[] }>,
+  action: PayloadAction<{
+    branchKeys?: string[]
+    clearEditorAfterAdd?: boolean
+  }>,
 ): SagaIterator {
   const isReadyForCart: boolean = yield select(selectIsCardReady)
   if (!isReadyForCart) return
@@ -647,6 +650,7 @@ export function* handleAddEditorPiePlanToCart(
   const branchKeys = (action.payload.branchKeys ?? []).filter(
     (key): key is string => Boolean(key),
   )
+  const clearEditorAfterAdd = action.payload.clearEditorAfterAdd === true
 
   if (branchKeys.length === 0) {
     yield call(createPostcardsFromEditor)
@@ -659,7 +663,8 @@ export function* handleAddEditorPiePlanToCart(
       type: toggleCartForDispatchBranch.type,
       payload: {
         branchKey: branchKeys[i]!,
-        clearEditorAfterAdd: branchKeys.length === 1,
+        clearEditorAfterAdd:
+          branchKeys.length === 1 ? clearEditorAfterAdd : false,
       },
     })
   }

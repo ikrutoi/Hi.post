@@ -153,6 +153,8 @@ export const dateSlice = createSlice({
       _state,
       _action: PayloadAction<{
         branchKeys?: string[]
+        /** В плане была одна строка — после addCart сбросить мини-секции (как в CardPiePanel). */
+        clearEditorAfterAdd?: boolean
       }>,
     ) {},
 

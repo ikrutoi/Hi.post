@@ -353,6 +353,17 @@ button.navArrowWrap {
   }
 }
 
+/** Соседний месяц + превью (корзина и т.д.): число остаётся «чужим», не как у current. */
+.adjacentMonth.withPostcards:not(.dispatch) {
+  .dayNumber {
+    background-color: $color-disabled;
+    border-color: $color-section-dark;
+    color: $color-font-disabled;
+    font-weight: 600;
+    box-shadow: none;
+  }
+}
+
 .selected {
   background-color: $color-hover-bg;
 }

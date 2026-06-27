@@ -84,12 +84,9 @@ export function useMobilePlanCardPies() {
   )
 
   useEffect(() => {
-    if (
-      selectedPlanPieId != null &&
-      !planPies.some((pie) => pie.id === selectedPlanPieId)
-    ) {
-      setSelectedPlanPieId(null)
-    }
+    if (selectedPlanPieId == null) return
+    if (planPies.some((pie) => pie.id === selectedPlanPieId)) return
+    setSelectedPlanPieId(planPies[0]?.id ?? null)
   }, [planPies, selectedPlanPieId])
 
   useEffect(() => {
