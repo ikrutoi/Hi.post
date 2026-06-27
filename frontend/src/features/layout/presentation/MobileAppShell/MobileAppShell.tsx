@@ -364,54 +364,62 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                     </div>
                   </div>
                     <div className={styles.mobilePieRightSlot}>
-                      <button
-                        type="button"
-                        className={clsx(
-                          styles.mobilePieRightSlotItem,
-                          styles.mobilePieRightSlotItemCart,
-                          cartListPanelOpen &&
-                            styles.mobilePieRightSlotItemCartOpen,
-                          cartSlotVisualMode === 'activeOnly' &&
-                            styles.mobilePieRightSlotItemCartModeActiveOnly,
-                          cartSlotVisualMode === 'mixed' &&
-                            styles.mobilePieRightSlotItemCartModeMixed,
-                          cartSlotVisualMode === 'blockedOnly' &&
-                            styles.mobilePieRightSlotItemCartModeBlockedOnly,
-                        )}
-                        aria-label="Cart postcards"
-                        aria-pressed={cartListPanelOpen}
-                        onClick={handleCartSlotClick}
-                      >
-                        <div
+                      <div className={styles.mobilePieRightSlotCartShell}>
+                        <button
+                          type="button"
                           className={clsx(
-                            styles.mobilePieRightSlotCartHalf,
-                            styles.mobilePieRightSlotCartActive,
+                            styles.mobilePieRightSlotItemCart,
+                            cartSlotVisualMode === 'activeOnly' &&
+                              styles.mobilePieRightSlotItemCartModeActiveOnly,
+                            cartSlotVisualMode === 'mixed' &&
+                              styles.mobilePieRightSlotItemCartModeMixed,
+                            cartSlotVisualMode === 'blockedOnly' &&
+                              styles.mobilePieRightSlotItemCartModeBlockedOnly,
                           )}
+                          aria-label="Cart postcards"
+                          aria-pressed={cartListPanelOpen}
+                          onClick={handleCartSlotClick}
                         >
-                          {activeCartPostcardCount > 0 ? (
-                            <span className={styles.mobilePieRightSlotCartCount}>
-                              {activeCartPostcardCount}
-                            </span>
-                          ) : null}
-                        </div>
+                          <div
+                            className={clsx(
+                              styles.mobilePieRightSlotCartHalf,
+                              styles.mobilePieRightSlotCartActive,
+                            )}
+                          />
+                          <div
+                            className={clsx(
+                              styles.mobilePieRightSlotCartHalf,
+                              styles.mobilePieRightSlotCartBlocked,
+                            )}
+                          />
+                        </button>
                         <div
-                          className={clsx(
-                            styles.mobilePieRightSlotCartHalf,
-                            styles.mobilePieRightSlotCartBlocked,
-                          )}
-                        >
-                          {blockedCartPostcardCount > 0 ? (
-                            <span
-                              className={clsx(
-                                styles.mobilePieRightSlotCartCount,
-                                styles.mobilePieRightSlotCartCountBlocked,
-                              )}
-                            >
-                              {blockedCartPostcardCount}
-                            </span>
-                          ) : null}
-                        </div>
-                      </button>
+                          className={styles.mobilePieRightSlotCartCover}
+                          aria-hidden
+                        />
+                        {activeCartPostcardCount > 0 ? (
+                          <span
+                            className={clsx(
+                              styles.mobilePieRightSlotCartCount,
+                              styles.mobilePieRightSlotCartCountActive,
+                            )}
+                            aria-hidden
+                          >
+                            {activeCartPostcardCount}
+                          </span>
+                        ) : null}
+                        {blockedCartPostcardCount > 0 ? (
+                          <span
+                            className={clsx(
+                              styles.mobilePieRightSlotCartCount,
+                              styles.mobilePieRightSlotCartCountBlocked,
+                            )}
+                            aria-hidden
+                          >
+                            {blockedCartPostcardCount}
+                          </span>
+                        ) : null}
+                      </div>
                       <button
                         type="button"
                         className={clsx(

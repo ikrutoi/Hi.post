@@ -10,6 +10,7 @@ $list-panel-list-footer-gap: 1px;
 $cart-list-header-square-skew-deg: -15deg;
 $cart-list-header-square-w: 1.75rem;
 $cart-list-header-square-h: 1.35rem;
+$cart-list-header-square-h-mobile: 1.5rem;
 $cart-list-header-square-w-selected: $cart-list-header-square-w * 1.5;
 
 .panel {
@@ -117,7 +118,7 @@ $cart-list-header-square-w-selected: $cart-list-header-square-w * 1.5;
       position: absolute;
       top: 50%;
       width: 100%;
-      height: $cart-list-header-square-h;
+      height: $cart-list-header-square-h-mobile;
       transform: translateY(-50%) skewX($cart-list-header-square-skew-deg);
       transform-origin: center center;
       transition: width 0.15s ease;
