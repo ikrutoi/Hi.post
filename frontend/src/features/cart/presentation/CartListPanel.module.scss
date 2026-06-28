@@ -10,9 +10,11 @@ $list-panel-scroll-inset: 0.35rem;
 $list-panel-list-footer-gap: 1px;
 $cart-list-header-square-h: 1.35rem;
 $cart-list-header-square-h-mobile: 1.5rem;
-$cart-list-header-skew-offset: $cart-list-header-square-h * math.tan(15deg);
+$cart-list-header-skew-deg: 30deg;
+$cart-list-header-skew-offset: $cart-list-header-square-h *
+  math.tan($cart-list-header-skew-deg);
 $cart-list-header-skew-offset-mobile: $cart-list-header-square-h-mobile *
-  math.tan(15deg);
+  math.tan($cart-list-header-skew-deg);
 $cart-list-header-corner-radius: 0.2rem;
 /** Неактивный сегмент — половина контейнера; активный — 65%. */
 $cart-list-header-segment-inactive-w: 50%;

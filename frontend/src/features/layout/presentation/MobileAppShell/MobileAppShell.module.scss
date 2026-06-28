@@ -478,9 +478,11 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
 }
 
 .mobilePieRightSlotCartShell {
-  position: relative;
-  flex: 0 0 auto;
-  align-self: flex-end;
+  container-type: inline-size;
+  container-name: mobile-cart-shell;
+  position: absolute;
+  right: 0;
+  top: 0;
   width: 100%;
   height: min(
     var(--mobile-pie-gutter-mini-side),
@@ -489,11 +491,25 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   pointer-events: none;
   border-radius: var(--mobile-pie-gutter-mini-radius);
   overflow: visible;
+}
 
-  &:not(:has(.mobilePieRightSlotItemCart[aria-pressed='true'])) {
-    box-shadow:
-      0 1px 0 rgba(0, 0, 0, 0.05),
-      0 2px 3px rgba(100, 75, 20, 0.09);
+.mobilePieRightSlotCartButtonFrame {
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border-radius: var(--mobile-pie-gutter-mini-radius);
+  overflow: hidden;
+  pointer-events: none;
+  transform: translateZ(0);
+  transition: width $mobile-pie-right-slot-motion-duration ease;
+
+  &:has(.mobilePieRightSlotItemCart[aria-pressed='true']) {
+    width: calc(100% * #{$mobile-pie-right-slot-active-width-scale});
+    z-index: 1;
   }
 }
 
@@ -504,7 +520,7 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   top: 0;
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: calc(#{$mobile-pie-right-slot-active-width-scale} * 100cqw);
   height: 100%;
   margin: 0;
   padding: 0;
@@ -518,22 +534,9 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   pointer-events: auto;
-  transition:
-    width $mobile-pie-right-slot-motion-duration ease,
-    box-shadow $mobile-pie-right-slot-motion-duration ease;
   box-shadow:
-    inset 0 -1px 0 rgba(255, 255, 255, 0.38),
-    inset 0 0 0 1px color.change($color-cart-list-border, $alpha: 0.5);
-
-  &[aria-pressed='true'] {
-    width: calc(100% * #{$mobile-pie-right-slot-active-width-scale});
-    z-index: 1;
-    box-shadow:
-      0 1px 0 rgba(0, 0, 0, 0.05),
-      0 2px 3px rgba(100, 75, 20, 0.09),
-      inset 0 -1px 0 rgba(255, 255, 255, 0.38),
-      inset 0 0 0 1px color.change($color-cart-list-border, $alpha: 0.5);
-  }
+    0 1px 0 rgba(0, 0, 0, 0.05),
+    0 2px 3px rgba(100, 75, 20, 0.09);
 
   &:focus-visible {
     outline: 2px solid $color-cart-list-entry-date-edit-border;
@@ -555,6 +558,10 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   position: relative;
   overflow: hidden;
   pointer-events: none;
+
+  + .mobilePieRightSlotCartHalf {
+    margin-top: -1px;
+  }
 }
 
 .mobilePieRightSlotCartCount {
@@ -657,7 +664,13 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
 }
 
 .mobilePieRightSlotItemHistory {
-  margin: 0;
+  margin: calc(
+      min(
+          var(--mobile-pie-gutter-mini-side),
+          (var(--mobile-pie-size) - var(--mobile-section-inset)) / 2
+        ) + var(--mobile-section-inset)
+    )
+    0 0;
   padding: 0;
   font: inherit;
   color: inherit;

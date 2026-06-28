@@ -365,34 +365,36 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                   </div>
                     <div className={styles.mobilePieRightSlot}>
                       <div className={styles.mobilePieRightSlotCartShell}>
-                        <button
-                          type="button"
-                          className={clsx(
-                            styles.mobilePieRightSlotItemCart,
-                            cartSlotVisualMode === 'activeOnly' &&
-                              styles.mobilePieRightSlotItemCartModeActiveOnly,
-                            cartSlotVisualMode === 'mixed' &&
-                              styles.mobilePieRightSlotItemCartModeMixed,
-                            cartSlotVisualMode === 'blockedOnly' &&
-                              styles.mobilePieRightSlotItemCartModeBlockedOnly,
-                          )}
-                          aria-label="Cart postcards"
-                          aria-pressed={cartListPanelOpen}
-                          onClick={handleCartSlotClick}
-                        >
-                          <div
+                        <div className={styles.mobilePieRightSlotCartButtonFrame}>
+                          <button
+                            type="button"
                             className={clsx(
-                              styles.mobilePieRightSlotCartHalf,
-                              styles.mobilePieRightSlotCartActive,
+                              styles.mobilePieRightSlotItemCart,
+                              cartSlotVisualMode === 'activeOnly' &&
+                                styles.mobilePieRightSlotItemCartModeActiveOnly,
+                              cartSlotVisualMode === 'mixed' &&
+                                styles.mobilePieRightSlotItemCartModeMixed,
+                              cartSlotVisualMode === 'blockedOnly' &&
+                                styles.mobilePieRightSlotItemCartModeBlockedOnly,
                             )}
-                          />
-                          <div
-                            className={clsx(
-                              styles.mobilePieRightSlotCartHalf,
-                              styles.mobilePieRightSlotCartBlocked,
-                            )}
-                          />
-                        </button>
+                            aria-label="Cart postcards"
+                            aria-pressed={cartListPanelOpen}
+                            onClick={handleCartSlotClick}
+                          >
+                            <div
+                              className={clsx(
+                                styles.mobilePieRightSlotCartHalf,
+                                styles.mobilePieRightSlotCartActive,
+                              )}
+                            />
+                            <div
+                              className={clsx(
+                                styles.mobilePieRightSlotCartHalf,
+                                styles.mobilePieRightSlotCartBlocked,
+                              )}
+                            />
+                          </button>
+                        </div>
                         {activeCartPostcardCount > 0 ? (
                           <span
                             className={clsx(
