@@ -29,14 +29,36 @@ export const buildNotebookDateTabCommands = (): UnknownAction[] => [
   setActiveSection('date'),
 ]
 
-/** Mobile header Date tab: date strip without opening CardPie list in the central slot. */
+/** Mobile header Date tab: календарь в режиме «Дата», без списков. */
 export const buildNotebookDateTabCommandsMobile = (): UnknownAction[] => [
   setNotebookStripDateOverCart(true),
+  setNotebookStripDateOverHistory(true),
   setCartListSelectedLocalId(null),
   setHistoryListSelectedLocalId(null),
+  setCartListPanelOpen(false),
+  setHistoryListPanelOpen(false),
   closeDayPanel(),
   setCartCalendarDatePickMode(false),
   setNotebookStripTab('date'),
+  setActiveSection('date'),
+]
+
+/** Mobile header Cart tab: календарь в режиме «Корзина», без списка. */
+export const buildNotebookCartTabCommandsMobile = (): UnknownAction[] => [
+  setCartListPanelOpen(false),
+  setHistoryListPanelOpen(false),
+  closeDayPanel(),
+  setCartCalendarDatePickMode(false),
+  setNotebookStripTab('cart'),
+  setActiveSection('date'),
+]
+
+/** Mobile header History tab: календарь в режиме «История», без списка. */
+export const buildNotebookHistoryTabCommandsMobile = (): UnknownAction[] => [
+  setCartListPanelOpen(false),
+  setHistoryListPanelOpen(false),
+  closeDayPanel(),
+  setNotebookStripTab('history'),
   setActiveSection('date'),
 ]
 
@@ -68,6 +90,26 @@ export const buildNotebookHistoryTabCommands = (): UnknownAction[] => [
   }),
   setNotebookStripTab('history'),
   setActiveSection('history'),
+]
+
+/** Mobile Cart slot: только список корзины, режим календаря не меняется. */
+export const buildMobileCartSlotOpenCommands = (): UnknownAction[] => [
+  setHistoryListPanelOpen(false),
+  setCartListPanelOpen(true),
+]
+
+export const buildMobileCartSlotCloseCommands = (): UnknownAction[] => [
+  setCartListPanelOpen(false),
+]
+
+/** Mobile History slot: только список истории, режим календаря не меняется. */
+export const buildMobileHistorySlotOpenCommands = (): UnknownAction[] => [
+  setCartListPanelOpen(false),
+  setHistoryListPanelOpen(true),
+]
+
+export const buildMobileHistorySlotCloseCommands = (): UnknownAction[] => [
+  setHistoryListPanelOpen(false),
 ]
 
 /** sectionEditorMenu + cardPieCopy: снять активную закладку Cart/History, не трогая выбор строки. */

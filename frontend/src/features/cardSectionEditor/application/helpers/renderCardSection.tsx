@@ -28,8 +28,9 @@ export const renderCardSection = (
     case 'aroma':
       return <Aroma />
     case 'date':
-    case 'history':
       return <Date section={notebookStripTab} />
+    case 'history':
+      return <Date section="history" />
     default:
       return null
   }

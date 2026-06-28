@@ -8,11 +8,6 @@ import {
   notebookTabDateClicked,
   notebookTabHistoryClicked,
 } from '@date/calendar/application/orchestration/notebookOrchestration.events'
-import {
-  IconCart,
-  IconHistory,
-  IconSectionMenuDate,
-} from '@shared/ui/icons'
 import styles from './CalendarNotebookTabs.module.scss'
 import type { DateStripSection } from './dateStripSection.types'
 
@@ -21,14 +16,18 @@ type Props = {
   section: DateStripSection
   /** peek: над секцией, растут вверх; header: в шапке, растут вниз. */
   variant?: 'peek' | 'header'
+  /** Ни одна закладка не подсвечена (мобильные списки корзины/истории у CardPie). */
+  suppressTabHighlight?: boolean
 }
 
 /**
- * Закладки: слева Date, центр Cart, справа History — клик переключает режим календаря.
+ * Закладки хедера: открывают календарь в режиме Date / Cart / History strip.
+ * Списки корзины и истории — только правые кнопки у CardPie.
  */
 export const CalendarNotebookTabs: React.FC<Props> = ({
   section,
   variant = 'peek',
+  suppressTabHighlight = false,
 }) => {
   const dispatch = useAppDispatch()
   const { activePieSide } = useRightListArchiveMini()
@@ -39,11 +38,12 @@ export const CalendarNotebookTabs: React.FC<Props> = ({
    * подсвечиваем соответствующую закладку.
    */
   const stripTabsNoneActive =
-    activePieSide === 'left' &&
-    factorySidebarSection !== 'date' &&
-    factorySidebarSection !== 'history' &&
-    section !== 'cart' &&
-    section !== 'history'
+    suppressTabHighlight ||
+    (activePieSide === 'left' &&
+      factorySidebarSection !== 'date' &&
+      factorySidebarSection !== 'history' &&
+      section !== 'cart' &&
+      section !== 'history')
 
   const goDate = useCallback(() => {
     dispatch(notebookTabDateClicked())
@@ -88,11 +88,7 @@ export const CalendarNotebookTabs: React.FC<Props> = ({
               goDate()
             }
           }}
-        >
-          {variant === 'header' ? (
-            <IconSectionMenuDate className={styles.tabIcon} aria-hidden />
-          ) : null}
-        </li>
+        />
         <li
           role="tab"
           aria-selected={tab2Active}
@@ -111,11 +107,7 @@ export const CalendarNotebookTabs: React.FC<Props> = ({
               goCart()
             }
           }}
-        >
-          {variant === 'header' ? (
-            <IconCart className={styles.tabIcon} aria-hidden />
-          ) : null}
-        </li>
+        />
         <li
           role="tab"
           aria-selected={tab3Active}
@@ -134,11 +126,7 @@ export const CalendarNotebookTabs: React.FC<Props> = ({
               goHistory()
             }
           }}
-        >
-          {variant === 'header' ? (
-            <IconHistory className={styles.tabIcon} aria-hidden />
-          ) : null}
-        </li>
+        />
       </ul>
     </div>
   )

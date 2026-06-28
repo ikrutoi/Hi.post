@@ -965,6 +965,7 @@ const App = () => {
         onEditorPieToolbarAction={handleEditorPieToolbarAction}
         onCartListSelectEntry={handleCartListSelectEntry}
         onCartListDateEditEntry={handleCartListDateEditEntry}
+        onHistoryListSelectEntry={handleHistoryListSelectEntry}
       />
     )
   }

@@ -232,6 +232,10 @@ function* closeOtherListPanels(action: {
     yield put(setHistoryListPanelOpen(false))
   }
 
+  if (openingHistory) {
+    yield put(setCartListPanelOpen(false))
+  }
+
   if (openingCart || openingHistory) {
     yield put(setUserLoginPanelOpen(false))
   }

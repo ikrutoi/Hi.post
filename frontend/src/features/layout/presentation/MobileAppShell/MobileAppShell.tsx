@@ -8,8 +8,11 @@ import { selectCartListPanelOpen, selectActiveCartPostcardCount, selectBlockedCa
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import {
-  notebookTabHistoryClicked,
-} from '@date/calendar/application/orchestration/notebookOrchestration.events'
+  buildMobileCartSlotCloseCommands,
+  buildMobileCartSlotOpenCommands,
+  buildMobileHistorySlotCloseCommands,
+  buildMobileHistorySlotOpenCommands,
+} from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 import {
   setCardPieListPanelOpen,
   setHistoryListPanelOpen,
@@ -42,6 +45,7 @@ import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentat
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { MobileCardPieGutterMinis } from './MobileCardPieGutterMinis'
 import { MobileCartListSlot } from './MobileCartListSlot'
+import { MobileHistoryListSlot } from './MobileHistoryListSlot'
 import { useMobilePlanCardPies } from './useMobilePlanCardPies'
 import { CardPieLeftSlot } from '@features/cardPie/presentation/CardPieLeftSlot'
 import { EditorPieListCardPieBadgeSync } from '@features/cardPie/presentation/EditorPieListCardPieBadgeSync'
@@ -71,6 +75,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   onEditorPieToolbarAction,
   onCartListSelectEntry,
   onCartListDateEditEntry,
+  onHistoryListSelectEntry,
 }) => {
   const dispatch = useAppDispatch()
   const shellRef = useRef<HTMLDivElement>(null)
@@ -82,6 +87,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
   const addressListPanelOpen = senderListPanelOpen || recipientListPanelOpen
   const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
+  const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
   const notebookStripSection = useDateStripSectionForNotebookTabs()
   const activeSection = useAppSelector(selectActiveSection)
   const activeCartPostcardCount = useAppSelector(selectActiveCartPostcardCount)
@@ -118,11 +124,12 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     }
   }, [activeSection, cardPieListPanelOpen, dispatch])
 
-  const mobileCentralListPanel = useMemo((): 'cardPie' | 'cart' | null => {
+  const mobileCentralListPanel = useMemo((): 'cardPie' | 'cart' | 'history' | null => {
     if (showMobileCardPieListInFactory) return 'cardPie'
     if (cartListPanelOpen) return 'cart'
+    if (historyListPanelOpen) return 'history'
     return null
-  }, [showMobileCardPieListInFactory, cartListPanelOpen])
+  }, [showMobileCardPieListInFactory, cartListPanelOpen, historyListPanelOpen])
   const { planPies, selectedPlanPie, selectedPlanPieId, selectPlanPie, cyclePlanPie } =
     useMobilePlanCardPies()
 
@@ -250,12 +257,18 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       event.stopPropagation()
       const isOpen = selectCartListPanelOpen(store.getState())
       if (isOpen) {
-        dispatch(setCartListPanelOpen(false))
+        for (const command of buildMobileCartSlotCloseCommands()) {
+          dispatch(command)
+        }
         return
       }
-      dispatch(setNotebookStripTab('cart'))
-      dispatch(setActiveSection('date'))
-      dispatch(setCartListPanelOpen(true))
+      if (selectIsCardPieListPanelOpen(store.getState())) {
+        dispatch(setCardPieListPanelOpen(false))
+        dispatchCardPieToolbarIconState(dispatch, false)
+      }
+      for (const command of buildMobileCartSlotOpenCommands()) {
+        dispatch(command)
+      }
     },
     [dispatch],
   )
@@ -264,19 +277,24 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     (event: React.MouseEvent) => {
       event.stopPropagation()
       const state = store.getState()
-      if (selectNotebookStripTab(state) === 'history') {
-        dispatch(setNotebookStripDateOverHistory(true))
-        dispatch(setNotebookStripTab('date'))
-        dispatch(setActiveSection('date'))
-        dispatch(setHistoryListPanelOpen(false))
+      if (selectIsHistoryListPanelOpen(state)) {
+        for (const command of buildMobileHistorySlotCloseCommands()) {
+          dispatch(command)
+        }
         return
       }
-      dispatch(notebookTabHistoryClicked())
+      if (selectIsCardPieListPanelOpen(state)) {
+        dispatch(setCardPieListPanelOpen(false))
+        dispatchCardPieToolbarIconState(dispatch, false)
+      }
+      for (const command of buildMobileHistorySlotOpenCommands()) {
+        dispatch(command)
+      }
     },
     [dispatch],
   )
 
-  const historyStripActive = notebookStripSection === 'history'
+  const historyStripActive = historyListPanelOpen
 
   const cardWidthStyle =
     sizeCard?.width != null && sizeCard.width > 0
@@ -307,6 +325,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
           <CalendarNotebookTabs
             variant="header"
             section={notebookStripSection}
+            suppressTabHighlight={cartListPanelOpen || historyListPanelOpen}
           />
         </div>
         <div className={styles.mobileSubstrate}>
@@ -459,6 +478,13 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                       <MobileCartListSlot
                         onSelectEntry={onCartListSelectEntry}
                         onDateEditEntry={onCartListDateEditEntry}
+                      />
+                    </div>
+                  ) : null}
+                  {mobileCentralListPanel === 'history' ? (
+                    <div className={styles.mobileFormListOverlay}>
+                      <MobileHistoryListSlot
+                        onSelectEntry={onHistoryListSelectEntry}
                       />
                     </div>
                   ) : null}

@@ -7,6 +7,7 @@ import type { RootState } from '@app/state'
 import type { CalendarViewDate, DispatchDate } from '@entities/date/domain/types'
 import type { DateStripSection } from '@date/presentation/dateStripSection.types'
 import { createSelector } from '@reduxjs/toolkit'
+import { selectIsMobileLayout } from '@layout/infrastructure/selectors'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { selectCartListSelectedLocalId, selectCartListPanelOpen } from '@cart/infrastructure/selectors/cartSelectors'
 import { getHistoryOpenDayPanelPrimaryPostcardLocalId } from '../historyOpenDayPanelPrimaryPostcard'
@@ -20,6 +21,11 @@ export const selectLastCalendarViewDate = (
 export const computeNotebookStripTabFromState = (
   state: RootState,
 ): DateStripSection => {
+  /** Mobile: закладки хедера задают strip явно; списки корзины/истории strip не трогают. */
+  if (selectIsMobileLayout(state)) {
+    return state.calendar.notebookStripTab
+  }
+
   const activeSection = state.sectionEditorMenu.activeSection
   if (state.cart.isActive && state.calendar.notebookStripDateOverCart) {
     return 'date'

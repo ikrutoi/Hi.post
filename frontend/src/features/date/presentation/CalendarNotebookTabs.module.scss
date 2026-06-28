@@ -31,7 +31,6 @@ $tab-yellow: color.mix($tab2-t, $tab2-b, 48%);
 
 $tab-height: 1.05rem;
 $tab-height-header: 1.75rem;
-$tab-height-header-icon: 1.2rem;
 // active ≈ 2.35rem
 $tab-height-header-active-scale: 1.35;
 
@@ -72,13 +71,6 @@ $tab-height-header-active-scale: 1.35;
     0 1px 2px rgba(0, 0, 0, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.45);
   transform-origin: bottom center;
-  transition: transform 0.18s ease;
-}
-
-.tabIcon {
-  display: block;
-  flex-shrink: 0;
-  pointer-events: none;
   transition: transform 0.18s ease;
 }
 
@@ -144,16 +136,6 @@ $tab-height-header-active-scale: 1.35;
 
 .trackHeader .tabActive {
   transform: scaleY($tab-height-header-active-scale);
-}
-
-.trackHeader .tabActive .tabIcon {
-  transform: scaleY(calc(1 / #{$tab-height-header-active-scale}));
-}
-
-.trackHeader .tabIcon {
-  width: $tab-height-header-icon;
-  height: $tab-height-header-icon;
-  color: $color-app-inner;
 }
 
 .tabHeader {

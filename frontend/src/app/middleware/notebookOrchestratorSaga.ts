@@ -11,9 +11,11 @@ import {
 import { bumpNotebookDateTabPeekClearTick } from '@date/calendar/infrastructure/state'
 import {
   buildNotebookCartTabCommands,
+  buildNotebookCartTabCommandsMobile,
   buildNotebookDateTabCommands,
   buildNotebookDateTabCommandsMobile,
   buildNotebookHistoryTabCommands,
+  buildNotebookHistoryTabCommandsMobile,
   buildNotebookSessionRestoreCommands,
 } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 
@@ -38,6 +40,8 @@ function* handleNotebookTabCartClicked(): SagaIterator {
   const isMobileLayout: boolean = yield select(selectIsMobileLayout)
   if (isMobileLayout) {
     yield call(closeCardPieListPanelAndSyncIconsSaga)
+    yield* dispatchCommands(buildNotebookCartTabCommandsMobile())
+    return
   }
   yield* dispatchCommands(buildNotebookCartTabCommands())
 }
@@ -46,6 +50,8 @@ function* handleNotebookTabHistoryClicked(): SagaIterator {
   const isMobileLayout: boolean = yield select(selectIsMobileLayout)
   if (isMobileLayout) {
     yield call(closeCardPieListPanelAndSyncIconsSaga)
+    yield* dispatchCommands(buildNotebookHistoryTabCommandsMobile())
+    return
   }
   yield* dispatchCommands(buildNotebookHistoryTabCommands())
 }
