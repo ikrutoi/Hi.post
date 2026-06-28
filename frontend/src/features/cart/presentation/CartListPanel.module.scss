@@ -1,3 +1,4 @@
+@use 'sass:math';
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
 
@@ -7,11 +8,20 @@ $list-panel-header-lead-row: 1.75rem;
 $list-panel-scroll-inset: 0.35rem;
 /** 1px зазор: последняя строка списка не заходит под верхний бордер футера. */
 $list-panel-list-footer-gap: 1px;
-$cart-list-header-square-skew-deg: -15deg;
-$cart-list-header-square-w: 1.75rem;
 $cart-list-header-square-h: 1.35rem;
 $cart-list-header-square-h-mobile: 1.5rem;
-$cart-list-header-square-w-selected: $cart-list-header-square-w * 1.5;
+$cart-list-header-skew-offset: $cart-list-header-square-h * math.tan(15deg);
+$cart-list-header-skew-offset-mobile: $cart-list-header-square-h-mobile *
+  math.tan(15deg);
+$cart-list-header-corner-radius: 0.2rem;
+/** Неактивный сегмент — половина контейнера; активный — 65%. */
+$cart-list-header-segment-inactive-w: 50%;
+$cart-list-header-segment-active-w: 65%;
+$cart-list-header-segments-header-w: 30%;
+$cart-list-header-segments-header-w-container: 30cqw;
+$cart-list-header-segments-header-w-mobile: 40%;
+$cart-list-header-segments-header-w-container-mobile: 40cqw;
+$cart-list-header-segment-count-inset: 1.5rem;
 
 .panel {
   position: relative;
@@ -54,32 +64,41 @@ $cart-list-header-square-w-selected: $cart-list-header-square-w * 1.5;
 }
 
 .cartHeaderSegments {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.headerBelowSegmentSlot {
   position: relative;
-  flex-shrink: 0;
-  width: $cart-list-header-square-w;
+  flex: 0 0 $cart-list-header-segments-header-w;
+  width: $cart-list-header-segments-header-w;
+  min-width: $cart-list-header-segments-header-w;
   height: $cart-list-header-square-h;
+  background-color: #fff;
+
+  @supports (width: 1cqw) {
+    flex-basis: $cart-list-header-segments-header-w-container;
+    width: $cart-list-header-segments-header-w-container;
+    min-width: $cart-list-header-segments-header-w-container;
+  }
 
   :global([data-shell-layout='mobile']) & {
-    height: $list-panel-header-lead-row;
+    flex-basis: $cart-list-header-segments-header-w-mobile;
+    width: $cart-list-header-segments-header-w-mobile;
+    min-width: $cart-list-header-segments-header-w-mobile;
+    height: $cart-list-header-square-h-mobile;
+
+    @supports (width: 1cqw) {
+      flex-basis: $cart-list-header-segments-header-w-container-mobile;
+      width: $cart-list-header-segments-header-w-container-mobile;
+      min-width: $cart-list-header-segments-header-w-container-mobile;
+    }
   }
 }
 
-.headerBelowSquare {
+.cartHeaderSegmentButton {
   position: absolute;
   top: 0;
   display: flex;
   flex-shrink: 0;
   align-items: center;
   justify-content: flex-start;
-  width: $cart-list-header-square-w;
+  width: $cart-list-header-segment-inactive-w;
   height: $cart-list-header-square-h;
   box-sizing: border-box;
   padding: 0;
@@ -91,13 +110,14 @@ $cart-list-header-square-w-selected: $cart-list-header-square-w * 1.5;
   -webkit-tap-highlight-color: transparent;
   background-color: transparent;
   border: none;
-  transform: skewX($cart-list-header-square-skew-deg);
-  transform-origin: center center;
-  transition: width 0.15s ease;
+  transform: none;
+  transition:
+    left 0.15s ease,
+    right 0.15s ease,
+    width 0.15s ease;
   touch-action: manipulation;
 
   &[aria-pressed='true'] {
-    width: $cart-list-header-square-w-selected;
     z-index: 1;
   }
 
@@ -106,30 +126,12 @@ $cart-list-header-square-w-selected: $cart-list-header-square-w * 1.5;
   }
 
   :global([data-shell-layout='mobile']) & {
-    top: 0;
-    bottom: 0;
-    height: auto;
-    z-index: 1;
-    transform: none;
-    background-color: transparent;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      width: 100%;
-      height: $cart-list-header-square-h-mobile;
-      transform: translateY(-50%) skewX($cart-list-header-square-skew-deg);
-      transform-origin: center center;
-      transition: width 0.15s ease;
-      pointer-events: none;
-    }
+    height: $cart-list-header-square-h-mobile;
   }
 }
 
-.headerBelowCount {
+.cartHeaderSegmentCount {
   position: absolute;
-  left: 50%;
   top: 50%;
   z-index: 2;
   color: $color-font-enabled-light-hover;
@@ -146,34 +148,98 @@ $cart-list-header-square-w-selected: $cart-list-header-square-w * 1.5;
   }
 }
 
-.cart {
-  right: 0;
+.cartHeaderSegmentCountCart {
+  left: $cart-list-header-segment-count-inset;
+  transform: translateY(-50%);
+}
+
+.cartHeaderSegmentCountBlocked {
   left: auto;
-  background-color: $color-preview-indicator-cart;
+  right: $cart-list-header-segment-count-inset;
+  transform: translateY(-50%);
+}
+
+.cart {
+  left: 0;
+  overflow: hidden;
+  border-top-left-radius: $cart-list-header-corner-radius;
+  border-bottom-left-radius: $cart-list-header-corner-radius;
+  background-color: transparent;
+
+  &[aria-pressed='true'] {
+    width: $cart-list-header-segment-active-w;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background-color: $color-preview-indicator-cart;
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      calc(100% - #{$cart-list-header-skew-offset}) 100%,
+      0 100%
+    );
+    pointer-events: none;
+  }
 
   :global([data-shell-layout='mobile']) & {
-    background-color: transparent;
+    background-color: $color-preview-indicator-cart;
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      calc(100% - #{$cart-list-header-skew-offset-mobile}) 100%,
+      0 100%
+    );
 
     &::before {
-      right: 0;
-      left: auto;
-      background-color: $color-preview-indicator-cart;
+      display: none;
     }
   }
 }
 
 .cartBlocked {
-  left: 0;
-  right: auto;
-  background-color: $color-preview-indicator-error;
+  right: 0;
+  left: auto;
+  overflow: hidden;
+  border-top-right-radius: $cart-list-header-corner-radius;
+  border-bottom-right-radius: $cart-list-header-corner-radius;
+  background-color: transparent;
+
+  &[aria-pressed='true'] {
+    width: $cart-list-header-segment-active-w;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background-color: $color-preview-indicator-error;
+    clip-path: polygon(
+      #{$cart-list-header-skew-offset} 0,
+      100% 0,
+      100% 100%,
+      0 100%
+    );
+    pointer-events: none;
+  }
 
   :global([data-shell-layout='mobile']) & {
-    background-color: transparent;
+    background-color: $color-preview-indicator-error;
+    clip-path: polygon(
+      #{$cart-list-header-skew-offset-mobile} 0,
+      100% 0,
+      100% 100%,
+      0 100%
+    );
 
     &::before {
-      left: 0;
-      right: auto;
-      background-color: $color-preview-indicator-error;
+      display: none;
     }
   }
 }

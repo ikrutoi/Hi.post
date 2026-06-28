@@ -408,47 +408,58 @@ export const CartListPanel: React.FC<Props> = ({
               role="group"
               aria-label="Cart list header actions"
             >
-              <div className={styles.headerBelowSegmentSlot}>
-                <button
-                  type="button"
-                  className={clsx(styles.headerBelowSquare, styles.cart)}
-                  aria-label={
-                    cartSegmentCounts.cart > 0
-                      ? `Cart, ${cartSegmentCounts.cart} postcards`
-                      : 'Cart'
-                  }
-                  aria-pressed={listSegment === 'cart'}
-                  onClick={handleSelectCartSegment}
-                />
-                {cartSegmentCounts.cart > 0 ? (
-                  <span className={styles.headerBelowCount} aria-hidden>
-                    {cartSegmentCounts.cart}
-                  </span>
-                ) : null}
-              </div>
-              <div className={styles.headerBelowSegmentSlot}>
-                <button
-                  type="button"
+              <button
+                type="button"
+                className={clsx(
+                  styles.cartHeaderSegmentButton,
+                  styles.cart,
+                )}
+                aria-label={
+                  cartSegmentCounts.cart > 0
+                    ? `Cart, ${cartSegmentCounts.cart} postcards`
+                    : 'Cart'
+                }
+                aria-pressed={listSegment === 'cart'}
+                onClick={handleSelectCartSegment}
+              />
+              {cartSegmentCounts.cart > 0 ? (
+                <span
                   className={clsx(
-                    styles.headerBelowSquare,
-                    styles.cartBlocked,
+                    styles.cartHeaderSegmentCount,
+                    styles.cartHeaderSegmentCountCart,
                   )}
-                  aria-label={
-                    cartSegmentCounts.cartBlocked > 0
-                      ? `Cart blocked, ${cartSegmentCounts.cartBlocked} postcards`
-                      : 'Cart blocked'
-                  }
-                  aria-pressed={listSegment === 'cartBlocked'}
-                  onClick={() =>
-                    dispatch(setCartListStatusSegment('cartBlocked'))
-                  }
-                />
-                {cartSegmentCounts.cartBlocked > 0 ? (
-                  <span className={styles.headerBelowCount} aria-hidden>
-                    {cartSegmentCounts.cartBlocked}
-                  </span>
-                ) : null}
-              </div>
+                  aria-hidden
+                >
+                  {cartSegmentCounts.cart}
+                </span>
+              ) : null}
+              <button
+                type="button"
+                className={clsx(
+                  styles.cartHeaderSegmentButton,
+                  styles.cartBlocked,
+                )}
+                aria-label={
+                  cartSegmentCounts.cartBlocked > 0
+                    ? `Cart blocked, ${cartSegmentCounts.cartBlocked} postcards`
+                    : 'Cart blocked'
+                }
+                aria-pressed={listSegment === 'cartBlocked'}
+                onClick={() =>
+                  dispatch(setCartListStatusSegment('cartBlocked'))
+                }
+              />
+              {cartSegmentCounts.cartBlocked > 0 ? (
+                <span
+                  className={clsx(
+                    styles.cartHeaderSegmentCount,
+                    styles.cartHeaderSegmentCountBlocked,
+                  )}
+                  aria-hidden
+                >
+                  {cartSegmentCounts.cartBlocked}
+                </span>
+              ) : null}
             </div>
           ) : undefined
         }

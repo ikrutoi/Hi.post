@@ -3,6 +3,8 @@
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
 .header {
+  container-type: inline-size;
+  container-name: list-panel-stacked-header;
   position: absolute;
   left: 0.5rem;
   top: 0.15rem;
@@ -28,19 +30,24 @@
 }
 
 .headerTopRow {
+  position: relative;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 0.35rem;
   min-height: 1.75rem;
   width: 100%;
 }
 
 .headerTopCenterSlot {
-  flex: 1;
-  min-width: 0;
+  position: absolute;
+  inset-inline: 0;
+  top: 50%;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  transform: translateY(-50%);
   pointer-events: none;
 
   > * {
