@@ -34,6 +34,9 @@ $mobile-header-history-tab-blue: color.mix(
   52%
 );
 $mobile-pie-right-slot-active-width-scale: 1.5;
+// Центр диагонали в узком режиме: середина видимой правой части (1/scale ширины).
+$mobile-pie-right-slot-narrow-diagonal-center-x: 1 -
+  1 / (2 * $mobile-pie-right-slot-active-width-scale);
 $mobile-pie-right-slot-motion-duration: 0.2s;
 
 .mobileShell {
@@ -515,11 +518,14 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
 
 .mobilePieRightSlotItemCart {
   container-type: size;
+  --mobile-cart-diagonal-center-x: calc(
+    100cqw * #{$mobile-pie-right-slot-narrow-diagonal-center-x}
+  );
   position: absolute;
   right: 0;
   top: 0;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
   width: calc(#{$mobile-pie-right-slot-active-width-scale} * 100cqw);
   height: 100%;
   margin: 0;
@@ -553,15 +559,10 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
 }
 
 .mobilePieRightSlotCartHalf {
-  flex: 1 1 50%;
   min-height: 0;
   position: relative;
   overflow: hidden;
   pointer-events: none;
-
-  + .mobilePieRightSlotCartHalf {
-    margin-top: -1px;
-  }
 }
 
 .mobilePieRightSlotCartCount {
@@ -632,8 +633,11 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
     clip-path: polygon(
       0 0,
       100% 0,
-      100% calc(50cqh + 50cqw * tan(-30deg)),
-      0 calc(50cqh - 50cqw * tan(-30deg))
+      100%
+        calc(
+          50cqh + (100cqw - var(--mobile-cart-diagonal-center-x)) * tan(-30deg)
+        ),
+      0 calc(50cqh - var(--mobile-cart-diagonal-center-x) * tan(-30deg))
     );
     @include mobile-cart-tab-yellow-gradient;
     pointer-events: none;
