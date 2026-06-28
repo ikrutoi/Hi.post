@@ -3,7 +3,7 @@ import type { CardLayer } from '@cardphoto/domain/types'
 import type { CartListPanelItem } from '@cart/presentation/CartListPanel'
 import type { HistoryListPanelItem } from '@date/presentation/HistoryListPanel'
 import type { RightSidebarKey } from '@toolbar/domain/types/rightSidebar.types'
-import type { IconKey } from '@shared/config/constants'
+import type { CardSection, IconKey } from '@shared/config/constants'
 
 export type MobileAppShellProps = {
   formRef: RefObject<HTMLDivElement | null>
@@ -21,4 +21,5 @@ export type MobileAppShellProps = {
   onCartListSelectEntry: (item: CartListPanelItem) => void
   onCartListDateEditEntry: (item: CartListPanelItem) => void
   onHistoryListSelectEntry: (item: HistoryListPanelItem) => void
+  onRightListPieSectorClick: (section: CardSection) => void
 }

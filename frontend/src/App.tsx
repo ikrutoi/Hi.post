@@ -945,28 +945,31 @@ const App = () => {
 
   if (isMobileLayout) {
     return (
-      <MobileAppShell
-        formRef={formRef}
-        sizeCard={sizeCard}
-        onAppClick={handleAppClick}
-        pinActiveTab={
-          activePieSide === 'right' &&
-          rightListArchiveLocalId != null &&
-          rightListArchiveSource != null
-            ? rightListArchiveSource
-            : null
-        }
-        activePieSide={activePieSide}
-        showTopCardStripFullSpan={showTopCardStripFullSpan}
-        onBeforeLeftPieInteraction={handleBeforeLeftPieInteraction}
-        onLeftPieCenterClick={handleLeftPieCenterClick}
-        envelopeAddressCreateMode={mobileEnvelopeAddressFormOpen}
-        cardPieListPanelOpen={cardPieListPanelOpen}
-        onEditorPieToolbarAction={handleEditorPieToolbarAction}
-        onCartListSelectEntry={handleCartListSelectEntry}
-        onCartListDateEditEntry={handleCartListDateEditEntry}
-        onHistoryListSelectEntry={handleHistoryListSelectEntry}
-      />
+      <RightListArchiveMiniProvider value={centerStripMirrorValue}>
+        <MobileAppShell
+          formRef={formRef}
+          sizeCard={sizeCard}
+          onAppClick={handleAppClick}
+          pinActiveTab={
+            activePieSide === 'right' &&
+            rightListArchiveLocalId != null &&
+            rightListArchiveSource != null
+              ? rightListArchiveSource
+              : null
+          }
+          activePieSide={activePieSide}
+          showTopCardStripFullSpan={showTopCardStripFullSpan}
+          onBeforeLeftPieInteraction={handleBeforeLeftPieInteraction}
+          onLeftPieCenterClick={handleLeftPieCenterClick}
+          envelopeAddressCreateMode={mobileEnvelopeAddressFormOpen}
+          cardPieListPanelOpen={cardPieListPanelOpen}
+          onEditorPieToolbarAction={handleEditorPieToolbarAction}
+          onCartListSelectEntry={handleCartListSelectEntry}
+          onCartListDateEditEntry={handleCartListDateEditEntry}
+          onHistoryListSelectEntry={handleHistoryListSelectEntry}
+          onRightListPieSectorClick={handleRightListPieSectorClick}
+        />
+      </RightListArchiveMiniProvider>
     )
   }
 

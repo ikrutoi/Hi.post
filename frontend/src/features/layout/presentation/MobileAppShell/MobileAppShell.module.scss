@@ -33,7 +33,7 @@ $mobile-header-history-tab-blue: color.mix(
   $mobile-header-date-tab-bottom,
   52%
 );
-$mobile-pie-right-slot-active-width-scale: 1.5;
+$mobile-pie-right-slot-active-width-scale: 1.25;
 // Центр диагонали в узком режиме: середина видимой правой части (1/scale ширины).
 $mobile-pie-right-slot-narrow-diagonal-center-x: 1 -
   1 / (2 * $mobile-pie-right-slot-active-width-scale);
@@ -475,7 +475,7 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   transition: width $mobile-pie-right-slot-motion-duration ease;
 
   &[aria-pressed='true'] {
-    width: 150%;
+    width: calc(100% * #{$mobile-pie-right-slot-active-width-scale});
     z-index: 1;
   }
 }

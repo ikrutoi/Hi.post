@@ -55,6 +55,7 @@ import { DateToolbarListDateBadgeSync } from '@date/presentation/DateToolbarList
 import { RightSidebarHistoryBadgeSync } from '@toolbar/presentation/RightSidebarHistoryBadgeSync'
 import { CalendarModeToolbarBadgesSync } from '@toolbar/presentation/CalendarModeToolbarBadgesSync'
 import { UserLoginRightSlot } from '@features/auth/presentation/UserLoginRightSlot'
+import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { CalendarNotebookTabs } from '@date/presentation/CalendarNotebookTabs'
 import { useDateStripSectionForNotebookTabs } from '@date/presentation/useDateStripSectionForNotebookTabs'
 import { useMobileVisualViewport } from '@layout/application/hooks/useMobileVisualViewport'
@@ -76,6 +77,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   onCartListSelectEntry,
   onCartListDateEditEntry,
   onHistoryListSelectEntry,
+  onRightListPieSectorClick,
 }) => {
   const dispatch = useAppDispatch()
   const shellRef = useRef<HTMLDivElement>(null)
@@ -132,10 +134,25 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   }, [showMobileCardPieListInFactory, cartListPanelOpen, historyListPanelOpen])
   const { planPies, selectedPlanPie, selectedPlanPieId, selectPlanPie, cyclePlanPie } =
     useMobilePlanCardPies()
+  const {
+    centerStripListMirrorEnabled,
+    mirrorInner,
+    mirrorSectionFlags,
+    listRowPostcardStatus,
+  } = useRightListArchiveMini()
 
   const canCyclePlanPies = planPies.length > 0
+  const centralPieFromListArchive =
+    centerStripListMirrorEnabled &&
+    mirrorInner != null &&
+    mirrorSectionFlags != null
 
   const handleLeftPieCenterPress = useCallback(() => {
+    if (activePieSide === 'right') {
+      onLeftPieCenterClick()
+      return
+    }
+
     if (canCyclePlanPies) {
       const nextPlanPieId = cyclePlanPie()
       if (nextPlanPieId == null) return
@@ -153,7 +170,14 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     }
 
     onLeftPieCenterClick()
-  }, [canCyclePlanPies, cyclePlanPie, planPies, dispatch, onLeftPieCenterClick])
+  }, [
+    activePieSide,
+    canCyclePlanPies,
+    cyclePlanPie,
+    planPies,
+    dispatch,
+    onLeftPieCenterClick,
+  ])
 
   const handleSelectPlanPie = useCallback(
     (id: string) => {
@@ -360,15 +384,28 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                       <CardPie
                         fillContainer
                         station="left"
-                        {...(selectedPlanPie != null
+                        {...(centralPieFromListArchive
                           ? {
-                              pieInner: selectedPlanPie.inner,
-                              pieSections: selectedPlanPie.sections,
+                              pieInner: mirrorInner,
+                              pieSections: mirrorSectionFlags,
+                              isProcessed: false,
+                              status: listRowPostcardStatus,
                             }
-                          : { isProcessed: true })}
-                        onLeftPieSectorClick={handleLeftPieSectorClick}
+                          : selectedPlanPie != null
+                            ? {
+                                pieInner: selectedPlanPie.inner,
+                                pieSections: selectedPlanPie.sections,
+                              }
+                            : { isProcessed: true })}
+                        onLeftPieSectorClick={
+                          centralPieFromListArchive
+                            ? onRightListPieSectorClick
+                            : handleLeftPieSectorClick
+                        }
                         onLeftPieCenterClick={handleLeftPieCenterPress}
-                        leftPieCenterPlanCycle={canCyclePlanPies}
+                        leftPieCenterPlanCycle={
+                          canCyclePlanPies && activePieSide !== 'right'
+                        }
                         leftPieCenterClickable={
                           canCyclePlanPies ||
                           (activePieSide === 'right' && !showTopCardStripFullSpan)
