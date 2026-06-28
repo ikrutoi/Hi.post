@@ -393,10 +393,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                             )}
                           />
                         </button>
-                        <div
-                          className={styles.mobilePieRightSlotCartCover}
-                          aria-hidden
-                        />
                         {activeCartPostcardCount > 0 ? (
                           <span
                             className={clsx(
