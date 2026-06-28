@@ -130,6 +130,13 @@ $list-panel-footer-band: calc(1.75rem + 1px);
     justify-content: center;
     margin-inline: auto;
   }
+
+  :global([data-shell-layout='mobile']) & {
+    :global([data-postcard-indicator]) > span {
+      width: 0.625rem;
+      height: 0.625rem;
+    }
+  }
 }
 
 .indicators {

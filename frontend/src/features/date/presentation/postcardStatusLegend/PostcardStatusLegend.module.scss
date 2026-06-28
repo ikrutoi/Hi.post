@@ -208,36 +208,20 @@
     }
   }
 
-  /* Фильтр включён — коричневый только у svg; счётчик отдельно. */
-  .item.active {
-    .count {
-      color: $color-font-enabled-light;
-    }
-  }
-
-  /* Фильтр выключен — enabled-light на иконках через .historyListIconEnabled. */
-  .item.inactive {
+  .item.inactive .icon {
     color: $color-font-enabled-light;
-    transition: color 0.15s ease;
-
-    &:hover {
-      color: $color-font-enabled;
-    }
   }
 
-  .historyListIconEnabled {
-    color: $color-font-enabled-light;
-    flex-shrink: 0;
-    transition: color 0.15s ease;
-  }
-
-  .historyListIconActive {
-    color: $color-app-sidebar-icon-active;
-    flex-shrink: 0;
-  }
-
-  .item.inactive:hover .historyListIconEnabled {
+  .item.inactive:hover .icon {
     color: $color-font-enabled;
+  }
+
+  .item.active .icon {
+    color: $color-app-sidebar-icon-active;
+  }
+
+  .item.active .count {
+    color: $color-font-enabled-light;
   }
 
   .count {
