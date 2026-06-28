@@ -167,7 +167,7 @@
 
 .root-historyList.rootEmpty {
   .item.inactive {
-    color: $color-font-disabled;
+    color: $color-font-enabled-light;
   }
 
   .item.active .count {
@@ -210,33 +210,40 @@
 
   /* Фильтр включён — коричневый только у svg; счётчик отдельно. */
   .item.active {
-    .icon {
-      color: $color-app-sidebar-icon-active;
-    }
-
     .count {
       color: $color-font-enabled-light;
     }
   }
 
-  /* Фильтр выключен — как .toolbarKeyEnabled: color на кнопке, svg через currentColor. */
+  /* Фильтр выключен — enabled-light на иконках через .historyListIconEnabled. */
   .item.inactive {
     color: $color-font-enabled-light;
     transition: color 0.15s ease;
-
-    .icon {
-      color: inherit;
-    }
 
     &:hover {
       color: $color-font-enabled;
     }
   }
 
+  .historyListIconEnabled {
+    color: $color-font-enabled-light;
+    flex-shrink: 0;
+    transition: color 0.15s ease;
+  }
+
+  .historyListIconActive {
+    color: $color-app-sidebar-icon-active;
+    flex-shrink: 0;
+  }
+
+  .item.inactive:hover .historyListIconEnabled {
+    color: $color-font-enabled;
+  }
+
   .count {
     flex-shrink: 0;
     margin-left: 0.05rem;
-    font-size: 0.75rem;
+    font-size: 0.9rem;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
     line-height: 1;
@@ -309,6 +316,34 @@
     }
 
     .dot {
+      width: 0.625rem;
+      height: 0.625rem;
+    }
+  }
+
+  /** Футер списка истории — те же размеры, что у легенды календаря (cart/history). */
+  .root-historyList {
+    .item {
+      gap: 0.25rem;
+    }
+
+    .icon,
+    .item svg {
+      flex-shrink: 0;
+      width: 1.125rem;
+      height: 1.125rem;
+      min-width: 1.125rem;
+      min-height: 1.125rem;
+    }
+
+    .iconSend {
+      width: 1.35rem;
+      min-width: 1.35rem;
+      height: 1.125rem;
+    }
+
+    .dot {
+      flex-shrink: 0;
       width: 0.625rem;
       height: 0.625rem;
     }

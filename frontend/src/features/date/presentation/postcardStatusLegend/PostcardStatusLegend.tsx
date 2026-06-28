@@ -69,6 +69,14 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
     )
   }
 
+  const legendIconClass = (pressed: boolean, ...extra: (string | undefined)[]) =>
+    clsx(
+      styles.icon,
+      ...extra,
+      spot === 'historyList' &&
+        (pressed ? styles.historyListIconActive : styles.historyListIconEnabled),
+    )
+
   return (
     <div
       className={clsx(
@@ -98,7 +106,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
             onClick={() => handlePostcardStatusClick('cart')}
           >
             <span className={clsx(styles.dot, styles.dotCart)} />
-            <IconCart className={styles.icon} />
+            <IconCart className={legendIconClass(postcardStatuses.cart)} />
             {statusCount('cart')}
           </button>
         ) : null}
@@ -118,7 +126,9 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
                 onClick={() => handlePostcardStatusClick('cartBlocked')}
               >
                 <span className={clsx(styles.dot, styles.dotCartBlocked)} />
-                <IconCardBlocked className={styles.icon} />
+                <IconCardBlocked
+                  className={legendIconClass(postcardStatuses.cartBlocked)}
+                />
               </button>
             ) : null}
             {(calendarCartStripBlockedLegend ? [0, 1, 2] : [0, 1, 2, 3]).map(
@@ -134,7 +144,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
                   aria-hidden
                 >
                   <span className={clsx(styles.dot, styles.dotReady)} />
-                  <IconPostcardReady className={styles.icon} />
+                  <IconPostcardReady className={legendIconClass(false)} />
                 </div>
               ),
             )}
@@ -152,7 +162,9 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
               onClick={() => handlePostcardStatusClick('ready')}
             >
               <span className={clsx(styles.dot, styles.dotReady)} />
-              <IconPostcardReady className={styles.icon} />
+              <IconPostcardReady
+                className={legendIconClass(postcardStatuses.ready)}
+              />
               {statusCount('ready')}
             </button>
             <button
@@ -167,7 +179,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
             >
               <span className={clsx(styles.dot, styles.dotSent)} />
               <IconPostcardSend
-                className={clsx(styles.icon, styles.iconSend)}
+                className={legendIconClass(postcardStatuses.sent, styles.iconSend)}
               />
               {statusCount('sent')}
             </button>
@@ -182,7 +194,9 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
               onClick={() => handlePostcardStatusClick('delivered')}
             >
               <span className={clsx(styles.dot, styles.dotDelivered)} />
-              <IconPostcardDelivered className={styles.icon} />
+              <IconPostcardDelivered
+                className={legendIconClass(postcardStatuses.delivered)}
+              />
               {statusCount('delivered')}
             </button>
             <button
@@ -196,7 +210,9 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
               onClick={() => handlePostcardStatusClick('error')}
             >
               <span className={clsx(styles.dot, styles.dotError)} />
-              <IconPostcardNotDelivered className={styles.icon} />
+              <IconPostcardNotDelivered
+                className={legendIconClass(postcardStatuses.error)}
+              />
               {statusCount('error')}
             </button>
           </>
