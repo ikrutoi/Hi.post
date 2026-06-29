@@ -251,12 +251,13 @@ const App = () => {
     if (
       prevCartListPanelOpen.current &&
       !listPanelOpen &&
-      activePieSide === 'right'
+      activePieSide === 'right' &&
+      listSelectedLocalId == null
     ) {
       setActivePieSide('left')
     }
     prevCartListPanelOpen.current = listPanelOpen
-  }, [listPanelOpen, activePieSide])
+  }, [listPanelOpen, activePieSide, listSelectedLocalId])
 
   const cardPieListPanelOpen = useAppSelector(selectIsCardPieListPanelOpen)
   const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
@@ -308,26 +309,81 @@ const App = () => {
     if (
       prevHistoryListPanelOpen.current &&
       !historyListPanelOpen &&
-      activePieSide === 'right'
+      activePieSide === 'right' &&
+      historyListSelectedLocalId == null
     ) {
       setActivePieSide('left')
     }
     prevHistoryListPanelOpen.current = historyListPanelOpen
-  }, [historyListPanelOpen, activePieSide])
+  }, [historyListPanelOpen, activePieSide, historyListSelectedLocalId])
 
-  const rightListArchiveLocalId =
-    rightListArchivePinnedForLeftFactory?.localId ??
-    (listPanelOpen && listSelectedLocalId != null
-      ? listSelectedLocalId
-      : historyListPanelOpen && historyListSelectedLocalId != null
-        ? historyListSelectedLocalId
-        : historyOpenDayPanelArchiveLocalId != null
-          ? historyOpenDayPanelArchiveLocalId
-          : null)
+  const rightListArchiveLocalId = useMemo(() => {
+    if (rightListArchivePinnedForLeftFactory != null) {
+      return rightListArchivePinnedForLeftFactory.localId
+    }
+    /**
+     * Mobile: открытый список корзины/истории + выбранная строка → правый CardPie
+     * на месте центрального (не подмешивать в левый режим сборки).
+     */
+    if (isMobileLayout) {
+      if (listPanelOpen && listSelectedLocalId != null) {
+        return listSelectedLocalId
+      }
+      if (historyListPanelOpen && historyListSelectedLocalId != null) {
+        return historyListSelectedLocalId
+      }
+    }
+    /**
+     * Peek корзины/истории: контекст открытки держим по `activePieSide === 'right'`,
+     * а не по открытому списку — иначе закрытие списка при клике по сектору сбрасывает CardPie.
+     */
+    if (activePieSide === 'right') {
+      if (historyListSelectedLocalId != null) return historyListSelectedLocalId
+      if (listSelectedLocalId != null) return listSelectedLocalId
+    }
+    if (
+      listSelectedLocalId != null &&
+      (listPanelOpen || notebookStripTab === 'cart')
+    ) {
+      return listSelectedLocalId
+    }
+    if (
+      historyListSelectedLocalId != null &&
+      (historyListPanelOpen || notebookStripTab === 'history')
+    ) {
+      return historyListSelectedLocalId
+    }
+    if (historyOpenDayPanelArchiveLocalId != null) {
+      return historyOpenDayPanelArchiveLocalId
+    }
+    return null
+  }, [
+    rightListArchivePinnedForLeftFactory,
+    isMobileLayout,
+    activePieSide,
+    listSelectedLocalId,
+    historyListSelectedLocalId,
+    listPanelOpen,
+    notebookStripTab,
+    historyListPanelOpen,
+    historyOpenDayPanelArchiveLocalId,
+  ])
 
   const rightListArchiveSource = useMemo((): 'cart' | 'history' | null => {
     if (rightListArchivePinnedForLeftFactory != null) {
       return rightListArchivePinnedForLeftFactory.source
+    }
+    if (isMobileLayout) {
+      if (listPanelOpen && listSelectedLocalId != null) {
+        return 'cart'
+      }
+      if (historyListPanelOpen && historyListSelectedLocalId != null) {
+        return 'history'
+      }
+    }
+    if (activePieSide === 'right') {
+      if (historyListSelectedLocalId != null) return 'history'
+      if (listSelectedLocalId != null) return 'cart'
     }
     if (listPanelOpen && listSelectedLocalId != null) {
       return 'cart'
@@ -338,12 +394,17 @@ const App = () => {
     if (historyListPanelOpen && historyListSelectedLocalId != null) {
       return 'history'
     }
+    if (notebookStripTab === 'history' && historyListSelectedLocalId != null) {
+      return 'history'
+    }
     if (historyOpenDayPanelArchiveLocalId != null) {
       return 'history'
     }
     return null
   }, [
     rightListArchivePinnedForLeftFactory,
+    isMobileLayout,
+    activePieSide,
     notebookStripTab,
     listPanelOpen,
     listSelectedLocalId,
@@ -434,13 +495,22 @@ const App = () => {
 
   const handleRightListPieSectorClick = useCallback(
     (section: CardSection) => {
-      dispatch(setActiveSection(section))
       const copyStripFullSpan =
         cardPieCopyStripExpanded && rightListArchiveLocalId != null
       const fullFactoryFromRightPie =
         activePieSide === 'right' &&
         !copyStripFullSpan &&
         cardPieEditEngaged
+      if (fullFactoryFromRightPie) {
+        setRightPieCardphotoPeekNoToolbar(false)
+        setRightPieCardtextPeekNoToolbar(false)
+        setRightPieEnvelopePeekNoToolbar(false)
+        setRightPieAromaPeekNoToolbar(false)
+        setRightPieDatePeekNoToolbar(false)
+      } else {
+        syncPeekChromeForOpenedSection(section)
+        setActivePieSide('right')
+      }
       if (
         fullFactoryFromRightPie &&
         section === 'envelope' &&
@@ -453,15 +523,7 @@ const App = () => {
           }),
         )
       }
-      if (fullFactoryFromRightPie) {
-        setRightPieCardphotoPeekNoToolbar(false)
-        setRightPieCardtextPeekNoToolbar(false)
-        setRightPieEnvelopePeekNoToolbar(false)
-        setRightPieAromaPeekNoToolbar(false)
-        setRightPieDatePeekNoToolbar(false)
-      } else {
-        syncPeekChromeForOpenedSection(section)
-      }
+      dispatch(setActiveSection(section))
     },
     [
       dispatch,
@@ -604,6 +666,10 @@ const App = () => {
     const source = rightListArchiveSource
     const prev = prevListArchiveListContextRef.current
 
+    if (prev.localId === localId && prev.source === source) {
+      return
+    }
+
     const onlySelectedRowChangedInSameList =
       prev.source != null &&
       source != null &&
@@ -710,8 +776,15 @@ const App = () => {
   ])
 
   const centerStripMirrorValue = useMemo(() => {
+    const mobileListArchivePreviewActive =
+      isMobileLayout &&
+      ((listPanelOpen && listSelectedLocalId != null) ||
+        (historyListPanelOpen && historyListSelectedLocalId != null))
+
     const stripMirrorsRightListPostcard =
-      activePieSide === 'right' || showTopCardStripFullSpan
+      activePieSide === 'right' ||
+      showTopCardStripFullSpan ||
+      mobileListArchivePreviewActive
 
     return {
       activePieSide,
@@ -747,6 +820,11 @@ const App = () => {
     activePieSide,
     cardPieEditEngaged,
     showTopCardStripFullSpan,
+    isMobileLayout,
+    listPanelOpen,
+    listSelectedLocalId,
+    historyListPanelOpen,
+    historyListSelectedLocalId,
     rightListArchiveBundle,
     rightListArchiveLocalId,
     rightListArchiveSource,
@@ -766,6 +844,25 @@ const App = () => {
 
   const mergeLeft = false
   const mergeRight = false
+
+  useEffect(() => {
+    if (!isMobileLayout) return
+    const archiveRowSelected =
+      (listPanelOpen && listSelectedLocalId != null) ||
+      (historyListPanelOpen && historyListSelectedLocalId != null)
+    if (archiveRowSelected && activePieSide !== 'right') {
+      setActivePieSide('right')
+      setCardPieEditEngaged(false)
+      setSuppressCardPieEditActiveAfterCopy(true)
+    }
+  }, [
+    isMobileLayout,
+    listPanelOpen,
+    listSelectedLocalId,
+    historyListPanelOpen,
+    historyListSelectedLocalId,
+    activePieSide,
+  ])
 
   useEffect(() => {
     if (rightListArchiveLocalId == null) {
@@ -852,6 +949,8 @@ const App = () => {
       if (lid == null) return
       dispatch(setCartListSelectedLocalId(lid))
       setCardPieEditEngaged(false)
+      setSuppressCardPieEditActiveAfterCopy(true)
+      setActivePieSide('right')
       if (item.sourceDate) {
         dispatch(
           updateLastViewedCalendarDate({

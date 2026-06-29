@@ -4,7 +4,13 @@ import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { store } from '@app/state/store'
 import { openCardphotoFromMiniStripRequested } from '@cardphoto/infrastructure/state'
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
-import { selectCartListPanelOpen, selectActiveCartPostcardCount, selectBlockedCartPostcardCount } from '@cart/infrastructure/selectors'
+import {
+  selectCartListPanelOpen,
+  selectCartListSelectedLocalId,
+  selectActiveCartPostcardCount,
+  selectBlockedCartPostcardCount,
+  selectCartItems,
+} from '@cart/infrastructure/selectors'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import {
@@ -24,6 +30,7 @@ import {
 import {
   selectIsCardPieListPanelOpen,
   selectIsHistoryListPanelOpen,
+  selectHistoryListSelectedLocalId,
   selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
 import { addEditorPiePlanToCart } from '@date/infrastructure/state'
@@ -89,7 +96,10 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
   const addressListPanelOpen = senderListPanelOpen || recipientListPanelOpen
   const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
+  const cartListSelectedLocalId = useAppSelector(selectCartListSelectedLocalId)
   const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
+  const historyListSelectedLocalId = useAppSelector(selectHistoryListSelectedLocalId)
+  const cartItems = useAppSelector(selectCartItems)
   const notebookStripSection = useDateStripSectionForNotebookTabs()
   const activeSection = useAppSelector(selectActiveSection)
   const activeCartPostcardCount = useAppSelector(selectActiveCartPostcardCount)
@@ -135,10 +145,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const { planPies, selectedPlanPie, selectedPlanPieId, selectPlanPie, cyclePlanPie } =
     useMobilePlanCardPies()
   const {
-    centerStripListMirrorEnabled,
-    mirrorInner,
-    mirrorSectionFlags,
-    listRowPostcardStatus,
+    mirrorTargetLocalId,
+    mirrorListArchiveSource,
     rightPieCardphotoPeekNoToolbar,
     rightPieCardtextPeekNoToolbar,
     rightPieEnvelopePeekNoToolbar,
@@ -154,10 +162,51 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     rightPieDatePeekNoToolbar
 
   const canCyclePlanPies = planPies.length > 0
-  const centralPieFromListArchive =
-    centerStripListMirrorEnabled &&
-    mirrorInner != null &&
-    mirrorSectionFlags != null
+  /**
+   * Mobile: один центральный CardPie вместо пары left/right на десктопе.
+   * При открытом списке корзины/истории и выбранной строке — правый CardPie (готовая открытка),
+   * иначе левый (сборка). Данные корзины/истории не подмешиваются в левый режим.
+   */
+  const mobileCentralArchivePreview = useMemo((): {
+    localId: number
+    source: 'cart' | 'history'
+  } | null => {
+    if (cartListPanelOpen && cartListSelectedLocalId != null) {
+      return { localId: cartListSelectedLocalId, source: 'cart' }
+    }
+    if (historyListPanelOpen && historyListSelectedLocalId != null) {
+      return { localId: historyListSelectedLocalId, source: 'history' }
+    }
+    if (
+      activePieSide === 'right' &&
+      mirrorTargetLocalId != null &&
+      mirrorListArchiveSource != null
+    ) {
+      return {
+        localId: mirrorTargetLocalId,
+        source: mirrorListArchiveSource,
+      }
+    }
+    return null
+  }, [
+    activePieSide,
+    cartListPanelOpen,
+    cartListSelectedLocalId,
+    historyListPanelOpen,
+    historyListSelectedLocalId,
+    mirrorTargetLocalId,
+    mirrorListArchiveSource,
+  ])
+
+  const mobileCentralPieMode: 'left' | 'right' =
+    mobileCentralArchivePreview != null ? 'right' : 'left'
+
+  const mobileCentralArchivePostcardStatus = useMemo(() => {
+    if (mobileCentralArchivePreview == null) return undefined
+    return cartItems.find(
+      (postcard) => postcard.localId === mobileCentralArchivePreview.localId,
+    )?.status
+  }, [cartItems, mobileCentralArchivePreview])
 
   const handleLeftPieCenterPress = useCallback(() => {
     if (activePieSide === 'right') {
@@ -196,6 +245,10 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       const pie = planPies.find((entry) => entry.id === id)
       if (pie == null) return
 
+      if (activePieSide === 'right') {
+        onBeforeLeftPieInteraction()
+      }
+
       selectPlanPie(id)
 
       const state = store.getState()
@@ -232,7 +285,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         )
       }
     },
-    [dispatch, planPies, selectPlanPie],
+    [dispatch, planPies, selectPlanPie, activePieSide, onBeforeLeftPieInteraction],
   )
 
   const handleRightListArchivePieSectorClick = useCallback(
@@ -406,37 +459,43 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                     onSelectPlanPie={handleSelectPlanPie}
                   />
                   <div className={styles.mobilePieStage}>
-                  <div className={styles.mobilePieWrap}>
-                      <CardPie
-                        fillContainer
-                        station="left"
-                        {...(centralPieFromListArchive
-                          ? {
-                              pieInner: mirrorInner,
-                              pieSections: mirrorSectionFlags,
-                              isProcessed: false,
-                              status: listRowPostcardStatus,
-                            }
-                          : selectedPlanPie != null
+                  <div
+                    className={styles.mobilePieWrap}
+                    data-mobile-central-pie-mode={mobileCentralPieMode}
+                  >
+                      {mobileCentralPieMode === 'right' &&
+                      mobileCentralArchivePreview != null ? (
+                        <CardPie
+                          fillContainer
+                          station="right"
+                          isProcessed={false}
+                          status={mobileCentralArchivePostcardStatus}
+                          id={String(mobileCentralArchivePreview.localId)}
+                          rightListSource={mobileCentralArchivePreview.source}
+                          onListArchiveSectorClick={
+                            handleRightListArchivePieSectorClick
+                          }
+                          onRightPieCenterClick={handleLeftPieCenterPress}
+                          leftPieCenterClickable={
+                            !showTopCardStripFullSpan
+                          }
+                        />
+                      ) : (
+                        <CardPie
+                          fillContainer
+                          station="left"
+                          {...(selectedPlanPie != null
                             ? {
                                 pieInner: selectedPlanPie.inner,
                                 pieSections: selectedPlanPie.sections,
                               }
                             : { isProcessed: true })}
-                        onLeftPieSectorClick={
-                          centralPieFromListArchive
-                            ? handleRightListArchivePieSectorClick
-                            : handleLeftPieSectorClick
-                        }
-                        onLeftPieCenterClick={handleLeftPieCenterPress}
-                        leftPieCenterPlanCycle={
-                          canCyclePlanPies && activePieSide !== 'right'
-                        }
-                        leftPieCenterClickable={
-                          canCyclePlanPies ||
-                          (activePieSide === 'right' && !showTopCardStripFullSpan)
-                        }
-                      />
+                          onLeftPieSectorClick={handleLeftPieSectorClick}
+                          onLeftPieCenterClick={handleLeftPieCenterPress}
+                          leftPieCenterPlanCycle={canCyclePlanPies}
+                          leftPieCenterClickable={canCyclePlanPies}
+                        />
+                      )}
                   </div>
                     <div className={styles.mobilePieToolbar}>
                       <Toolbar
