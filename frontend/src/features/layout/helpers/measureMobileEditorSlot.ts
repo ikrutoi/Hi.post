@@ -5,6 +5,18 @@ export interface MobileEditorSlotMeasure {
   slotHeight: number
   contentWidth: number
   contentHeight: number
+  /** Visible mobile factory toolbar shell height (0 when peek/list chrome hides it). */
+  factoryToolbarPx: number
+}
+
+const MOBILE_FACTORY_TOOLBAR_SHELL_SELECTOR =
+  '[aria-label="Section toolbars"]'
+
+export function measureFactoryToolbarReservePx(formEl: HTMLElement): number {
+  const shell = formEl.querySelector(MOBILE_FACTORY_TOOLBAR_SHELL_SELECTOR)
+  if (!(shell instanceof HTMLElement)) return 0
+  const height = shell.getBoundingClientRect().height
+  return height > 0 ? Math.round(height) : 0
 }
 
 /** Доступная область центральной секции под карточку (mobile form slot). */
@@ -51,5 +63,6 @@ export function measureMobileEditorSlot(
     slotHeight,
     contentWidth,
     contentHeight,
+    factoryToolbarPx: measureFactoryToolbarReservePx(formEl),
   }
 }

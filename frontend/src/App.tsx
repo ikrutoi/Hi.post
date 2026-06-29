@@ -181,10 +181,6 @@ const App = () => {
   const layoutReady = authInitialized
   useViewportInit()
   const { sizeCard, isMobileLayout } = useSizeFacade()
-  useRecordSizeCard(formRef, cardPanelRef, {
-    enabled: layoutReady,
-    skipPanelMeasure: isMobileLayout,
-  })
   const sectionSize =
     sizeCard?.width != null && sizeCard.width > 0 ? sizeCard.width / 6 : null
 
@@ -264,6 +260,41 @@ const App = () => {
 
   const cardPieListPanelOpen = useAppSelector(selectIsCardPieListPanelOpen)
   const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
+
+  const mobileFactoryChromeRevision = useMemo(
+    () =>
+      [
+        rightPieCardphotoPeekNoToolbar,
+        rightPieCardtextPeekNoToolbar,
+        rightPieEnvelopePeekNoToolbar,
+        rightPieAromaPeekNoToolbar,
+        rightPieDatePeekNoToolbar,
+        listPanelOpen,
+        historyListPanelOpen,
+        cardPieListPanelOpen,
+      ]
+        .map((flag) => (flag ? '1' : '0'))
+        .join(':'),
+    [
+      rightPieCardphotoPeekNoToolbar,
+      rightPieCardtextPeekNoToolbar,
+      rightPieEnvelopePeekNoToolbar,
+      rightPieAromaPeekNoToolbar,
+      rightPieDatePeekNoToolbar,
+      listPanelOpen,
+      historyListPanelOpen,
+      cardPieListPanelOpen,
+    ],
+  )
+
+  useRecordSizeCard(formRef, cardPanelRef, {
+    enabled: layoutReady,
+    skipPanelMeasure: isMobileLayout,
+    mobileFactoryChromeRevision: isMobileLayout
+      ? mobileFactoryChromeRevision
+      : undefined,
+  })
+
   const prevHistoryListPanelOpen = useRef(historyListPanelOpen)
   const historyListSelectedLocalId = useAppSelector(
     selectHistoryListSelectedLocalId,

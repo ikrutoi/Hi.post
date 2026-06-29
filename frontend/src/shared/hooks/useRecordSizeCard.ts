@@ -16,6 +16,8 @@ export interface UseRecordSizeCardOptions {
   skipPanelMeasure?: boolean
   /** When false, skip measuring until layout targets are mounted (e.g. after auth gate). */
   enabled?: boolean
+  /** Mobile: remeasure when factory toolbar / peek chrome visibility changes. */
+  mobileFactoryChromeRevision?: string
 }
 
 export const useRecordSizeCard = (
@@ -31,12 +33,14 @@ export const useRecordSizeCard = (
   } = useSizeFacade()
   const skipPanelMeasure = options?.skipPanelMeasure ?? false
   const enabled = options?.enabled ?? true
+  const mobileFactoryChromeRevision = options?.mobileFactoryChromeRevision
 
   useLayoutEffect(() => {
     if (!enabled) return
 
     let cancelled = false
     let resizeObserver: ResizeObserver | null = null
+    let mutationObserver: MutationObserver | null = null
     let rafId = 0
 
     const attach = (): boolean => {
@@ -58,20 +62,22 @@ export const useRecordSizeCard = (
         if (skipPanelMeasure) {
           const currentRemSize = remSize ?? 16
           const viewportWidth = window.innerWidth
-          const rowToolbarPx = currentRemSize * MOBILE_CARD_INNER_TOOLBAR_REM
-          const innerToolbarPx = rowToolbarPx * MOBILE_FACTORY_TOOLBAR_ROW_COUNT
-          const sizeCardFit = {
-            orientation: sizeCard.orientation,
-            aspectRatio: sizeCard.aspectRatio,
-            innerToolbarPx,
-            sectionHeightWorkSideOnly: true,
-          } as const
           const { contentWidth, contentHeight, slotHeight } =
             measureMobileEditorSlot(
               elementForm,
               currentRemSize,
               viewportHeight,
             )
+          const mobileToolbarReservePx =
+            currentRemSize *
+            MOBILE_CARD_INNER_TOOLBAR_REM *
+            MOBILE_FACTORY_TOOLBAR_ROW_COUNT
+          const sizeCardFit = {
+            orientation: sizeCard.orientation,
+            aspectRatio: sizeCard.aspectRatio,
+            innerToolbarPx: mobileToolbarReservePx,
+            sectionHeightWorkSideOnly: true,
+          } as const
 
           let measureWidth = contentWidth > 0 ? contentWidth : widthForm
           let measureHeight = contentHeight
@@ -121,13 +127,13 @@ export const useRecordSizeCard = (
               'landscape',
               viewportWidth,
             )
-            if (innerToolbarPx > 0 && resultSizeCard.width > 0) {
+            if (mobileToolbarReservePx > 0 && resultSizeCard.width > 0) {
               const fitted = getSizeCard(
                 {
                   width: Math.max(measureWidth, resultSizeCard.width),
                   height: Math.max(
                     measureHeight,
-                    resultSizeCard.height + innerToolbarPx,
+                    resultSizeCard.height + mobileToolbarReservePx,
                   ),
                 },
                 currentRemSize,
@@ -219,6 +225,17 @@ export const useRecordSizeCard = (
         if (mobileBody) {
           resizeObserver.observe(mobileBody)
         }
+        const toolbarShell = elementForm.querySelector(
+          '[aria-label="Section toolbars"]',
+        )
+        if (toolbarShell instanceof HTMLElement) {
+          resizeObserver.observe(toolbarShell)
+        }
+        mutationObserver = new MutationObserver(() => updateSize())
+        mutationObserver.observe(elementForm, {
+          childList: true,
+          subtree: true,
+        })
       }
       return true
     }
@@ -236,6 +253,7 @@ export const useRecordSizeCard = (
       cancelled = true
       cancelAnimationFrame(rafId)
       resizeObserver?.disconnect()
+      mutationObserver?.disconnect()
     }
-  }, [enabled, remSize, sizeCard.aspectRatio, sizeCard.orientation, skipPanelMeasure, setSizeCard, setSizeMiniCard])
+  }, [enabled, remSize, sizeCard.aspectRatio, sizeCard.orientation, skipPanelMeasure, mobileFactoryChromeRevision, setSizeCard, setSizeMiniCard])
 }

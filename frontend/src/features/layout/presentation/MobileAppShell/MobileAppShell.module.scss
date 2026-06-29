@@ -811,7 +811,9 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   :global([class*='envelope']:not([data-envelope-mobile-form='true']))
     :global([class*='envelopeViewContent'])
     > :global([class*='envelopeWorkZone']),
-  :global([class*='aromaViewContent']) > :global([class*='form']) {
+  :global([class*='aromaViewContent']) > :global([class*='form']),
+  :global([class*='dateViewContent']) > :global([class*='form']),
+  :global([class*='dateViewContent']) > :global([class*='formWithNotebookTabs']) {
     flex: 0 0 auto;
     width: min(100%, var(--card-work-zone-side, 100%));
     height: auto;
@@ -825,23 +827,15 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   }
 
   :global([class*='dateViewContent']) {
-    flex: 1 1 auto;
-    height: 100%;
-    max-height: 100%;
-    align-items: stretch;
+    flex: 0 0 auto;
+    align-items: center;
+    width: 100%;
+    min-height: 0;
   }
 
   :global([class*='dateViewContent']) > :global([class*='form']),
   :global([class*='dateViewContent']) > :global([class*='formWithNotebookTabs']) {
-    flex: 1 1 auto;
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
-    max-height: 100%;
-    min-height: 0;
-    aspect-ratio: unset;
-    box-sizing: border-box;
-    border: none;
+    overflow: auto;
   }
 
   :global([class*='cardphotoViewContent']) :global([class*='viewContainer']),
@@ -888,6 +882,10 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   padding-top: var(--mobile-factory-toolbar-gap);
   padding-bottom: var(--mobile-form-padding-bottom);
 
+  &[data-mobile-factory-chrome='peek'] {
+    padding-top: 0;
+  }
+
   :global([class*='cardSectionEditor']) {
     justify-content: flex-end;
     flex: 1 1 auto;
@@ -912,7 +910,7 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
     min-height: 0;
     max-height: 100%;
     flex: 1 1 auto;
-    height: auto;
+    height: 100%;
   }
 
   :global([class*='editorSection']) {

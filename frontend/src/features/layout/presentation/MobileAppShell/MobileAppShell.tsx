@@ -139,7 +139,19 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     mirrorInner,
     mirrorSectionFlags,
     listRowPostcardStatus,
+    rightPieCardphotoPeekNoToolbar,
+    rightPieCardtextPeekNoToolbar,
+    rightPieEnvelopePeekNoToolbar,
+    rightPieAromaPeekNoToolbar,
+    rightPieDatePeekNoToolbar,
   } = useRightListArchiveMini()
+
+  const mobileFactoryChromePeek =
+    rightPieCardphotoPeekNoToolbar ||
+    rightPieCardtextPeekNoToolbar ||
+    rightPieEnvelopePeekNoToolbar ||
+    rightPieAromaPeekNoToolbar ||
+    rightPieDatePeekNoToolbar
 
   const canCyclePlanPies = planPies.length > 0
   const centralPieFromListArchive =
@@ -221,6 +233,20 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       }
     },
     [dispatch, planPies, selectPlanPie],
+  )
+
+  const handleRightListArchivePieSectorClick = useCallback(
+    (section: CardSection) => {
+      const state = store.getState()
+      if (selectCartListPanelOpen(state)) {
+        dispatch(setCartListPanelOpen(false))
+      }
+      if (selectIsHistoryListPanelOpen(state)) {
+        dispatch(setHistoryListPanelOpen(false))
+      }
+      onRightListPieSectorClick(section)
+    },
+    [dispatch, onRightListPieSectorClick],
   )
 
   const handleLeftPieSectorClick = useCallback(
@@ -399,7 +425,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                             : { isProcessed: true })}
                         onLeftPieSectorClick={
                           centralPieFromListArchive
-                            ? onRightListPieSectorClick
+                            ? handleRightListArchivePieSectorClick
                             : handleLeftPieSectorClick
                         }
                         onLeftPieCenterClick={handleLeftPieCenterPress}
@@ -498,6 +524,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                     styles.mobileForm,
                     mobileCentralListPanel != null && styles.mobileFormListPanel,
                   )}
+                  data-mobile-factory-chrome={
+                    mobileFactoryChromePeek ? 'peek' : undefined
+                  }
                 >
                   <div
                     className={styles.mobileFormEditorLayer}

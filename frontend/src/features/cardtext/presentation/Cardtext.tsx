@@ -347,15 +347,6 @@ export const Cardtext: React.FC<CardtextProps> = (props) => {
   } = useRightListArchiveMini()
   const notebookTabsOuter = useSectionEditorNotebookTabsOuter()
 
-  /** Правый режим без cardPieEdit: текст архива, без записи в слайс левой открытки. */
-  if (
-    centerStripListMirrorEnabled &&
-    activePieSide === 'right' &&
-    !cardPieEditEngaged
-  ) {
-    return <CardtextRightListMirror />
-  }
-
   if (
     rightPieCardtextPeekNoToolbar &&
     listRowInner != null &&
@@ -371,6 +362,15 @@ export const Cardtext: React.FC<CardtextProps> = (props) => {
       />
     )
     return notebookTabsOuter ? peek : <NotebookPeekShell>{peek}</NotebookPeekShell>
+  }
+
+  /** Правый режим без cardPieEdit: текст архива, без записи в слайс `cardtext` сессии. */
+  if (
+    centerStripListMirrorEnabled &&
+    activePieSide === 'right' &&
+    !cardPieEditEngaged
+  ) {
+    return <CardtextRightListMirror />
   }
 
   return <CardtextSessionEditor {...props} />
