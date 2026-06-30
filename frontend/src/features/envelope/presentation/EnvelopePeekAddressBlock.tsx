@@ -9,6 +9,8 @@ export type EnvelopePeekAddressBlockProps = {
   role: 'sender' | 'recipient'
   /** Стыковка с сеткой конверта (`flex: 1` вместо `form`). */
   className?: string
+  /** Mobile: уплотнить межстрочный интервал адреса в peek. */
+  compact?: boolean
 }
 
 type PeekAddressLine = { text: string; isName: boolean }
@@ -27,7 +29,7 @@ function addressLinesForPeek(
 
 export const EnvelopePeekAddressBlock: React.FC<
   EnvelopePeekAddressBlockProps
-> = ({ role, className }) => {
+> = ({ role, className, compact = false }) => {
   const { listRowInner } = useRightListArchiveMini()
 
   const senderLines = useMemo(() => {
@@ -59,6 +61,7 @@ export const EnvelopePeekAddressBlock: React.FC<
       className={clsx(
         styles.root,
         role === 'sender' ? styles.rootSender : styles.rootRecipient,
+        compact && styles.rootCompact,
         className,
       )}
     >

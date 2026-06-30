@@ -16,7 +16,11 @@
 }
 
 .rootRecipient {
-  padding-bottom: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.rootCompact.rootRecipient {
+  padding-bottom: 0.35rem;
 }
 
 .lines {
@@ -54,4 +58,24 @@
 
 .rootRecipient .line {
   color: $color-envelope-recipient-legend;
+}
+
+.rootCompact {
+  .lines {
+    gap: 0.06rem;
+  }
+
+  .line {
+    font-size: 1.1rem;
+    line-height: 1.15;
+  }
+
+  .lineName {
+    font-size: 1.2rem;
+  }
+}
+
+.rootCompact.rootSender {
+  padding-top: 0;
+  margin-top: -0.35rem;
 }

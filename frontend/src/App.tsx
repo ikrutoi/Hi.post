@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react'
+import { flushSync } from 'react-dom'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
@@ -508,8 +509,10 @@ const App = () => {
         setRightPieAromaPeekNoToolbar(false)
         setRightPieDatePeekNoToolbar(false)
       } else {
-        syncPeekChromeForOpenedSection(section)
-        setActivePieSide('right')
+        flushSync(() => {
+          syncPeekChromeForOpenedSection(section)
+          setActivePieSide('right')
+        })
       }
       if (
         fullFactoryFromRightPie &&

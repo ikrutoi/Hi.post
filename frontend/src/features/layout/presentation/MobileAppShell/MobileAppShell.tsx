@@ -166,6 +166,11 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     rightPieAromaPeekNoToolbar ||
     rightPieDatePeekNoToolbar
 
+  /** Peek секции: список корзины/истории не перекрывает фабрику, кнопка списка остаётся включённой. */
+  const mobileFactoryListOverlayKey = mobileFactoryChromePeek
+    ? null
+    : mobileCentralListPanel
+
   const canCyclePlanPies = planPies.length > 0
   /**
    * Mobile: один центральный CardPie вместо пары left/right на десктопе.
@@ -604,7 +609,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                   ref={formRef}
                   className={clsx(
                     styles.mobileForm,
-                    mobileCentralListPanel != null && styles.mobileFormListPanel,
+                    mobileFactoryListOverlayKey != null && styles.mobileFormListPanel,
                   )}
                   data-mobile-factory-chrome={
                     mobileFactoryChromePeek ? 'peek' : undefined
@@ -612,16 +617,16 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                 >
                   <div
                     className={styles.mobileFormEditorLayer}
-                    aria-hidden={mobileCentralListPanel != null}
+                    aria-hidden={mobileFactoryListOverlayKey != null}
                   >
                     <CardSectionEditor />
                   </div>
-                  {mobileCentralListPanel === 'cardPie' ? (
+                  {mobileFactoryListOverlayKey === 'cardPie' ? (
                     <div className={styles.mobileFormListOverlay}>
                       <CardPieLeftSlot />
                     </div>
                   ) : null}
-                  {mobileCentralListPanel === 'cart' ? (
+                  {mobileFactoryListOverlayKey === 'cart' ? (
                     <div className={styles.mobileFormListOverlay}>
                       <MobileCartListSlot
                         onSelectEntry={onCartListSelectEntry}
@@ -629,7 +634,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                       />
                     </div>
                   ) : null}
-                  {mobileCentralListPanel === 'history' ? (
+                  {mobileFactoryListOverlayKey === 'history' ? (
                     <div className={styles.mobileFormListOverlay}>
                       <MobileHistoryListSlot
                         onSelectEntry={onHistoryListSelectEntry}

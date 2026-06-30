@@ -135,6 +135,7 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
                   : 'peek-env-sender'
               }
               role="sender"
+              compact={isMobile}
               className={styles.envelopePeekBlock}
             />
           ) : (
@@ -160,6 +161,7 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
                   : 'peek-env-recipient'
               }
               role="recipient"
+              compact={isMobile}
               className={styles.envelopePeekBlock}
             />
           ) : (
