@@ -232,9 +232,19 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
 
   const mobileCentralPieDisplay = useMemo((): 'archive' | 'hidden' | 'assembly' => {
     if (mobileCentralArchivePreview != null) return 'archive'
-    if (mobileListArchiveSlotActive) return 'hidden'
+    if (
+      mobileListArchiveSlotActive ||
+      notebookStripSection === 'cart' ||
+      notebookStripSection === 'history'
+    ) {
+      return 'hidden'
+    }
     return 'assembly'
-  }, [mobileCentralArchivePreview, mobileListArchiveSlotActive])
+  }, [
+    mobileCentralArchivePreview,
+    mobileListArchiveSlotActive,
+    notebookStripSection,
+  ])
 
   /** Peek фабрики: закладки Date/Cart/History в хедере не подсвечиваются. */
   const suppressHeaderNotebookTabHighlight =
@@ -287,10 +297,17 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       if (pie == null) return
 
       const state = store.getState()
+      const notebookStripTab = selectNotebookStripTab(state)
       const exitingListArchiveSlot =
         selectCartListPanelOpen(state) || selectIsHistoryListPanelOpen(state)
+      const exitingHeaderCartHistoryStrip =
+        notebookStripTab === 'cart' || notebookStripTab === 'history'
 
-      if (exitingListArchiveSlot || activePieSide === 'right') {
+      if (
+        exitingListArchiveSlot ||
+        exitingHeaderCartHistoryStrip ||
+        activePieSide === 'right'
+      ) {
         onBeforeLeftPieInteraction()
 
         if (selectIsCardPieListPanelOpen(state)) {
@@ -304,15 +321,19 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
           dispatch(setHistoryListPanelOpen(false))
         }
 
-        const notebookStripTab = selectNotebookStripTab(state)
         if (notebookStripTab === 'cart') {
           dispatch(setNotebookStripDateOverCart(true))
         } else if (notebookStripTab === 'history') {
           dispatch(setNotebookStripDateOverHistory(true))
         }
         dispatch(setNotebookStripTab('date'))
-        dispatch(openCardphotoFromMiniStripRequested())
-        dispatch(setActiveSection('cardphoto'))
+
+        if (exitingHeaderCartHistoryStrip) {
+          dispatch(setActiveSection('date'))
+        } else {
+          dispatch(openCardphotoFromMiniStripRequested())
+          dispatch(setActiveSection('cardphoto'))
+        }
       }
 
       selectPlanPie(id)
