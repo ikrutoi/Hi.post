@@ -523,6 +523,16 @@ const App = () => {
           }),
         )
       }
+      /** Mobile header: закладка Cart/History — только при клике по сектору «Дата». */
+      if (section === 'date') {
+        if (rightListArchiveSource === 'history') {
+          dispatch(setNotebookStripTab('history'))
+        } else {
+          dispatch(setNotebookStripTab('cart'))
+        }
+      } else {
+        dispatch(setNotebookStripTab('date'))
+      }
       dispatch(setActiveSection(section))
     },
     [
@@ -531,6 +541,7 @@ const App = () => {
       cardPieCopyStripExpanded,
       cardPieEditEngaged,
       rightListArchiveLocalId,
+      rightListArchiveSource,
       syncPeekChromeForOpenedSection,
     ],
   )

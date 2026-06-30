@@ -142,6 +142,11 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     if (historyListPanelOpen) return 'history'
     return null
   }, [showMobileCardPieListInFactory, cartListPanelOpen, historyListPanelOpen])
+
+  /** Кнопка корзины/истории у CardPie: список открыт — только archive pie или пусто. */
+  const mobileListArchiveSlotActive =
+    cartListPanelOpen || historyListPanelOpen
+
   const { planPies, selectedPlanPie, selectedPlanPieId, selectPlanPie, cyclePlanPie } =
     useMobilePlanCardPies()
   const {
@@ -164,18 +169,23 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const canCyclePlanPies = planPies.length > 0
   /**
    * Mobile: один центральный CardPie вместо пары left/right на десктопе.
-   * При открытом списке корзины/истории и выбранной строке — правый CardPie (готовая открытка),
-   * иначе левый (сборка). Данные корзины/истории не подмешиваются в левый режим.
+   * При открытом списке корзины/истории — только archive pie выбранной строки;
+   * без выбора pie скрыт (не показываем сборку). После закрытия списка archive
+   * может оставаться, пока activePieSide === 'right'.
    */
   const mobileCentralArchivePreview = useMemo((): {
     localId: number
     source: 'cart' | 'history'
   } | null => {
-    if (cartListPanelOpen && cartListSelectedLocalId != null) {
-      return { localId: cartListSelectedLocalId, source: 'cart' }
+    if (cartListPanelOpen) {
+      return cartListSelectedLocalId != null
+        ? { localId: cartListSelectedLocalId, source: 'cart' }
+        : null
     }
-    if (historyListPanelOpen && historyListSelectedLocalId != null) {
-      return { localId: historyListSelectedLocalId, source: 'history' }
+    if (historyListPanelOpen) {
+      return historyListSelectedLocalId != null
+        ? { localId: historyListSelectedLocalId, source: 'history' }
+        : null
     }
     if (
       activePieSide === 'right' &&
@@ -198,8 +208,21 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     mirrorListArchiveSource,
   ])
 
-  const mobileCentralPieMode: 'left' | 'right' =
-    mobileCentralArchivePreview != null ? 'right' : 'left'
+  const mobileCentralPieDisplay = useMemo((): 'archive' | 'hidden' | 'assembly' => {
+    if (mobileCentralArchivePreview != null) return 'archive'
+    if (mobileListArchiveSlotActive) return 'hidden'
+    return 'assembly'
+  }, [mobileCentralArchivePreview, mobileListArchiveSlotActive])
+
+  /** Закладка Cart/History в хедере — только после клика по сектору «Дата» archive pie. */
+  const showHeaderArchiveDateNotebookTab =
+    activePieSide === 'right' &&
+    activeSection === 'date' &&
+    rightPieDatePeekNoToolbar
+
+  const suppressHeaderNotebookTabHighlight =
+    (cartListPanelOpen || historyListPanelOpen) &&
+    !showHeaderArchiveDateNotebookTab
 
   const mobileCentralArchivePostcardStatus = useMemo(() => {
     if (mobileCentralArchivePreview == null) return undefined
@@ -245,36 +268,36 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       const pie = planPies.find((entry) => entry.id === id)
       if (pie == null) return
 
-      if (activePieSide === 'right') {
+      const state = store.getState()
+      const exitingListArchiveSlot =
+        selectCartListPanelOpen(state) || selectIsHistoryListPanelOpen(state)
+
+      if (exitingListArchiveSlot || activePieSide === 'right') {
         onBeforeLeftPieInteraction()
+
+        if (selectIsCardPieListPanelOpen(state)) {
+          dispatch(setCardPieListPanelOpen(false))
+          dispatchCardPieToolbarIconState(dispatch, false)
+        }
+        if (selectCartListPanelOpen(state)) {
+          dispatch(setCartListPanelOpen(false))
+        }
+        if (selectIsHistoryListPanelOpen(state)) {
+          dispatch(setHistoryListPanelOpen(false))
+        }
+
+        const notebookStripTab = selectNotebookStripTab(state)
+        if (notebookStripTab === 'cart') {
+          dispatch(setNotebookStripDateOverCart(true))
+        } else if (notebookStripTab === 'history') {
+          dispatch(setNotebookStripDateOverHistory(true))
+        }
+        dispatch(setNotebookStripTab('date'))
+        dispatch(openCardphotoFromMiniStripRequested())
+        dispatch(setActiveSection('cardphoto'))
       }
 
       selectPlanPie(id)
-
-      const state = store.getState()
-      const notebookStripTab = selectNotebookStripTab(state)
-      if (notebookStripTab !== 'cart' && notebookStripTab !== 'history') {
-        return
-      }
-
-      if (selectIsCardPieListPanelOpen(state)) {
-        dispatch(setCardPieListPanelOpen(false))
-        dispatchCardPieToolbarIconState(dispatch, false)
-      }
-      if (selectCartListPanelOpen(state)) {
-        dispatch(setCartListPanelOpen(false))
-      }
-      if (selectIsHistoryListPanelOpen(state)) {
-        dispatch(setHistoryListPanelOpen(false))
-      }
-
-      if (notebookStripTab === 'cart') {
-        dispatch(setNotebookStripDateOverCart(true))
-      } else {
-        dispatch(setNotebookStripDateOverHistory(true))
-      }
-      dispatch(setNotebookStripTab('date'))
-      dispatch(setActiveSection('date'))
 
       if (pie.dispatchDate != null) {
         dispatch(
@@ -285,21 +308,20 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         )
       }
     },
-    [dispatch, planPies, selectPlanPie, activePieSide, onBeforeLeftPieInteraction],
+    [
+      dispatch,
+      planPies,
+      selectPlanPie,
+      activePieSide,
+      onBeforeLeftPieInteraction,
+    ],
   )
 
   const handleRightListArchivePieSectorClick = useCallback(
     (section: CardSection) => {
-      const state = store.getState()
-      if (selectCartListPanelOpen(state)) {
-        dispatch(setCartListPanelOpen(false))
-      }
-      if (selectIsHistoryListPanelOpen(state)) {
-        dispatch(setHistoryListPanelOpen(false))
-      }
       onRightListPieSectorClick(section)
     },
-    [dispatch, onRightListPieSectorClick],
+    [onRightListPieSectorClick],
   )
 
   const handleLeftPieSectorClick = useCallback(
@@ -428,7 +450,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
           <CalendarNotebookTabs
             variant="header"
             section={notebookStripSection}
-            suppressTabHighlight={cartListPanelOpen || historyListPanelOpen}
+            suppressTabHighlight={suppressHeaderNotebookTabHighlight}
           />
         </div>
         <div className={styles.mobileSubstrate}>
@@ -461,9 +483,10 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                   <div className={styles.mobilePieStage}>
                   <div
                     className={styles.mobilePieWrap}
-                    data-mobile-central-pie-mode={mobileCentralPieMode}
+                    data-mobile-central-pie-mode={mobileCentralPieDisplay}
+                    aria-hidden={mobileCentralPieDisplay === 'hidden'}
                   >
-                      {mobileCentralPieMode === 'right' &&
+                      {mobileCentralPieDisplay === 'archive' &&
                       mobileCentralArchivePreview != null ? (
                         <CardPie
                           fillContainer
@@ -480,7 +503,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                             !showTopCardStripFullSpan
                           }
                         />
-                      ) : (
+                      ) : mobileCentralPieDisplay === 'assembly' ? (
                         <CardPie
                           fillContainer
                           station="left"
@@ -495,7 +518,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                           leftPieCenterPlanCycle={canCyclePlanPies}
                           leftPieCenterClickable={canCyclePlanPies}
                         />
-                      )}
+                      ) : null}
                   </div>
                     <div className={styles.mobilePieToolbar}>
                       <Toolbar
