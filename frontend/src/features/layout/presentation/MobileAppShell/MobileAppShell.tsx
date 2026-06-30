@@ -219,15 +219,11 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     return 'assembly'
   }, [mobileCentralArchivePreview, mobileListArchiveSlotActive])
 
-  /** Закладка Cart/History в хедере — только после клика по сектору «Дата» archive pie. */
-  const showHeaderArchiveDateNotebookTab =
-    activePieSide === 'right' &&
-    activeSection === 'date' &&
-    rightPieDatePeekNoToolbar
-
+  /** Peek фабрики: закладки Date/Cart/History в хедере не подсвечиваются. */
   const suppressHeaderNotebookTabHighlight =
-    (cartListPanelOpen || historyListPanelOpen) &&
-    !showHeaderArchiveDateNotebookTab
+    mobileFactoryChromePeek ||
+    cartListPanelOpen ||
+    historyListPanelOpen
 
   const mobileCentralArchivePostcardStatus = useMemo(() => {
     if (mobileCentralArchivePreview == null) return undefined

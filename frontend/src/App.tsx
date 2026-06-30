@@ -526,15 +526,18 @@ const App = () => {
           }),
         )
       }
-      /** Mobile header: закладка Cart/History — только при клике по сектору «Дата». */
-      if (section === 'date') {
-        if (rightListArchiveSource === 'history') {
-          dispatch(setNotebookStripTab('history'))
+      /** Mobile peek: закладки хедера не переключаем. */
+      const mobileArchivePeek = isMobileLayout && !fullFactoryFromRightPie
+      if (!mobileArchivePeek) {
+        if (section === 'date') {
+          if (rightListArchiveSource === 'history') {
+            dispatch(setNotebookStripTab('history'))
+          } else {
+            dispatch(setNotebookStripTab('cart'))
+          }
         } else {
-          dispatch(setNotebookStripTab('cart'))
+          dispatch(setNotebookStripTab('date'))
         }
-      } else {
-        dispatch(setNotebookStripTab('date'))
       }
       dispatch(setActiveSection(section))
     },
@@ -546,6 +549,7 @@ const App = () => {
       rightListArchiveLocalId,
       rightListArchiveSource,
       syncPeekChromeForOpenedSection,
+      isMobileLayout,
     ],
   )
 
