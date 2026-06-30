@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
 
 .root {
   // flex: 0 0 50%;
@@ -212,8 +213,10 @@
     color: $color-font-enabled-light;
   }
 
-  .item.inactive:hover .icon {
-    color: $color-font-enabled;
+  @include iconButton.toolbar-key-hover-fine-pointer {
+    .item.inactive:hover .icon {
+      color: $color-font-enabled;
+    }
   }
 
   .item.active .icon {
