@@ -14,9 +14,7 @@ import {
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import {
-  buildMobileCartSlotCloseCommands,
   buildMobileCartSlotOpenCommands,
-  buildMobileHistorySlotCloseCommands,
   buildMobileHistorySlotOpenCommands,
 } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 import {
@@ -157,7 +155,26 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     rightPieEnvelopePeekNoToolbar,
     rightPieAromaPeekNoToolbar,
     rightPieDatePeekNoToolbar,
+    clearRightPieCardphotoPeek,
+    clearRightPieCardtextPeek,
+    clearRightPieEnvelopePeek,
+    clearRightPieAromaPeek,
+    clearRightPieDatePeek,
   } = useRightListArchiveMini()
+
+  const clearMobileFactoryPeek = useCallback(() => {
+    clearRightPieCardphotoPeek()
+    clearRightPieCardtextPeek()
+    clearRightPieEnvelopePeek()
+    clearRightPieAromaPeek()
+    clearRightPieDatePeek()
+  }, [
+    clearRightPieCardphotoPeek,
+    clearRightPieCardtextPeek,
+    clearRightPieEnvelopePeek,
+    clearRightPieAromaPeek,
+    clearRightPieDatePeek,
+  ])
 
   const mobileFactoryChromePeek =
     rightPieCardphotoPeekNoToolbar ||
@@ -381,13 +398,13 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const handleCartSlotClick = useCallback(
     (event: React.MouseEvent) => {
       event.stopPropagation()
-      const isOpen = selectCartListPanelOpen(store.getState())
-      if (isOpen) {
-        for (const command of buildMobileCartSlotCloseCommands()) {
-          dispatch(command)
+      if (selectCartListPanelOpen(store.getState())) {
+        if (mobileFactoryChromePeek) {
+          clearMobileFactoryPeek()
         }
         return
       }
+      clearMobileFactoryPeek()
       if (selectIsCardPieListPanelOpen(store.getState())) {
         dispatch(setCardPieListPanelOpen(false))
         dispatchCardPieToolbarIconState(dispatch, false)
@@ -396,20 +413,20 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         dispatch(command)
       }
     },
-    [dispatch],
+    [dispatch, mobileFactoryChromePeek, clearMobileFactoryPeek],
   )
 
   const handleHistorySlotClick = useCallback(
     (event: React.MouseEvent) => {
       event.stopPropagation()
-      const state = store.getState()
-      if (selectIsHistoryListPanelOpen(state)) {
-        for (const command of buildMobileHistorySlotCloseCommands()) {
-          dispatch(command)
+      if (selectIsHistoryListPanelOpen(store.getState())) {
+        if (mobileFactoryChromePeek) {
+          clearMobileFactoryPeek()
         }
         return
       }
-      if (selectIsCardPieListPanelOpen(state)) {
+      clearMobileFactoryPeek()
+      if (selectIsCardPieListPanelOpen(store.getState())) {
         dispatch(setCardPieListPanelOpen(false))
         dispatchCardPieToolbarIconState(dispatch, false)
       }
@@ -417,7 +434,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         dispatch(command)
       }
     },
-    [dispatch],
+    [dispatch, mobileFactoryChromePeek, clearMobileFactoryPeek],
   )
 
   const historyStripActive = historyListPanelOpen
