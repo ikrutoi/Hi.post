@@ -538,12 +538,14 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                         />
                       ) : null}
                   </div>
-                    <div className={styles.mobilePieToolbar}>
-                      <Toolbar
-                        section="editorPie"
-                        onActionClick={handleEditorPieToolbarAction}
-                      />
-                    </div>
+                    {mobileCentralPieDisplay === 'assembly' ? (
+                      <div className={styles.mobilePieToolbar}>
+                        <Toolbar
+                          section="editorPie"
+                          onActionClick={handleEditorPieToolbarAction}
+                        />
+                      </div>
+                    ) : null}
                   </div>
                     <div className={styles.mobilePieRightSlot}>
                       <div className={styles.mobilePieRightSlotCartShell}>

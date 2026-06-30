@@ -1,13 +1,28 @@
 @use 'sass:math';
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
 
-$list-panel-stacked-band: 3.75rem;
-$list-panel-compact-header-band: 2.35rem;
-$list-panel-header-lead-row: 1.75rem;
+/** Две строки хедера (icon row + toolbar) — `headerSectionToolbar` min-height. */
+$list-panel-header-chrome-band: calc(
+  #{iconButton.$toolbar-hit-size-card-pie-list-header * 2} + 0.35rem
+);
+/** `ListPanelStackedHeader` cardPie archive + toolbar: top inset + chrome + padding. */
+$list-panel-stacked-band: calc(0.15rem + #{$list-panel-header-chrome-band} + 0.15rem);
+/** Пустой список: compact header с divider (`headerCompactWithDivider`). */
+$list-panel-compact-header-band: calc(
+  0.15rem + #{iconButton.$toolbar-hit-size-card-pie-list-header} + 0.2rem + 0.15rem
+);
 $list-panel-scroll-inset: 0.35rem;
 /** 1px зазор: последняя строка списка не заходит под верхний бордер футера. */
 $list-panel-list-footer-gap: 1px;
+/** Футер: одна строка хедера + тот же межстрочный gap (0.35rem), без второй строки toolbar. */
+$list-panel-footer-row-band: calc(
+  #{iconButton.$toolbar-hit-size-card-pie-list-header} + 0.35rem
+);
+$list-panel-footer-band: calc(
+  #{$list-panel-footer-row-band} + #{$list-panel-list-footer-gap}
+);
 $cart-list-header-square-h: 1.35rem;
 $cart-list-header-square-h-mobile: 1.5rem;
 $cart-list-header-skew-deg: 30deg;
@@ -31,9 +46,7 @@ $cart-list-header-segment-count-inset: 1.5rem;
   flex-direction: column;
   height: 100%;
   padding-top: $list-panel-stacked-band;
-  padding-bottom: calc(
-    #{$list-panel-header-lead-row} + #{$list-panel-list-footer-gap}
-  );
+  padding-bottom: $list-panel-footer-band;
   background-color: #fff;
   border: 1px solid $color-app-strip;
   border-radius: 0.75rem;
@@ -59,9 +72,20 @@ $cart-list-header-segment-count-inset: 1.5rem;
 
 .panelEmptyNoToolbar {
   padding-top: $list-panel-compact-header-band;
+  padding-bottom: calc(
+    #{$list-panel-compact-header-band} + #{$list-panel-list-footer-gap}
+  );
 
   .panelScrollTrack {
     top: calc(#{$list-panel-compact-header-band} - #{$list-panel-scroll-inset});
+    bottom: calc(
+      #{$list-panel-compact-header-band} - #{$list-panel-scroll-inset} +
+        #{$list-panel-list-footer-gap}
+    );
+  }
+
+  .footer {
+    height: $list-panel-compact-header-band;
   }
 }
 
@@ -250,7 +274,8 @@ $cart-list-header-segment-count-inset: 1.5rem;
   position: absolute;
   top: calc(#{$list-panel-stacked-band} - #{$list-panel-scroll-inset});
   bottom: calc(
-    #{$list-panel-header-lead-row} - #{$list-panel-scroll-inset} + #{$list-panel-list-footer-gap}
+    #{$list-panel-footer-row-band} - #{$list-panel-scroll-inset} +
+      #{$list-panel-list-footer-gap}
   );
   @include list-panel-scroll-track-right;
   width: 0.75rem;
@@ -320,7 +345,7 @@ $cart-list-header-segment-count-inset: 1.5rem;
   justify-content: space-between;
   gap: 0.5rem;
   @include list-panel-footer-width;
-  height: $list-panel-header-lead-row;
+  height: $list-panel-footer-row-band;
   padding: 0 0.35rem;
   box-sizing: border-box;
   border-top: 1px solid $color-cardphoto-input-border;

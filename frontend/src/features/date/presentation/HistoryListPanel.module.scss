@@ -1,11 +1,26 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
 
-$list-panel-stacked-band: 3.75rem;
-$list-panel-compact-header-band: 2.35rem;
+/** Две строки хедера (icon row + toolbar) — `headerSectionToolbar` min-height. */
+$list-panel-header-chrome-band: calc(
+  #{iconButton.$toolbar-hit-size-card-pie-list-header * 2} + 0.35rem
+);
+/** `ListPanelStackedHeader` cardPie archive + toolbar: top inset + chrome + padding. */
+$list-panel-stacked-band: calc(0.15rem + #{$list-panel-header-chrome-band} + 0.15rem);
+/** Пустой список: compact header с divider (`headerCompactWithDivider`). */
+$list-panel-compact-header-band: calc(
+  0.15rem + #{iconButton.$toolbar-hit-size-card-pie-list-header} + 0.2rem + 0.15rem
+);
 $list-panel-scroll-inset: 0.35rem;
-/** Полоса легенды снизу + 1px зазор до верхнего бордера — список не заезжает под футер. */
-$list-panel-footer-band: calc(1.75rem + 1px);
+$list-panel-list-footer-gap: 1px;
+/** Футер: одна строка хедера + тот же межстрочный gap (0.35rem), без второй строки toolbar. */
+$list-panel-footer-row-band: calc(
+  #{iconButton.$toolbar-hit-size-card-pie-list-header} + 0.35rem
+);
+$list-panel-footer-band: calc(
+  #{$list-panel-footer-row-band} + #{$list-panel-list-footer-gap}
+);
 
 .panel {
   position: relative;
@@ -32,23 +47,32 @@ $list-panel-footer-band: calc(1.75rem + 1px);
 
 .panelEmptyNoToolbar {
   padding-top: $list-panel-compact-header-band;
+  padding-bottom: calc(
+    #{$list-panel-compact-header-band} + #{$list-panel-list-footer-gap}
+  );
 
   .panelScrollTrack {
     top: calc(#{$list-panel-compact-header-band} - #{$list-panel-scroll-inset});
-    height: calc(
-      100% - #{$list-panel-compact-header-band} - #{$list-panel-scroll-inset} - #{$list-panel-footer-band}
+    bottom: calc(
+      #{$list-panel-compact-header-band} - #{$list-panel-scroll-inset} +
+        #{$list-panel-list-footer-gap}
     );
+  }
+
+  .indicators {
+    height: $list-panel-compact-header-band;
   }
 }
 
 .panelScrollTrack {
   position: absolute;
   top: calc(#{$list-panel-stacked-band} - #{$list-panel-scroll-inset});
+  bottom: calc(
+    #{$list-panel-footer-row-band} - #{$list-panel-scroll-inset} +
+      #{$list-panel-list-footer-gap}
+  );
   @include list-panel-scroll-track-right;
   width: 0.75rem;
-  height: calc(
-    100% - #{$list-panel-stacked-band} - #{$list-panel-scroll-inset} - #{$list-panel-footer-band}
-  );
   border-radius: 0 0.75rem 0.75rem 0;
   overflow: hidden;
   z-index: 1;
@@ -142,14 +166,14 @@ $list-panel-footer-band: calc(1.75rem + 1px);
 .indicators {
   position: absolute;
   left: 0.5rem;
-  right: calc(0.75rem + #{$list-panel-scroll-gutter});
   bottom: 0;
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  height: 1.75rem;
-  padding: 0.15rem 0.35rem 0;
+  @include list-panel-footer-width;
+  height: $list-panel-footer-row-band;
+  padding: 0 0.35rem;
   box-sizing: border-box;
   border-top: 1px solid $color-cardphoto-input-border;
   background-color: #fff;
