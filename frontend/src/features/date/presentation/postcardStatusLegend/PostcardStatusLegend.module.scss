@@ -194,12 +194,35 @@
 
 /** Футер календаря (cart/history): иконки enabled/disabled по счётчику, без active при клике. */
 .rootCalendarFooterAlwaysEnabled {
+  .item {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+
+    &:active {
+      background-color: #fff;
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: none;
+      background-color: #fff;
+    }
+  }
+
   .item.itemIconEnabled .icon {
     color: $color-font-enabled-light;
   }
 
   .item.itemIconDisabled .icon {
     color: $color-font-disabled;
+  }
+
+  .item.itemIconEnabled:active .icon,
+  .item.itemIconDisabled:active .icon {
+    color: $color-font-enabled;
   }
 
   @include iconButton.toolbar-key-hover-fine-pointer {
