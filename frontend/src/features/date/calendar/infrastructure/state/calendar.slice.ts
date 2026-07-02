@@ -5,6 +5,7 @@ import type { CalendarViewDate } from '@entities/date/domain/types'
 import type { CardCalendarIndex } from '@entities/card/domain/types'
 import type { DaysOfWeek } from '@entities/date/domain/types'
 import {
+  PostcardStatus,
   PostcardStatuses,
   PostcardStatusesCount,
 } from '@/entities/postcard/domain/types'
@@ -206,6 +207,17 @@ const calendarSlice = createSlice({
       state.postcardStatuses = action.payload
     },
 
+    togglePostcardStatus(state, action: PayloadAction<PostcardStatus>) {
+      const status = action.payload
+      if (status === 'cart') {
+        const nextCartValue = !state.postcardStatuses.cart
+        state.postcardStatuses.cart = nextCartValue
+        state.postcardStatuses.cartBlocked = nextCartValue
+        return
+      }
+      state.postcardStatuses[status] = !state.postcardStatuses[status]
+    },
+
     setHistoryListPanelOpen(state, action: PayloadAction<boolean>) {
       const wasOpen = state.historyListPanelOpen
       state.historyListPanelOpen = action.payload
@@ -287,6 +299,7 @@ export const {
   setHistoryListPanelDensity,
   setPostcardStatusesCount,
   setPostcardStatuses,
+  togglePostcardStatus,
   setHistoryListPanelOpen,
   setHistoryListSelectedLocalId,
   setNotebookStripTab,

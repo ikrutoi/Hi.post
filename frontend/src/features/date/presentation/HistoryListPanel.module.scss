@@ -146,6 +146,7 @@ $list-panel-footer-band: calc(
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
 
   /** Корень индикатора по умолчанию `width: 100%` — сжимаем к контенту и центрируем группу точек. */
   :global([data-postcard-indicator]) {
@@ -153,6 +154,7 @@ $list-panel-footer-band: calc(
     max-width: 100%;
     justify-content: center;
     margin-inline: auto;
+    pointer-events: auto;
   }
 
   :global([data-shell-layout='mobile']) & {

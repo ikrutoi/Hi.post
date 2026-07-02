@@ -2,6 +2,7 @@ import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
   setPostcardStatuses,
   setPostcardStatusesCount,
+  togglePostcardStatus,
   updateLastViewedCalendarDate,
   setHistoryListPanelOpen,
   setDateListPanelOpen,
@@ -16,6 +17,7 @@ import {
 } from '../../infrastructure/selectors'
 import type { CalendarViewDate } from '@entities/date/domain/types'
 import {
+  PostcardStatus,
   PostcardStatuses,
   PostcardStatusesCount,
 } from '@/entities/postcard/domain/types'
@@ -42,6 +44,8 @@ export const useCalendarFacade = () => {
     setCalendarViewDate,
     setPostcardStatuses: (statuses: PostcardStatuses) =>
       dispatch(setPostcardStatuses(statuses)),
+    togglePostcardStatus: (status: PostcardStatus) =>
+      dispatch(togglePostcardStatus(status)),
     setPostcardStatusesCount: (statusesCount: PostcardStatusesCount) =>
       dispatch(setPostcardStatusesCount(statusesCount)),
   }

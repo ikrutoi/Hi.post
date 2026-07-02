@@ -12,7 +12,8 @@ import { selectCartItems } from '@cart/infrastructure/selectors'
 import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
 import type { DispatchDate } from '@entities/date/domain/types'
 import type { CalendarCardItem } from '@entities/card/domain/types'
-import type { PostcardHydrated, PostcardStatus } from '@entities/postcard'
+import type { PostcardHydrated } from '@entities/postcard'
+import { computeLegendStatusCountsFromCalendarMap } from '@date/application/helpers/legendStatusCounts'
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
 import { selectRecipientsList } from '@envelope/infrastructure/selectors'
 import {
@@ -118,18 +119,8 @@ export const HistoryListRightSlot: React.FC<HistoryListRightSlotProps> = ({
           ...day.error,
         )
       })
-      const legendStatusCounts: Record<PostcardStatus, number> = {
-        cart: 0,
-        cartBlocked: 0,
-        ready: 0,
-        sent: 0,
-        delivered: 0,
-        error: 0,
-      }
-      postcardItems.forEach((item) => {
-        if (item.status === 'cartBlocked') return
-        legendStatusCounts[item.status] += 1
-      })
+      const { legendStatusCounts, historyUnderlyingPostcardCount } =
+        computeLegendStatusCountsFromCalendarMap(cardsByDateMap)
       const entries: HistoryListPanelItem[] = []
       postcardItems.forEach((item, i) => {
         if (item.status === 'cartBlocked') return

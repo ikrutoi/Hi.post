@@ -37,6 +37,13 @@
   gap: 0.35rem;
   min-height: 1.75rem;
   width: 100%;
+
+  .headerLead,
+  .headerLeadClickable,
+  .closeBtn {
+    position: relative;
+    z-index: 2;
+  }
 }
 
 .headerTopCenterSlot {

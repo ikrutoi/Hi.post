@@ -21,6 +21,8 @@ export type PostcardStatusLegendProps = {
   calendarCartStripBlockedLegend?: boolean
   /** Mobile footer: cart / history strip — чуть крупнее точки и иконки. */
   calendarCartHistoryFooter?: boolean
+  /** Футер календаря (cart/history): всегда enabled, без active при клике. */
+  calendarFooterAlwaysEnabled?: boolean
 }
 
 export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
@@ -31,34 +33,29 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
   calendarCartStripLegendOnly = false,
   calendarCartStripBlockedLegend = false,
   calendarCartHistoryFooter = false,
+  calendarFooterAlwaysEnabled = false,
 }) => {
-  const { postcardStatuses, setPostcardStatuses } = useCalendarFacade()
+  const { postcardStatuses, togglePostcardStatus } = useCalendarFacade()
+
+  const showStatusCounts =
+    statusCounts != null && spot === 'historyList'
 
   const hideCartInCalendarDateFooter =
-    spot === 'calendar' &&
-    calendarCartStripLegendOnly &&
-    !calendarCartStripBlockedLegend
+    calendarCartStripLegendOnly && !calendarCartStripBlockedLegend
 
   const handlePostcardStatusClick = (status: PostcardStatus) => {
-    if (status === 'cart') {
-      const nextCartValue = !postcardStatuses.cart
-      setPostcardStatuses({
-        ...postcardStatuses,
-        cart: nextCartValue,
-        cartBlocked: nextCartValue,
-      })
-      return
-    }
-    setPostcardStatuses({
-      ...postcardStatuses,
-      [status]: !postcardStatuses[status],
-    })
+    togglePostcardStatus(status)
+  }
+
+  const itemStateClass = (status: PostcardStatus) => {
+    if (calendarFooterAlwaysEnabled) return styles.inactive
+    return postcardStatuses[status] ? styles.active : styles.inactive
   }
 
   const statusCount = (status: PostcardStatus) => {
-    if (spot !== 'historyList' || statusCounts == null) return null
+    if (!showStatusCounts || statusCounts == null) return null
     const n =
-      status === 'cart'
+      status === 'cart' && !calendarCartStripBlockedLegend
         ? statusCounts.cart + statusCounts.cartBlocked
         : statusCounts[status]
     if (n <= 0) return null
@@ -74,7 +71,6 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
       className={clsx(
         styles.root,
         styles[`root-${spot}`],
-        isHistoryEmpty && styles.rootEmpty,
         spot === 'calendar' &&
           calendarDispatchDimmed &&
           !calendarCartStripLegendOnly &&
@@ -82,6 +78,8 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
         spot === 'calendar' &&
           calendarCartHistoryFooter &&
           styles.rootCalendarCartHistory,
+        calendarFooterAlwaysEnabled && styles.rootCalendarFooterAlwaysEnabled,
+        spot === 'historyList' && isHistoryEmpty && styles.rootEmpty,
       )}
       aria-label="Postcard status colors"
     >
@@ -92,7 +90,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
             className={clsx(
               styles.item,
               styles.cart,
-              postcardStatuses.cart ? styles.active : styles.inactive,
+              itemStateClass('cart'),
             )}
             aria-pressed={postcardStatuses.cart}
             onClick={() => handlePostcardStatusClick('cart')}
@@ -102,7 +100,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
             {statusCount('cart')}
           </button>
         ) : null}
-        {spot === 'calendar' && calendarCartStripLegendOnly ? (
+        {calendarCartStripLegendOnly ? (
           <>
             {calendarCartStripBlockedLegend ? (
               <button
@@ -110,15 +108,14 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
                 className={clsx(
                   styles.item,
                   styles.cartBlocked,
-                  postcardStatuses.cartBlocked
-                    ? styles.active
-                    : styles.inactive,
+                  itemStateClass('cartBlocked'),
                 )}
                 aria-pressed={postcardStatuses.cartBlocked}
                 onClick={() => handlePostcardStatusClick('cartBlocked')}
               >
                 <span className={clsx(styles.dot, styles.dotCartBlocked)} />
                 <IconCardBlocked className={styles.icon} />
+                {statusCount('cartBlocked')}
               </button>
             ) : null}
             {(calendarCartStripBlockedLegend ? [0, 1, 2] : [0, 1, 2, 3]).map(
@@ -146,7 +143,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
               className={clsx(
                 styles.item,
                 styles.ready,
-                postcardStatuses.ready ? styles.active : styles.inactive,
+                itemStateClass('ready'),
               )}
               aria-pressed={postcardStatuses.ready}
               onClick={() => handlePostcardStatusClick('ready')}
@@ -160,7 +157,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
               className={clsx(
                 styles.item,
                 styles.sent,
-                postcardStatuses.sent ? styles.active : styles.inactive,
+                itemStateClass('sent'),
               )}
               aria-pressed={postcardStatuses.sent}
               onClick={() => handlePostcardStatusClick('sent')}
@@ -176,7 +173,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
               className={clsx(
                 styles.item,
                 styles.delivered,
-                postcardStatuses.delivered ? styles.active : styles.inactive,
+                itemStateClass('delivered'),
               )}
               aria-pressed={postcardStatuses.delivered}
               onClick={() => handlePostcardStatusClick('delivered')}
@@ -190,7 +187,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
               className={clsx(
                 styles.item,
                 styles.error,
-                postcardStatuses.error ? styles.active : styles.inactive,
+                itemStateClass('error'),
               )}
               aria-pressed={postcardStatuses.error}
               onClick={() => handlePostcardStatusClick('error')}

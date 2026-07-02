@@ -396,6 +396,24 @@
   }
 }
 
+/** Режим корзины / истории: легенда на всю ширину футера, как в списке истории. */
+.dateBottomToggleIndicatorsFullWidth {
+  width: 100%;
+  max-width: 100%;
+  flex: 1 1 auto;
+  padding-left: 0.35rem;
+  padding-right: 0.35rem;
+  box-sizing: border-box;
+
+  :global([data-shell-layout='mobile']) & {
+    width: 100%;
+    max-width: 100%;
+    flex: 1 1 auto;
+    padding-left: 0.35rem;
+    padding-right: 0.35rem;
+  }
+}
+
 .dateBottomToggleHistoryGroup {
   display: flex;
   align-items: center;

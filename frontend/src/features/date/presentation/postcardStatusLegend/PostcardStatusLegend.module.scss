@@ -192,6 +192,24 @@
   }
 }
 
+/** Футер календаря (cart/history): иконки всегда enabled, без active/hover потемнения. */
+.rootCalendarFooterAlwaysEnabled {
+  .item .icon {
+    color: $color-font-enabled-light;
+  }
+
+  .item.active .icon,
+  .item.inactive .icon {
+    color: $color-font-enabled-light;
+  }
+
+  @include iconButton.toolbar-key-hover-fine-pointer {
+    .item:hover .icon {
+      color: $color-font-enabled-light;
+    }
+  }
+}
+
 .root-historyList {
   .item.inactive .dot {
     opacity: 0.42;
@@ -235,6 +253,15 @@
     font-variant-numeric: tabular-nums;
     line-height: 1;
     user-select: none;
+  }
+}
+
+/** Кружки статусов в футере календаря — яркие, даже при enabled-иконках. */
+.root-historyList.rootCalendarFooterAlwaysEnabled {
+  .item.inactive .dot,
+  .item.active .dot {
+    opacity: 1;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
   }
 }
 
