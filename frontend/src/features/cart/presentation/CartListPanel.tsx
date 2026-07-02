@@ -22,6 +22,7 @@ import {
 } from '@cart/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { setCartCalendarDatePickMode } from '@date/calendar/infrastructure/state'
+import { notebookTabCartClicked } from '@date/calendar/application/orchestration/notebookOrchestration.events'
 import type { CartListStatusSegment } from '@cart/domain/types'
 import { listEntryPriceLine } from '@shared/utils/listEntryPriceLine'
 import { CartListEntry, type CartListEntryVariant } from './CartListEntry'
@@ -29,6 +30,7 @@ import type { PostcardHydrated } from '@entities/postcard'
 import type { DispatchDate } from '@entities/date/domain/types'
 import { getCurrentDate } from '@shared/utils/date'
 import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
+import type { IconKey } from '@shared/config/constants'
 import styles from './CartListPanel.module.scss'
 
 export type CartListPanelItem = {
@@ -54,6 +56,8 @@ type Props = {
   onSelectEntry?: (item: CartListPanelItem) => void
   /** cartBlocked: dateEdit — правый CardPie и данные открытки строки. */
   onDateEditEntry?: (item: CartListPanelItem) => void
+  /** Мобильный список: иконка «Дата» вместо корзины / blocked. */
+  leadIconKeyOverride?: IconKey
 }
 
 function formatDispatchDateLabel(d: DispatchDate): string {
@@ -217,6 +221,7 @@ export const CartListPanel: React.FC<Props> = ({
   entries: entriesProp,
   onSelectEntry,
   onDateEditEntry,
+  leadIconKeyOverride,
 }) => {
   const dispatch = useAppDispatch()
   const cartItems = useAppSelector(selectCartItems)
@@ -379,9 +384,10 @@ export const CartListPanel: React.FC<Props> = ({
     entriesProp != null || listSegment === 'cart'
 
   const listLeadIconKey =
-    entriesProp == null && listSegment === 'cartBlocked'
+    leadIconKeyOverride ??
+    (entriesProp == null && listSegment === 'cartBlocked'
       ? 'cardBlocked'
-      : 'cart'
+      : 'cart')
 
   const cartListToolbarGroupsOverride = useMemo(() => {
     if (entriesProp != null || listSegment !== 'cartBlocked') {
@@ -389,6 +395,11 @@ export const CartListPanel: React.FC<Props> = ({
     }
     return CART_LIST_TOOLBAR.filter((group) => group.group !== 'cartList')
   }, [entriesProp, listSegment])
+
+  const handleLeadIconClick = useCallback(() => {
+    if (leadIconKeyOverride == null) return
+    dispatch(notebookTabCartClicked())
+  }, [dispatch, leadIconKeyOverride])
 
   return (
     <div
@@ -401,6 +412,10 @@ export const CartListPanel: React.FC<Props> = ({
       <ListPanelStackedHeader
         leadIconKey={listLeadIconKey}
         cardPieListHeaderIcons
+        onLeadIconClick={
+          leadIconKeyOverride != null ? handleLeadIconClick : undefined
+        }
+        leadIconAriaLabel="Cart calendar"
         headerTopCenter={
           entriesProp == null ? (
             <div

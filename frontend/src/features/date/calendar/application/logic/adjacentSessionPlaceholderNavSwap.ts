@@ -16,6 +16,8 @@ export function shouldAdjacentSessionPlaceholderNavSwap(params: {
   photoPreview: PhotoPreviewLike
   /** Cart list open on Date strip: calendar shows cart pipeline — like history for placeholder swap. */
   cartListPanelOpen?: boolean
+  /** Mobile header History tab keeps activeSection on date. */
+  historyCalendarStrip?: boolean
 }): boolean {
   const {
     direction,
@@ -24,10 +26,12 @@ export function shouldAdjacentSessionPlaceholderNavSwap(params: {
     dayData,
     photoPreview,
     cartListPanelOpen = false,
+    historyCalendarStrip = false,
   } = params
+  const isHistory = activeSection === 'history' || historyCalendarStrip
   if (direction === 'current') return false
   if (!isSelectedDate) return false
-  if (activeSection === 'history') return false
+  if (isHistory) return false
   if (activeSection === 'date' && cartListPanelOpen) return false
   if (photoPreview?.previewUrl) return false
   if (!dayData) return false
@@ -40,14 +44,14 @@ export function shouldAdjacentSessionPlaceholderNavSwap(params: {
   const firstPipeline = pipelineCount > 0 ? pipelineCards[0] : null
 
   const workingSlotForSelectedDay =
-    activeSection !== 'history' && isSelectedDate && processed
+    !isHistory && isSelectedDate && processed
       ? processed
       : null
 
   const noSessionCardphotoImage = !photoPreview?.previewUrl
 
   const primaryItem =
-    activeSection !== 'history' &&
+    !isHistory &&
     isSelectedDate &&
     noSessionCardphotoImage
       ? workingSlotForSelectedDay ?? null

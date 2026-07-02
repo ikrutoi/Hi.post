@@ -10,6 +10,11 @@ import { shiftMonth } from '../helpers'
 import { isDisabledDate } from '@entities/date/utils'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import { shouldAdjacentSessionPlaceholderNavSwap } from './adjacentSessionPlaceholderNavSwap'
+import {
+  isCartCalendarStrip,
+  isHistoryCalendarStrip,
+  resolveCardPreviewSection,
+} from './calendarStripSection'
 import type {
   CalendarViewDate,
   DispatchDate,
@@ -17,7 +22,6 @@ import type {
 import type { MonthDirection } from '@entities/date/domain/types'
 import type { HandleCellClickParams } from '../../../cell/domain/types'
 import type { CardCalendarIndex } from '@entities/card/domain/types'
-import type { CardSection } from '@shared/config/constants'
 import {
   calendarDayHasCards,
   isEmptyCalendarDay,
@@ -56,14 +60,15 @@ export const buildMonthCells = ({
   const photoPreview = useAppSelector(selectCardphotoPreview)
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
-  const isCartCalendarStrip =
-    activeSection === 'date' && notebookStripTab === 'cart'
-  const cardPreviewSection: CardSection | 'cart' | null =
-    activeSection === 'history'
-      ? 'history'
-      : isCartCalendarStrip
-        ? 'cart'
-        : activeSection
+  const cartCalendarStrip = isCartCalendarStrip(activeSection, notebookStripTab)
+  const historyCalendarStrip = isHistoryCalendarStrip(
+    activeSection,
+    notebookStripTab,
+  )
+  const cardPreviewSection = resolveCardPreviewSection(
+    activeSection,
+    notebookStripTab,
+  )
   if (!calendarViewDate) return []
 
   const { year: currentViewYear, month: currentViewMonth } = shiftMonth(
@@ -81,7 +86,7 @@ export const buildMonthCells = ({
       currentViewYear === currentDate.year
 
     const isSelectedDate =
-      activeSection !== 'history' &&
+      !historyCalendarStrip &&
       highlightDates.some(
         (d) =>
           d.year === currentViewYear &&
@@ -101,20 +106,21 @@ export const buildMonthCells = ({
         activeSection,
         dayData,
         photoPreview,
-        cartListPanelOpen: isCartCalendarStrip,
+        cartListPanelOpen: cartCalendarStrip,
+        historyCalendarStrip,
       })
 
     const isDisabled = isDisabledDate(day, cellDate, currentDate)
 
     const historyEmptyNoPreview =
-      activeSection === 'history' &&
+      historyCalendarStrip &&
       direction === 'current' &&
       isEmptyCalendarDay(dayData) &&
       !isDisabled
 
     /** История: dayBefore/dayAfter с открытками на день — pointer. */
     const historyAdjacentPointer =
-      activeSection === 'history' &&
+      historyCalendarStrip &&
       direction !== 'current' &&
       dayData != null &&
       calendarDayHasCards(dayData) &&
@@ -123,9 +129,10 @@ export const buildMonthCells = ({
     /** Дата: dayBefore/dayAfter не disabled — выбор даты / панель дня, pointer (не полоска «Корзина»). */
     const dateAdjacentPointer =
       activeSection === 'date' &&
+      !historyCalendarStrip &&
       direction !== 'current' &&
       !isDisabled &&
-      !isCartCalendarStrip
+      !cartCalendarStrip
 
     const adjacentMonthPointer = historyAdjacentPointer || dateAdjacentPointer
     /**
@@ -133,17 +140,17 @@ export const buildMonthCells = ({
      * Дни из merged dispatch (ветки шаблонов / список CardPiePanel) не помечаем pointer — иначе при тех же датах в корзине остаётся «рука».
      */
     const cartPreviewPointer =
-      isCartCalendarStrip &&
+      cartCalendarStrip &&
       direction === 'current' &&
       dayData != null &&
       calendarDayHasCards(dayData) &&
       !isSelectedDate
 
     const cartDateEditPickBorder =
-      isCartCalendarStrip && cartCalendarDatePickMode && !isDisabled
+      cartCalendarStrip && cartCalendarDatePickMode && !isDisabled
 
     const dateStripEnabledDayBorder =
-      activeSection === 'date' && !isCartCalendarStrip && !isDisabled
+      activeSection === 'date' && !cartCalendarStrip && !isDisabled
 
     const cartDatePickWaveStrong =
       cartDateEditPickBorder &&
@@ -180,7 +187,7 @@ export const buildMonthCells = ({
         cartDatePickWaveStrong={cartDatePickWaveStrong}
         cartDatePickWaveFading={cartDatePickWaveFading}
         dateStripEnabledDayBorder={dateStripEnabledDayBorder}
-        suppressDispatchSelectionStyle={isCartCalendarStrip}
+        suppressDispatchSelectionStyle={cartCalendarStrip}
         rightArchiveCardPieDay={isRightArchiveCardPieDay}
       >
         {dayData && (

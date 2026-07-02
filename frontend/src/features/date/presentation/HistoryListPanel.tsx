@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react'
-import { useAppSelector } from '@app/hooks'
+import React, { useCallback, useMemo } from 'react'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { useListCardPreviewUrl } from '@entities/card/application/hooks/useListCardPreviewUrl'
 import { IconHistory } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
@@ -12,6 +12,7 @@ import styles from './HistoryListPanel.module.scss'
 import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegend'
 import { HistoryListEntry } from './historyList/HistoryListEntry'
 import clsx from 'clsx'
+import type { IconKey } from '@shared/config/constants'
 import type { PanelDensity2Size } from '@shared/ui/icons'
 import { PostcardIndicator } from '@toolbar/presentation/PostcardIndictor'
 import {
@@ -23,6 +24,7 @@ import {
   sortHistoryListEntries,
   type HistoryListSortEmphasis,
 } from '@date/application/helpers/historyListSort'
+import { notebookTabHistoryClicked } from '@date/calendar/application/orchestration/notebookOrchestration.events'
 
 export type HistoryListPanelItem = {
   id: string
@@ -51,6 +53,8 @@ type Props = {
   hasUnderlyingHistoryEntries?: boolean
   /** Число открыток по статусу (до фильтра) — для бейджей в легенде. */
   legendStatusCounts?: Record<PostcardStatus, number>
+  /** Мобильный список: иконка «Дата» вместо истории. */
+  leadIconKeyOverride?: IconKey
   // section: 'date' | 'history'
 }
 
@@ -100,8 +104,10 @@ export const HistoryListPanel: React.FC<Props> = ({
   onSelectEntry,
   hasUnderlyingHistoryEntries,
   legendStatusCounts,
+  leadIconKeyOverride,
   // section,
 }) => {
+  const dispatch = useAppDispatch()
   const historyListSortMode = useAppSelector(selectHistoryListSortMode)
   const historyListPanelDensity = useAppSelector(selectHistoryListPanelDensity)
   const sortEmphasis = getHistoryListSortEmphasis(historyListSortMode)
@@ -117,13 +123,22 @@ export const HistoryListPanel: React.FC<Props> = ({
       ? !hasRows
       : !hasUnderlyingHistoryEntries
 
+  const handleLeadIconClick = useCallback(() => {
+    if (leadIconKeyOverride == null) return
+    dispatch(notebookTabHistoryClicked())
+  }, [dispatch, leadIconKeyOverride])
+
   return (
     <div
       className={clsx(styles.panel, !hasRows && styles.panelEmptyNoToolbar)}
     >
       <ListPanelStackedHeader
-        leadIconKey="listHistory"
+        leadIconKey={leadIconKeyOverride ?? 'listHistory'}
         cardPieListHeaderIcons
+        onLeadIconClick={
+          leadIconKeyOverride != null ? handleLeadIconClick : undefined
+        }
+        leadIconAriaLabel="History calendar"
         headerTopCenter={
           <div className={styles.headerPostcardDots}>
             <PostcardIndicator />

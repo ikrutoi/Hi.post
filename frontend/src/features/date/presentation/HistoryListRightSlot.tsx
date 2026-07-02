@@ -27,6 +27,7 @@ import {
   selectPostcardStatuses,
 } from '@date/calendar/infrastructure/selectors'
 import { postcardLocalIdFromCalendarCardItem } from '@date/calendar/infrastructure/postcardLocalIdFromCalendarCardItem'
+import type { IconKey } from '@shared/config/constants'
 
 function formatDispatchDateLabel(d: DispatchDate): string {
   const date = new Date(d.year, d.month, d.day)
@@ -40,10 +41,12 @@ function formatDispatchDateLabel(d: DispatchDate): string {
 /** Список истории открыток в правой колонке (рядом с корзиной), не в левом слоте даты. */
 export type HistoryListRightSlotProps = {
   onSelectEntry?: (item: HistoryListPanelItem) => void
+  leadIconKeyOverride?: IconKey
 }
 
 export const HistoryListRightSlot: React.FC<HistoryListRightSlotProps> = ({
   onSelectEntry: onSelectEntryProp,
+  leadIconKeyOverride,
 }) => {
   const dispatch = useAppDispatch()
   const { historyListPanelOpen } = useCalendarFacade()
@@ -199,6 +202,7 @@ export const HistoryListRightSlot: React.FC<HistoryListRightSlotProps> = ({
       onSelectEntry={handleSelectEntry}
       hasUnderlyingHistoryEntries={historyUnderlyingPostcardCount > 0}
       legendStatusCounts={legendStatusCounts}
+      leadIconKeyOverride={leadIconKeyOverride}
     />
   )
 }

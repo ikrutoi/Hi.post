@@ -12,7 +12,10 @@ export const MobileHistoryListSlot: React.FC<MobileHistoryListSlotProps> = ({
 }) => (
   <div className={styles.root}>
     <div className={styles.panelWrap}>
-      <HistoryListRightSlot onSelectEntry={onSelectEntry} />
+      <HistoryListRightSlot
+        onSelectEntry={onSelectEntry}
+        leadIconKeyOverride="date"
+      />
     </div>
   </div>
 )

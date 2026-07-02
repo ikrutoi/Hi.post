@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { setCartListSelectedLocalId } from '@cart/infrastructure/state'
 import { useDateFacade } from '../../../application/facades'
 import { useCalendarFacade } from '../../../calendar/application/facades'
+import { isHistoryCalendarStrip } from '../../../calendar/application/logic/calendarStripSection'
 import {
   closeDayPanel,
   openDayPanel,
@@ -234,7 +235,10 @@ export const useCalendarCellController = ({
         ? selectedDates.some((d) => sameDispatchDate(d, dispatchDate))
         : Boolean(selectedDate && sameDispatchDate(selectedDate, dispatchDate))
 
-      const isHistorySection = activeSection === 'history'
+      const isHistorySection = isHistoryCalendarStrip(
+        activeSection,
+        notebookStripTab,
+      )
       /** В закладке корзины календарь только для навигации по дням — не трогаем dispatch-дату редактора / CardPie / список CardPiePanel. */
       const applyDispatchDateSelection =
         !isHistorySection && notebookStripTab !== 'cart'
@@ -297,7 +301,10 @@ export const useCalendarCellController = ({
               selectedDate && sameDispatchDate(selectedDate, dispatchDate),
             )
 
-        const isHistorySection = activeSection === 'history'
+        const isHistorySection = isHistoryCalendarStrip(
+          activeSection,
+          notebookStripTab,
+        )
         const applyDispatchDateSelection =
           !isHistorySection && notebookStripTab !== 'cart'
 

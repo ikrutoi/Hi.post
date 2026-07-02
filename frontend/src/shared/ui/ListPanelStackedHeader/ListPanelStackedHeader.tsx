@@ -24,6 +24,9 @@ export type ListPanelStackedHeaderProps = {
   variant?: 'default' | 'sectionToolbar'
   /** Archive list panels (CardPie, cart, history, …): header icons at 85% of standard. */
   cardPieListHeaderIcons?: boolean
+  /** Клик по ведущей иконке (например мобильный список → календарь). */
+  onLeadIconClick?: () => void
+  leadIconAriaLabel?: string
   onClose: () => void
   closeAriaLabel: string
 }
@@ -36,12 +39,19 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
   showDividerWithoutToolbar = false,
   variant = 'default',
   cardPieListHeaderIcons = false,
+  onLeadIconClick,
+  leadIconAriaLabel,
   onClose,
   closeAriaLabel,
 }) => {
   const hasToolbar = toolbar != null && toolbar !== false
   const showDividerOnly = !hasToolbar && showDividerWithoutToolbar
   const hasTopCenter = headerTopCenter != null && headerTopCenter !== false
+  const leadIconContent = leadIconOverride ?? getToolbarIcon({ key: leadIconKey })
+  const leadIconClassName = clsx(
+    styles.headerLead,
+    onLeadIconClick != null && styles.headerLeadClickable,
+  )
 
   return (
     <div
@@ -56,14 +66,27 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
       )}
     >
       <div className={styles.headerTopRow}>
-        <div
-          className={styles.headerLead}
-          aria-hidden
-          data-icon-state="enabled"
-          data-lead-icon={leadIconOverride ? undefined : leadIconKey}
-        >
-          {leadIconOverride ?? getToolbarIcon({ key: leadIconKey })}
-        </div>
+        {onLeadIconClick != null ? (
+          <button
+            type="button"
+            className={leadIconClassName}
+            data-icon-state="enabled"
+            data-lead-icon={leadIconOverride ? undefined : leadIconKey}
+            onClick={onLeadIconClick}
+            aria-label={leadIconAriaLabel ?? 'Open calendar'}
+          >
+            {leadIconContent}
+          </button>
+        ) : (
+          <div
+            className={leadIconClassName}
+            aria-hidden
+            data-icon-state="enabled"
+            data-lead-icon={leadIconOverride ? undefined : leadIconKey}
+          >
+            {leadIconContent}
+          </div>
+        )}
         <div
           className={styles.headerTopCenterSlot}
           {...(!hasTopCenter ? { 'aria-hidden': true as const } : {})}
