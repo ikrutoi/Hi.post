@@ -1115,6 +1115,8 @@ const App = () => {
           envelopeAddressCreateMode={mobileEnvelopeAddressFormOpen}
           cardPieListPanelOpen={cardPieListPanelOpen}
           onEditorPieToolbarAction={handleEditorPieToolbarAction}
+          onPostcardPieCartToolbarAction={handlePostcardPieCartToolbarAction}
+          postcardPieCartToolbarStateOverride={postcardPieCartToolbarStateOverride}
           onCartListSelectEntry={handleCartListSelectEntry}
           onCartListDateEditEntry={handleCartListDateEditEntry}
           onHistoryListSelectEntry={handleHistoryListSelectEntry}

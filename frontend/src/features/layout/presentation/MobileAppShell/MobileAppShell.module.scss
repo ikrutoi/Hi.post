@@ -723,6 +723,27 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
       }
     }
   }
+
+  :global([class*='toolbarPostcardPieCart']),
+  :global([class*='toolbarPostcardPieHistory']) {
+    height: 100%;
+
+    :global([class*='toolbarGroup']) {
+      height: 100%;
+    }
+
+    :global([class*='toolbarKey']) {
+      @include iconButton.toolbar-icon-button-size-standard(true);
+      margin: 0;
+      background-color: transparent;
+
+      &[class*='toolbarKeyEnabled']:hover,
+      &[class*='toolbarKeyActive']:hover,
+      &[class*='toolbarKeyDisabled']:hover {
+        background-color: transparent;
+      }
+    }
+  }
 }
 
 .mobileEditorSection {

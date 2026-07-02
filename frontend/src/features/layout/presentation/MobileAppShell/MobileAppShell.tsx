@@ -79,6 +79,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   envelopeAddressCreateMode = false,
   cardPieListPanelOpen,
   onEditorPieToolbarAction,
+  onPostcardPieCartToolbarAction,
+  postcardPieCartToolbarStateOverride,
   onCartListSelectEntry,
   onCartListDateEditEntry,
   onHistoryListSelectEntry,
@@ -258,6 +260,15 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       (postcard) => postcard.localId === mobileCentralArchivePreview.localId,
     )?.status
   }, [cartItems, mobileCentralArchivePreview])
+
+  const showMobileCentralPostcardPieCartToolbar =
+    mobileCentralPieDisplay === 'archive' &&
+    mobileCentralArchivePostcardStatus === 'cart'
+
+  const showMobileCentralPostcardPieHistoryToolbar =
+    mobileCentralPieDisplay === 'archive' &&
+    mobileCentralArchivePostcardStatus != null &&
+    mobileCentralArchivePostcardStatus !== 'cart'
 
   const handleLeftPieCenterPress = useCallback(() => {
     if (activePieSide === 'right') {
@@ -565,6 +576,21 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                           section="editorPie"
                           onActionClick={handleEditorPieToolbarAction}
                         />
+                      </div>
+                    ) : null}
+                    {showMobileCentralPostcardPieCartToolbar ? (
+                      <div className={styles.mobilePieToolbar}>
+                        <Toolbar
+                          section="postcardPieCart"
+                          onActionClick={onPostcardPieCartToolbarAction}
+                          stateOverride={postcardPieCartToolbarStateOverride}
+                          mergedWithCenter
+                        />
+                      </div>
+                    ) : null}
+                    {showMobileCentralPostcardPieHistoryToolbar ? (
+                      <div className={styles.mobilePieToolbar}>
+                        <Toolbar section="postcardPieHistory" mergedWithCenter />
                       </div>
                     ) : null}
                   </div>

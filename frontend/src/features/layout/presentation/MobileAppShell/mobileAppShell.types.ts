@@ -18,6 +18,8 @@ export type MobileAppShellProps = {
   envelopeAddressCreateMode?: boolean
   cardPieListPanelOpen: boolean
   onEditorPieToolbarAction?: (key: IconKey) => void | false
+  onPostcardPieCartToolbarAction?: (key: IconKey) => void | false
+  postcardPieCartToolbarStateOverride?: Record<string, string>
   onCartListSelectEntry: (item: CartListPanelItem) => void
   onCartListDateEditEntry: (item: CartListPanelItem) => void
   onHistoryListSelectEntry: (item: HistoryListPanelItem) => void
