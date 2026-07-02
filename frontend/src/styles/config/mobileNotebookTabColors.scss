@@ -1,0 +1,63 @@
+@use 'sass:color';
+@use '@styles/config/colors' as *;
+
+$mobile-notebook-date-tab-top: color.adjust(
+  color.mix($color-date-input, $color-date-multi, 22%),
+  $saturation: 8%,
+  $lightness: 2%
+);
+$mobile-notebook-date-tab-bottom: color.adjust(
+  color.mix($color-date-input-border, $color-date-multi, 18%),
+  $saturation: 10%,
+  $lightness: -6%
+);
+
+$mobile-notebook-cart-tab-top: color.adjust(
+  color.mix($color-cart-list-surface, $color-preview-indicator-cart, 22%),
+  $saturation: 14%,
+  $lightness: 1%
+);
+$mobile-notebook-cart-tab-bottom: color.adjust(
+  color.mix($color-cart-list-border, $color-preview-indicator-cart, 32%),
+  $saturation: 18%,
+  $lightness: -8%
+);
+
+$mobile-notebook-history-tab-yellow: color.mix(
+  $mobile-notebook-cart-tab-top,
+  $mobile-notebook-cart-tab-bottom,
+  48%
+);
+$mobile-notebook-history-tab-blue: color.mix(
+  $mobile-notebook-date-tab-top,
+  $mobile-notebook-date-tab-bottom,
+  52%
+);
+
+/** Вертикальные полосы у секции «Дата» — как закладки в мобильном хедере. */
+@mixin mobile-notebook-date-tab-gutter-gradient {
+  background: linear-gradient(
+    0deg,
+    $mobile-notebook-date-tab-top 0%,
+    $mobile-notebook-date-tab-bottom 100%
+  );
+}
+
+@mixin mobile-notebook-cart-tab-gutter-gradient {
+  background: linear-gradient(
+    0deg,
+    $mobile-notebook-cart-tab-top 0%,
+    $mobile-notebook-cart-tab-bottom 100%
+  );
+}
+
+@mixin mobile-notebook-history-tab-gutter-gradient {
+  background: linear-gradient(
+    to bottom,
+    $mobile-notebook-history-tab-yellow 0 20%,
+    $color-preview-indicator-ready 20% 40%,
+    $mobile-notebook-history-tab-blue 40% 60%,
+    $color-preview-indicator-delivered 60% 80%,
+    $color-preview-indicator-error 80% 100%
+  );
+}

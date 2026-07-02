@@ -50,8 +50,9 @@ import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
 const DateSectionShell: React.FC<{
   children: React.ReactNode
   showMobileSliderToolbar?: boolean
-}> = ({ children, showMobileSliderToolbar = false }) => (
-  <div className={styles.date}>
+  stripSection: DateStripSection
+}> = ({ children, showMobileSliderToolbar = false, stripSection }) => (
+  <div className={styles.date} data-mobile-date-strip={stripSection}>
     <div className={styles.dateViewWrap}>
       <MobileInlineToolbarRow
         className={styles.dateToolbarRow}
@@ -269,6 +270,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
           listRowLocalId != null ? `peek-date-${listRowLocalId}` : 'peek-date'
         }
         showMobileSliderToolbar={false}
+        stripSection={section}
       >
         {notebookTabsOuter ? (
           peekBody
@@ -362,7 +364,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   )
 
   return (
-    <DateSectionShell showMobileSliderToolbar={showMobileSliderToolbar}>
+    <DateSectionShell showMobileSliderToolbar={showMobileSliderToolbar} stripSection={section}>
       {notebookTabsOuter ? (
         calendarBody
       ) : (

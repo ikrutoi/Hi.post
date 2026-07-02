@@ -1,38 +1,15 @@
 @use 'sass:color';
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
+@use '@styles/config/mobileNotebookTabColors' as notebookTab;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
-$mobile-header-cart-tab-top: color.adjust(
-  color.mix($color-cart-list-surface, $color-preview-indicator-cart, 22%),
-  $saturation: 14%,
-  $lightness: 1%
-);
-$mobile-header-cart-tab-bottom: color.adjust(
-  color.mix($color-cart-list-border, $color-preview-indicator-cart, 32%),
-  $saturation: 18%,
-  $lightness: -8%
-);
-$mobile-header-date-tab-top: color.adjust(
-  color.mix($color-date-input, $color-date-multi, 22%),
-  $saturation: 8%,
-  $lightness: 2%
-);
-$mobile-header-date-tab-bottom: color.adjust(
-  color.mix($color-date-input-border, $color-date-multi, 18%),
-  $saturation: 10%,
-  $lightness: -6%
-);
-$mobile-header-history-tab-yellow: color.mix(
-  $mobile-header-cart-tab-top,
-  $mobile-header-cart-tab-bottom,
-  48%
-);
-$mobile-header-history-tab-blue: color.mix(
-  $mobile-header-date-tab-top,
-  $mobile-header-date-tab-bottom,
-  52%
-);
+$mobile-header-cart-tab-top: notebookTab.$mobile-notebook-cart-tab-top;
+$mobile-header-cart-tab-bottom: notebookTab.$mobile-notebook-cart-tab-bottom;
+$mobile-header-date-tab-top: notebookTab.$mobile-notebook-date-tab-top;
+$mobile-header-date-tab-bottom: notebookTab.$mobile-notebook-date-tab-bottom;
+$mobile-header-history-tab-yellow: notebookTab.$mobile-notebook-history-tab-yellow;
+$mobile-header-history-tab-blue: notebookTab.$mobile-notebook-history-tab-blue;
 $mobile-pie-right-slot-active-width-scale: 1.25;
 // Центр диагонали в узком режиме: середина видимой правой части (1/scale ширины).
 $mobile-pie-right-slot-narrow-diagonal-center-x: 1 -
@@ -756,15 +733,31 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   padding: 0;
   overflow: hidden;
 
+  &:has(:global([data-mobile-date-strip])) {
+    :global([class*='editorAreaCenter']),
+    :global([class*='cardSectionRenderer']) {
+      justify-content: flex-start;
+    }
+  }
+
   // Section shells — side inset; toolbar band без рамки, рамка только у рабочей зоны.
   :global([class*='cardSectionRenderer']) > :global([class*='cardphoto']:not([class*='View']):not([class*='Toolbar']):not([class*='Stage']):not([class*='Title'])),
   :global([class*='cardtextContainer']) > :global([class*='cardtext']:not([class*='Container']):not([class*='View']):not([class*='Toolbar']):not([class*='ReadOnly'])),
   :global([class*='cardSectionRenderer']) > :global([class*='envelope']:not([class*='Section']):not([class*='Peek']):not([class*='Toggle']):not([class*='Logo']):not([class*='Mark']):not([class*='Footer']):not([class*='Top']):not([class*='Bottom']):not([class*='View']):not([class*='Work'])),
-  :global([class*='cardSectionRenderer']) > :global([class*='aroma']:not([class*='Tile']):not([class*='View']):not([class*='Work'])),
-  :global([class*='cardSectionRenderer']) > :global([class*='date']:not([class*='View']):not([class*='Header']):not([class*='Bottom']):not([class*='Peek']):not([class*='Strip'])) {
+  :global([class*='cardSectionRenderer']) > :global([class*='aroma']:not([class*='Tile']):not([class*='View']):not([class*='Work'])) {
     box-sizing: border-box;
     width: calc(100% - 2 * var(--mobile-section-inset));
     margin-inline: var(--mobile-section-inset);
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    background-color: transparent;
+  }
+
+  :global([class*='cardSectionRenderer']) > :global([class*='date']:not([class*='View']):not([class*='Header']):not([class*='Bottom']):not([class*='Peek']):not([class*='Strip'])) {
+    box-sizing: border-box;
+    width: 100%;
+    margin-inline: 0;
     border: none;
     border-radius: 0;
     box-shadow: none;
@@ -777,9 +770,10 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   :global([class*='cardSectionRenderer']) > :global([class*='aroma']:not([class*='Tile']):not([class*='View']):not([class*='Work'])),
   :global([class*='cardSectionRenderer']) > :global([class*='date']:not([class*='View']):not([class*='Header']):not([class*='Bottom']):not([class*='Peek']):not([class*='Strip'])) {
     padding: 0;
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     min-height: 0;
-    height: 100%;
+    height: auto;
+    align-self: stretch;
   }
 
   // Cardphoto / cardtext / envelope / aroma / date — inner work zone flush to factory toolbar shell.
@@ -817,7 +811,8 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
     border-radius: 0.5rem;
     background-color: #fff;
     overflow: hidden;
-    width: 100%;
+    width: calc(100% - 2 * var(--mobile-section-inset));
+    margin-inline: var(--mobile-section-inset);
     min-height: 0;
   }
 
@@ -850,7 +845,8 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   :global([class*='dateViewContent']) {
     flex: 0 0 auto;
     align-items: center;
-    width: 100%;
+    width: calc(100% - 2 * var(--mobile-section-inset));
+    margin-inline: var(--mobile-section-inset);
     min-height: 0;
   }
 
