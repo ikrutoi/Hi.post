@@ -23,6 +23,8 @@ type Props = {
   /** Tighter top padding when the floating title strip is in edit mode */
   titleStripEditing?: boolean
   onDelete?: () => void
+  /** Archive peek: стандартный кадр секции (как cardphoto viewContainer). */
+  sectionFrame?: boolean
 }
 
 export const CardtextView: React.FC<Props> = ({
@@ -31,6 +33,7 @@ export const CardtextView: React.FC<Props> = ({
   contentKey,
   titleStripEditing,
   onDelete,
+  sectionFrame = false,
 }) => {
   const slateKey =
     contentKey ??
@@ -55,6 +58,7 @@ export const CardtextView: React.FC<Props> = ({
       className={clsx(
         styles.viewContainer,
         titleStripEditing && styles.viewContainerTitleStripEditing,
+        sectionFrame && styles.viewContainerSectionFrame,
         colorClass,
       )}
       style={{
@@ -63,7 +67,12 @@ export const CardtextView: React.FC<Props> = ({
         textAlign: style?.align ?? 'left',
       }}
     >
-      <div className={styles.viewBody}>
+      <div
+        className={clsx(
+          styles.viewBody,
+          sectionFrame && styles.viewBodySectionFrame,
+        )}
+      >
         {/** `initialValue` только при mount — без key Slate не подхватывает смену строки/данных при том же editor memo. */}
         <Slate key={slateKey} editor={editor} initialValue={initialValue}>
           <Editable

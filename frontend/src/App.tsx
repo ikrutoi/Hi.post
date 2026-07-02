@@ -510,18 +510,19 @@ const App = () => {
         setRightPieDatePeekNoToolbar(false)
       } else {
         flushSync(() => {
+          dispatch(setActiveSection(section))
           syncPeekChromeForOpenedSection(section)
           setActivePieSide('right')
         })
       }
       if (
         fullFactoryFromRightPie &&
-        section === 'envelope' &&
+        (section === 'envelope' || section === 'cardtext') &&
         rightListArchiveLocalId != null
       ) {
         dispatch(
           applyArchiveSectionToEditorRequested({
-            section: 'envelope',
+            section,
             sourceLocalId: rightListArchiveLocalId,
           }),
         )
@@ -539,7 +540,9 @@ const App = () => {
           dispatch(setNotebookStripTab('date'))
         }
       }
-      dispatch(setActiveSection(section))
+      if (fullFactoryFromRightPie) {
+        dispatch(setActiveSection(section))
+      }
     },
     [
       dispatch,

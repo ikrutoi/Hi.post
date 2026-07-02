@@ -5,8 +5,10 @@ import { CardtextView } from './CardtextView/CardtextView'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import {
   createInitialCardtextContent,
+  cardtextHasRenderableContent,
   cardtextValueForReadOnlyPreview,
 } from '@cardtext/domain/editor/editor.types'
+import { IconSectionMenuCardtext } from '@shared/ui/icons'
 import { useCardtextFacade } from '../application/facades/useCardtextFacade'
 import {
   useCardtextTitleStrip,
@@ -31,6 +33,7 @@ import {
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import styles from './Cardtext.module.scss'
 import viewStyles from './CardtextView/CardtextView.module.scss'
+import cardphotoViewStyles from '@cardphoto/presentation/CardphotoView/CardphotoView.module.scss'
 import { useAppDispatch } from '@app/hooks'
 import {
   deleteCardtextFromViewRequested,
@@ -52,6 +55,7 @@ const CardtextListRowPeekPreview: React.FC<{
 }> = ({ inner, rowLocalId }) => {
   const ct = inner.cardtext
   const fallback = createInitialCardtextContent()
+  const hasText = cardtextHasRenderableContent(ct)
   const value = cardtextValueForReadOnlyPreview(ct)
   const style = ct?.style ?? fallback.style
   const contentKey =
@@ -73,51 +77,36 @@ const CardtextListRowPeekPreview: React.FC<{
             {null}
           </MobileInlineToolbarRow>
           <div className={styles.cardtextViewContent}>
-            <CardtextView
-              contentKey={contentKey}
-              value={value}
-              style={style}
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-/** Фабрика в режиме правого списка: текст из `mirrorInner`, не из слайса `cardtext` сессии. */
-const CardtextRightListMirror: React.FC = () => {
-  const { mirrorInner, mirrorTargetLocalId } = useRightListArchiveMini()
-  const ct = mirrorInner?.cardtext
-  const fallback = createInitialCardtextContent()
-  const value = ct
-    ? cardtextValueForReadOnlyPreview(ct)
-    : fallback.value
-  const style = ct?.style ?? fallback.style
-  const contentKey =
-    mirrorTargetLocalId != null && ct?.id != null
-      ? `mirror-${mirrorTargetLocalId}-${ct.id}`
-      : mirrorTargetLocalId != null
-        ? `mirror-${mirrorTargetLocalId}`
-        : 'mirror-pending'
-
-  return (
-    <div className={styles.cardtextContainer}>
-      <div className={styles.cardtext}>
-        <div className={styles.cardtextViewWrap}>
-          <MobileInlineToolbarRow
-            className={styles.cardtextToolbarRow}
-            emptyClassName={styles.cardtextToolbarRowEmpty}
-            show={false}
-          >
-            {null}
-          </MobileInlineToolbarRow>
-          <div className={styles.cardtextViewContent}>
-            <CardtextView
-              contentKey={contentKey}
-              value={value}
-              style={style}
-            />
+            {hasText ? (
+              <CardtextView
+                contentKey={contentKey}
+                value={value}
+                style={style}
+                sectionFrame
+              />
+            ) : (
+              <div
+                className={clsx(
+                  viewStyles.viewContainer,
+                  viewStyles.viewContainerSectionFrame,
+                )}
+              >
+                <div
+                  className={clsx(
+                    viewStyles.viewBody,
+                    viewStyles.viewBodySectionFrame,
+                    viewStyles.viewBodySectionFrameEmpty,
+                  )}
+                >
+                  <div
+                    className={cardphotoViewStyles.emptyPlaceholderIcon}
+                    aria-hidden
+                  >
+                    <IconSectionMenuCardtext />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -340,37 +329,34 @@ export const Cardtext: React.FC<CardtextProps> = (props) => {
   const {
     activePieSide,
     cardPieEditEngaged,
-    centerStripListMirrorEnabled,
-    rightPieCardtextPeekNoToolbar,
+    mirrorInner,
+    mirrorTargetLocalId,
     listRowInner,
     listRowLocalId,
   } = useRightListArchiveMini()
   const notebookTabsOuter = useSectionEditorNotebookTabsOuter()
 
-  if (
-    rightPieCardtextPeekNoToolbar &&
-    listRowInner != null &&
-    !cardPieEditEngaged
-  ) {
-    const peek = (
+  const archiveInner = listRowInner ?? mirrorInner
+  const archiveRowLocalId = listRowLocalId ?? mirrorTargetLocalId
+
+  /** Правый режим без cardPieEdit: упрощённый текст архива, не слайс сессии левой открытки. */
+  if (!cardPieEditEngaged && activePieSide === 'right' && archiveInner != null) {
+    const preview = (
       <CardtextListRowPeekPreview
         key={
-          listRowLocalId != null ? `peek-row-${listRowLocalId}` : 'peek-row'
+          archiveRowLocalId != null
+            ? `archive-row-${archiveRowLocalId}`
+            : 'archive-row'
         }
-        inner={listRowInner}
-        rowLocalId={listRowLocalId}
+        inner={archiveInner}
+        rowLocalId={archiveRowLocalId}
       />
     )
-    return notebookTabsOuter ? peek : <NotebookPeekShell>{peek}</NotebookPeekShell>
-  }
-
-  /** Правый режим без cardPieEdit: текст архива, без записи в слайс `cardtext` сессии. */
-  if (
-    centerStripListMirrorEnabled &&
-    activePieSide === 'right' &&
-    !cardPieEditEngaged
-  ) {
-    return <CardtextRightListMirror />
+    return notebookTabsOuter ? (
+      preview
+    ) : (
+      <NotebookPeekShell>{preview}</NotebookPeekShell>
+    )
   }
 
   return <CardtextSessionEditor {...props} />
