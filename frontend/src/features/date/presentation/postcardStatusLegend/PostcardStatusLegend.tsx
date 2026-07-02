@@ -52,12 +52,24 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
     return postcardStatuses[status] ? styles.active : styles.inactive
   }
 
+  const statusCountValue = (status: PostcardStatus): number => {
+    if (statusCounts == null) return 0
+    if (status === 'cart' && !calendarCartStripBlockedLegend) {
+      return statusCounts.cart + statusCounts.cartBlocked
+    }
+    return statusCounts[status]
+  }
+
+  const itemVisualStateClass = (status: PostcardStatus) => {
+    if (!calendarFooterAlwaysEnabled) return itemStateClass(status)
+    return statusCountValue(status) > 0
+      ? styles.itemIconEnabled
+      : styles.itemIconDisabled
+  }
+
   const statusCount = (status: PostcardStatus) => {
     if (!showStatusCounts || statusCounts == null) return null
-    const n =
-      status === 'cart' && !calendarCartStripBlockedLegend
-        ? statusCounts.cart + statusCounts.cartBlocked
-        : statusCounts[status]
+    const n = statusCountValue(status)
     if (n <= 0) return null
     return (
       <span className={styles.count} aria-hidden>
@@ -90,7 +102,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
             className={clsx(
               styles.item,
               styles.cart,
-              itemStateClass('cart'),
+              itemVisualStateClass('cart'),
             )}
             aria-pressed={postcardStatuses.cart}
             onClick={() => handlePostcardStatusClick('cart')}
@@ -108,7 +120,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
                 className={clsx(
                   styles.item,
                   styles.cartBlocked,
-                  itemStateClass('cartBlocked'),
+                  itemVisualStateClass('cartBlocked'),
                 )}
                 aria-pressed={postcardStatuses.cartBlocked}
                 onClick={() => handlePostcardStatusClick('cartBlocked')}
@@ -143,7 +155,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
               className={clsx(
                 styles.item,
                 styles.ready,
-                itemStateClass('ready'),
+                itemVisualStateClass('ready'),
               )}
               aria-pressed={postcardStatuses.ready}
               onClick={() => handlePostcardStatusClick('ready')}
@@ -157,7 +169,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
               className={clsx(
                 styles.item,
                 styles.sent,
-                itemStateClass('sent'),
+                itemVisualStateClass('sent'),
               )}
               aria-pressed={postcardStatuses.sent}
               onClick={() => handlePostcardStatusClick('sent')}
@@ -173,7 +185,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
               className={clsx(
                 styles.item,
                 styles.delivered,
-                itemStateClass('delivered'),
+                itemVisualStateClass('delivered'),
               )}
               aria-pressed={postcardStatuses.delivered}
               onClick={() => handlePostcardStatusClick('delivered')}
@@ -187,7 +199,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
               className={clsx(
                 styles.item,
                 styles.error,
-                itemStateClass('error'),
+                itemVisualStateClass('error'),
               )}
               aria-pressed={postcardStatuses.error}
               onClick={() => handlePostcardStatusClick('error')}

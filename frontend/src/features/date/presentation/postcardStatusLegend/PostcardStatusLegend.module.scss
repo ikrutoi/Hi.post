@@ -192,20 +192,23 @@
   }
 }
 
-/** Футер календаря (cart/history): иконки всегда enabled, без active/hover потемнения. */
+/** Футер календаря (cart/history): иконки enabled/disabled по счётчику, без active при клике. */
 .rootCalendarFooterAlwaysEnabled {
-  .item .icon {
+  .item.itemIconEnabled .icon {
     color: $color-font-enabled-light;
   }
 
-  .item.active .icon,
-  .item.inactive .icon {
-    color: $color-font-enabled-light;
+  .item.itemIconDisabled .icon {
+    color: $color-font-disabled;
   }
 
   @include iconButton.toolbar-key-hover-fine-pointer {
-    .item:hover .icon {
+    .item.itemIconEnabled:hover .icon {
       color: $color-font-enabled-light;
+    }
+
+    .item.itemIconDisabled:hover .icon {
+      color: $color-font-disabled;
     }
   }
 }
