@@ -11,11 +11,12 @@
   min-height: 0;
 
   :global([data-shell-layout='mobile']) & {
+    display: flex;
+    flex-direction: column;
     flex: 1 1 auto;
     height: 100%;
     min-height: 0;
-    grid-template-rows: var(--mobile-date-calendar-chrome-row-height, 2rem) minmax(0, 1fr);
-    row-gap: 0.125rem;
+    gap: var(--mobile-date-calendar-chrome-gap, 0.125rem);
     align-content: stretch;
   }
 }
@@ -30,11 +31,15 @@
   min-height: 0;
 
   :global([data-shell-layout='mobile']) & {
-    height: 100%;
+    flex: 1 1 auto;
+    width: 100%;
     min-height: 0;
+    margin-bottom: var(--mobile-date-calendar-chrome-gap, 0.125rem);
+    grid-column: unset;
+    grid-row: unset;
     grid-template-rows: repeat(6, auto);
-    gap: 0.125rem;
-    align-content: start;
+    gap: var(--mobile-date-calendar-chrome-gap, 0.125rem);
+    align-content: center;
     align-self: stretch;
   }
 }

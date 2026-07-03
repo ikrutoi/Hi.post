@@ -4,6 +4,7 @@
 @use '@styles/config/mobileSectionGutter' as sectionGutter;
 
 $mobile-date-calendar-chrome-row-height: 2rem;
+$mobile-date-calendar-chrome-gap: 0.125rem;
 
 .date {
   display: flex;
@@ -307,6 +308,7 @@ $mobile-date-calendar-chrome-row-height: 2rem;
     width: 100%;
     height: 100%;
     --mobile-date-calendar-chrome-row-height: #{$mobile-date-calendar-chrome-row-height};
+    --mobile-date-calendar-chrome-gap: #{$mobile-date-calendar-chrome-gap};
 
     > *:first-child {
       flex: 1 1 auto;
