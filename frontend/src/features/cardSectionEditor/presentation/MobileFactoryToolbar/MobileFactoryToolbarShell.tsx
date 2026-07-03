@@ -15,6 +15,7 @@ import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { CardSectionToolbar } from '@features/cardSectionToolbar/presentation/CardSectionToolbar'
+import { MobileDateCalendarToolbarNav } from '@date/dateHeader/presentation/MobileDateCalendarToolbarNav'
 import { useMobileScenarioToolbarSnapshot } from './MobileScenarioToolbarContext'
 import styles from './MobileFactoryToolbarShell.module.scss'
 
@@ -79,8 +80,12 @@ export const MobileFactoryToolbarShell: React.FC = () => {
   const isAromaSection = activeSection === 'aroma'
   const showSectionUpperToolbar =
     showUpperContent && !isAromaSection && !suppressMobileCalendarUpperRow
+  const showMobileDateCalendarNavRow =
+    suppressMobileCalendarUpperRow && showUpperContent
   const showShell =
-    (showSectionUpperToolbar || showLowerRow || suppressMobileCalendarUpperRow) &&
+    (showSectionUpperToolbar ||
+      showLowerRow ||
+      showMobileDateCalendarNavRow) &&
     !(isAromaSection && !showLowerRow)
   const isMobileCalendarSection =
     isMobileLayout &&
@@ -88,7 +93,10 @@ export const MobileFactoryToolbarShell: React.FC = () => {
   const showDivider =
     !isMobileCalendarSection &&
     !isAromaSection
-  const singleRowShell = !showSectionUpperToolbar && showLowerRow
+  const singleRowShell =
+    !showSectionUpperToolbar &&
+    !showMobileDateCalendarNavRow &&
+    showLowerRow
 
   if (envelopeAddressCreateMode) return null
   if (!showShell) return null
@@ -105,6 +113,10 @@ export const MobileFactoryToolbarShell: React.FC = () => {
       {showSectionUpperToolbar ? (
         <div className={styles.rowUpper}>
           <CardSectionToolbar />
+        </div>
+      ) : showMobileDateCalendarNavRow ? (
+        <div className={styles.rowUpper}>
+          <MobileDateCalendarToolbarNav />
         </div>
       ) : null}
       {showDivider ? <div className={styles.rowDivider} aria-hidden /> : null}

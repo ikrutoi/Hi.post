@@ -29,7 +29,7 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   --mobile-chrome-padding-y: 0.35rem;
   --mobile-section-inset: 0.75rem;
   --mobile-form-padding-bottom: calc(
-    1.5rem + env(safe-area-inset-bottom, 0px)
+    1rem + env(safe-area-inset-bottom, 0px)
   );
   --mobile-pie-size: min(52vw, 14rem, 28dvh);
   --mobile-section-gap: clamp(0.5rem, 2.2dvh, 2.25rem);
@@ -44,6 +44,7 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   --mobile-factory-toolbar-row-height: calc(
     #{$section-inner-toolbar-height-desktop} + var(--mobile-factory-toolbar-row-gap-share)
   );
+  --mobile-central-section-offset-top: var(--mobile-factory-toolbar-gap);
   --mobile-section-toolbar-band: var(--mobile-factory-toolbar-row-height);
   --mobile-toolbar-key-size: #{iconButton.$toolbar-hit-size-mobile};
   --mobile-toolbar-icon-size: #{iconButton.$toolbar-icon-size-mobile};
@@ -813,6 +814,9 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
     z-index: 1;
     border-radius: 0;
     align-items: stretch;
+    flex: 0 0 auto;
+    height: auto;
+    width: 100%;
   }
 
   :global([class*='cardphotoViewContent']),

@@ -73,7 +73,7 @@
     min-height: 0;
     width: 100%;
     height: 100%;
-    gap: 0;
+    gap: var(--mobile-central-section-offset-top, var(--mobile-factory-toolbar-gap));
   }
 }
 
