@@ -8,5 +8,11 @@
   :global([data-shell-layout='mobile']) & {
     gap: 0.125rem;
     margin-bottom: 0.125rem;
+    box-sizing: border-box;
+    height: var(--mobile-date-calendar-chrome-row-height, 2rem);
+    min-height: var(--mobile-date-calendar-chrome-row-height, 2rem);
+    max-height: var(--mobile-date-calendar-chrome-row-height, 2rem);
+    align-items: center;
+    overflow: hidden;
   }
 }
