@@ -2,6 +2,7 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
 @use '@styles/config/mobileNotebookTabColors' as notebookTab;
+@use '@styles/config/mobileSectionGutter' as sectionGutter;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
 $mobile-header-cart-tab-top: notebookTab.$mobile-notebook-cart-tab-top;
@@ -733,21 +734,14 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   padding: 0;
   overflow: hidden;
 
-  &:has(:global([data-mobile-date-strip])) {
-    :global([class*='editorAreaCenter']),
-    :global([class*='cardSectionRenderer']) {
-      justify-content: flex-start;
-    }
-  }
-
-  // Section shells — side inset; toolbar band без рамки, рамка только у рабочей зоны.
+  // Section shells — full width.
   :global([class*='cardSectionRenderer']) > :global([class*='cardphoto']:not([class*='View']):not([class*='Toolbar']):not([class*='Stage']):not([class*='Title'])),
   :global([class*='cardtextContainer']) > :global([class*='cardtext']:not([class*='Container']):not([class*='View']):not([class*='Toolbar']):not([class*='ReadOnly'])),
   :global([class*='cardSectionRenderer']) > :global([class*='envelope']:not([class*='Section']):not([class*='Peek']):not([class*='Toggle']):not([class*='Logo']):not([class*='Mark']):not([class*='Footer']):not([class*='Top']):not([class*='Bottom']):not([class*='View']):not([class*='Work'])),
   :global([class*='cardSectionRenderer']) > :global([class*='aroma']:not([class*='Tile']):not([class*='View']):not([class*='Work'])) {
     box-sizing: border-box;
-    width: calc(100% - 2 * var(--mobile-section-inset));
-    margin-inline: var(--mobile-section-inset);
+    width: 100%;
+    margin-inline: 0;
     border: none;
     border-radius: 0;
     box-shadow: none;
@@ -781,11 +775,42 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   :global([class*='cardtextViewWrap']),
   :global([class*='envelopeViewWrap']),
   :global([class*='aromaViewWrap']) {
+    position: relative;
+    z-index: 1;
     border-radius: 0;
     align-items: center;
+    flex: 0 0 auto;
+    height: auto;
+    width: 100%;
+    @include sectionGutter.mobile-section-view-wrap-side-gutters;
+  }
+
+  :global([class*='cardphotoViewWrap']) {
+    background: sectionGutter.$mobile-section-gutter-cardphoto;
+  }
+
+  :global([class*='cardtextViewWrap']) {
+    background: sectionGutter.$mobile-section-gutter-cardtext;
+  }
+
+  :global([class*='envelope']:not([data-envelope-mobile-form='true']))
+    :global([class*='envelopeViewWrap']) {
+    background: sectionGutter.$mobile-section-gutter-envelope;
+  }
+
+  :global([class*='aromaViewWrap']) {
+    background: sectionGutter.$mobile-section-gutter-aroma;
+  }
+
+  :global([class*='envelope'][data-envelope-mobile-form='true'])
+    :global([class*='envelopeViewWrap']) {
+    padding-inline: 0;
+    background: transparent;
   }
 
   :global([class*='dateViewWrap']) {
+    position: relative;
+    z-index: 1;
     border-radius: 0;
     align-items: stretch;
   }
@@ -794,6 +819,7 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   :global([class*='cardtextViewContent']),
   :global([class*='envelopeViewContent']),
   :global([class*='aromaViewContent']) {
+    position: relative;
     border: 1px solid $color-section-light;
     border-radius: 0.5rem;
     background-color: #fff;
@@ -801,16 +827,37 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
     flex: 0 0 auto;
     align-items: center;
     width: 100%;
+    margin-inline: 0;
     min-height: 0;
+    box-sizing: border-box;
+  }
+
+  :global([class*='envelope']:not([data-envelope-mobile-form='true']))
+    :global([class*='envelopeViewContent']) {
+    aspect-ratio: 1;
+    max-height: min(100%, var(--card-work-zone-side, 100%));
+    min-width: min(100%, max(8rem, var(--card-work-zone-side, 8rem)));
+    min-height: min(100%, max(8rem, var(--card-work-zone-side, 8rem)));
+  }
+
+  :global([class*='envelope'][data-envelope-mobile-form='true'])
+    :global([class*='envelopeViewContent']) {
+    width: 100%;
+    margin-inline: 0;
+    border: none;
+    border-radius: 0;
+    background-color: $color-app-inner;
+    overflow-y: auto;
   }
 
   :global([class*='dateViewContent']) {
+    position: relative;
     border: 1px solid $color-section-light;
     border-radius: 0.5rem;
     background-color: #fff;
     overflow: hidden;
-    width: calc(100% - 2 * var(--mobile-section-inset));
-    margin-inline: var(--mobile-section-inset);
+    width: 100%;
+    margin-inline: 0;
     min-height: 0;
   }
 
@@ -818,9 +865,6 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   :global([class*='cardphotoViewContent']) :global([class*='viewContainer']),
   :global([class*='cardtextReadOnlyShell']) :global([class*='viewContainer']),
   :global([class*='cardtextViewContent']) > :global([class*='_editor_']),
-  :global([class*='envelope']:not([data-envelope-mobile-form='true']))
-    :global([class*='envelopeViewContent'])
-    > :global([class*='envelopeWorkZone']),
   :global([class*='aromaViewContent']) > :global([class*='form']),
   :global([class*='dateViewContent']) > :global([class*='form']),
   :global([class*='dateViewContent']) > :global([class*='formWithNotebookTabs']) {
@@ -834,19 +878,36 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
     aspect-ratio: 1;
     box-sizing: border-box;
     border: none;
+    border-radius: 0.5rem;
+    overflow: hidden;
   }
 
-  :global([class*='dateViewContent']) {
-    flex: 0 0 auto;
-    align-items: center;
-    width: calc(100% - 2 * var(--mobile-section-inset));
-    margin-inline: var(--mobile-section-inset);
+  :global([class*='envelope']:not([data-envelope-mobile-form='true']))
+    :global([class*='envelopeViewContent'])
+    > :global([class*='envelopeWorkZone']) {
+    flex: 1 1 auto;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: none;
+    min-width: 0;
     min-height: 0;
+    aspect-ratio: unset;
+    border-radius: 0;
+    overflow: hidden;
   }
 
   :global([class*='dateViewContent']) > :global([class*='form']),
   :global([class*='dateViewContent']) > :global([class*='formWithNotebookTabs']) {
     overflow: auto;
+  }
+
+  :global([class*='dateViewContent']) {
+    flex: 0 0 auto;
+    align-items: center;
+    width: 100%;
+    margin-inline: 0;
+    min-height: 0;
   }
 
   :global([class*='cardphotoViewContent']) :global([class*='viewContainer']),

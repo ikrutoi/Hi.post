@@ -22,10 +22,10 @@
 
   :global([data-shell-layout='mobile']) &:not([data-envelope-mobile-form='true']) {
     width: 100%;
-    height: 100%;
+    height: auto;
     max-height: 100%;
     min-height: 0;
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     padding: 0;
     display: flex;
     flex-direction: column;
@@ -47,9 +47,9 @@
   }
 
   :global([data-shell-layout='mobile']) & {
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     width: 100%;
-    height: 100%;
+    height: auto;
     min-height: 0;
     justify-content: flex-end;
   }
@@ -190,9 +190,14 @@
   overflow: hidden;
   border: 1px solid $color-cardphoto-input-border;
 
-  :global([data-shell-layout='mobile']) & {
+  :global([data-shell-layout='mobile']) .envelope:not([data-envelope-mobile-form='true']) & {
     flex: 0 0 auto;
-    align-items: center;
+    align-items: stretch;
+    width: 100%;
+    aspect-ratio: 1;
+    max-height: min(100%, var(--card-work-zone-side, 100%));
+    min-width: min(100%, max(8rem, var(--card-work-zone-side, 8rem)));
+    min-height: min(100%, max(8rem, var(--card-work-zone-side, 8rem)));
     border: 1px solid $color-section-light;
   }
 
@@ -298,13 +303,15 @@
   box-sizing: border-box;
   background-color: #fff;
 
-  :global([data-shell-layout='mobile']) & {
-    flex: 0 0 auto;
-    width: min(100%, var(--card-work-zone-side, 100%));
-    height: auto;
+  :global([data-shell-layout='mobile']) .envelope:not([data-envelope-mobile-form='true']) & {
+    flex: 1 1 auto;
+    width: 100%;
+    height: 100%;
     max-width: 100%;
-    max-height: min(100%, var(--card-work-zone-side, 100%));
-    aspect-ratio: 1;
+    max-height: none;
+    min-width: 0;
+    min-height: 0;
+    aspect-ratio: unset;
   }
 }
 

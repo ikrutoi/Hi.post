@@ -1,0 +1,30 @@
+@use 'sass:color';
+@use '@styles/config/colors' as *;
+
+$mobile-section-gutter-cardphoto: color.mix(
+  $color-cardphoto-input,
+  $color-cardphoto-input-border,
+  48%
+);
+$mobile-section-gutter-cardtext: color.mix(
+  $color-cardtext-input,
+  $color-cardtext-input-border,
+  48%
+);
+$mobile-section-gutter-envelope: color.mix(
+  $color-envelope-recipient-input,
+  $color-envelope-recipient-input-border,
+  48%
+);
+$mobile-section-gutter-aroma: color.mix(
+  $color-aroma-input,
+  $color-aroma-input-border,
+  48%
+);
+
+/** Боковые полосы: padding у `*ViewWrap`, скругление остаётся у `*ViewContent`. */
+@mixin mobile-section-view-wrap-side-gutters {
+  box-sizing: border-box;
+  padding-inline: var(--mobile-section-inset);
+  width: 100%;
+}

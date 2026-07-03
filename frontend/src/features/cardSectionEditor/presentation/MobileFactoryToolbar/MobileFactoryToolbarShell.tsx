@@ -77,7 +77,8 @@ export const MobileFactoryToolbarShell: React.FC = () => {
   const showUpperContent = !hideUpperToolbar
   const showLowerRow = scenarioToolbar != null
   const isAromaSection = activeSection === 'aroma'
-  const showSectionUpperToolbar = showUpperContent && !isAromaSection
+  const showSectionUpperToolbar =
+    showUpperContent && !isAromaSection && !suppressMobileCalendarUpperRow
   const showShell =
     (showSectionUpperToolbar || showLowerRow || suppressMobileCalendarUpperRow) &&
     !(isAromaSection && !showLowerRow)
