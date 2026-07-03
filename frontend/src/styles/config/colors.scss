@@ -47,6 +47,9 @@ $color-preview-indicator-error: #f44336;
 
 $preview-indicator-cart-blocked-border-width: 2px;
 
+/** Кружок статуса на превью ячейки календаря (mobile cart/history) и в футере strip. */
+$mobile-calendar-preview-indicator-dot-size: 0.75rem;
+
 @mixin preview-indicator-cart-blocked-ring(
   $border-width: $preview-indicator-cart-blocked-border-width
 ) {

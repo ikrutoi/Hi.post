@@ -156,13 +156,6 @@ $list-panel-footer-band: calc(
     margin-inline: auto;
     pointer-events: auto;
   }
-
-  :global([data-shell-layout='mobile']) & {
-    :global([data-postcard-indicator]) > span {
-      width: 0.625rem;
-      height: 0.625rem;
-    }
-  }
 }
 
 .indicators {

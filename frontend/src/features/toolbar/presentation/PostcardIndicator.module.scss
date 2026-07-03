@@ -17,6 +17,12 @@
   margin: 0.25rem;
   border-radius: 50%;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
+
+  :global([data-shell-layout='mobile']) & {
+    width: $mobile-calendar-preview-indicator-dot-size;
+    height: $mobile-calendar-preview-indicator-dot-size;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.32);
+  }
 }
 
 /** Фильтр выключен — точка не показывается, но место под неё остаётся (без скачка ширины). */

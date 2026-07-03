@@ -364,8 +364,8 @@
     }
 
     .dot {
-      width: 0.625rem;
-      height: 0.625rem;
+      width: $mobile-calendar-preview-indicator-dot-size;
+      height: $mobile-calendar-preview-indicator-dot-size;
     }
   }
 
@@ -403,8 +403,8 @@
 
     .dot {
       flex-shrink: 0;
-      width: 0.625rem;
-      height: 0.625rem;
+      width: $mobile-calendar-preview-indicator-dot-size;
+      height: $mobile-calendar-preview-indicator-dot-size;
     }
   }
 }
