@@ -11,6 +11,32 @@ import {
   type CardPieSectionFlags,
   resolveAddressForRecipientId,
 } from './postcardCardPieViewModel'
+import { createInitialCardtextContent } from '@cardtext/domain/editor/editor.types'
+
+export const DEFAULT_MOBILE_PLAN_PIE_ID = 'default-plan-pie'
+
+export function emptyCardPieInnerData(): CardPieInnerData {
+  return {
+    cardphoto: {
+      previewUrl: null,
+      factoryDisplayUrl: null,
+      isComplete: false,
+      id: 'empty',
+    },
+    cardtext: createInitialCardtextContent(),
+    recipient: null,
+    recipientCount: 0,
+    recipientPreviewLines: [],
+    datePreviewLines: [],
+    senderBadgeShow: false,
+    senderDisplayName: null,
+    hasSenderAppliedData: false,
+    sender: null,
+    aroma: null,
+    date: null,
+    dates: [],
+  }
+}
 
 export function cardPieInnerFromEditorActiveData(
   active: ReturnType<typeof selectActiveCardFullData>,

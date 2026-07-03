@@ -12,8 +12,6 @@ type MobileCardPieGutterMinisProps = {
 
 export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
   ({ planPies, selectedPlanPieId, onSelectPlanPie }) => {
-    if (planPies.length === 0) return null
-
     return (
       <div className={styles.mobilePieGutterMiniList} aria-label="Card pie plan">
         {planPies.map(({ id, inner, sections }) => (

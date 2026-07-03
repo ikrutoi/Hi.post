@@ -4,11 +4,14 @@ import { selectActiveCardFullData } from '@features/cardPie/infrastructure/selec
 import {
   buildCardPieInnerDataForPlanEntry,
   cardPieInnerFromEditorActiveData,
+  DEFAULT_MOBILE_PLAN_PIE_ID,
+  emptyCardPieInnerData,
 } from '@features/cardPie/infrastructure/planEntryCardPieViewModel'
 import type {
   CardPieInnerData,
   CardPieSectionFlags,
 } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
+import { buildPieSectionFlagsFromInner } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import type { DispatchDate } from '@entities/date'
 import { useDispatchPlanListEntries } from '@date/application/hooks/useDispatchPlanListEntries'
 import {
@@ -28,6 +31,19 @@ export type MobilePlanCardPie = {
   inner: CardPieInnerData
   sections: CardPieSectionFlags
   dispatchDate: DispatchDate | null
+}
+
+function buildDefaultMobilePlanPie(
+  baseInner: CardPieInnerData,
+  envelopeComplete: boolean,
+): MobilePlanCardPie {
+  return {
+    id: DEFAULT_MOBILE_PLAN_PIE_ID,
+    dispatchBranchKey: null,
+    dispatchDate: null,
+    inner: baseInner,
+    sections: buildPieSectionFlagsFromInner(baseInner, envelopeComplete),
+  }
 }
 
 export function useMobilePlanCardPies() {
@@ -51,13 +67,13 @@ export function useMobilePlanCardPies() {
   )
 
   const planPies = useMemo((): MobilePlanCardPie[] => {
-    const baseInner = cardPieInnerFromEditorActiveData(activeEditorData)
-    if (baseInner == null) return []
-
+    const baseInner =
+      cardPieInnerFromEditorActiveData(activeEditorData) ??
+      emptyCardPieInnerData()
     const ctx = { envelopeRecipients, recipientEntries }
     const envelopeComplete = Boolean(envelopeRecord?.isComplete)
 
-    return entries
+    const mapped = entries
       .filter((entry) => entry.variant !== 'inactive')
       .map((entry) => ({
         id: entry.id,
@@ -69,6 +85,10 @@ export function useMobilePlanCardPies() {
           ctx,
         }),
       }))
+
+    if (mapped.length > 0) return mapped
+
+    return [buildDefaultMobilePlanPie(baseInner, envelopeComplete)]
   }, [
     activeEditorData,
     entries,
