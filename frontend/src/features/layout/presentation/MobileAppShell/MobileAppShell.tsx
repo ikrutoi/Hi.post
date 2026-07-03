@@ -211,11 +211,15 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         ? { localId: historyListSelectedLocalId, source: 'history' }
         : null
     }
-    if (notebookStripSection === 'cart' && cartListSelectedLocalId != null) {
-      return { localId: cartListSelectedLocalId, source: 'cart' }
+    if (notebookStripSection === 'cart') {
+      return cartListSelectedLocalId != null
+        ? { localId: cartListSelectedLocalId, source: 'cart' }
+        : null
     }
-    if (notebookStripSection === 'history' && historyListSelectedLocalId != null) {
-      return { localId: historyListSelectedLocalId, source: 'history' }
+    if (notebookStripSection === 'history') {
+      return historyListSelectedLocalId != null
+        ? { localId: historyListSelectedLocalId, source: 'history' }
+        : null
     }
     if (
       activePieSide === 'right' &&

@@ -155,6 +155,7 @@ export const buildNotebookSessionRestoreCommands = (
       setActiveSection('date'),
       setCartCalendarDatePickMode(false),
       setCartListStatusSegment('cart'),
+      setNotebookStripTab('cart'),
     ]
   }
   if (tab === 'history') {
@@ -162,6 +163,7 @@ export const buildNotebookSessionRestoreCommands = (
       setCartListPanelOpen(false),
       setHistoryListPanelOpen(true),
       setActiveSection('history'),
+      setNotebookStripTab('history'),
     ]
   }
   return []

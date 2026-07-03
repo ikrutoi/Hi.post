@@ -339,6 +339,14 @@ const App = () => {
      * а не по открытому списку — иначе закрытие списка при клике по сектору сбрасывает CardPie.
      */
     if (activePieSide === 'right') {
+      if (notebookStripTab === 'history') {
+        if (historyListSelectedLocalId != null) return historyListSelectedLocalId
+        return null
+      }
+      if (notebookStripTab === 'cart') {
+        if (listSelectedLocalId != null) return listSelectedLocalId
+        return null
+      }
       if (historyListSelectedLocalId != null) return historyListSelectedLocalId
       if (listSelectedLocalId != null) return listSelectedLocalId
     }
@@ -383,6 +391,14 @@ const App = () => {
       }
     }
     if (activePieSide === 'right') {
+      if (notebookStripTab === 'history') {
+        if (historyListSelectedLocalId != null) return 'history'
+        return null
+      }
+      if (notebookStripTab === 'cart') {
+        if (listSelectedLocalId != null) return 'cart'
+        return null
+      }
       if (historyListSelectedLocalId != null) return 'history'
       if (listSelectedLocalId != null) return 'cart'
     }
