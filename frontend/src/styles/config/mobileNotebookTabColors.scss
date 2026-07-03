@@ -12,6 +12,32 @@ $mobile-notebook-date-tab-bottom: color.adjust(
   $lightness: -6%
 );
 
+$mobile-notebook-date-tab-cardphoto: color.mix(
+  $color-cardphoto-input,
+  $color-cardphoto-input-border,
+  48%
+);
+$mobile-notebook-date-tab-cardtext: color.mix(
+  $color-cardtext-input,
+  $color-cardtext-input-border,
+  48%
+);
+$mobile-notebook-date-tab-envelope: color.mix(
+  $color-envelope-recipient-input,
+  $color-envelope-recipient-input-border,
+  48%
+);
+$mobile-notebook-date-tab-aroma: color.mix(
+  $color-aroma-input,
+  $color-aroma-input-border,
+  48%
+);
+$mobile-notebook-date-tab-date: color.mix(
+  $color-date-input,
+  $color-date-input-border,
+  48%
+);
+
 $mobile-notebook-cart-tab-top: color.adjust(
   color.mix($color-cart-list-surface, $color-preview-indicator-cart, 22%),
   $saturation: 14%,
@@ -37,9 +63,12 @@ $mobile-notebook-history-tab-blue: color.mix(
 /** Вертикальные полосы у секции «Дата» — как закладки в мобильном хедере. */
 @mixin mobile-notebook-date-tab-gutter-gradient {
   background: linear-gradient(
-    0deg,
-    $mobile-notebook-date-tab-top 0%,
-    $mobile-notebook-date-tab-bottom 100%
+    to bottom,
+    $mobile-notebook-date-tab-cardphoto 0 20%,
+    $mobile-notebook-date-tab-cardtext 20% 40%,
+    $mobile-notebook-date-tab-envelope 40% 60%,
+    $mobile-notebook-date-tab-aroma 60% 80%,
+    $mobile-notebook-date-tab-date 80% 100%
   );
 }
 

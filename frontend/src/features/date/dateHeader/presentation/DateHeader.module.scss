@@ -2,6 +2,7 @@
 @use '@styles/config/colors' as *;
 
 $date-header-history-pie-alpha: 0.26;
+$date-header-date-pie-alpha: 0.34;
 
 .header {
   display: grid;
@@ -40,8 +41,41 @@ $date-header-history-pie-alpha: 0.26;
 }
 
 .dateSectionModeDispatch {
-  border-color: $color-date-input-border;
-  background-color: $color-date-input;
+  position: relative;
+  background-color: transparent;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: 50%;
+    background: conic-gradient(
+      from -90deg at 50% 50%,
+      color.change($color-pie-cardphoto, $alpha: $date-header-date-pie-alpha) 0deg
+        72deg,
+      color.change($color-pie-cardtext, $alpha: $date-header-date-pie-alpha) 72deg
+        144deg,
+      color.change(
+          color.mix(
+            $color-envelope-recipient-input,
+            $color-envelope-recipient-input-border,
+            48%
+          ),
+          $alpha: $date-header-date-pie-alpha
+        )
+        144deg 216deg,
+      color.change($color-pie-aroma, $alpha: $date-header-date-pie-alpha) 216deg
+        288deg,
+      color.change($color-pie-date, $alpha: $date-header-date-pie-alpha) 288deg
+        360deg
+    );
+  }
+
+  svg {
+    position: relative;
+    z-index: 1;
+  }
 }
 
 .dateSectionModeCart {
