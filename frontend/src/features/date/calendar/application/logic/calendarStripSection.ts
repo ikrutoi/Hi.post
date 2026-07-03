@@ -15,6 +15,13 @@ export function isCartCalendarStrip(
   return activeSection === 'date' && notebookStripTab === 'cart'
 }
 
+export function isDateCalendarStrip(
+  activeSection: CardSection | null | undefined,
+  notebookStripTab: DateStripSection,
+): boolean {
+  return activeSection === 'date' && notebookStripTab === 'date'
+}
+
 export function resolveCardPreviewSection(
   activeSection: CardSection | null | undefined,
   notebookStripTab: DateStripSection,

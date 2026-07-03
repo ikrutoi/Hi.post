@@ -12,6 +12,7 @@ import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/fa
 import { shouldAdjacentSessionPlaceholderNavSwap } from './adjacentSessionPlaceholderNavSwap'
 import {
   isCartCalendarStrip,
+  isDateCalendarStrip,
   isHistoryCalendarStrip,
   resolveCardPreviewSection,
 } from './calendarStripSection'
@@ -61,6 +62,7 @@ export const buildMonthCells = ({
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
   const cartCalendarStrip = isCartCalendarStrip(activeSection, notebookStripTab)
+  const dateCalendarStrip = isDateCalendarStrip(activeSection, notebookStripTab)
   const historyCalendarStrip = isHistoryCalendarStrip(
     activeSection,
     notebookStripTab,
@@ -187,7 +189,7 @@ export const buildMonthCells = ({
         cartDatePickWaveStrong={cartDatePickWaveStrong}
         cartDatePickWaveFading={cartDatePickWaveFading}
         dateStripEnabledDayBorder={dateStripEnabledDayBorder}
-        suppressDispatchSelectionStyle={cartCalendarStrip}
+        suppressDispatchSelectionStyle={cartCalendarStrip || dateCalendarStrip}
         rightArchiveCardPieDay={isRightArchiveCardPieDay}
       >
         {dayData && (

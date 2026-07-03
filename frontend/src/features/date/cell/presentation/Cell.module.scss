@@ -69,6 +69,11 @@ $cart-date-edit-wave-overlay: color.change($cart-date-edit-tint, $alpha: 0.48);
     cursor: default;
   }
 
+  /** Полоса «Дата»: без dispatch-подсветки, но с обычным pointer на текущем месяце. */
+  &.dispatchSelectionSuppressed.current:hover:not(.disabled) {
+    cursor: pointer;
+  }
+
   &.cart.cartPreviewPointer {
     cursor: pointer;
   }

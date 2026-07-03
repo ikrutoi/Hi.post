@@ -91,7 +91,10 @@ export const Cell: React.FC<CellProps> = ({
 
   const dynamicClass = clsx(
     styles.cell,
-    suppressDispatchSelectionStyle && styles.cart,
+    suppressDispatchSelectionStyle &&
+      (dateStripEnabledDayBorder
+        ? styles.dispatchSelectionSuppressed
+        : styles.cart),
     historyEmptyNoPreview && styles.historyEmptyNoPreview,
     adjacentMonthPointer && styles.adjacentMonthPointer,
     cartPreviewPointer && styles.cartPreviewPointer,

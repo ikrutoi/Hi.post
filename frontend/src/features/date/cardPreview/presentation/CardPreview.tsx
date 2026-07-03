@@ -19,6 +19,9 @@ import { postcardLocalIdFromCalendarCardItem } from '@date/calendar/infrastructu
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { calendarDayHasCards } from '@date/cell/domain/calendarDayContent'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
+import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
+import { isDateCalendarStrip } from '@date/calendar/application/logic/calendarStripSection'
+import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import { applyRightListArchiveToolbarVisuals } from '@toolbar/application/syncRightListArchiveToolbarVisuals'
 import { CardPreviewItem } from './CardPreviewItem'
 import styles from './CardPreview.module.scss'
@@ -98,6 +101,12 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   const cartListSelectedLocalId = useAppSelector(selectCartListSelectedLocalId)
   const cartItems = useAppSelector(selectCartItems)
   const isMobileLayout = useAppSelector(selectIsMobileLayout)
+  const notebookStripTab = useAppSelector(selectNotebookStripTab)
+  const { activeSection } = useSectionMenuFacade()
+  const dateCalendarStrip = isDateCalendarStrip(activeSection, notebookStripTab)
+  /** Полоса «Дата»: выбор dispatch-даты без подсветки ячейки и тени CardPie. */
+  const showDispatchDateSelectionHighlight =
+    isSelectedDate && !dateCalendarStrip
   const dispatch = useAppDispatch()
   const { processed, cart, ready, sent, delivered, error } = data
 
@@ -258,7 +267,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
     ? cartThumbnailForSelectedPostcard != null
     : isHistory
       ? historyThumbnailForSelectedPostcard != null
-      : isSelectedDate &&
+      : showDispatchDateSelectionHighlight &&
         (primaryItemForDisplay != null || showEmptySessionPlaceholder)
 
   /** Полоса «Корзина»: пустая disabled-ячейка — серый фон без белой вспышки после смены даты. */
@@ -311,7 +320,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
             previewAllowBlob={primaryItemForDisplay.previewAllowBlob}
             cardId={primaryItemForDisplay.cardId}
             isHistory={isHistoryLike}
-            isSelectedDate={isSelectedDate}
+            isSelectedDate={showDispatchDateSelectionHighlight}
             isCartDateDisabledPreview={isCartCalendar && isDisabledDate}
             isAdjacentMonthEdge={isAdjacentMonthEdge}
             isActiveCardPiePostcard={isActiveCardPiePostcard}
