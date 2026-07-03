@@ -58,6 +58,11 @@
   filter: none;
 }
 
+.previewItemActiveCardPie {
+  z-index: 1;
+  @include calendar-active-cardpie-preview-shadow;
+}
+
 .previewItemSelected {
   opacity: 1;
   filter: none;

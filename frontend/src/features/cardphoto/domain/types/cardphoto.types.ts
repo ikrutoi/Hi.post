@@ -114,4 +114,6 @@ export interface PreviewItemForCalendar {
    * cart, ready, sent, delivered, error; `cartBlocked` — в слоте cart, если нет обычной корзины).
    */
   historyIndicatorStatuses?: readonly PostcardStatus[]
+  /** Превью совпадает с открыткой в центральном CardPie — усиленная тень. */
+  isActiveCardPiePostcard?: boolean
 }

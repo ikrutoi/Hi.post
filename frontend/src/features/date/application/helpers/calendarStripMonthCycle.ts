@@ -55,6 +55,16 @@ export function calendarMonthAtStripCycleIndex(
   return { year: date.year, month: date.month }
 }
 
+export function stripPostcardAtCycleIndex<T extends { date: DispatchDate }>(
+  items: readonly T[],
+  cycleIndex: number,
+): T | null {
+  if (items.length === 0) return null
+  const safeIndex =
+    ((cycleIndex % items.length) + items.length) % items.length
+  return items[safeIndex] ?? null
+}
+
 export function nextStripMonthCycleIndex(
   cycleIndex: number,
   itemCount: number,
@@ -62,3 +72,15 @@ export function nextStripMonthCycleIndex(
   if (itemCount <= 0) return 0
   return (cycleIndex + 1) % itemCount
 }
+
+/** Ключ состава списка (порядок localId не влияет — только набор открыток). */
+export function stripPostcardsLocalIdsKey(
+  items: readonly { localId: number }[],
+): string {
+  return items
+    .map((item) => item.localId)
+    .sort((a, b) => a - b)
+    .join('|')
+}
+
+export type CalendarStripKind = 'cart' | 'history'

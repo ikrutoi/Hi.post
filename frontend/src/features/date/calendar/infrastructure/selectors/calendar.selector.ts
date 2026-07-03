@@ -18,6 +18,9 @@ export const selectLastCalendarViewDate = (
   state: RootState,
 ): CalendarViewDate => state.calendar.lastViewedCalendarDate
 
+export const selectLastStripMonthCycleStep = (state: RootState) =>
+  state.calendar.lastStripMonthCycleStep
+
 export const computeNotebookStripTabFromState = (
   state: RootState,
 ): DateStripSection => {

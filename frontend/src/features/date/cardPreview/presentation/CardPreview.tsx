@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo } from 'react'
+import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { store } from '@app/state/store'
 import { setCartListSelectedLocalId } from '@cart/infrastructure/state'
@@ -253,6 +254,13 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
     !primaryItemForDisplay &&
     !photoPreview?.previewUrl
 
+  const isActiveCardPiePostcard = isCartCalendar
+    ? cartThumbnailForSelectedPostcard != null
+    : isHistory
+      ? historyThumbnailForSelectedPostcard != null
+      : isSelectedDate &&
+        (primaryItemForDisplay != null || showEmptySessionPlaceholder)
+
   /** Полоса «Корзина»: пустая disabled-ячейка — серый фон без белой вспышки после смены даты. */
   const showDisabledCartEmptyFill =
     isCartCalendar &&
@@ -289,7 +297,12 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   return (
     <div className={styles.cardPreviewContainer}>
       {primaryItemForDisplay ? (
-        <div className={styles.previewWrapper}>
+        <div
+          className={clsx(
+            styles.previewWrapper,
+            isActiveCardPiePostcard && styles.previewWrapperActiveCardPie,
+          )}
+        >
           <CardPreviewItem
             key={primaryItemForDisplay.rowKey}
             item={primaryItemForDisplay}
@@ -301,6 +314,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
             isSelectedDate={isSelectedDate}
             isCartDateDisabledPreview={isCartCalendar && isDisabledDate}
             isAdjacentMonthEdge={isAdjacentMonthEdge}
+            isActiveCardPiePostcard={isActiveCardPiePostcard}
             historyIndicatorStatuses={
               isHistory && historyStatusIndicatorStack.length > 0
                 ? historyStatusIndicatorStack
@@ -319,9 +333,17 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
           ) : null}
         </div>
       ) : showEmptySessionPlaceholder ? (
-        <div className={styles.previewWrapper}>
+        <div
+          className={clsx(
+            styles.previewWrapper,
+            isActiveCardPiePostcard && styles.previewWrapperActiveCardPie,
+          )}
+        >
           <div
-            className={styles.miniCardphotoPlaceholder}
+            className={clsx(
+              styles.miniCardphotoPlaceholder,
+              isActiveCardPiePostcard && styles.miniCardphotoPlaceholderActiveCardPie,
+            )}
             aria-hidden
             data-calendar-session-placeholder={
               adjacentSessionPlaceholderNavSwap ? 'true' : undefined

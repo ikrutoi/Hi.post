@@ -24,6 +24,11 @@
   }
 }
 
+.miniCardphotoPlaceholderActiveCardPie {
+  z-index: 1;
+  @include calendar-active-cardpie-preview-shadow;
+}
+
 .cardPreviewContainer {
   position: absolute;
   inset: 0;
@@ -53,6 +58,11 @@
     border: solid 1px $color-section-dark;
     background-color: $color-section-dark;
   }
+}
+
+.previewWrapperActiveCardPie {
+  overflow: visible;
+  z-index: 2;
 }
 
 /** Счётчик лишних открыток на день — только оверлей, без второго ряда под превью. */

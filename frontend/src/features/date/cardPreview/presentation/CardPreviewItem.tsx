@@ -22,6 +22,7 @@ export const CardPreviewItem: React.FC<
   isAdjacentMonthEdge = false,
   hasCartPostcardsOnDay = false,
   historyIndicatorStatuses,
+  isActiveCardPiePostcard = false,
   onArchivePostcardClick,
 }) => {
   const { openPreview } = useCardFacade()
@@ -79,6 +80,7 @@ export const CardPreviewItem: React.FC<
     <div
       className={clsx(
         styles.previewItem,
+        isActiveCardPiePostcard && styles.previewItemActiveCardPie,
         isHistory
           ? styles.previewItemHistory
           : isSelectedDate

@@ -50,6 +50,19 @@ $preview-indicator-cart-blocked-border-width: 2px;
 /** Кружок статуса на превью ячейки календаря (mobile cart/history) и в футере strip. */
 $mobile-calendar-preview-indicator-dot-size: 0.75rem;
 
+/** Превью открытки в ячейке календаря, совпадающей с центральным CardPie. */
+@mixin calendar-active-cardpie-preview-shadow {
+  box-shadow:
+    0 0 0 1.5px rgba($color-date-multi, 0.36),
+    0 0 0 3px rgba($color-date-multi, 0.11);
+
+  :global([data-shell-layout='mobile']) & {
+    box-shadow:
+      0 0 0 2px rgba($color-date-multi, 0.38),
+      0 0 0 3.5px rgba($color-date-multi, 0.12);
+  }
+}
+
 @mixin preview-indicator-cart-blocked-ring(
   $border-width: $preview-indicator-cart-blocked-border-width
 ) {

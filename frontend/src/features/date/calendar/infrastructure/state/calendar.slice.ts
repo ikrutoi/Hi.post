@@ -12,6 +12,10 @@ import {
 import type { DateStripSection } from '@date/presentation/dateStripSection.types'
 import type { PanelDensity2Size } from '@shared/ui/icons'
 import type { HistoryListSortMode } from '@date/application/helpers/historyListSort'
+import {
+  nextStripMonthCycleIndex,
+  type CalendarStripKind,
+} from '@date/application/helpers/calendarStripMonthCycle'
 
 const CALENDAR_STRIP_TAB_SESSION_KEY = 'hi.post.calendarStripTab'
 
@@ -81,6 +85,23 @@ type CalendarState = {
    * Увеличивается при клике по закладке «Дата» на полосе календаря — App сбрасывает peek-ввод в центре.
    */
   notebookDateTabPeekClearTick: number
+  /** Индексы цикла футера cart/history strip по статусу. */
+  stripMonthCycleIndices: {
+    cart: Record<'cart' | 'cartBlocked', number>
+    history: Record<'cart' | 'ready' | 'sent' | 'delivered' | 'error', number>
+  }
+  stripMonthCycleKeys: {
+    cart: Partial<Record<'cart' | 'cartBlocked', string>>
+    history: Partial<
+      Record<'cart' | 'ready' | 'sent' | 'delivered' | 'error', string>
+    >
+  }
+  /** Индекс, применённый последним `stepStripMonthCycle` (для UI в том же тике). */
+  lastStripMonthCycleStep: {
+    strip: CalendarStripKind
+    status: string
+    index: number
+  } | null
 }
 
 const now = getCurrentDate()
@@ -121,6 +142,12 @@ const initialState: CalendarState = {
     error: true,
   },
   notebookDateTabPeekClearTick: 0,
+  stripMonthCycleIndices: {
+    cart: { cart: 0, cartBlocked: 0 },
+    history: { cart: 0, ready: 0, sent: 0, delivered: 0, error: 0 },
+  },
+  stripMonthCycleKeys: { cart: {}, history: {} },
+  lastStripMonthCycleStep: null,
 }
 
 const calendarSlice = createSlice({
@@ -275,6 +302,51 @@ const calendarSlice = createSlice({
     bumpNotebookDateTabPeekClearTick(state) {
       state.notebookDateTabPeekClearTick += 1
     },
+
+    stepStripMonthCycle(
+      state,
+      action: PayloadAction<{
+        strip: CalendarStripKind
+        status: string
+        localIdsKey: string
+        itemCount: number
+      }>,
+    ) {
+      const { strip, status, localIdsKey, itemCount } = action.payload
+
+      if (state.stripMonthCycleIndices == null) {
+        state.stripMonthCycleIndices = {
+          cart: { cart: 0, cartBlocked: 0 },
+          history: { cart: 0, ready: 0, sent: 0, delivered: 0, error: 0 },
+        }
+      }
+      if (state.stripMonthCycleKeys == null) {
+        state.stripMonthCycleKeys = { cart: {}, history: {} }
+      }
+
+      const keys = state.stripMonthCycleKeys[strip] as Record<
+        string,
+        string | undefined
+      >
+      const indices = state.stripMonthCycleIndices[strip] as Record<
+        string,
+        number
+      >
+
+      if (keys[status] !== localIdsKey) {
+        keys[status] = localIdsKey
+        indices[status] = 0
+      }
+
+      if (itemCount <= 0) {
+        state.lastStripMonthCycleStep = null
+        return
+      }
+
+      const index = indices[status] ?? 0
+      state.lastStripMonthCycleStep = { strip, status, index }
+      indices[status] = nextStripMonthCycleIndex(index, itemCount)
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(setCartListPanelOpen, (state, action) => {
@@ -308,5 +380,6 @@ export const {
   setCartCalendarDatePickMode,
   setCartCalendarDatePickLocalId,
   bumpNotebookDateTabPeekClearTick,
+  stepStripMonthCycle,
 } = calendarSlice.actions
 export default calendarSlice.reducer
