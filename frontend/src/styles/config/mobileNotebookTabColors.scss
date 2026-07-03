@@ -72,6 +72,10 @@ $mobile-notebook-history-tab-blue: color.mix(
   );
 }
 
+@mixin mobile-notebook-date-tab-gutter-solid {
+  background-color: $mobile-notebook-date-tab-date;
+}
+
 @mixin mobile-notebook-cart-tab-gutter-gradient {
   background: linear-gradient(
     0deg,

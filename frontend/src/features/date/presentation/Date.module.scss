@@ -44,7 +44,7 @@ $mobile-date-calendar-chrome-gap: 0.125rem;
 
     &[data-mobile-date-strip='date'] .dateViewWrap {
       @include sectionGutter.mobile-section-view-wrap-side-gutters;
-      @include notebookTab.mobile-notebook-date-tab-gutter-gradient;
+      @include notebookTab.mobile-notebook-date-tab-gutter-solid;
     }
 
     &[data-mobile-date-strip='cart'] .dateViewWrap {
