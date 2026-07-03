@@ -345,6 +345,10 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   scrollbar-width: none;
   pointer-events: auto;
   box-sizing: border-box;
+  border: 1px solid $color-section-light;
+  border-radius: var(--mobile-pie-gutter-mini-radius);
+  padding: 1px;
+  background-color: color.mix(#fff, $color-app-inner, 45%);
 
   &::-webkit-scrollbar {
     display: none;
