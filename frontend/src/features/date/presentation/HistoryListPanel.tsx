@@ -53,6 +53,10 @@ type Props = {
   hasUnderlyingHistoryEntries?: boolean
   /** Число открыток по статусу (до фильтра) — для бейджей в легенде. */
   legendStatusCounts?: Record<PostcardStatus, number>
+  /** Клик по иконке статуса переключает месяц календаря (футер cart/history). */
+  calendarHistoryStripLegend?: boolean
+  calendarFooterAlwaysEnabled?: boolean
+  calendarCartHistoryFooter?: boolean
   /** Мобильный список: иконка «Дата» вместо истории. */
   leadIconKeyOverride?: IconKey
   // section: 'date' | 'history'
@@ -104,6 +108,9 @@ export const HistoryListPanel: React.FC<Props> = ({
   onSelectEntry,
   hasUnderlyingHistoryEntries,
   legendStatusCounts,
+  calendarHistoryStripLegend = false,
+  calendarFooterAlwaysEnabled = false,
+  calendarCartHistoryFooter = false,
   leadIconKeyOverride,
   // section,
 }) => {
@@ -183,6 +190,9 @@ export const HistoryListPanel: React.FC<Props> = ({
             spot="historyList"
             isHistoryEmpty={legendTreatAsEmpty}
             statusCounts={legendStatusCounts}
+            calendarHistoryStripLegend={calendarHistoryStripLegend}
+            calendarFooterAlwaysEnabled={calendarFooterAlwaysEnabled}
+            calendarCartHistoryFooter={calendarCartHistoryFooter}
           />
         </div>
       </div>

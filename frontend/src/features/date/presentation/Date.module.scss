@@ -329,6 +329,8 @@
     min-height: 0;
     align-items: center;
     align-self: stretch;
+    position: relative;
+    z-index: 2;
   }
 
   &Multi {

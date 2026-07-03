@@ -45,8 +45,10 @@ import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/p
 import { MobileInlineToolbarRow } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import { MobileDateCalendarToolbarSlider } from '@date/dateHeader/presentation/MobileDateCalendarToolbarSlider'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
-import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
-import { computeCartLegendStatusCounts, computeLegendStatusCountsFromCalendarMap } from '@date/application/helpers/legendStatusCounts'
+import {
+  computeCartLegendStatusCounts,
+  computeHistoryLegendStatusCounts,
+} from '@date/application/helpers/legendStatusCounts'
 import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
 
 const DateSectionShell: React.FC<{
@@ -117,10 +119,9 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
   const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
   const isMobileLayout = useAppSelector(selectIsMobileLayout)
-  const cardsByDateMap = useAppSelector(selectCardsByDateMap)
   const { legendStatusCounts, historyUnderlyingPostcardCount } = useMemo(
-    () => computeLegendStatusCountsFromCalendarMap(cardsByDateMap),
-    [cardsByDateMap],
+    () => computeHistoryLegendStatusCounts(cartItems),
+    [cartItems],
   )
   const { legendStatusCounts: cartLegendStatusCounts, cartUnderlyingPostcardCount } =
     useMemo(() => computeCartLegendStatusCounts(cartItems), [cartItems])
@@ -356,6 +357,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
                 section === 'date' || section === 'cart'
               }
               calendarCartStripBlockedLegend={section === 'cart'}
+              calendarHistoryStripLegend={section === 'history'}
               calendarCartHistoryFooter={
                 section === 'cart' || section === 'history'
               }

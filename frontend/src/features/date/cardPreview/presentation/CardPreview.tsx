@@ -128,13 +128,13 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
         ]
       : pipelineCards
   /**
-   * Бейдж «×N»: в «Истории» / полосе корзины — все карточки дня (+ processed).
+   * Бейдж «×N»: в «Истории» / полосе корзины — только открытки из pipeline (без сборки).
    * В «Дата» не считаем ни корзину, ни конвейер `ready`…`error` (только ветки получателя / см. ниже).
    */
   const totalOnDayForBadge = isCartCalendar
     ? pipelineCount
-    : isHistoryLike
-      ? pipelineCount + (processed ? 1 : 0)
+    : isHistory
+      ? pipelineCount
       : processed
         ? 1
         : 0
@@ -185,7 +185,6 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
           ? historyThumbnailForSelectedPostcard ??
             firstPipelineWithPreview ??
             firstPipeline ??
-            processed ??
             null
           : workingSlotForSelectedDay ??
             firstPipelineWithPreview ??

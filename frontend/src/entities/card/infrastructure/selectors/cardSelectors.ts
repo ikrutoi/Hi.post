@@ -19,6 +19,8 @@ import {
 import { DispatchDate } from '@entities/date'
 import { CardSection } from '@shared/config/constants'
 import { selectCartItems } from '@cart/infrastructure/selectors'
+import { isHistoryCalendarStrip } from '@date/calendar/application/logic/calendarStripSection'
+import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
 import type { PostcardHydrated } from '@entities/postcard'
 import { cardListPreviewUrlFromCard } from '@entities/card/domain/helpers'
 
@@ -95,6 +97,7 @@ export const selectCardsByDateMap = createSelector(
     selectCardphotoPreview,
     selectMergedDispatchDates,
     (state: RootState) => state.sectionEditorMenu.activeSection,
+    selectNotebookStripTab,
   ],
   (
     allCards: Card[],
@@ -102,9 +105,13 @@ export const selectCardsByDateMap = createSelector(
     photoPreview,
     activeDates,
     editorMenuActiveSection,
+    notebookStripTab,
   ) => {
     const map: Record<string, CardCalendarIndex> = {}
-    const showOnlyPersistedPostcards = editorMenuActiveSection === 'history'
+    const showOnlyPersistedPostcards = isHistoryCalendarStrip(
+      editorMenuActiveSection,
+      notebookStripTab,
+    )
 
     const isActiveEditorDate = (d: DispatchDate) =>
       activeDates.some((a) => sameDispatchDateKey(a, d))

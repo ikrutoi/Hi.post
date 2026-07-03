@@ -25,6 +25,32 @@ export function computeCartLegendStatusCounts(
   return { legendStatusCounts, cartUnderlyingPostcardCount }
 }
 
+/** История: счётчики из `cartItems` — тот же источник, что у цикла месяцев в футере. */
+export function computeHistoryLegendStatusCounts(
+  cartItems: Pick<PostcardHydrated, 'status'>[],
+): {
+  legendStatusCounts: LegendStatusCounts
+  historyUnderlyingPostcardCount: number
+} {
+  const legendStatusCounts: LegendStatusCounts = {
+    cart: 0,
+    cartBlocked: 0,
+    ready: 0,
+    sent: 0,
+    delivered: 0,
+    error: 0,
+  }
+  let historyUnderlyingPostcardCount = 0
+
+  cartItems.forEach((item) => {
+    if (item.status === 'cartBlocked') return
+    legendStatusCounts[item.status] += 1
+    historyUnderlyingPostcardCount += 1
+  })
+
+  return { legendStatusCounts, historyUnderlyingPostcardCount }
+}
+
 export function computeLegendStatusCountsFromCalendarMap(
   cardsByDateMap: Record<string, CardCalendarIndex>,
 ): { legendStatusCounts: LegendStatusCounts; historyUnderlyingPostcardCount: number } {
