@@ -50,6 +50,7 @@ import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentat
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { MobileCardPieGutterMinis } from './MobileCardPieGutterMinis'
 import { MobileCartListSlot } from './MobileCartListSlot'
+import listSlotStyles from './MobileCartListSlot.module.scss'
 import { MobileHistoryListSlot } from './MobileHistoryListSlot'
 import { useMobilePlanCardPies } from './useMobilePlanCardPies'
 import { CardPieLeftSlot } from '@features/cardPie/presentation/CardPieLeftSlot'
@@ -136,13 +137,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     }
   }, [activeSection, cardPieListPanelOpen, dispatch])
 
-  const mobileCentralListPanel = useMemo((): 'cardPie' | 'cart' | 'history' | null => {
-    if (showMobileCardPieListInFactory) return 'cardPie'
-    if (cartListPanelOpen) return 'cart'
-    if (historyListPanelOpen) return 'history'
-    return null
-  }, [showMobileCardPieListInFactory, cartListPanelOpen, historyListPanelOpen])
-
   /** Кнопка корзины/истории у CardPie: список открыт — только archive pie или пусто. */
   const mobileListArchiveSlotActive =
     cartListPanelOpen || historyListPanelOpen
@@ -185,10 +179,33 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     rightPieAromaPeekNoToolbar ||
     rightPieDatePeekNoToolbar
 
-  /** Peek секции: список корзины/истории не перекрывает фабрику, кнопка списка остаётся включённой. */
-  const mobileFactoryListOverlayKey = mobileFactoryChromePeek
-    ? null
-    : mobileCentralListPanel
+  type MobileFactoryListOverlayKey =
+    | 'cardPie'
+    | 'cart'
+    | 'history'
+    | 'cardphoto'
+    | 'cardtext'
+    | 'address'
+
+  /** Peek секции: список не перекрывает фабрику, кнопка списка остаётся включённой. */
+  const mobileFactoryListOverlayKey = useMemo((): MobileFactoryListOverlayKey | null => {
+    if (mobileFactoryChromePeek) return null
+    if (showMobileCardPieListInFactory) return 'cardPie'
+    if (cartListPanelOpen) return 'cart'
+    if (historyListPanelOpen) return 'history'
+    if (cardphotoListPanelOpen) return 'cardphoto'
+    if (cardtextListPanelOpen) return 'cardtext'
+    if (addressListPanelOpen) return 'address'
+    return null
+  }, [
+    mobileFactoryChromePeek,
+    showMobileCardPieListInFactory,
+    cartListPanelOpen,
+    historyListPanelOpen,
+    cardphotoListPanelOpen,
+    cardtextListPanelOpen,
+    addressListPanelOpen,
+  ])
 
   const canCyclePlanPies = planPies.length > 0
   /**
@@ -501,9 +518,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       data-envelope-address-create={
         envelopeAddressCreateMode ? 'true' : undefined
       }
-      data-cardphoto-list-open={cardphotoListPanelOpen ? 'true' : undefined}
-      data-cardtext-list-open={cardtextListPanelOpen ? 'true' : undefined}
-      data-address-list-open={addressListPanelOpen ? 'true' : undefined}
       onClick={onAppClick}
     >
       <MarkStampYearDevProvider>
@@ -714,6 +728,33 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                       />
                     </div>
                   ) : null}
+                  {mobileFactoryListOverlayKey === 'cardphoto' ? (
+                    <div className={styles.mobileFormListOverlay}>
+                      <div className={listSlotStyles.root}>
+                        <div className={listSlotStyles.panelWrap}>
+                          <CardphotoListMobileSlot />
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+                  {mobileFactoryListOverlayKey === 'cardtext' ? (
+                    <div className={styles.mobileFormListOverlay}>
+                      <div className={listSlotStyles.root}>
+                        <div className={listSlotStyles.panelWrap}>
+                          <CardtextListMobileSlot />
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+                  {mobileFactoryListOverlayKey === 'address' ? (
+                    <div className={styles.mobileFormListOverlay}>
+                      <div className={listSlotStyles.root}>
+                        <div className={listSlotStyles.panelWrap}>
+                          <AddressListMobileSlot />
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
               </section>
             </div>
@@ -723,21 +764,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         {userLoginPanelOpen ? (
           <div className={styles.mobileUserPanel}>
             <UserLoginRightSlot />
-          </div>
-        ) : null}
-        {cardphotoListPanelOpen ? (
-          <div className={styles.mobileCardphotoListPanel}>
-            <CardphotoListMobileSlot />
-          </div>
-        ) : null}
-        {cardtextListPanelOpen ? (
-          <div className={styles.mobileCardtextListPanel}>
-            <CardtextListMobileSlot />
-          </div>
-        ) : null}
-        {addressListPanelOpen ? (
-          <div className={styles.mobileAddressListPanel}>
-            <AddressListMobileSlot />
           </div>
         ) : null}
       </MarkStampYearDevProvider>

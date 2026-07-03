@@ -71,14 +71,6 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   overflow: hidden;
 }
 
-.mobileShell[data-cardphoto-list-open='true'],
-.mobileShell[data-cardtext-list-open='true'],
-.mobileShell[data-address-list-open='true'] {
-  .mobilePieSection {
-    display: none;
-  }
-}
-
 .mobileShell[data-envelope-address-create='true'] {
   .mobileHeader,
   .mobileHeaderTabsOverlay {
@@ -1118,28 +1110,3 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   }
 }
 
-.mobileCardphotoListPanel,
-.mobileCardtextListPanel,
-.mobileAddressListPanel {
-  position: fixed;
-  top: var(--mobile-app-header-height);
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 160;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  box-sizing: border-box;
-  background-color: $color-app-inner;
-  padding: 0 var(--mobile-section-inset) var(--mobile-form-padding-bottom);
-  pointer-events: none;
-
-  > * {
-    flex: 1 1 auto;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    pointer-events: auto;
-  }
-}
