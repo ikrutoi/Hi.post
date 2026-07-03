@@ -99,9 +99,23 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   const notebookTabsOuter = useSectionEditorNotebookTabsOuter()
   const {
     rightPieDatePeekNoToolbar,
+    rightPieCardphotoPeekNoToolbar,
+    rightPieCardtextPeekNoToolbar,
+    rightPieEnvelopePeekNoToolbar,
+    rightPieAromaPeekNoToolbar,
     listRowInner,
     listRowLocalId,
   } = useRightListArchiveMini()
+  const isMobileFactoryChromePeek =
+    rightPieDatePeekNoToolbar ||
+    rightPieCardphotoPeekNoToolbar ||
+    rightPieCardtextPeekNoToolbar ||
+    rightPieEnvelopePeekNoToolbar ||
+    rightPieAromaPeekNoToolbar
+  /** Peek фабрики из CardPie: боковые полосы секции «Дата», не strip корзины/истории. */
+  const gutterStripSection: DateStripSection = isMobileFactoryChromePeek
+    ? 'date'
+    : section
   const currentDate = useMemo(() => getCurrentDate(), [])
   const cartItems = useAppSelector(selectCartItems)
   const { flashParts, triggerFlash } = useFlashEffect()
@@ -280,7 +294,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
           listRowLocalId != null ? `peek-date-${listRowLocalId}` : 'peek-date'
         }
         showMobileSliderToolbar={false}
-        stripSection={section}
+        stripSection={gutterStripSection}
       >
         {notebookTabsOuter ? (
           peekBody
@@ -399,7 +413,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   )
 
   return (
-    <DateSectionShell showMobileSliderToolbar={showMobileSliderToolbar} stripSection={section}>
+    <DateSectionShell showMobileSliderToolbar={showMobileSliderToolbar} stripSection={gutterStripSection}>
       {notebookTabsOuter ? (
         calendarBody
       ) : (
