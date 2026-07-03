@@ -6,7 +6,11 @@ import { getToolbarIcon } from '@shared/utils/icons'
 import styles from './CardPreviewItem.module.scss'
 import { PreviewItemForCalendar } from '@cardphoto/domain/types'
 
-export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
+export const CardPreviewItem: React.FC<
+  PreviewItemForCalendar & {
+    onArchivePostcardClick?: () => void
+  }
+> = ({
   item,
   status,
   isProcessed,
@@ -18,6 +22,7 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
   isAdjacentMonthEdge = false,
   hasCartPostcardsOnDay = false,
   historyIndicatorStatuses,
+  onArchivePostcardClick,
 }) => {
   const { openPreview } = useCardFacade()
   const { displayUrl, onPreviewImgError } = useListCardPreviewUrl(
@@ -29,6 +34,10 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
   const handlePreviewClick = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
+    if (onArchivePostcardClick) {
+      onArchivePostcardClick()
+      return
+    }
     if (cardId) {
       openPreview(cardId)
     }

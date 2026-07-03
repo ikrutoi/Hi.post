@@ -144,6 +144,9 @@ export const Cell: React.FC<CellProps> = ({
   return (
     <div
       className={dynamicClass}
+      data-right-archive-card-pie-day={
+        rightArchiveCardPieDay ? 'true' : undefined
+      }
       onClickCapture={
         isAdjacentNavCell ? handleAdjacentCellClickCapture : handleClickCapture
       }

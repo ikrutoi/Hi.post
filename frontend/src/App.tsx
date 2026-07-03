@@ -800,7 +800,9 @@ const App = () => {
     const mobileListArchivePreviewActive =
       isMobileLayout &&
       ((listPanelOpen && listSelectedLocalId != null) ||
-        (historyListPanelOpen && historyListSelectedLocalId != null))
+        (historyListPanelOpen && historyListSelectedLocalId != null) ||
+        (notebookStripTab === 'cart' && listSelectedLocalId != null) ||
+        (notebookStripTab === 'history' && historyListSelectedLocalId != null))
 
     const stripMirrorsRightListPostcard =
       activePieSide === 'right' ||
@@ -842,6 +844,7 @@ const App = () => {
     cardPieEditEngaged,
     showTopCardStripFullSpan,
     isMobileLayout,
+    notebookStripTab,
     listPanelOpen,
     listSelectedLocalId,
     historyListPanelOpen,
@@ -869,8 +872,10 @@ const App = () => {
   useEffect(() => {
     if (!isMobileLayout) return
     const archiveRowSelected =
-      (listPanelOpen && listSelectedLocalId != null) ||
-      (historyListPanelOpen && historyListSelectedLocalId != null)
+      (listSelectedLocalId != null &&
+        (listPanelOpen || notebookStripTab === 'cart')) ||
+      (historyListSelectedLocalId != null &&
+        (historyListPanelOpen || notebookStripTab === 'history'))
     if (archiveRowSelected && activePieSide !== 'right') {
       setActivePieSide('right')
       setCardPieEditEngaged(false)
@@ -882,6 +887,7 @@ const App = () => {
     listSelectedLocalId,
     historyListPanelOpen,
     historyListSelectedLocalId,
+    notebookStripTab,
     activePieSide,
   ])
 

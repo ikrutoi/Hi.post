@@ -173,6 +173,7 @@ export const selectRightListArchiveCardPieHighlightDispatchDate = createSelector
     selectHistoryOpenDayPanelArchiveLocalId,
     selectIsHistoryListPanelOpen,
     selectHistoryListSelectedLocalId,
+    selectComputedNotebookStripTab,
     selectCartItems,
   ],
   (
@@ -181,6 +182,7 @@ export const selectRightListArchiveCardPieHighlightDispatchDate = createSelector
     historyDayPanelArchiveLocalId,
     historyListPanelOpen,
     historyListSelectedLocalId,
+    notebookStripTab,
     cartItems,
   ): DispatchDate | null => {
     const localId =
@@ -188,9 +190,14 @@ export const selectRightListArchiveCardPieHighlightDispatchDate = createSelector
         ? cartListSelectedLocalId
         : historyListPanelOpen && historyListSelectedLocalId != null
           ? historyListSelectedLocalId
-          : historyDayPanelArchiveLocalId != null
-            ? historyDayPanelArchiveLocalId
-            : null
+          : notebookStripTab === 'cart' && cartListSelectedLocalId != null
+            ? cartListSelectedLocalId
+            : notebookStripTab === 'history' &&
+                historyListSelectedLocalId != null
+              ? historyListSelectedLocalId
+              : historyDayPanelArchiveLocalId != null
+                ? historyDayPanelArchiveLocalId
+                : null
     if (localId == null) return null
     const postcard = cartItems.find((p) => p.localId === localId)
     if (!postcard) return null

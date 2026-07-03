@@ -1,5 +1,7 @@
-import React, { useMemo } from 'react'
-import { useAppSelector } from '@app/hooks'
+import React, { useCallback, useMemo } from 'react'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { store } from '@app/state/store'
+import { setCartListSelectedLocalId } from '@cart/infrastructure/state'
 import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { selectRecipientsPendingIds } from '@envelope/infrastructure/selectors'
@@ -10,9 +12,13 @@ import {
 import {
   selectHistoryListSelectedLocalId,
 } from '@date/calendar/infrastructure/selectors'
+import { openDayPanel, setHistoryListSelectedLocalId } from '@date/calendar/infrastructure/state'
 import { selectCartListSelectedLocalId } from '@cart/infrastructure/selectors/cartSelectors'
 import { postcardLocalIdFromCalendarCardItem } from '@date/calendar/infrastructure/postcardLocalIdFromCalendarCardItem'
 import { selectCartItems } from '@cart/infrastructure/selectors'
+import { calendarDayHasCards } from '@date/cell/domain/calendarDayContent'
+import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
+import { applyRightListArchiveToolbarVisuals } from '@toolbar/application/syncRightListArchiveToolbarVisuals'
 import { CardPreviewItem } from './CardPreviewItem'
 import styles from './CardPreview.module.scss'
 import { CalendarCardItem } from '@entities/card/domain/types'
@@ -90,6 +96,8 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   const historyListSelectedLocalId = useAppSelector(selectHistoryListSelectedLocalId)
   const cartListSelectedLocalId = useAppSelector(selectCartListSelectedLocalId)
   const cartItems = useAppSelector(selectCartItems)
+  const isMobileLayout = useAppSelector(selectIsMobileLayout)
+  const dispatch = useAppDispatch()
   const { processed, cart, ready, sent, delivered, error } = data
 
   const isHistory = section === 'history'
@@ -257,6 +265,28 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
     ? historyStatusIndicatorsForCalendarDay(data)
     : []
 
+  const handleMobileArchivePostcardClick = useCallback(
+    (item: CalendarCardItem) => {
+      if (!isMobileLayout || (!isCartCalendar && !isHistory)) return
+      const localId = postcardLocalIdFromCalendarCardItem(item, cartItems)
+      if (localId == null) return
+
+      if (isCartCalendar) {
+        dispatch(setCartListSelectedLocalId(localId))
+        applyRightListArchiveToolbarVisuals(dispatch, store.getState(), 'cart')
+      } else {
+        dispatch(setHistoryListSelectedLocalId(localId))
+        applyRightListArchiveToolbarVisuals(dispatch, store.getState(), 'history')
+      }
+
+      const dateKey = `${item.date.year}-${item.date.month}-${item.date.day}`
+      if (calendarDayHasCards(data)) {
+        dispatch(openDayPanel({ dateKey, dayData: data }))
+      }
+    },
+    [cartItems, data, dispatch, isCartCalendar, isHistory, isMobileLayout],
+  )
+
   return (
     <div className={styles.cardPreviewContainer}>
       {primaryItemForDisplay ? (
@@ -275,6 +305,11 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
             historyIndicatorStatuses={
               isHistory && historyStatusIndicatorStack.length > 0
                 ? historyStatusIndicatorStack
+                : undefined
+            }
+            onArchivePostcardClick={
+              isMobileLayout && isHistoryLike && primaryItemForDisplay != null
+                ? () => handleMobileArchivePostcardClick(primaryItemForDisplay)
                 : undefined
             }
           />

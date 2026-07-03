@@ -211,6 +211,12 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         ? { localId: historyListSelectedLocalId, source: 'history' }
         : null
     }
+    if (notebookStripSection === 'cart' && cartListSelectedLocalId != null) {
+      return { localId: cartListSelectedLocalId, source: 'cart' }
+    }
+    if (notebookStripSection === 'history' && historyListSelectedLocalId != null) {
+      return { localId: historyListSelectedLocalId, source: 'history' }
+    }
     if (
       activePieSide === 'right' &&
       mirrorTargetLocalId != null &&
@@ -230,6 +236,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     historyListSelectedLocalId,
     mirrorTargetLocalId,
     mirrorListArchiveSource,
+    notebookStripSection,
   ])
 
   const mobileCentralPieDisplay = useMemo((): 'archive' | 'hidden' | 'assembly' => {

@@ -20,10 +20,17 @@ import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import {
   selectCartCalendarDatePickMode,
+  selectComputedNotebookStripTab,
+  selectHistoryListSelectedLocalId,
   selectNotebookStripTab,
   selectRightListArchiveCardPieHighlightDispatchDate,
 } from '@date/calendar/infrastructure/selectors'
+import { selectCartListSelectedLocalId } from '@cart/infrastructure/selectors/cartSelectors'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
+import {
+  isCartCalendarStrip,
+  isHistoryCalendarStrip,
+} from '../logic/calendarStripSection'
 import {
   markCartDatePickSnakeHintDone,
   readCartDatePickSnakeHintDone,
@@ -49,13 +56,23 @@ export const useCalendarConstruction = ({
   const { activeSection } = useSectionMenuFacade()
   const { activePieSide } = useRightListArchiveMini()
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
+  const computedNotebookStripTab = useAppSelector(selectComputedNotebookStripTab)
   const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
+  const cartListSelectedLocalId = useAppSelector(selectCartListSelectedLocalId)
+  const historyListSelectedLocalId = useAppSelector(selectHistoryListSelectedLocalId)
   const rightArchiveCardPieHighlightFromList = useAppSelector(
     selectRightListArchiveCardPieHighlightDispatchDate,
   )
-  /** Рамка даты archive CardPie — только в правом режиме; после перехода в левую фабрику снимаем. */
+  const hasArchiveStripSelection =
+    (isCartCalendarStrip(activeSection, computedNotebookStripTab) &&
+      cartListSelectedLocalId != null) ||
+    (isHistoryCalendarStrip(activeSection, computedNotebookStripTab) &&
+      historyListSelectedLocalId != null)
+  /** Рамка даты archive CardPie — правый режим или полоса корзины/истории с выбранной открыткой. */
   const rightArchiveCardPieHighlightDate =
-    activePieSide === 'right' ? rightArchiveCardPieHighlightFromList : null
+    activePieSide === 'right' || hasArchiveStripSelection
+      ? rightArchiveCardPieHighlightFromList
+      : null
   const cardsMap = useAppSelector(selectCardsByDateMap)
   const highlightDates = useAppSelector(selectMergedDispatchDates)
   const { year, month } = calendarViewDate
