@@ -1,6 +1,5 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
-@use '@styles/config/mobileNotebookTabColors' as notebookTab;
 
 .date {
   display: flex;
@@ -38,31 +37,6 @@
     background-color: transparent;
     position: relative;
     isolation: isolate;
-
-    &[data-mobile-date-strip] {
-      &::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: -1px;
-        z-index: 0;
-        pointer-events: none;
-      }
-    }
-
-    &[data-mobile-date-strip='date']::before {
-      @include notebookTab.mobile-notebook-date-tab-gutter-gradient;
-    }
-
-    &[data-mobile-date-strip='cart']::before {
-      @include notebookTab.mobile-notebook-cart-tab-gutter-gradient;
-    }
-
-    &[data-mobile-date-strip='history']::before {
-      @include notebookTab.mobile-notebook-history-tab-gutter-gradient;
-    }
   }
 }
 
@@ -132,9 +106,7 @@
     max-height: none;
     min-height: 0;
     align-items: center;
-    border-left: none;
-    border-right: none;
-    border-bottom: none;
+    border: 1px solid $color-section-light;
 
     > * {
       flex: 0 0 auto;

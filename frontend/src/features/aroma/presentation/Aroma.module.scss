@@ -92,9 +92,7 @@
   :global([data-shell-layout='mobile']) & {
     flex: 0 0 auto;
     align-items: center;
-    border-left: none;
-    border-right: none;
-    border-bottom: none;
+    border: 1px solid $color-section-light;
   }
 
   :global([data-shell-layout='desktop']) & {

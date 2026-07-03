@@ -794,8 +794,7 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   :global([class*='cardtextViewContent']),
   :global([class*='envelopeViewContent']),
   :global([class*='aromaViewContent']) {
-    border: 1px solid $color-cardphoto-input-border;
-    border-top: none;
+    border: 1px solid $color-section-light;
     border-radius: 0.5rem;
     background-color: #fff;
     overflow: hidden;
@@ -806,18 +805,13 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   }
 
   :global([class*='dateViewContent']) {
-    border: 1px solid $color-cardphoto-input-border;
-    border-top: none;
+    border: 1px solid $color-section-light;
     border-radius: 0.5rem;
     background-color: #fff;
     overflow: hidden;
     width: calc(100% - 2 * var(--mobile-section-inset));
     margin-inline: var(--mobile-section-inset);
     min-height: 0;
-  }
-
-  :global([class*='cardphotoViewContent']) {
-    border-color: $color-section-light;
   }
 
   // Квадратная рабочая зона — единый размер для всех секций фабрики.
