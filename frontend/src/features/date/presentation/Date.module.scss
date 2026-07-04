@@ -61,7 +61,7 @@ $mobile-date-calendar-chrome-gap: 0.125rem;
         left: 0;
         right: 0;
         top: calc(-1 * var(--mobile-section-background-rise));
-        bottom: 0;
+        bottom: calc(-1 * var(--mobile-form-padding-bottom));
         z-index: -1;
         pointer-events: none;
         @include notebookTab.mobile-notebook-history-tab-gutter-gradient;
