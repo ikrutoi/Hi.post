@@ -765,7 +765,7 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
     align-self: stretch;
   }
 
-  // Cardphoto / cardtext / envelope / aroma / date — inner work zone flush to factory toolbar shell.
+  // Cardphoto / cardtext / envelope / aroma — inner work zone flush to factory toolbar shell.
   :global([class*='cardphotoViewWrap']),
   :global([class*='cardtextViewWrap']),
   :global([class*='envelopeViewWrap']),
@@ -800,16 +800,16 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
     }
   }
 
-  :global([class*='aromaViewWrap']) {
-    @include sectionGutter.mobile-section-gutter-backdrop {
-      background: sectionGutter.$mobile-section-gutter-aroma;
-    }
-  }
-
   :global([class*='envelope'][data-envelope-mobile-form='true'])
     :global([class*='envelopeViewWrap']) {
     padding-inline: 0;
     background: transparent;
+  }
+
+  :global([class*='aromaViewWrap']) {
+    @include sectionGutter.mobile-section-gutter-backdrop {
+      background: sectionGutter.$mobile-section-gutter-aroma;
+    }
   }
 
   :global([class*='dateViewWrap']) {

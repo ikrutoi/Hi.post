@@ -287,6 +287,7 @@ export const Toolbar = ({
     iconOptions?: IconOptions,
     iconIndex?: number,
   ) => {
+    const elementKey = iconIndex != null ? `${key}-${iconIndex}` : key
     const rawData = sectionState[key]
     // editorPie: первая иконка-дырка становится «добавить в корзину» у комплектной открытки.
     const editorPieCartAdd =
@@ -442,7 +443,7 @@ export const Toolbar = ({
     ) {
       return (
         <CardtextColorButton
-          key={key}
+          key={elementKey}
           className={clsx(
             styles.toolbarKey,
             styles[`toolbarKey${capitalize(buttonStatus ?? 'enabled')}`],
@@ -467,7 +468,7 @@ export const Toolbar = ({
     ) {
       return (
         <CardtextAlignButton
-          key={key}
+          key={elementKey}
           className={clsx(
             styles.toolbarKey,
             styles[`toolbarKey${capitalize(visualStatus ?? 'enabled')}`],
@@ -490,7 +491,7 @@ export const Toolbar = ({
 
       return (
         <div
-          key={key}
+          key={elementKey}
           className={clsx(
             styles.toolbarKey,
             styles.toolbarKeyCropQualityIndicator,
@@ -508,7 +509,7 @@ export const Toolbar = ({
 
     return (
       <button
-        key={key}
+        key={elementKey}
         type="button"
         className={clsx(
           styles.toolbarKey,

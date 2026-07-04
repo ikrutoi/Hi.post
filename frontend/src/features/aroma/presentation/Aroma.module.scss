@@ -30,6 +30,11 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+    border: none;
+    box-shadow: none;
+    background-color: transparent;
+    position: relative;
+    z-index: 1;
   }
 }
 
@@ -41,6 +46,7 @@
   flex-direction: column;
   justify-content: flex-end;
   border-radius: 0.5rem;
+  z-index: 1;
 
   :global([data-shell-layout='desktop']) & {
     border-radius: 0;
@@ -91,8 +97,19 @@
 
   :global([data-shell-layout='mobile']) & {
     flex: 0 0 auto;
+    width: 100%;
+    margin-inline: 0;
+    height: auto;
+    min-height: 0;
     align-items: center;
-    border: 1px solid $color-section-light;
+    overflow: hidden;
+
+    > * {
+      flex: 0 0 auto;
+      width: min(100%, var(--card-work-zone-side, 100%));
+      max-width: 100%;
+      min-height: 0;
+    }
   }
 
   :global([data-shell-layout='desktop']) & {
@@ -127,6 +144,8 @@
     height: auto;
     max-width: 100%;
     max-height: min(100%, var(--card-work-zone-side, 100%));
+    min-width: min(100%, max(8rem, var(--card-work-zone-side, 8rem)));
+    min-height: min(100%, max(8rem, var(--card-work-zone-side, 8rem)));
     aspect-ratio: 1;
   }
 
