@@ -781,20 +781,28 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   }
 
   :global([class*='cardphotoViewWrap']) {
-    background: sectionGutter.$mobile-section-gutter-cardphoto;
+    @include sectionGutter.mobile-section-gutter-backdrop {
+      background: sectionGutter.$mobile-section-gutter-cardphoto;
+    }
   }
 
   :global([class*='cardtextViewWrap']) {
-    background: sectionGutter.$mobile-section-gutter-cardtext;
+    @include sectionGutter.mobile-section-gutter-backdrop {
+      background: sectionGutter.$mobile-section-gutter-cardtext;
+    }
   }
 
   :global([class*='envelope']:not([data-envelope-mobile-form='true']))
     :global([class*='envelopeViewWrap']) {
-    background: sectionGutter.$mobile-section-gutter-envelope;
+    @include sectionGutter.mobile-section-gutter-backdrop {
+      background: sectionGutter.$mobile-section-gutter-envelope;
+    }
   }
 
   :global([class*='aromaViewWrap']) {
-    background: sectionGutter.$mobile-section-gutter-aroma;
+    @include sectionGutter.mobile-section-gutter-backdrop {
+      background: sectionGutter.$mobile-section-gutter-aroma;
+    }
   }
 
   :global([class*='envelope'][data-envelope-mobile-form='true'])
@@ -989,36 +997,6 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
     max-height: 100%;
     flex: 1 1 auto;
     height: 100%;
-
-    &::before {
-      @include sectionGutter.mobile-section-gutter-rise-band;
-    }
-  }
-
-  :global([class*='editorSection']):has([class*='cardphotoViewWrap'])::before {
-    background: sectionGutter.$mobile-section-gutter-cardphoto;
-  }
-
-  :global([class*='editorSection']):has([class*='cardtextViewWrap'])::before {
-    background: sectionGutter.$mobile-section-gutter-cardtext;
-  }
-
-  :global([class*='editorSection']):has([class*='envelopeViewWrap']):not(
-      :has([data-envelope-mobile-form='true'])
-    )::before {
-    background: sectionGutter.$mobile-section-gutter-envelope;
-  }
-
-  :global([class*='editorSection']):has([class*='aromaViewWrap'])::before {
-    background: sectionGutter.$mobile-section-gutter-aroma;
-  }
-
-  :global([class*='editorSection']):has([data-mobile-date-strip='date'])::before {
-    @include notebookTab.mobile-notebook-date-tab-gutter-solid;
-  }
-
-  :global([class*='editorSection']):has([data-mobile-date-strip='cart'])::before {
-    @include notebookTab.mobile-notebook-cart-tab-gutter-gradient;
   }
 
   :global([class*='cardSectionRenderer']) {

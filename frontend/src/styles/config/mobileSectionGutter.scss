@@ -34,14 +34,17 @@ $mobile-section-gutter-aroma: color.mix(
   width: 100%;
 }
 
-/** Полоса gutter-фона от верха `editorSection` до верха factory toolbar shell. */
-@mixin mobile-section-gutter-rise-band {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(-1 * var(--mobile-section-background-rise));
-  height: var(--mobile-section-background-rise);
-  pointer-events: none;
-  z-index: 0;
+/** Gutter-фон секции: от верха factory toolbar shell до низа формы. */
+@mixin mobile-section-gutter-backdrop {
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(-1 * var(--mobile-section-background-rise));
+    bottom: calc(-1 * var(--mobile-form-padding-bottom));
+    z-index: -1;
+    pointer-events: none;
+    @content;
+  }
 }

@@ -6,6 +6,13 @@
 $mobile-date-calendar-chrome-row-height: 2rem;
 $mobile-date-calendar-chrome-gap: 0.125rem;
 
+@mixin mobile-date-strip-gutter-backdrop {
+  @include sectionGutter.mobile-section-view-wrap-side-gutters;
+  @include sectionGutter.mobile-section-gutter-backdrop {
+    @content;
+  }
+}
+
 .date {
   display: flex;
   justify-content: center;
@@ -43,27 +50,19 @@ $mobile-date-calendar-chrome-gap: 0.125rem;
     isolation: isolate;
 
     &[data-mobile-date-strip='date'] .dateViewWrap {
-      @include sectionGutter.mobile-section-view-wrap-side-gutters;
-      @include notebookTab.mobile-notebook-date-tab-gutter-solid;
+      @include mobile-date-strip-gutter-backdrop {
+        @include notebookTab.mobile-notebook-date-tab-gutter-solid;
+      }
     }
 
     &[data-mobile-date-strip='cart'] .dateViewWrap {
-      @include sectionGutter.mobile-section-view-wrap-side-gutters;
-      @include notebookTab.mobile-notebook-cart-tab-gutter-gradient;
+      @include mobile-date-strip-gutter-backdrop {
+        @include notebookTab.mobile-notebook-cart-tab-gutter-gradient;
+      }
     }
 
     &[data-mobile-date-strip='history'] .dateViewWrap {
-      @include sectionGutter.mobile-section-view-wrap-side-gutters;
-
-      &::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: calc(-1 * var(--mobile-section-background-rise));
-        bottom: calc(-1 * var(--mobile-form-padding-bottom));
-        z-index: -1;
-        pointer-events: none;
+      @include mobile-date-strip-gutter-backdrop {
         @include notebookTab.mobile-notebook-history-tab-gutter-gradient;
       }
     }
