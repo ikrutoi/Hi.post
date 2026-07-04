@@ -776,6 +776,7 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
     align-items: center;
     flex: 0 0 auto;
     height: auto;
+    min-height: 0;
     width: 100%;
     @include sectionGutter.mobile-section-view-wrap-side-gutters;
   }
