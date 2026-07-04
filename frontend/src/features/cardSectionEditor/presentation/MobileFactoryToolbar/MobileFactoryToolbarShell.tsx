@@ -78,49 +78,35 @@ export const MobileFactoryToolbarShell: React.FC = () => {
   const showUpperContent = !hideUpperToolbar
   const showSectionUpperToolbar =
     showUpperContent && !suppressMobileCalendarUpperRow
-  const showLowerRow =
-    scenarioToolbar != null ||
-    (isMobileLayout &&
-      activeSection === 'aroma' &&
-      showSectionUpperToolbar)
   const showMobileDateCalendarNavRow =
     suppressMobileCalendarUpperRow && showUpperContent
-  const showUpperRow = showSectionUpperToolbar || showMobileDateCalendarNavRow
+  const showLowerRow = scenarioToolbar != null
   const showShell =
     showSectionUpperToolbar ||
     showLowerRow ||
     showMobileDateCalendarNavRow
-  const showDivider =
-    showUpperRow &&
-    showLowerRow &&
-    !(isMobileLayout && activeSection === 'date')
-  const singleRowShell =
-    !showSectionUpperToolbar &&
-    !showMobileDateCalendarNavRow &&
-    showLowerRow
+  const hideToolbarDivider =
+    isMobileLayout && activeSection === 'date'
 
   if (envelopeAddressCreateMode) return null
   if (!showShell) return null
 
   return (
-    <div
-      className={clsx(
-        styles.shell,
-        !showDivider && styles.shellNoDivider,
-        singleRowShell && styles.shellSingleRow,
-      )}
-      aria-label="Section toolbars"
-    >
-      {showSectionUpperToolbar ? (
-        <div className={styles.rowUpper}>
+    <div className={styles.shell} aria-label="Section toolbars">
+      <div className={styles.rowUpper}>
+        {showSectionUpperToolbar ? (
           <CardSectionToolbar />
-        </div>
-      ) : showMobileDateCalendarNavRow ? (
-        <div className={styles.rowUpper}>
+        ) : showMobileDateCalendarNavRow ? (
           <MobileDateCalendarToolbarNav />
-        </div>
-      ) : null}
-      {showDivider ? <div className={styles.rowDivider} aria-hidden /> : null}
+        ) : null}
+      </div>
+      <div
+        className={clsx(
+          styles.rowDivider,
+          hideToolbarDivider && styles.rowDividerHidden,
+        )}
+        aria-hidden
+      />
       <div
         className={styles.rowLower}
         aria-hidden={!showLowerRow ? true : undefined}

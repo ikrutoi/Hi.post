@@ -79,20 +79,6 @@
       + 2 * var(--mobile-factory-toolbar-row-height)
       + 1px
     );
-
-    &:has([class*='shellSingleRow']) {
-      --mobile-section-background-rise: calc(
-        var(--mobile-central-section-offset-top, var(--mobile-factory-toolbar-gap))
-        + var(--mobile-factory-toolbar-row-height)
-      );
-    }
-
-    &:has([class*='shellNoDivider']):not(:has([class*='shellSingleRow'])) {
-      --mobile-section-background-rise: calc(
-        var(--mobile-central-section-offset-top, var(--mobile-factory-toolbar-gap))
-        + 2 * var(--mobile-factory-toolbar-row-height)
-      );
-    }
   }
 }
 
