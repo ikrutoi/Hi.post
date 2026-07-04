@@ -337,10 +337,8 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   scrollbar-width: none;
   pointer-events: auto;
   box-sizing: border-box;
-  border: 1px solid $color-section-light;
   border-radius: var(--mobile-pie-gutter-mini-radius);
-  padding: 1px;
-  background-color: color.mix(#fff, $color-app-inner, 45%);
+  background-color: $color-app-inner;
 
   &::-webkit-scrollbar {
     display: none;
@@ -991,6 +989,40 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
     max-height: 100%;
     flex: 1 1 auto;
     height: 100%;
+
+    &::before {
+      @include sectionGutter.mobile-section-gutter-rise-band;
+    }
+  }
+
+  :global([class*='editorSection']):has([class*='cardphotoViewWrap'])::before {
+    background: sectionGutter.$mobile-section-gutter-cardphoto;
+  }
+
+  :global([class*='editorSection']):has([class*='cardtextViewWrap'])::before {
+    background: sectionGutter.$mobile-section-gutter-cardtext;
+  }
+
+  :global([class*='editorSection']):has([class*='envelopeViewWrap']):not(
+      :has([data-envelope-mobile-form='true'])
+    )::before {
+    background: sectionGutter.$mobile-section-gutter-envelope;
+  }
+
+  :global([class*='editorSection']):has([class*='aromaViewWrap'])::before {
+    background: sectionGutter.$mobile-section-gutter-aroma;
+  }
+
+  :global([class*='editorSection']):has([data-mobile-date-strip='date'])::before {
+    @include notebookTab.mobile-notebook-date-tab-gutter-solid;
+  }
+
+  :global([class*='editorSection']):has([data-mobile-date-strip='cart'])::before {
+    @include notebookTab.mobile-notebook-cart-tab-gutter-gradient;
+  }
+
+  :global([class*='editorSection']):has([data-mobile-date-strip='history'])::before {
+    @include notebookTab.mobile-notebook-history-tab-gutter-gradient;
   }
 
   :global([class*='cardSectionRenderer']) {

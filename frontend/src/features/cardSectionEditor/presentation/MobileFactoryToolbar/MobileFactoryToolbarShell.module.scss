@@ -1,6 +1,8 @@
 @use '@styles/config/colors' as *;
 
 .shell {
+  position: relative;
+  z-index: 1;
   flex: 0 0 auto;
   min-height: calc(2 * var(--mobile-factory-toolbar-row-height) + 1px);
   width: calc(100% - 2 * var(--mobile-section-inset));
@@ -8,7 +10,7 @@
   box-sizing: border-box;
   border: none;
   border-radius: 0.5rem;
-  background-color: $color-app-inner;
+  background-color: #fff;
   display: flex;
   flex-direction: column;
   overflow: hidden;

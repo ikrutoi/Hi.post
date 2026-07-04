@@ -28,3 +28,15 @@ $mobile-section-gutter-aroma: color.mix(
   padding-inline: var(--mobile-section-inset);
   width: 100%;
 }
+
+/** Полоса gutter-фона от верха `editorSection` до верха factory toolbar shell. */
+@mixin mobile-section-gutter-rise-band {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(-1 * var(--mobile-section-background-rise));
+  height: var(--mobile-section-background-rise);
+  pointer-events: none;
+  z-index: 0;
+}

@@ -77,22 +77,18 @@ export const MobileFactoryToolbarShell: React.FC = () => {
 
   const showUpperContent = !hideUpperToolbar
   const showLowerRow = scenarioToolbar != null
-  const isAromaSection = activeSection === 'aroma'
   const showSectionUpperToolbar =
-    showUpperContent && !isAromaSection && !suppressMobileCalendarUpperRow
+    showUpperContent && !suppressMobileCalendarUpperRow
   const showMobileDateCalendarNavRow =
     suppressMobileCalendarUpperRow && showUpperContent
   const showShell =
-    (showSectionUpperToolbar ||
-      showLowerRow ||
-      showMobileDateCalendarNavRow) &&
-    !(isAromaSection && !showLowerRow)
+    showSectionUpperToolbar ||
+    showLowerRow ||
+    showMobileDateCalendarNavRow
   const isMobileCalendarSection =
     isMobileLayout &&
     (activeSection === 'date' || activeSection === 'history')
-  const showDivider =
-    !isMobileCalendarSection &&
-    !isAromaSection
+  const showDivider = !isMobileCalendarSection
   const singleRowShell =
     !showSectionUpperToolbar &&
     !showMobileDateCalendarNavRow &&

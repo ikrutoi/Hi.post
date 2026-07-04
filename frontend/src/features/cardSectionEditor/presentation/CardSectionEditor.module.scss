@@ -74,6 +74,25 @@
     width: 100%;
     height: 100%;
     gap: var(--mobile-central-section-offset-top, var(--mobile-factory-toolbar-gap));
+    --mobile-section-background-rise: calc(
+      var(--mobile-central-section-offset-top, var(--mobile-factory-toolbar-gap))
+      + 2 * var(--mobile-factory-toolbar-row-height)
+      + 1px
+    );
+
+    &:has([class*='shellSingleRow']) {
+      --mobile-section-background-rise: calc(
+        var(--mobile-central-section-offset-top, var(--mobile-factory-toolbar-gap))
+        + var(--mobile-factory-toolbar-row-height)
+      );
+    }
+
+    &:has([class*='shellNoDivider']):not(:has([class*='shellSingleRow'])) {
+      --mobile-section-background-rise: calc(
+        var(--mobile-central-section-offset-top, var(--mobile-factory-toolbar-gap))
+        + 2 * var(--mobile-factory-toolbar-row-height)
+      );
+    }
   }
 }
 
@@ -104,6 +123,8 @@
   }
 
   :global([data-shell-layout='mobile']) & {
+    position: relative;
+    z-index: 0;
     flex: 1 1 auto;
     width: 100%;
     min-height: 0;
