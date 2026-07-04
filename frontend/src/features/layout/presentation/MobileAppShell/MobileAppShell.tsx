@@ -729,7 +729,10 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                     </div>
                   ) : null}
                   {mobileFactoryListOverlayKey === 'cardphoto' ? (
-                    <div className={styles.mobileFormListOverlay}>
+                    <div
+                      className={styles.mobileFormListOverlay}
+                      data-list-overlay="cardphoto"
+                    >
                       <div className={listSlotStyles.root}>
                         <div className={listSlotStyles.panelWrap}>
                           <CardphotoListMobileSlot />
@@ -738,7 +741,10 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                     </div>
                   ) : null}
                   {mobileFactoryListOverlayKey === 'cardtext' ? (
-                    <div className={styles.mobileFormListOverlay}>
+                    <div
+                      className={styles.mobileFormListOverlay}
+                      data-list-overlay="cardtext"
+                    >
                       <div className={listSlotStyles.root}>
                         <div className={listSlotStyles.panelWrap}>
                           <CardtextListMobileSlot />
@@ -747,7 +753,12 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                     </div>
                   ) : null}
                   {mobileFactoryListOverlayKey === 'address' ? (
-                    <div className={styles.mobileFormListOverlay}>
+                    <div
+                      className={styles.mobileFormListOverlay}
+                      data-list-overlay={
+                        senderListPanelOpen ? 'address-sender' : 'address-recipient'
+                      }
+                    >
                       <div className={listSlotStyles.root}>
                         <div className={listSlotStyles.panelWrap}>
                           <AddressListMobileSlot />

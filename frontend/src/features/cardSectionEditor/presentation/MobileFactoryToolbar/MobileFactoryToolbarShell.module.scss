@@ -75,7 +75,7 @@
 }
 
 .rowLower {
-  // Нижний ряд: фон кнопок-тулбаров как у приложения (а не чисто-белый).
+  // Нижний ряд: по умолчанию фон кнопок как у приложения.
   :global([class*='toolbarKey']) {
     background-color: $color-app-inner;
   }
@@ -84,6 +84,37 @@
   :global([class*='toolbarKey'][class*='toolbarKeyActive']:hover),
   :global([class*='toolbarKey'][class*='toolbarKeyDisabled']:hover) {
     background-color: $color-app-inner;
+  }
+
+  :global([class*='toolbarCardphoto']) :global([class*='toolbarKey']),
+  :global([class*='toolbarCardtext']) :global([class*='toolbarKey']),
+  :global([class*='toolbarSender']) :global([class*='toolbarKey']),
+  :global([class*='toolbarRecipient']) :global([class*='toolbarKey']),
+  :global([class*='toolbarCardphoto'])
+    :global([class*='toolbarKey'][class*='toolbarKeyEnabled']:hover),
+  :global([class*='toolbarCardphoto'])
+    :global([class*='toolbarKey'][class*='toolbarKeyActive']:hover),
+  :global([class*='toolbarCardphoto'])
+    :global([class*='toolbarKey'][class*='toolbarKeyDisabled']:hover),
+  :global([class*='toolbarCardtext'])
+    :global([class*='toolbarKey'][class*='toolbarKeyEnabled']:hover),
+  :global([class*='toolbarCardtext'])
+    :global([class*='toolbarKey'][class*='toolbarKeyActive']:hover),
+  :global([class*='toolbarCardtext'])
+    :global([class*='toolbarKey'][class*='toolbarKeyDisabled']:hover),
+  :global([class*='toolbarSender'])
+    :global([class*='toolbarKey'][class*='toolbarKeyEnabled']:hover),
+  :global([class*='toolbarSender'])
+    :global([class*='toolbarKey'][class*='toolbarKeyActive']:hover),
+  :global([class*='toolbarSender'])
+    :global([class*='toolbarKey'][class*='toolbarKeyDisabled']:hover),
+  :global([class*='toolbarRecipient'])
+    :global([class*='toolbarKey'][class*='toolbarKeyEnabled']:hover),
+  :global([class*='toolbarRecipient'])
+    :global([class*='toolbarKey'][class*='toolbarKeyActive']:hover),
+  :global([class*='toolbarRecipient'])
+    :global([class*='toolbarKey'][class*='toolbarKeyDisabled']:hover) {
+    background-color: #fff;
   }
 
   :global([class*='cardphotoToolbarRow']),
@@ -120,6 +151,37 @@
 }
 
 .rowUpper {
+  :global([class*='toolbarCardphoto']) :global([class*='toolbarKey']),
+  :global([class*='toolbarCardtext']) :global([class*='toolbarKey']),
+  :global([class*='toolbarSender']) :global([class*='toolbarKey']),
+  :global([class*='toolbarRecipient']) :global([class*='toolbarKey']),
+  :global([class*='toolbarCardphoto'])
+    :global([class*='toolbarKey'][class*='toolbarKeyEnabled']:hover),
+  :global([class*='toolbarCardphoto'])
+    :global([class*='toolbarKey'][class*='toolbarKeyActive']:hover),
+  :global([class*='toolbarCardphoto'])
+    :global([class*='toolbarKey'][class*='toolbarKeyDisabled']:hover),
+  :global([class*='toolbarCardtext'])
+    :global([class*='toolbarKey'][class*='toolbarKeyEnabled']:hover),
+  :global([class*='toolbarCardtext'])
+    :global([class*='toolbarKey'][class*='toolbarKeyActive']:hover),
+  :global([class*='toolbarCardtext'])
+    :global([class*='toolbarKey'][class*='toolbarKeyDisabled']:hover),
+  :global([class*='toolbarSender'])
+    :global([class*='toolbarKey'][class*='toolbarKeyEnabled']:hover),
+  :global([class*='toolbarSender'])
+    :global([class*='toolbarKey'][class*='toolbarKeyActive']:hover),
+  :global([class*='toolbarSender'])
+    :global([class*='toolbarKey'][class*='toolbarKeyDisabled']:hover),
+  :global([class*='toolbarRecipient'])
+    :global([class*='toolbarKey'][class*='toolbarKeyEnabled']:hover),
+  :global([class*='toolbarRecipient'])
+    :global([class*='toolbarKey'][class*='toolbarKeyActive']:hover),
+  :global([class*='toolbarRecipient'])
+    :global([class*='toolbarKey'][class*='toolbarKeyDisabled']:hover) {
+    background-color: #fff;
+  }
+
   :global([class*='envelopeToolbarRow']) {
     flex: 1 1 auto;
     align-self: stretch;

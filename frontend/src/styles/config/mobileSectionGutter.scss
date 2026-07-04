@@ -16,6 +16,11 @@ $mobile-section-gutter-envelope: color.mix(
   $color-envelope-recipient-input-border,
   48%
 );
+$mobile-section-gutter-envelope-sender: color.mix(
+  $color-envelope-sender-input,
+  $color-envelope-sender-input-border,
+  48%
+);
 $mobile-section-gutter-aroma: color.mix(
   $color-aroma-input,
   $color-aroma-input-border,

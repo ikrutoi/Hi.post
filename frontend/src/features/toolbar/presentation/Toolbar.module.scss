@@ -339,7 +339,7 @@
   padding-right: 1rem;
 
   .toolbarKey {
-    background-color: $color-app-inner;
+    background-color: #fff;
   }
 
   .toolbarKeyFontSizeIndicator {
@@ -349,7 +349,7 @@
     margin-right: 0;
 
     &:hover {
-      background-color: $color-app-inner;
+      background-color: #fff;
       cursor: default;
     }
   }
@@ -361,7 +361,7 @@
     cursor: default;
 
     &:hover {
-      background-color: $color-app-inner;
+      background-color: #fff;
       cursor: default;
     }
   }
@@ -373,13 +373,13 @@
 
     &:hover {
       color: $color-font-enabled;
-      background-color: $color-app-inner;
+      background-color: #fff;
     }
   }
 
   .toolbarKey.toolbarKeyActive:not([data-icon-key='apply']) {
     &:hover {
-      background-color: $color-app-inner;
+      background-color: #fff;
     }
   }
 }
@@ -795,24 +795,24 @@
 .toolbarSenderView,
 .toolbarRecipientView {
   .toolbarKey {
-    background-color: $color-app-inner;
+    background-color: #fff;
   }
 
   .toolbarKey[data-icon-key='listDelete'].toolbarKeyEnabled:hover,
   .toolbarKey[data-icon-key='listClose'].toolbarKeyEnabled:hover {
-    background-color: $color-app-inner;
+    background-color: #fff;
   }
 }
 
 .toolbarSenderCreate,
 .toolbarRecipientCreate {
   .toolbarKey {
-    background-color: $color-app-inner;
+    background-color: #fff;
   }
 
   .toolbarKey[data-icon-key='listDelete'].toolbarKeyEnabled:hover,
   .toolbarKey[data-icon-key='listClose'].toolbarKeyEnabled:hover {
-    background-color: $color-app-inner;
+    background-color: #fff;
   }
 
   [data-icon-key='applyMedium'].toolbarKeyEnabled,
@@ -829,12 +829,22 @@
   [data-icon-key='applyMediumCheck'].toolbarKeyEnabled:hover,
   [data-icon-key='applyMediumCheck'].toolbarKeySelected:hover,
   [data-icon-key='applyMediumCheck'].toolbarKeyActive:hover {
-    background-color: $color-app-inner;
+    background-color: #fff;
   }
 }
 
 .toolbarCardtext,
-.toolbarCardphoto,
+.toolbarCardphoto {
+  .toolbarKey {
+    background-color: #fff;
+  }
+
+  .toolbarKey[data-icon-key='listDelete'].toolbarKeyEnabled:hover,
+  .toolbarKey[data-icon-key='listClose'].toolbarKeyEnabled:hover {
+    background-color: #fff;
+  }
+}
+
 .toolbarDate,
 .toolbarHistory,
 .toolbarCart {
@@ -863,13 +873,30 @@
   [data-icon-key='apply'].toolbarKeyEnabled:hover,
   [data-icon-key='apply'].toolbarKeySelected:hover,
   [data-icon-key='apply'].toolbarKeyActive:hover {
-    background-color: $color-app-inner;
+    background-color: #fff;
   }
 }
 
-/* cardphoto / cardtext / date / cart / history: hover — затемнение иконки, без подложки */
+/* cardphoto / cardtext: hover — затемнение иконки, белая подложка */
 .toolbarCardphoto,
-.toolbarCardtext,
+.toolbarCardtext {
+  .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
+    color: $color-font-enabled-light;
+
+    &:hover {
+      color: $color-font-enabled;
+      background-color: #fff;
+    }
+  }
+
+  .toolbarKey.toolbarKeyActive:not([data-icon-key='apply']) {
+    &:hover {
+      background-color: #fff;
+    }
+  }
+}
+
+/* date / cart / history: hover — затемнение иконки, без подложки */
 .toolbarHistory,
 .toolbarDate,
 .toolbarCart {
@@ -1573,12 +1600,12 @@
 
     &:hover {
       color: $color-font-enabled;
-      background-color: $color-app-inner;
+      background-color: #fff;
     }
   }
 
   .toolbarKey.toolbarKeyActive:hover {
-    background-color: $color-app-inner;
+    background-color: #fff;
   }
 }
 
@@ -1598,12 +1625,12 @@
 
     &:hover {
       color: $color-font-enabled;
-      background-color: $color-app-inner;
+      background-color: #fff;
     }
   }
 
   .toolbarKey.toolbarKeyActive:hover {
-    background-color: $color-app-inner;
+    background-color: #fff;
   }
 }
 
@@ -1889,12 +1916,12 @@
     margin-inline: 0;
 
     .toolbarKey {
-      background-color: $color-app-inner;
+      background-color: #fff;
     }
 
     .toolbarKey[data-icon-key='listDelete'].toolbarKeyEnabled:hover,
     .toolbarKey[data-icon-key='listClose'].toolbarKeyEnabled:hover {
-      background-color: $color-app-inner;
+      background-color: #fff;
     }
 
     [data-icon-key='apply'].toolbarKeyEnabled,
@@ -1904,7 +1931,7 @@
     [data-icon-key='apply'].toolbarKeyEnabled:hover,
     [data-icon-key='apply'].toolbarKeySelected:hover,
     [data-icon-key='apply'].toolbarKeyActive:hover {
-      background-color: $color-app-inner;
+      background-color: #fff;
     }
 
     .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
@@ -1912,7 +1939,7 @@
 
       &:hover {
         color: $color-font-enabled;
-        background-color: $color-app-inner;
+        background-color: #fff;
       }
 
       &:active {
@@ -1922,7 +1949,7 @@
 
     .toolbarKey.toolbarKeyActive:not([data-icon-key='apply']) {
       &:hover {
-        background-color: $color-app-inner;
+        background-color: #fff;
       }
     }
   }
@@ -1934,12 +1961,12 @@
     margin-inline: 0;
 
     .toolbarKey {
-      background-color: $color-app-inner;
+      background-color: #fff;
     }
 
     .toolbarKey[data-icon-key='listDelete'].toolbarKeyEnabled:hover,
     .toolbarKey[data-icon-key='listClose'].toolbarKeyEnabled:hover {
-      background-color: $color-app-inner;
+      background-color: #fff;
     }
 
     .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
@@ -1947,7 +1974,7 @@
 
       &:hover {
         color: $color-font-enabled;
-        background-color: $color-app-inner;
+        background-color: #fff;
       }
 
       &:active {
@@ -1957,7 +1984,7 @@
 
     .toolbarKey.toolbarKeyActive:not([data-icon-key='apply']) {
       &:hover {
-        background-color: $color-app-inner;
+        background-color: #fff;
       }
     }
   }

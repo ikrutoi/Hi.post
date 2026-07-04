@@ -54,7 +54,18 @@ $mobile-date-calendar-chrome-gap: 0.125rem;
 
     &[data-mobile-date-strip='history'] .dateViewWrap {
       @include sectionGutter.mobile-section-view-wrap-side-gutters;
-      @include notebookTab.mobile-notebook-history-tab-gutter-gradient;
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: calc(-1 * var(--mobile-section-background-rise));
+        bottom: 0;
+        z-index: -1;
+        pointer-events: none;
+        @include notebookTab.mobile-notebook-history-tab-gutter-gradient;
+      }
     }
   }
 }

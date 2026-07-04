@@ -1021,10 +1021,6 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
     @include notebookTab.mobile-notebook-cart-tab-gutter-gradient;
   }
 
-  :global([class*='editorSection']):has([data-mobile-date-strip='history'])::before {
-    @include notebookTab.mobile-notebook-history-tab-gutter-gradient;
-  }
-
   :global([class*='cardSectionRenderer']) {
     min-height: 0;
     height: 100%;
@@ -1088,7 +1084,41 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   box-sizing: border-box;
   pointer-events: auto;
 
+  &[data-list-overlay='cardphoto'],
+  &[data-list-overlay='cardtext'],
+  &[data-list-overlay='address-sender'],
+  &[data-list-overlay='address-recipient'] {
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: calc(-1 * var(--mobile-section-inset));
+      right: calc(-1 * var(--mobile-section-inset));
+      pointer-events: none;
+      z-index: 0;
+    }
+  }
+
+  &[data-list-overlay='cardphoto']::before {
+    background: sectionGutter.$mobile-section-gutter-cardphoto;
+  }
+
+  &[data-list-overlay='cardtext']::before {
+    background: sectionGutter.$mobile-section-gutter-cardtext;
+  }
+
+  &[data-list-overlay='address-sender']::before {
+    background: sectionGutter.$mobile-section-gutter-envelope-sender;
+  }
+
+  &[data-list-overlay='address-recipient']::before {
+    background: sectionGutter.$mobile-section-gutter-envelope;
+  }
+
   > * {
+    position: relative;
+    z-index: 1;
     flex: 1 1 auto;
     min-height: 0;
     max-height: 100%;
