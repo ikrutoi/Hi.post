@@ -30,12 +30,7 @@ export const HistoryListEntryShort: React.FC<HistoryListEntryProps> = ({
       className={styles.root}
       data-density-level={densityLevel}
       data-postcard-status={
-        previewStatus === 'ready' ||
-        previewStatus === 'sent' ||
-        previewStatus === 'delivered' ||
-        previewStatus === 'error'
-          ? previewStatus
-          : undefined
+        previewStatus && !previewIsProcessed ? previewStatus : undefined
       }
       data-selected={isSelected ? 'true' : undefined}
       data-focused={isFocused ? 'true' : undefined}

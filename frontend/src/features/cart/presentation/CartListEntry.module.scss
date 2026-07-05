@@ -7,16 +7,18 @@ $list-entry-thumb-size: 2.75rem;
 
 $list-entry-surface: $color-cart-list-surface;
 $list-entry-border: $color-cart-list-border;
-/** Подсветка строки при выборе новой даты: заметнее холодный голубой. */
-$list-entry-date-edit-tint: hsl(210, 82%, 94%);
-$list-entry-date-edit-tint-hover: hsl(210, 76%, 90%);
-$list-entry-date-edit-bg: mix($list-entry-date-edit-tint, $list-entry-surface, 64%);
-$list-entry-date-edit-bg-hover: mix(
-  $list-entry-date-edit-tint-hover,
-  $list-entry-surface,
-  58%
-);
-$list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
+
+@mixin cart-list-entry-indicator-border($indicator-color) {
+  border-color: $indicator-color;
+
+  .thumb {
+    border-color: $indicator-color;
+  }
+}
+
+$list-entry-bg: #fff;
+$list-entry-bg-hover: #fafafa;
+$list-entry-bg-selected: #f5f5f5;
 
 .shell {
   position: relative;
@@ -24,11 +26,29 @@ $list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
   margin-bottom: 0.25rem;
   padding: 0.15rem 2rem;
   background-color: #fff;
-  border: 1px solid $list-entry-border;
+  border: 1px solid $color-preview-indicator-cart;
   border-radius: $list-entry-radius-sm;
   transition:
     box-shadow 0.15s ease,
     border-color 0.15s ease;
+
+  @include cart-list-entry-indicator-border($color-preview-indicator-cart);
+
+  &[data-preview-status='ready'] {
+    @include cart-list-entry-indicator-border($color-preview-indicator-ready);
+  }
+
+  &[data-preview-status='sent'] {
+    @include cart-list-entry-indicator-border($color-preview-indicator-sent);
+  }
+
+  &[data-preview-status='delivered'] {
+    @include cart-list-entry-indicator-border($color-preview-indicator-delivered);
+  }
+
+  &[data-preview-status='error'] {
+    @include cart-list-entry-indicator-border($color-preview-indicator-error);
+  }
 
   /**
    * Внешний контейнер: рамка без изменений; слева полоска как в Конверте.
@@ -187,7 +207,7 @@ $list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
   margin: 0;
   font: inherit;
   appearance: none;
-  color: $color-font-disabled;
+  color: $color-font-enabled-light;
   cursor: pointer;
   transition: color 0.15s ease;
 
@@ -208,18 +228,14 @@ $list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
   min-height: $list-entry-row-height;
   padding: 1px 0.5rem 1px 0.35rem;
   box-sizing: border-box;
-  background-color: $list-entry-surface;
-  border: 1px solid $list-entry-border;
+  background-color: $list-entry-bg;
+  border: none;
   border-radius: $list-entry-radius-sm;
   user-select: none;
-  transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    opacity 0.15s ease;
+  transition: background-color 0.15s ease;
 
   &[data-inactive='true'] {
-    background-color: $color-disabled-light;
-    border-color: $color-disabled;
+    background-color: $list-entry-bg;
 
     .thumb {
       background-color: mix($color-app-inner, #eee, 55%);
@@ -233,11 +249,10 @@ $list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
 
   &:hover,
   &[data-focused='true'] {
-    background-color: darken($list-entry-surface, 1.5%);
+    background-color: $list-entry-bg-hover;
 
     &[data-inactive='true'] {
-      background-color: darken($color-disabled-light, 3%);
-      border-color: $color-disabled;
+      background-color: $list-entry-bg-hover;
     }
   }
 
@@ -248,40 +263,28 @@ $list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
 
     &:focus-visible {
       outline: $list-entry-focus-outline-width solid
-        mix($list-entry-surface, $color-app-sidebar-icon-active, 55%);
+        mix($list-entry-bg, $color-app-sidebar-icon-active, 55%);
       outline-offset: $list-entry-focus-outline-offset;
     }
   }
 
   &[data-date-edit-active='true'] {
-    background-color: $list-entry-date-edit-bg;
+    background-color: $list-entry-bg;
   }
 
   &[data-date-edit-active='true']:hover,
   &[data-date-edit-active='true'][data-focused='true'] {
-    background-color: $list-entry-date-edit-bg-hover;
+    background-color: $list-entry-bg-hover;
   }
 
   &[data-date-edit-active='true'][data-inactive='true'] {
-    background-color: mix($list-entry-date-edit-tint, $color-disabled-light, 48%);
-  }
-
-  /** cartBlocked: голубая рамка только в dateEdit без выделения строки. */
-  &[data-cart-blocked='true'][data-date-edit-active='true']:not([data-selected='true']) {
-    border: 1px solid $list-entry-date-edit-border;
-  }
-
-  &[data-cart-blocked='true'][data-date-edit-active='true'][data-inactive='true']:not(
-      [data-selected='true']
-    ) {
-    border: 1px solid mix(hsl(210, 48%, 76%), $color-disabled, 58%);
+    background-color: $list-entry-bg;
   }
 
   /** Сегмент «Корзина». */
   &[data-selected='true']:not([data-cart-blocked='true']),
   &[data-date-edit-active='true'][data-selected='true']:not([data-cart-blocked='true']) {
-    background-color: darken($list-entry-surface, 3%);
-    border: 1px solid $list-entry-border;
+    background-color: $list-entry-bg-selected;
   }
 
   &[data-selected='true']:not([data-cart-blocked='true']):hover,
@@ -290,16 +293,14 @@ $list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
   &[data-date-edit-active='true'][data-selected='true']:not(
       [data-cart-blocked='true']
     )[data-focused='true'] {
-    background-color: darken($list-entry-surface, 3%);
-    border: 1px solid $list-entry-border;
+    background-color: $list-entry-bg-selected;
   }
 
   &[data-selected='true'][data-inactive='true']:not([data-cart-blocked='true']),
   &[data-date-edit-active='true'][data-selected='true'][data-inactive='true']:not(
       [data-cart-blocked='true']
     ) {
-    background-color: darken($color-disabled-light, 5%);
-    border-color: $color-disabled;
+    background-color: $list-entry-bg-selected;
   }
 
   &[data-selected='true'][data-inactive='true']:not([data-cart-blocked='true']):hover,
@@ -310,37 +311,32 @@ $list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
   &[data-date-edit-active='true'][data-selected='true'][data-inactive='true']:not(
       [data-cart-blocked='true']
     )[data-focused='true'] {
-    background-color: darken($color-disabled-light, 6%);
-    border-color: $color-disabled;
+    background-color: $list-entry-bg-selected;
   }
 
-  /** Сегмент «Заблокированные»: светло-синий акцент (полоска + бледный фон). */
+  /** Сегмент «Заблокированные». */
   &[data-cart-blocked='true'][data-selected='true'],
   &[data-cart-blocked='true'][data-date-edit-active='true'][data-selected='true'] {
-    background-color: mix($list-entry-date-edit-tint, $list-entry-surface, 72%);
-    border: 1px solid $list-entry-date-edit-border;
+    background-color: $list-entry-bg-selected;
   }
 
   &[data-cart-blocked='true'][data-selected='true']:hover,
   &[data-cart-blocked='true'][data-selected='true'][data-focused='true'],
   &[data-cart-blocked='true'][data-date-edit-active='true'][data-selected='true']:hover,
   &[data-cart-blocked='true'][data-date-edit-active='true'][data-selected='true'][data-focused='true'] {
-    background-color: mix($list-entry-date-edit-tint-hover, $list-entry-surface, 66%);
-    border: 1px solid $list-entry-date-edit-border;
+    background-color: $list-entry-bg-selected;
   }
 
   &[data-cart-blocked='true'][data-selected='true'][data-inactive='true'],
   &[data-cart-blocked='true'][data-date-edit-active='true'][data-selected='true'][data-inactive='true'] {
-    background-color: mix($list-entry-date-edit-tint, $color-disabled-light, 48%);
-    border: 1px solid mix(hsl(210, 48%, 76%), $color-disabled, 58%);
+    background-color: $list-entry-bg-selected;
   }
 
   &[data-cart-blocked='true'][data-selected='true'][data-inactive='true']:hover,
   &[data-cart-blocked='true'][data-selected='true'][data-inactive='true'][data-focused='true'],
   &[data-cart-blocked='true'][data-date-edit-active='true'][data-selected='true'][data-inactive='true']:hover,
   &[data-cart-blocked='true'][data-date-edit-active='true'][data-selected='true'][data-inactive='true'][data-focused='true'] {
-    background-color: mix($list-entry-date-edit-tint-hover, $color-disabled-light, 44%);
-    border: 1px solid mix(hsl(210, 48%, 76%), $color-disabled, 58%);
+    background-color: $list-entry-bg-selected;
   }
 }
 
@@ -380,7 +376,7 @@ $list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
   align-items: center;
   justify-content: center;
   background-color: $color-app-inner;
-  border: 1px solid mix($list-entry-border, transparent, 58%);
+  border: 1px solid $color-preview-indicator-cart;
 }
 
 .statusIndicator {

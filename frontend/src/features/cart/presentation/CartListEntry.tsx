@@ -137,6 +137,9 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
       data-inactive={inactive ? 'true' : undefined}
       data-selected={isSelected ? 'true' : undefined}
       data-cart-blocked={isBlockedEntry ? 'true' : undefined}
+      data-preview-status={
+        previewStatus && !previewIsProcessed ? previewStatus : undefined
+      }
     >
       {showCartCheckbox ? (
         <div className={styles.shellCheckboxSlot}>
