@@ -4,7 +4,7 @@ import type { LayoutOrientation } from '@layout/domain/types'
 import { roundTo } from '../../helpers'
 import { scaleMeasuredHeightToUiScale } from './calcAppUiScale'
 
-/** Mobile factory toolbar row — matches $section-inner-toolbar-height-desktop (2.25rem). */
+/** Mobile factory toolbar row — derived from section toolbar hit-area + padding. */
 export const MOBILE_CARD_INNER_TOOLBAR_REM = 2.25
 
 /** Mobile factory shell: upper (section) + lower (scenario) toolbar rows. */

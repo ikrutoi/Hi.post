@@ -42,8 +42,13 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   /** Зазор между мини-паями и центральным CardPie (база — `--mobile-section-inset`). */
   --mobile-pie-gutter-mini-gap-to-center: calc(var(--mobile-section-inset) * 2);
   --mobile-section-inner-toolbar-height: #{iconButton.$toolbar-hit-size-mobile-section};
+  --mobile-factory-toolbar-row-padding-y: calc(
+    (#{$section-inner-toolbar-height-desktop} - #{iconButton.$toolbar-hit-size-mobile-section}) / 2
+  );
+  /** Ряд factory toolbar: hit-area кнопки + вертикальные отступы + доля межрядного gap. */
   --mobile-factory-toolbar-row-height: calc(
-    #{$section-inner-toolbar-height-desktop} + var(--mobile-factory-toolbar-row-gap-share)
+    var(--mobile-section-inner-toolbar-height) + 2 * var(--mobile-factory-toolbar-row-padding-y) +
+      var(--mobile-factory-toolbar-row-gap-share)
   );
   --mobile-central-section-offset-top: var(--mobile-factory-toolbar-gap);
   --mobile-section-toolbar-band: var(--mobile-factory-toolbar-row-height);

@@ -1840,8 +1840,7 @@
   .toolbarAroma {
     align-items: center;
     height: 100%;
-    min-height: var(--mobile-factory-toolbar-row-height, var(--mobile-section-inner-toolbar-height));
-    max-height: var(--mobile-factory-toolbar-row-height, var(--mobile-section-inner-toolbar-height));
+    min-height: 0;
     box-sizing: border-box;
 
     .toolbarGroup {
