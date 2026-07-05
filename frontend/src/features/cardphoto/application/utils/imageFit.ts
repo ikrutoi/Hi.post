@@ -9,6 +9,33 @@ import type {
   ImageRotation,
 } from '../../domain/types'
 
+const MAX_STAGE_EDGE_BLEED = 2
+
+/** Добивает слой до фактического DOM-стейджа, если зазор ≤2px и картинка уже почти на всю ширину/высоту. */
+export function bleedImageLayerToStage(
+  layer: ImageLayer,
+  stageWidth: number,
+  stageHeight: number,
+): { left: number; top: number; width: number; height: number } {
+  const { left, top } = layer
+  let width = layer.meta.width
+  let height = layer.meta.height
+
+  const gapRight = stageWidth - (left + width)
+  const gapBottom = stageHeight - (top + height)
+  const fillsWidth = left + width >= stageWidth - MAX_STAGE_EDGE_BLEED
+  const fillsHeight = top + height >= stageHeight - MAX_STAGE_EDGE_BLEED
+
+  if (fillsWidth && gapRight > 0 && gapRight <= MAX_STAGE_EDGE_BLEED) {
+    width += gapRight
+  }
+  if (fillsHeight && gapBottom > 0 && gapBottom <= MAX_STAGE_EDGE_BLEED) {
+    height += gapBottom
+  }
+
+  return { left, top, width, height }
+}
+
 /** Целые px + центрирование через floor — убирает субпиксельный зазор у бордера (589×588.406 → 589×589 при квадратной карте). */
 function alignImageLayerToPixelGrid(
   card: CardLayer,
@@ -30,11 +57,25 @@ function alignImageLayerToPixelGrid(
     iw = cw
   }
 
+  const offsetX = Math.floor((cw - iw) / 2)
+  const offsetY = Math.floor((ch - ih) / 2)
+
+  // Субпиксельное округление (roundTo + floor) иногда оставляет ≤1px зазор справа/снизу —
+  // через него виден белый фон viewContainer. Добиваем только микро-зазоры, не letterbox.
+  const gapRight = cw - (offsetX + iw)
+  const gapBottom = ch - (offsetY + ih)
+  if (gapRight > 0 && gapRight <= 1) {
+    iw += gapRight
+  }
+  if (gapBottom > 0 && gapBottom <= 1) {
+    ih += gapBottom
+  }
+
   return {
     imgWidth: iw,
     imgHeight: ih,
-    offsetX: Math.floor((cw - iw) / 2),
-    offsetY: Math.floor((ch - ih) / 2),
+    offsetX,
+    offsetY,
   }
 }
 

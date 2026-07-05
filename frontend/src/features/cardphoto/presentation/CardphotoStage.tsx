@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { useStore } from 'react-redux'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
@@ -31,6 +31,15 @@ import {
   prepareForRedux,
   prepareConfigForRedux,
 } from '@app/middleware/cardphotoHelpers'
+import { bleedImageLayerToStage } from '../application/utils/imageFit'
+
+function measureStagePx(el: HTMLDivElement): { width: number; height: number } {
+  const { width, height } = el.getBoundingClientRect()
+  return {
+    width: Math.max(2, Math.ceil(width)),
+    height: Math.max(2, Math.ceil(height)),
+  }
+}
 
 export const CardphotoStage = () => {
   const dispatch = useAppDispatch()
@@ -56,6 +65,9 @@ export const CardphotoStage = () => {
   const { sizeCard } = useSizeFacade()
 
   const [loaded, setLoaded] = useState(false)
+  const [stagePx, setStagePx] = useState<{ width: number; height: number } | null>(
+    null,
+  )
   const stageRef = useRef<HTMLDivElement>(null)
 
   const containerKey = `${activeImage?.id}_${sizeCard.orientation}_${activeImage?.status}_${activeImage?.source}`
@@ -64,10 +76,9 @@ export const CardphotoStage = () => {
   useLayoutEffect(() => {
     const el = stageRef.current
     if (!el || !assetConfig) return
-    const w = el.clientWidth
-    const h = el.clientHeight
-    if (w < 2 || h < 2) return
-    dispatch(setCardphotoImageStageRect({ width: w, height: h }))
+    const next = measureStagePx(el)
+    setStagePx(next)
+    dispatch(setCardphotoImageStageRect(next))
   }, [dispatch, assetConfig])
 
   useLayoutEffect(() => {
@@ -75,15 +86,15 @@ export const CardphotoStage = () => {
     if (!el) return
 
     const publish = () => {
-      const w = el.clientWidth
-      const h = el.clientHeight
+      const next = measureStagePx(el)
       // Не затираем rect при кратковременном нулевом размере: при `clearCurrentConfig`
       // в saga `showCropUi` на один кадр false → пустой стейдж → иначе в Redux уходит
       // null и fit идёт по глобальному sizeCard (картинка крупнее стейджа + зазор у бордера).
-      if (w < 2 || h < 2) {
+      if (next.width < 2 || next.height < 2) {
         return
       }
-      dispatch(setCardphotoImageStageRect({ width: w, height: h }))
+      setStagePx(next)
+      dispatch(setCardphotoImageStageRect(next))
     }
 
     publish()
@@ -131,14 +142,30 @@ export const CardphotoStage = () => {
 
   const shouldShowImage = !!src && !!activeImage
 
-  const imageStyle: React.CSSProperties | undefined = imageLayer
+  const renderedImageBox = useMemo(() => {
+    if (!imageLayer) return null
+    if (!stagePx) {
+      return {
+        left: imageLayer.left,
+        top: imageLayer.top,
+        width: imageLayer.meta.width,
+        height: imageLayer.meta.height,
+      }
+    }
+    return bleedImageLayerToStage(imageLayer, stagePx.width, stagePx.height)
+  }, [imageLayer, stagePx])
+
+  const imageStyle: React.CSSProperties | undefined = renderedImageBox
     ? {
         position: 'absolute',
-        left: `${imageLayer.left}px`,
-        top: `${imageLayer.top}px`,
-        width: `${imageLayer.meta.width}px`,
-        height: `${imageLayer.meta.height}px`,
-        transform: `rotate(${imageLayer.rotation}deg)`,
+        left: `${renderedImageBox.left}px`,
+        top: `${renderedImageBox.top}px`,
+        width: `${renderedImageBox.width}px`,
+        height: `${renderedImageBox.height}px`,
+        transform:
+          imageLayer && imageLayer.rotation
+            ? `rotate(${imageLayer.rotation}deg)`
+            : undefined,
         transformOrigin: 'center center',
         maxWidth: 'none',
       }

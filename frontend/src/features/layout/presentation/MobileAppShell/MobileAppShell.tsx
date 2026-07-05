@@ -35,22 +35,12 @@ import { addEditorPiePlanToCart } from '@date/infrastructure/state'
 import { dispatchCardPieToolbarIconState } from '@toolbar/application/syncCardPieToolbarIcons'
 import type { CardSection, IconKey } from '@shared/config/constants'
 import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
-import { CardphotoListMobileSlot } from '@cardphoto/presentation/CardphotoListMobileSlot'
-import { CardtextListMobileSlot } from '@cardtext/presentation/CardtextListMobileSlot'
-import { AddressListMobileSlot } from '@envelope/addressBook/presentation/AddressListMobileSlot'
-import { selectIsListPanelOpen } from '@cardphoto/infrastructure/selectors'
-import { selectIsCardtextListPanelOpen } from '@cardtext/infrastructure/selectors'
-import {
-  selectRecipientListPanelOpen,
-  selectSenderListPanelOpen,
-} from '@envelope/infrastructure/selectors'
 import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDevContext'
 import { IconLogo } from '@shared/ui/icons'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { MobileCardPieGutterMinis } from './MobileCardPieGutterMinis'
 import { MobileCartListSlot } from './MobileCartListSlot'
-import listSlotStyles from './MobileCartListSlot.module.scss'
 import { MobileHistoryListSlot } from './MobileHistoryListSlot'
 import { useMobilePlanCardPies } from './useMobilePlanCardPies'
 import { CardPieLeftSlot } from '@features/cardPie/presentation/CardPieLeftSlot'
@@ -91,11 +81,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const shellRef = useRef<HTMLDivElement>(null)
   useMobileVisualViewport(shellRef)
   const userLoginPanelOpen = useAppSelector(selectUserLoginPanelOpen)
-  const cardphotoListPanelOpen = useAppSelector(selectIsListPanelOpen)
-  const cardtextListPanelOpen = useAppSelector(selectIsCardtextListPanelOpen)
-  const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
-  const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
-  const addressListPanelOpen = senderListPanelOpen || recipientListPanelOpen
   const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
   const cartListSelectedLocalId = useAppSelector(selectCartListSelectedLocalId)
   const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
@@ -179,13 +164,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     rightPieAromaPeekNoToolbar ||
     rightPieDatePeekNoToolbar
 
-  type MobileFactoryListOverlayKey =
-    | 'cardPie'
-    | 'cart'
-    | 'history'
-    | 'cardphoto'
-    | 'cardtext'
-    | 'address'
+  type MobileFactoryListOverlayKey = 'cardPie' | 'cart' | 'history'
 
   /** Peek секции: список не перекрывает фабрику, кнопка списка остаётся включённой. */
   const mobileFactoryListOverlayKey = useMemo((): MobileFactoryListOverlayKey | null => {
@@ -193,18 +172,12 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     if (showMobileCardPieListInFactory) return 'cardPie'
     if (cartListPanelOpen) return 'cart'
     if (historyListPanelOpen) return 'history'
-    if (cardphotoListPanelOpen) return 'cardphoto'
-    if (cardtextListPanelOpen) return 'cardtext'
-    if (addressListPanelOpen) return 'address'
     return null
   }, [
     mobileFactoryChromePeek,
     showMobileCardPieListInFactory,
     cartListPanelOpen,
     historyListPanelOpen,
-    cardphotoListPanelOpen,
-    cardtextListPanelOpen,
-    addressListPanelOpen,
   ])
 
   const canCyclePlanPies = planPies.length > 0
@@ -726,44 +699,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                       <MobileHistoryListSlot
                         onSelectEntry={onHistoryListSelectEntry}
                       />
-                    </div>
-                  ) : null}
-                  {mobileFactoryListOverlayKey === 'cardphoto' ? (
-                    <div
-                      className={styles.mobileFormListOverlay}
-                      data-list-overlay="cardphoto"
-                    >
-                      <div className={listSlotStyles.root}>
-                        <div className={listSlotStyles.panelWrap}>
-                          <CardphotoListMobileSlot />
-                        </div>
-                      </div>
-                    </div>
-                  ) : null}
-                  {mobileFactoryListOverlayKey === 'cardtext' ? (
-                    <div
-                      className={styles.mobileFormListOverlay}
-                      data-list-overlay="cardtext"
-                    >
-                      <div className={listSlotStyles.root}>
-                        <div className={listSlotStyles.panelWrap}>
-                          <CardtextListMobileSlot />
-                        </div>
-                      </div>
-                    </div>
-                  ) : null}
-                  {mobileFactoryListOverlayKey === 'address' ? (
-                    <div
-                      className={styles.mobileFormListOverlay}
-                      data-list-overlay={
-                        senderListPanelOpen ? 'address-sender' : 'address-recipient'
-                      }
-                    >
-                      <div className={listSlotStyles.root}>
-                        <div className={listSlotStyles.panelWrap}>
-                          <AddressListMobileSlot />
-                        </div>
-                      </div>
                     </div>
                   ) : null}
                 </div>

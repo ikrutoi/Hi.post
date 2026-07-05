@@ -121,7 +121,7 @@
     width: 100%;
     height: auto;
     align-items: center;
-    border: 1px solid $color-section-light;
+    border: none;
   }
 
   :global([data-shell-layout='desktop']) & {

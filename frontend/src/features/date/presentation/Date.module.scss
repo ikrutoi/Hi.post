@@ -1,17 +1,8 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
-@use '@styles/config/mobileNotebookTabColors' as notebookTab;
-@use '@styles/config/mobileSectionGutter' as sectionGutter;
 
 $mobile-date-calendar-chrome-row-height: 2rem;
 $mobile-date-calendar-chrome-gap: 0.125rem;
-
-@mixin mobile-date-strip-gutter-backdrop {
-  @include sectionGutter.mobile-section-view-wrap-side-gutters;
-  @include sectionGutter.mobile-section-gutter-backdrop {
-    @content;
-  }
-}
 
 .date {
   display: flex;
@@ -48,24 +39,6 @@ $mobile-date-calendar-chrome-gap: 0.125rem;
     background-color: transparent;
     position: relative;
     isolation: isolate;
-
-    &[data-mobile-date-strip='date'] .dateViewWrap {
-      @include mobile-date-strip-gutter-backdrop {
-        @include notebookTab.mobile-notebook-date-tab-gutter-solid;
-      }
-    }
-
-    &[data-mobile-date-strip='cart'] .dateViewWrap {
-      @include mobile-date-strip-gutter-backdrop {
-        @include notebookTab.mobile-notebook-cart-tab-gutter-gradient;
-      }
-    }
-
-    &[data-mobile-date-strip='history'] .dateViewWrap {
-      @include mobile-date-strip-gutter-backdrop {
-        @include notebookTab.mobile-notebook-history-tab-gutter-gradient;
-      }
-    }
   }
 }
 
@@ -134,6 +107,7 @@ $mobile-date-calendar-chrome-gap: 0.125rem;
     min-height: 0;
     align-items: center;
     overflow: hidden;
+    border: none;
 
     > * {
       flex: 0 0 auto;

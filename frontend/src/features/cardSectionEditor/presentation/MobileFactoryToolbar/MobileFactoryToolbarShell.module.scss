@@ -7,8 +7,7 @@
   height: calc(2 * var(--mobile-factory-toolbar-row-height) + 1px);
   min-height: calc(2 * var(--mobile-factory-toolbar-row-height) + 1px);
   max-height: calc(2 * var(--mobile-factory-toolbar-row-height) + 1px);
-  width: calc(100% - 2 * var(--mobile-section-inset));
-  margin-inline: var(--mobile-section-inset);
+  width: 100%;
   box-sizing: border-box;
   border: none;
   border-radius: 0.5rem;

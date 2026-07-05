@@ -2,7 +2,6 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
 @use '@styles/config/mobileNotebookTabColors' as notebookTab;
-@use '@styles/config/mobileSectionGutter' as sectionGutter;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
 $mobile-header-cart-tab-top: notebookTab.$mobile-notebook-cart-tab-top;
@@ -82,8 +81,12 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   }
 
   .mobileForm {
-    padding-top: calc(0.35rem + env(safe-area-inset-top, 0px));
     overflow: hidden;
+    padding-top: calc(0.35rem + env(safe-area-inset-top, 0px));
+
+    :global([data-mobile-factory-section-frame='true']) {
+      --mobile-factory-frame-top-offset: calc(0.35rem + env(safe-area-inset-top, 0px));
+    }
 
     :global([class*='cardSectionEditor']) {
       justify-content: flex-start;
@@ -133,9 +136,14 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   }
 
   .mobileForm {
+    --mobile-form-layout-padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
+    padding-bottom: var(--mobile-form-layout-padding-bottom);
     padding-top: 0.35rem;
-    padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
     overflow: hidden;
+
+    :global([data-mobile-factory-section-frame='true']) {
+      --mobile-factory-frame-top-offset: 0.35rem;
+    }
   }
 
   .mobileEditorSection {
@@ -765,7 +773,7 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
     align-self: stretch;
   }
 
-  // Cardphoto / cardtext / envelope / aroma — inner work zone flush to factory toolbar shell.
+  // Cardphoto / cardtext / envelope / aroma — контент внутри MobileFactorySectionFrame.
   :global([class*='cardphotoViewWrap']),
   :global([class*='cardtextViewWrap']),
   :global([class*='envelopeViewWrap']),
@@ -778,38 +786,22 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
     height: auto;
     min-height: 0;
     width: 100%;
-    @include sectionGutter.mobile-section-view-wrap-side-gutters;
-  }
-
-  :global([class*='cardphotoViewWrap']) {
-    @include sectionGutter.mobile-section-gutter-backdrop {
-      background: sectionGutter.$mobile-section-gutter-cardphoto;
-    }
   }
 
   :global([class*='cardtextViewWrap']) {
-    @include sectionGutter.mobile-section-gutter-backdrop {
-      background: sectionGutter.$mobile-section-gutter-cardtext;
-    }
-  }
-
-  :global([class*='envelope']:not([data-envelope-mobile-form='true']))
-    :global([class*='envelopeViewWrap']) {
-    @include sectionGutter.mobile-section-gutter-backdrop {
-      background: sectionGutter.$mobile-section-gutter-envelope;
-    }
+    position: relative;
+    z-index: 1;
+    border-radius: 0;
+    align-items: stretch;
+    flex: 0 0 auto;
+    height: auto;
+    width: 100%;
   }
 
   :global([class*='envelope'][data-envelope-mobile-form='true'])
     :global([class*='envelopeViewWrap']) {
     padding-inline: 0;
     background: transparent;
-  }
-
-  :global([class*='aromaViewWrap']) {
-    @include sectionGutter.mobile-section-gutter-backdrop {
-      background: sectionGutter.$mobile-section-gutter-aroma;
-    }
   }
 
   :global([class*='dateViewWrap']) {
@@ -827,7 +819,7 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   :global([class*='envelopeViewContent']),
   :global([class*='aromaViewContent']) {
     position: relative;
-    border: 1px solid $color-section-light;
+    border: none;
     border-radius: 0.5rem;
     background-color: #fff;
     overflow: hidden;
@@ -859,7 +851,7 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
 
   :global([class*='dateViewContent']) {
     position: relative;
-    border: 1px solid $color-section-light;
+    border: none;
     border-radius: 0.5rem;
     background-color: #fff;
     overflow: hidden;
@@ -957,16 +949,21 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   flex-direction: column;
   overflow: visible;
   box-sizing: border-box;
-  // Symmetric gap: CardPie ↔ toolbar shell ↔ central section.
+  // Зазор CardPie ↔ factory: padding формы + frame подтягивается и окрашивает полосу.
+  --mobile-form-layout-padding-bottom: var(--mobile-form-padding-bottom);
   padding-top: var(--mobile-factory-toolbar-gap);
-  padding-bottom: var(--mobile-form-padding-bottom);
+  padding-bottom: var(--mobile-form-layout-padding-bottom);
 
   &[data-mobile-factory-chrome='peek'] {
     padding-top: 0;
+
+    .mobileFormListOverlay {
+      padding-top: 0;
+    }
   }
 
   :global([class*='cardSectionEditor']) {
-    justify-content: flex-end;
+    justify-content: flex-start;
     flex: 1 1 auto;
     min-height: 0;
     height: 100%;
@@ -981,7 +978,7 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    justify-content: flex-end;
+    justify-content: flex-start;
   }
 
   :global([class*='editorAreaCenter']) {
@@ -990,6 +987,14 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
     max-height: 100%;
     flex: 1 1 auto;
     height: 100%;
+  }
+
+  :global([data-mobile-factory-section-frame='true']) {
+    width: 100% !important;
+    min-height: calc(100% + var(--mobile-form-layout-padding-bottom, var(--mobile-form-padding-bottom)));
+    max-height: none;
+    flex: 1 1 auto;
+    height: auto;
   }
 
   :global([class*='editorSection']) {
@@ -1052,7 +1057,7 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
 
 .mobileFormListOverlay {
   position: absolute;
-  top: var(--mobile-factory-toolbar-gap);
+  top: 0;
   right: var(--mobile-section-inset);
   bottom: var(--mobile-form-padding-bottom);
   left: var(--mobile-section-inset);
@@ -1062,38 +1067,7 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   min-height: 0;
   box-sizing: border-box;
   pointer-events: auto;
-
-  &[data-list-overlay='cardphoto'],
-  &[data-list-overlay='cardtext'],
-  &[data-list-overlay='address-sender'],
-  &[data-list-overlay='address-recipient'] {
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: calc(-1 * var(--mobile-section-inset));
-      right: calc(-1 * var(--mobile-section-inset));
-      pointer-events: none;
-      z-index: 0;
-    }
-  }
-
-  &[data-list-overlay='cardphoto']::before {
-    background: sectionGutter.$mobile-section-gutter-cardphoto;
-  }
-
-  &[data-list-overlay='cardtext']::before {
-    background: sectionGutter.$mobile-section-gutter-cardtext;
-  }
-
-  &[data-list-overlay='address-sender']::before {
-    background: sectionGutter.$mobile-section-gutter-envelope-sender;
-  }
-
-  &[data-list-overlay='address-recipient']::before {
-    background: sectionGutter.$mobile-section-gutter-envelope;
-  }
+  padding-top: var(--mobile-factory-toolbar-gap);
 
   > * {
     position: relative;

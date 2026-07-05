@@ -60,10 +60,9 @@
 .cropImage {
   display: block;
   opacity: 0;
-  will-change: transform;
   transition: opacity 0.4s ease;
-  // object-fit: contain;
-  // border-bottom: solid 1px blue;
+  object-fit: fill;
+  // will-change: transform — у compositor layer иногда остаётся 1px зазор у края.
 }
 
 .fadeIn {

@@ -1,0 +1,101 @@
+@use '@styles/config/mobileSectionGutter' as sectionGutter;
+@use '@styles/config/mobileNotebookTabColors' as notebookTab;
+
+.frame {
+  --mobile-factory-frame-top-offset: var(--mobile-factory-toolbar-gap);
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  box-sizing: border-box;
+  // Подтягиваем frame в padding-top mobileForm; второй padding-top — зазор до toolbar.
+  margin-top: calc(-1 * var(--mobile-factory-frame-top-offset));
+  padding-top: var(--mobile-factory-frame-top-offset);
+  padding-inline: var(--mobile-section-inset);
+  gap: var(--mobile-central-section-offset-top, var(--mobile-factory-toolbar-gap));
+  // Фон до низа mobileForm (safe-area): расширяем box, без padding-bottom (не поднимает контент).
+  margin-bottom: calc(-1 * var(--mobile-form-layout-padding-bottom, var(--mobile-form-padding-bottom)));
+  min-height: calc(100% + var(--mobile-form-layout-padding-bottom, var(--mobile-form-padding-bottom)));
+
+  &[data-mobile-section-surface='cardphoto'] {
+    background-color: sectionGutter.$mobile-section-gutter-cardphoto;
+  }
+
+  &[data-mobile-section-surface='cardtext'] {
+    background-color: sectionGutter.$mobile-section-gutter-cardtext;
+  }
+
+  &[data-mobile-section-surface='envelope'] {
+    background-color: sectionGutter.$mobile-section-gutter-envelope;
+  }
+
+  &[data-mobile-section-surface='envelope-sender'] {
+    background-color: sectionGutter.$mobile-section-gutter-envelope-sender;
+  }
+
+  &[data-mobile-section-surface='aroma'] {
+    background-color: sectionGutter.$mobile-section-gutter-aroma;
+  }
+
+  &[data-mobile-section-surface='date'] {
+    background-color: notebookTab.$mobile-notebook-date-tab-date;
+  }
+
+  &[data-mobile-section-surface='date-cart'] {
+    @include notebookTab.mobile-notebook-cart-tab-gutter-gradient;
+  }
+
+  &[data-mobile-section-surface='date-history'] {
+    @include notebookTab.mobile-notebook-history-tab-gutter-gradient;
+  }
+
+  &[data-mobile-section-surface='neutral'] {
+    background-color: transparent;
+  }
+
+  :global([data-mobile-factory-chrome='peek']) & {
+    --mobile-factory-frame-top-offset: 0;
+    margin-top: 0;
+    padding-top: 0;
+  }
+}
+
+.frameTemplateList {
+  gap: 0;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--mobile-central-section-offset-top, var(--mobile-factory-toolbar-gap));
+  padding-bottom: var(--mobile-section-inset);
+}
+
+.contentTemplateList {
+  gap: 0;
+}
+
+.listWrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.listPanelWrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
