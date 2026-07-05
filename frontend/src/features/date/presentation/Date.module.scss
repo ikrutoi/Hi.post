@@ -100,19 +100,20 @@ $mobile-date-calendar-chrome-gap: 0.125rem;
   border: 1px solid $color-cardphoto-input-border;
 
   :global([data-shell-layout='mobile']) & {
-    flex: 0 0 auto;
+    flex: 1 1 auto;
     width: 100%;
-    margin-inline: 0;
-    height: auto;
+    height: 100%;
+    min-width: 0;
     min-height: 0;
-    align-items: center;
+    align-items: stretch;
     overflow: hidden;
     border: none;
 
     > * {
-      flex: 0 0 auto;
-      width: min(100%, var(--card-work-zone-side, 100%));
-      max-width: 100%;
+      flex: 1 1 auto;
+      width: 100%;
+      height: 100%;
+      min-width: 0;
       min-height: 0;
     }
   }
@@ -141,14 +142,11 @@ $mobile-date-calendar-chrome-gap: 0.125rem;
   box-sizing: border-box;
 
   :global([data-shell-layout='mobile']) & {
-    flex: 0 0 auto;
-    width: min(100%, var(--card-work-zone-side, 100%));
-    height: auto;
-    max-width: 100%;
-    max-height: min(100%, var(--card-work-zone-side, 100%));
-    min-width: min(100%, max(8rem, var(--card-work-zone-side, 8rem)));
-    min-height: min(100%, max(8rem, var(--card-work-zone-side, 8rem)));
-    aspect-ratio: 1;
+    flex: 1 1 auto;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -171,14 +169,11 @@ $mobile-date-calendar-chrome-gap: 0.125rem;
     box-shadow 0.2s ease;
 
   :global([data-shell-layout='mobile']) & {
-    flex: 0 0 auto;
-    width: min(100%, var(--card-work-zone-side, 100%));
-    height: auto;
-    max-width: 100%;
-    max-height: min(100%, var(--card-work-zone-side, 100%));
-    min-width: min(100%, max(8rem, var(--card-work-zone-side, 8rem)));
-    min-height: min(100%, max(8rem, var(--card-work-zone-side, 8rem)));
-    aspect-ratio: 1;
+    flex: 1 1 auto;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
     padding: 0 0.5rem 0;
     overflow: hidden;
     box-sizing: border-box;

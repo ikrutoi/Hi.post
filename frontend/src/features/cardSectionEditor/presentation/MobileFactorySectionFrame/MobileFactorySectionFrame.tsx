@@ -46,7 +46,12 @@ export const MobileFactorySectionFrame: React.FC<MobileFactorySectionFrameProps>
       ) : (
         <>
           {toolbar}
-          {children}
+          <div
+            className={styles.centralWorkZone}
+            data-mobile-central-work-zone="true"
+          >
+            <div className={styles.centralWorkZoneInner}>{children}</div>
+          </div>
         </>
       )}
     </div>

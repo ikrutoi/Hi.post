@@ -7,8 +7,6 @@ import {
   getSizeMiniCard,
   getSizeCard,
   scaleMeasuredHeightToUiScale,
-  MOBILE_CARD_INNER_TOOLBAR_REM,
-  MOBILE_FACTORY_TOOLBAR_ROW_COUNT,
 } from '@shared/utils/layout'
 import { useSizeFacade } from '@layout/application/facades'
 
@@ -62,105 +60,26 @@ export const useRecordSizeCard = (
         if (skipPanelMeasure) {
           const currentRemSize = remSize ?? 16
           const viewportWidth = window.innerWidth
-          const { contentWidth, contentHeight, slotHeight } =
-            measureMobileEditorSlot(
-              elementForm,
-              currentRemSize,
-              viewportHeight,
-            )
-          const mobileToolbarReservePx =
-            currentRemSize *
-            MOBILE_CARD_INNER_TOOLBAR_REM *
-            MOBILE_FACTORY_TOOLBAR_ROW_COUNT
-          const sizeCardFit = {
-            orientation: sizeCard.orientation,
-            aspectRatio: sizeCard.aspectRatio,
-            innerToolbarPx: mobileToolbarReservePx,
-            sectionHeightWorkSideOnly: true,
-          } as const
+          const { contentWidth } = measureMobileEditorSlot(
+            elementForm,
+            currentRemSize,
+            viewportHeight,
+          )
 
-          let measureWidth = contentWidth > 0 ? contentWidth : widthForm
-          let measureHeight = contentHeight
+          const measureWidth =
+            contentWidth > 0
+              ? contentWidth
+              : Math.max(0, widthForm - currentRemSize * 1.5)
+          const workSide = Math.max(0, Math.round(measureWidth))
 
-          if (measureHeight <= 0 && slotHeight > 0) {
-            measureHeight = Math.max(
-              0,
-              slotHeight * 0.72,
-            )
-          }
-
-          let resultSizeCard =
-            measureWidth > 0 && measureHeight > 0
-              ? getSizeCard(
-                  { width: measureWidth, height: measureHeight },
-                  currentRemSize,
-                  viewportHeight,
-                  sizeCardFit,
-                )
-              : calcSizeCard(
-                  Math.max(measureHeight, viewportHeight * 0.35),
-                  'landscape',
-                  viewportWidth,
-                )
-
-          if (resultSizeCard.width <= 0 || resultSizeCard.height <= 0) {
-            const fallbackHeight = Math.max(
-              measureHeight,
-              slotHeight * 0.72,
-              viewportHeight * 0.28,
-              120,
-            )
-            resultSizeCard = getSizeCard(
-              {
-                width: Math.max(measureWidth, viewportWidth * 0.85),
-                height: fallbackHeight,
-              },
-              currentRemSize,
-              viewportHeight,
-              sizeCardFit,
-            )
-          }
-
-          if (resultSizeCard.width <= 0 || resultSizeCard.height <= 0) {
-            resultSizeCard = calcSizeCard(
-              Math.max(measureHeight, viewportHeight * 0.35),
-              'landscape',
-              viewportWidth,
-            )
-            if (mobileToolbarReservePx > 0 && resultSizeCard.width > 0) {
-              const fitted = getSizeCard(
-                {
-                  width: Math.max(measureWidth, resultSizeCard.width),
-                  height: Math.max(
-                    measureHeight,
-                    resultSizeCard.height + mobileToolbarReservePx,
-                  ),
-                },
-                currentRemSize,
-                viewportHeight,
-                sizeCardFit,
-              )
-              if (fitted.width > 0 && fitted.height > 0) {
-                resultSizeCard = fitted
-              }
-            }
-          }
-
-          if (contentHeight > 0 && resultSizeCard.height > contentHeight) {
-            const capped = getSizeCard(
-              { width: measureWidth, height: contentHeight },
-              currentRemSize,
-              viewportHeight,
-              sizeCardFit,
-            )
-            if (capped.width > 0 && capped.height > 0) {
-              resultSizeCard = capped
-            }
-          }
-
-          if (resultSizeCard.width > 0 && resultSizeCard.height > 0) {
-            setSizeCard(resultSizeCard)
-          } else if (skipPanelMeasure) {
+          if (workSide > 0) {
+            setSizeCard({
+              orientation: sizeCard.orientation,
+              aspectRatio: sizeCard.aspectRatio,
+              width: workSide,
+              height: workSide,
+            })
+          } else {
             const emergency = calcSizeCard(
               Math.max(viewportHeight * 0.35, 320),
               'landscape',

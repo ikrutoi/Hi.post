@@ -3,6 +3,7 @@
 
 .frame {
   --mobile-factory-frame-top-offset: var(--mobile-factory-toolbar-gap);
+  --mobile-central-work-side: calc(100vw - 2 * var(--mobile-section-inset));
   position: relative;
   flex: 1 1 auto;
   min-height: 0;
@@ -14,7 +15,6 @@
   // Подтягиваем frame в padding-top mobileForm; второй padding-top — зазор до toolbar.
   margin-top: calc(-1 * var(--mobile-factory-frame-top-offset));
   padding-top: var(--mobile-factory-frame-top-offset);
-  padding-inline: var(--mobile-section-inset);
   gap: var(--mobile-central-section-offset-top, var(--mobile-factory-toolbar-gap));
   // Фон до низа mobileForm (safe-area): расширяем box, без padding-bottom (не поднимает контент).
   margin-bottom: calc(-1 * var(--mobile-form-layout-padding-bottom, var(--mobile-form-padding-bottom)));
@@ -77,11 +77,35 @@
   flex-direction: column;
   justify-content: flex-end;
   gap: var(--mobile-central-section-offset-top, var(--mobile-factory-toolbar-gap));
-  padding-bottom: var(--mobile-section-inset);
 }
 
 .contentTemplateList {
   gap: 0;
+}
+
+/** Квадратная рабочая зона: одинаковые отступы слева, справа и снизу. */
+.centralWorkZone {
+  position: relative;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  width: var(--mobile-central-work-side);
+  max-width: calc(100% - 2 * var(--mobile-section-inset));
+  aspect-ratio: 1;
+  height: auto;
+  margin-inline: var(--mobile-section-inset);
+  margin-bottom: var(--mobile-section-inset);
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 0.5rem;
+}
+
+.centralWorkZoneInner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
 }
 
 .listWrap {
