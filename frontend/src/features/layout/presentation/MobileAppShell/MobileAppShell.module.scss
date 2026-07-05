@@ -29,6 +29,15 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   --mobile-section-inset: 0.75rem;
   /** Зазор между toolbar и центральной секцией — половина бокового inset. */
   --mobile-factory-toolbar-central-gap: calc(var(--mobile-section-inset) / 2);
+  /** Высота factory toolbar shell (2 ряда + разделитель). */
+  --mobile-factory-toolbar-shell-height: calc(
+    2 * var(--mobile-factory-toolbar-row-height) + 1px
+  );
+  /** Контент factory: toolbar + зазор + квадрат + нижний inset. */
+  --mobile-factory-body-height: calc(
+    var(--mobile-factory-toolbar-shell-height) + var(--mobile-factory-toolbar-central-gap) +
+      var(--mobile-central-work-side) + var(--mobile-section-inset)
+  );
   /** Квадрат центральной секции: ширина экрана минус боковые inset'ы. */
   --mobile-central-work-side: calc(100vw - 2 * var(--mobile-section-inset));
   --mobile-form-padding-bottom: calc(
