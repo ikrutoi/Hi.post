@@ -1,0 +1,42 @@
+@use '@styles/config/uiLayout' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
+
+/** Одна строка footer chrome — как в HistoryListPanel / CartListPanel. */
+$history-footer-row-band: calc(
+  #{iconButton.$toolbar-hit-size-card-pie-list-header} + 0.35rem
+);
+
+/** Календарь: `.form` на mobile уже даёт padding-inline 0.5rem — не дублируем слева. */
+$history-footer-calendar-width-trim: 0.25rem;
+
+@mixin history-footer-indicators-shell-base {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: $history-footer-row-band;
+  padding: 0 0.35rem;
+  box-sizing: border-box;
+  background-color: #fff;
+  overflow: visible;
+  pointer-events: auto;
+  isolation: isolate;
+}
+
+@mixin history-footer-indicators-shell-list {
+  @include history-footer-indicators-shell-base;
+  @include list-panel-footer-width;
+}
+
+@mixin history-footer-indicators-shell-calendar {
+  @include history-footer-indicators-shell-base;
+  width: calc(100% - #{$history-footer-calendar-width-trim});
+  max-width: calc(100% - #{$history-footer-calendar-width-trim});
+}
+
+@mixin history-footer-indicators-inner {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+}

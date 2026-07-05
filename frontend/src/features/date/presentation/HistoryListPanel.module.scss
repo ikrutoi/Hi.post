@@ -14,10 +14,9 @@ $list-panel-compact-header-band: calc(
 );
 $list-panel-scroll-inset: 0.35rem;
 $list-panel-list-footer-gap: 1px;
-/** Футер: одна строка хедера + тот же межстрочный gap (0.35rem), без второй строки toolbar. */
-$list-panel-footer-row-band: calc(
-  #{iconButton.$toolbar-hit-size-card-pie-list-header} + 0.35rem
-);
+@use '@styles/config/historyFooterChrome' as historyFooter;
+
+$list-panel-footer-row-band: historyFooter.$history-footer-row-band;
 $list-panel-footer-band: calc(
   #{$list-panel-footer-row-band} + #{$list-panel-list-footer-gap}
 );
@@ -163,24 +162,10 @@ $list-panel-footer-band: calc(
   left: 0.5rem;
   bottom: 0;
   z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  @include list-panel-footer-width;
-  height: $list-panel-footer-row-band;
-  padding: 0 0.35rem;
-  box-sizing: border-box;
+  @include historyFooter.history-footer-indicators-shell-list;
   border-top: 1px solid $color-cardphoto-input-border;
-  background-color: #fff;
-  overflow: visible;
-  pointer-events: auto;
-  isolation: isolate;
 }
 
 .indicatorsInner {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  min-width: 0;
-  min-height: 0;
+  @include historyFooter.history-footer-indicators-inner;
 }

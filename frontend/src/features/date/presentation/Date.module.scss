@@ -1,5 +1,6 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
+@use '@styles/config/historyFooterChrome' as historyFooter;
 
 $mobile-date-calendar-chrome-row-height: 2rem;
 $mobile-date-calendar-chrome-gap: 0.125rem;
@@ -326,6 +327,15 @@ $mobile-date-calendar-chrome-gap: 0.125rem;
     }
   }
 
+  &.dateBottomToggleCartHistory {
+    :global([data-shell-layout='mobile']) & {
+      flex: 0 0 historyFooter.$history-footer-row-band;
+      height: historyFooter.$history-footer-row-band;
+      min-height: historyFooter.$history-footer-row-band;
+      max-height: historyFooter.$history-footer-row-band;
+    }
+  }
+
   &Multi {
     margin-left: 0.5rem;
   }
@@ -398,22 +408,14 @@ $mobile-date-calendar-chrome-gap: 0.125rem;
   }
 }
 
-/** Режим корзины / истории: легенда на всю ширину футера, как в списке истории. */
-.dateBottomToggleIndicatorsFullWidth {
-  width: 100%;
-  max-width: 100%;
-  flex: 1 1 auto;
-  padding-left: 0.35rem;
-  padding-right: 0.35rem;
-  box-sizing: border-box;
+/** Cart / history footer — геометрия как `.indicators` в HistoryListPanel (с учётом padding `.form`). */
+.historyFooterIndicators {
+  @include historyFooter.history-footer-indicators-shell-calendar;
+  flex: 0 0 auto;
+}
 
-  :global([data-shell-layout='mobile']) & {
-    width: 100%;
-    max-width: 100%;
-    flex: 1 1 auto;
-    padding-left: 0.35rem;
-    padding-right: 0.35rem;
-  }
+.historyFooterIndicatorsInner {
+  @include historyFooter.history-footer-indicators-inner;
 }
 
 .dateBottomToggleHistoryGroup {

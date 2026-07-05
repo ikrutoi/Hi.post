@@ -340,46 +340,46 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
             triggerFlash={triggerFlash}
           />
 
-        <div className={styles.dateBottomToggle}>
-          <div
-            className={clsx(
-              styles.dateBottomToggleIndicators,
-              (section === 'cart' || section === 'history') &&
-                styles.dateBottomToggleIndicatorsFullWidth,
-            )}
-          >
-            <PostcardStatusLegend
-              spot={
-                section === 'cart' || section === 'history'
-                  ? 'historyList'
-                  : 'calendar'
-              }
-              isHistoryEmpty={
-                (section === 'history' &&
-                  historyUnderlyingPostcardCount === 0) ||
-                (section === 'cart' && cartUnderlyingPostcardCount === 0)
-              }
-              statusCounts={
-                section === 'history'
-                  ? legendStatusCounts
-                  : section === 'cart'
-                    ? cartLegendStatusCounts
-                    : undefined
-              }
-              calendarDispatchDimmed={section === 'date'}
-              calendarCartStripLegendOnly={
-                section === 'date' || section === 'cart'
-              }
-              calendarCartStripBlockedLegend={section === 'cart'}
-              calendarHistoryStripLegend={section === 'history'}
-              calendarCartHistoryFooter={
-                section === 'cart' || section === 'history'
-              }
-              calendarFooterAlwaysEnabled={
-                section === 'cart' || section === 'history'
-              }
-            />
-          </div>
+        <div
+          className={clsx(
+            styles.dateBottomToggle,
+            (section === 'cart' || section === 'history') &&
+              styles.dateBottomToggleCartHistory,
+          )}
+        >
+          {section === 'cart' || section === 'history' ? (
+            <div className={styles.historyFooterIndicators}>
+              <div className={styles.historyFooterIndicatorsInner}>
+                <PostcardStatusLegend
+                  spot="historyList"
+                  isHistoryEmpty={
+                    (section === 'history' &&
+                      historyUnderlyingPostcardCount === 0) ||
+                    (section === 'cart' && cartUnderlyingPostcardCount === 0)
+                  }
+                  statusCounts={
+                    section === 'history'
+                      ? legendStatusCounts
+                      : cartLegendStatusCounts
+                  }
+                  calendarCartStripLegendOnly={section === 'cart'}
+                  calendarCartStripBlockedLegend={section === 'cart'}
+                  calendarHistoryStripLegend={section === 'history'}
+                  calendarCartHistoryFooter
+                  calendarFooterAlwaysEnabled
+                />
+              </div>
+            </div>
+          ) : (
+            <div className={styles.dateBottomToggleIndicators}>
+              <PostcardStatusLegend
+                spot="calendar"
+                isHistoryEmpty={false}
+                calendarDispatchDimmed={section === 'date'}
+                calendarCartStripLegendOnly={section === 'date'}
+              />
+            </div>
+          )}
           {section === 'date' ? (
             <div
               className={clsx(
