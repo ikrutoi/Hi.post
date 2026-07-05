@@ -1,18 +1,11 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 import clsx from 'clsx'
 import { useAppSelector } from '@app/hooks'
-import { selectIsListPanelOpen } from '@cardphoto/infrastructure/selectors'
-import { selectIsCardtextListPanelOpen } from '@cardtext/infrastructure/selectors'
-import {
-  selectRecipientListPanelOpen,
-  selectSenderListPanelOpen,
-} from '@envelope/infrastructure/selectors'
-import { selectIsCardPieListPanelOpen } from '@date/calendar/infrastructure/selectors'
-import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
 import { selectSenderView } from '@envelope/sender/infrastructure/selectors'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
+import { useMobileFactoryListChrome } from '../../application/hooks/useMobileFactoryListChrome'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { CardSectionToolbar } from '@features/cardSectionToolbar/presentation/CardSectionToolbar'
 import { MobileDateCalendarToolbarNav } from '@date/dateHeader/presentation/MobileDateCalendarToolbarNav'
@@ -23,48 +16,10 @@ export const MobileFactoryToolbarShell: React.FC = () => {
   const scenarioToolbar = useMobileScenarioToolbarSnapshot()
   const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const activeSection = useAppSelector(selectActiveSection)
-  const cardphotoListPanelOpen = useAppSelector(selectIsListPanelOpen)
-  const cardtextListPanelOpen = useAppSelector(selectIsCardtextListPanelOpen)
-  const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
-  const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
-  const addressListPanelOpen = senderListPanelOpen || recipientListPanelOpen
-  const cardPieListPanelOpen = useAppSelector(selectIsCardPieListPanelOpen)
-  const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
   const senderView = useAppSelector(selectSenderView)
   const recipientView = useAppSelector(selectRecipientView)
-  const {
-    rightPieCardphotoPeekNoToolbar,
-    rightPieCardtextPeekNoToolbar,
-    rightPieEnvelopePeekNoToolbar,
-    rightPieAromaPeekNoToolbar,
-    rightPieDatePeekNoToolbar,
-  } = useRightListArchiveMini()
-
-  const hideUpperToolbar = useMemo(
-    () =>
-      rightPieCardphotoPeekNoToolbar ||
-      rightPieCardtextPeekNoToolbar ||
-      rightPieEnvelopePeekNoToolbar ||
-      rightPieAromaPeekNoToolbar ||
-      rightPieDatePeekNoToolbar ||
-      cardphotoListPanelOpen ||
-      cardtextListPanelOpen ||
-      addressListPanelOpen ||
-      cardPieListPanelOpen ||
-      cartListPanelOpen,
-    [
-      rightPieCardphotoPeekNoToolbar,
-      rightPieCardtextPeekNoToolbar,
-      rightPieEnvelopePeekNoToolbar,
-      rightPieAromaPeekNoToolbar,
-      rightPieDatePeekNoToolbar,
-      cardphotoListPanelOpen,
-      cardtextListPanelOpen,
-      addressListPanelOpen,
-      cardPieListPanelOpen,
-      cartListPanelOpen,
-    ],
-  )
+  const { hideUpperToolbar } = useMobileFactoryListChrome()
+  const { rightPieEnvelopePeekNoToolbar } = useRightListArchiveMini()
 
   const envelopeAddressCreateMode =
     activeSection === 'envelope' &&

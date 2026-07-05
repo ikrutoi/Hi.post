@@ -5,21 +5,19 @@ import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/fa
 import { useSizeFacade } from '@layout/application/facades'
 import { useCardtextFacade } from '@cardtext/application/facades'
 import { CardphotoListMobileSlot } from '@cardphoto/presentation/CardphotoListMobileSlot'
-import { selectIsListPanelOpen } from '@cardphoto/infrastructure/selectors'
 import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
 import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import { selectIsHistoryListPanelOpen } from '@date/calendar/infrastructure/selectors'
 import { MobileCartListSlot } from '@layout/presentation/MobileAppShell/MobileCartListSlot'
 import { MobileHistoryListSlot } from '@layout/presentation/MobileAppShell/MobileHistoryListSlot'
 import { CardtextListMobileSlot } from '@cardtext/presentation/CardtextListMobileSlot'
-import { selectIsCardtextListPanelOpen } from '@cardtext/infrastructure/selectors'
 import {
   selectRecipientListPanelOpen,
   selectSenderListPanelOpen,
 } from '@envelope/infrastructure/selectors'
 import { AddressListMobileSlot } from '@envelope/addressBook/presentation/AddressListMobileSlot'
 import { EnvelopeMobileAddressFocusProvider } from '@envelope/presentation/EnvelopeMobileAddressFocusContext'
-import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
+import { useMobileFactoryListChrome } from '../application/hooks/useMobileFactoryListChrome'
 import { CardSectionRenderer } from './CardSectionRenderer/CardSectionRenderer'
 import { CardtextEditTitleInline } from '@cardtext/presentation/CardtextEditTitleInline/CardtextEditTitleInline'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
@@ -39,69 +37,14 @@ export const CardSectionEditor: React.FC = () => {
   const { activeSection } = useSectionMenuFacade()
   const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
   const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
-  const cardphotoListPanelOpen = useAppSelector(selectIsListPanelOpen)
-  const cardtextListPanelOpen = useAppSelector(selectIsCardtextListPanelOpen)
   const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
-  const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
-  const addressListPanelOpen = senderListPanelOpen || recipientListPanelOpen
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const { currentView: cardtextCurrentView } = useCardtextFacade()
   const {
-    rightPieCardphotoPeekNoToolbar,
-    rightPieCardtextPeekNoToolbar,
-    rightPieEnvelopePeekNoToolbar,
-    rightPieDatePeekNoToolbar,
-  } = useRightListArchiveMini()
-
-  const mobileFactoryChromePeek =
-    rightPieCardphotoPeekNoToolbar ||
-    rightPieCardtextPeekNoToolbar ||
-    rightPieEnvelopePeekNoToolbar
-
-  const mobileDateListChromePeek =
-    mobileFactoryChromePeek || rightPieDatePeekNoToolbar
-
-  const showMobileTemplateList = useMemo(() => {
-    if (!isMobileLayout) return false
-    if (cartListPanelOpen && !mobileDateListChromePeek) return true
-    if (historyListPanelOpen && !mobileDateListChromePeek) return true
-    if (mobileFactoryChromePeek) return false
-    if (
-      activeSection === 'cardphoto' &&
-      cardphotoListPanelOpen &&
-      !rightPieCardphotoPeekNoToolbar
-    ) {
-      return true
-    }
-    if (
-      activeSection === 'cardtext' &&
-      cardtextListPanelOpen &&
-      !rightPieCardtextPeekNoToolbar
-    ) {
-      return true
-    }
-    if (
-      activeSection === 'envelope' &&
-      addressListPanelOpen &&
-      !rightPieEnvelopePeekNoToolbar
-    ) {
-      return true
-    }
-    return false
-  }, [
-    isMobileLayout,
+    showMobileTemplateList,
     mobileFactoryChromePeek,
     mobileDateListChromePeek,
-    cartListPanelOpen,
-    historyListPanelOpen,
-    activeSection,
-    cardphotoListPanelOpen,
-    cardtextListPanelOpen,
-    addressListPanelOpen,
-    rightPieCardphotoPeekNoToolbar,
-    rightPieCardtextPeekNoToolbar,
-    rightPieEnvelopePeekNoToolbar,
-  ])
+  } = useMobileFactoryListChrome()
 
   const mobileSectionSurface = useMemo((): MobileFactorySectionSurface => {
     if (cartListPanelOpen && !mobileDateListChromePeek) {
