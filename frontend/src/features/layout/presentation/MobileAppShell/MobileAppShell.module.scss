@@ -27,6 +27,8 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   );
   --mobile-chrome-padding-y: 0.35rem;
   --mobile-section-inset: 0.75rem;
+  /** Зазор между toolbar и центральной секцией — половина бокового inset. */
+  --mobile-factory-toolbar-central-gap: calc(var(--mobile-section-inset) / 2);
   /** Квадрат центральной секции: ширина экрана минус боковые inset'ы. */
   --mobile-central-work-side: calc(100vw - 2 * var(--mobile-section-inset));
   --mobile-form-padding-bottom: calc(
@@ -91,10 +93,6 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
     overflow: hidden;
     padding-top: calc(0.35rem + env(safe-area-inset-top, 0px));
 
-    :global([data-mobile-factory-section-frame='true']) {
-      --mobile-factory-frame-top-offset: calc(0.35rem + env(safe-area-inset-top, 0px));
-    }
-
     :global([class*='cardSectionEditor']) {
       justify-content: flex-start;
       flex: 1 1 auto;
@@ -147,10 +145,6 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
     padding-bottom: var(--mobile-form-layout-padding-bottom);
     padding-top: 0.35rem;
     overflow: hidden;
-
-    :global([data-mobile-factory-section-frame='true']) {
-      --mobile-factory-frame-top-offset: 0.35rem;
-    }
   }
 
   .mobileEditorSection {
@@ -932,7 +926,7 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   flex-direction: column;
   overflow: visible;
   box-sizing: border-box;
-  // Зазор CardPie ↔ factory: padding формы + frame подтягивается и окрашивает полосу.
+  // Зазор CardPie ↔ factory (без окраски frame — фон секции начинается ниже).
   --mobile-form-layout-padding-bottom: var(--mobile-form-padding-bottom);
   padding-top: var(--mobile-factory-toolbar-gap);
   padding-bottom: var(--mobile-form-layout-padding-bottom);
@@ -974,10 +968,10 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
 
   :global([data-mobile-factory-section-frame='true']) {
     width: 100% !important;
-    min-height: calc(100% + var(--mobile-form-layout-padding-bottom, var(--mobile-form-padding-bottom)));
-    max-height: none;
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     height: auto;
+    max-height: none;
+    margin-top: auto;
   }
 
   :global([class*='editorSection']) {

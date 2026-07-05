@@ -1,24 +1,28 @@
 @use '@styles/config/mobileSectionGutter' as sectionGutter;
 @use '@styles/config/mobileNotebookTabColors' as notebookTab;
 
+@mixin mobile-factory-inset-horizontal {
+  box-sizing: border-box;
+  width: var(--mobile-central-work-side);
+  max-width: calc(100% - 2 * var(--mobile-section-inset));
+  margin-inline: var(--mobile-section-inset);
+}
+
 .frame {
-  --mobile-factory-frame-top-offset: var(--mobile-factory-toolbar-gap);
   --mobile-central-work-side: calc(100vw - 2 * var(--mobile-section-inset));
   position: relative;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
+  margin-top: auto;
   min-height: 0;
   width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
   box-sizing: border-box;
-  // Подтягиваем frame в padding-top mobileForm; второй padding-top — зазор до toolbar.
-  margin-top: calc(-1 * var(--mobile-factory-frame-top-offset));
-  padding-top: var(--mobile-factory-frame-top-offset);
-  gap: var(--mobile-central-section-offset-top, var(--mobile-factory-toolbar-gap));
-  // Фон до низа mobileForm (safe-area): расширяем box, без padding-bottom (не поднимает контент).
+  // Верх фона секции: половина бокового inset непосредственно над toolbar.
+  padding-top: var(--mobile-factory-toolbar-central-gap);
+  // Фон секции: контент + safe-area снизу (без растягивания вверх).
+  padding-bottom: var(--mobile-form-layout-padding-bottom, var(--mobile-form-padding-bottom));
   margin-bottom: calc(-1 * var(--mobile-form-layout-padding-bottom, var(--mobile-form-padding-bottom)));
-  min-height: calc(100% + var(--mobile-form-layout-padding-bottom, var(--mobile-form-padding-bottom)));
 
   &[data-mobile-section-surface='cardphoto'] {
     background-color: sectionGutter.$mobile-section-gutter-cardphoto;
@@ -55,12 +59,6 @@
   &[data-mobile-section-surface='neutral'] {
     background-color: transparent;
   }
-
-  :global([data-mobile-factory-chrome='peek']) & {
-    --mobile-factory-frame-top-offset: 0;
-    margin-top: 0;
-    padding-top: 0;
-  }
 }
 
 .frameTemplateList {
@@ -70,29 +68,30 @@
 .content {
   position: relative;
   z-index: 1;
-  flex: 1 1 auto;
-  min-height: 0;
+  flex: 0 0 auto;
   width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  gap: var(--mobile-central-section-offset-top, var(--mobile-factory-toolbar-gap));
+  box-sizing: border-box;
+  gap: var(--mobile-factory-toolbar-central-gap);
 }
 
 .contentTemplateList {
   gap: 0;
 }
 
+.toolbarSlot {
+  flex: 0 0 auto;
+  @include mobile-factory-inset-horizontal;
+}
+
 /** Квадратная рабочая зона: одинаковые отступы слева, справа и снизу. */
 .centralWorkZone {
   position: relative;
   flex: 0 0 auto;
-  box-sizing: border-box;
-  width: var(--mobile-central-work-side);
-  max-width: calc(100% - 2 * var(--mobile-section-inset));
+  @include mobile-factory-inset-horizontal;
   aspect-ratio: 1;
   height: auto;
-  margin-inline: var(--mobile-section-inset);
   margin-bottom: var(--mobile-section-inset);
   min-width: 0;
   overflow: hidden;
