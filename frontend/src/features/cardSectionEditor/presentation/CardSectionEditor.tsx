@@ -7,6 +7,10 @@ import { useCardtextFacade } from '@cardtext/application/facades'
 import { CardphotoListMobileSlot } from '@cardphoto/presentation/CardphotoListMobileSlot'
 import { selectIsListPanelOpen } from '@cardphoto/infrastructure/selectors'
 import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
+import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
+import { selectIsHistoryListPanelOpen } from '@date/calendar/infrastructure/selectors'
+import { MobileCartListSlot } from '@layout/presentation/MobileAppShell/MobileCartListSlot'
+import { MobileHistoryListSlot } from '@layout/presentation/MobileAppShell/MobileHistoryListSlot'
 import { CardtextListMobileSlot } from '@cardtext/presentation/CardtextListMobileSlot'
 import { selectIsCardtextListPanelOpen } from '@cardtext/infrastructure/selectors'
 import {
@@ -33,6 +37,8 @@ import styles from './CardSectionEditor.module.scss'
 export const CardSectionEditor: React.FC = () => {
   const { sizeCard, isMobileLayout } = useSizeFacade()
   const { activeSection } = useSectionMenuFacade()
+  const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
+  const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
   const cardphotoListPanelOpen = useAppSelector(selectIsListPanelOpen)
   const cardtextListPanelOpen = useAppSelector(selectIsCardtextListPanelOpen)
   const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
@@ -44,6 +50,7 @@ export const CardSectionEditor: React.FC = () => {
     rightPieCardphotoPeekNoToolbar,
     rightPieCardtextPeekNoToolbar,
     rightPieEnvelopePeekNoToolbar,
+    rightPieDatePeekNoToolbar,
   } = useRightListArchiveMini()
 
   const mobileFactoryChromePeek =
@@ -51,8 +58,14 @@ export const CardSectionEditor: React.FC = () => {
     rightPieCardtextPeekNoToolbar ||
     rightPieEnvelopePeekNoToolbar
 
+  const mobileDateListChromePeek =
+    mobileFactoryChromePeek || rightPieDatePeekNoToolbar
+
   const showMobileTemplateList = useMemo(() => {
-    if (!isMobileLayout || mobileFactoryChromePeek) return false
+    if (!isMobileLayout) return false
+    if (cartListPanelOpen && !mobileDateListChromePeek) return true
+    if (historyListPanelOpen && !mobileDateListChromePeek) return true
+    if (mobileFactoryChromePeek) return false
     if (
       activeSection === 'cardphoto' &&
       cardphotoListPanelOpen &&
@@ -78,6 +91,9 @@ export const CardSectionEditor: React.FC = () => {
   }, [
     isMobileLayout,
     mobileFactoryChromePeek,
+    mobileDateListChromePeek,
+    cartListPanelOpen,
+    historyListPanelOpen,
     activeSection,
     cardphotoListPanelOpen,
     cardtextListPanelOpen,
@@ -88,6 +104,12 @@ export const CardSectionEditor: React.FC = () => {
   ])
 
   const mobileSectionSurface = useMemo((): MobileFactorySectionSurface => {
+    if (cartListPanelOpen && !mobileDateListChromePeek) {
+      return 'date-cart'
+    }
+    if (historyListPanelOpen && !mobileDateListChromePeek) {
+      return 'date-history'
+    }
     if (activeSection === 'envelope' && senderListPanelOpen) {
       return 'envelope-sender'
     }
@@ -121,9 +143,18 @@ export const CardSectionEditor: React.FC = () => {
     senderListPanelOpen,
     notebookStripTab,
     mobileFactoryChromePeek,
+    mobileDateListChromePeek,
+    cartListPanelOpen,
+    historyListPanelOpen,
   ])
 
   const mobileTemplateList = useMemo(() => {
+    if (cartListPanelOpen) {
+      return <MobileCartListSlot />
+    }
+    if (historyListPanelOpen) {
+      return <MobileHistoryListSlot />
+    }
     switch (activeSection) {
       case 'cardphoto':
         return <CardphotoListMobileSlot />
@@ -134,7 +165,7 @@ export const CardSectionEditor: React.FC = () => {
       default:
         return null
     }
-  }, [activeSection])
+  }, [activeSection, cartListPanelOpen, historyListPanelOpen])
 
   const width = sizeCard.width
   const height = sizeCard.height

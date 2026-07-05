@@ -40,8 +40,7 @@ import { IconLogo } from '@shared/ui/icons'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { MobileCardPieGutterMinis } from './MobileCardPieGutterMinis'
-import { MobileCartListSlot } from './MobileCartListSlot'
-import { MobileHistoryListSlot } from './MobileHistoryListSlot'
+import { MobileDateListSlotActionsProvider } from './MobileDateListSlotActionsContext'
 import { useMobilePlanCardPies } from './useMobilePlanCardPies'
 import { CardPieLeftSlot } from '@features/cardPie/presentation/CardPieLeftSlot'
 import { EditorPieListCardPieBadgeSync } from '@features/cardPie/presentation/EditorPieListCardPieBadgeSync'
@@ -164,20 +163,16 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     rightPieAromaPeekNoToolbar ||
     rightPieDatePeekNoToolbar
 
-  type MobileFactoryListOverlayKey = 'cardPie' | 'cart' | 'history'
+  type MobileFactoryListOverlayKey = 'cardPie'
 
   /** Peek секции: список не перекрывает фабрику, кнопка списка остаётся включённой. */
   const mobileFactoryListOverlayKey = useMemo((): MobileFactoryListOverlayKey | null => {
     if (mobileFactoryChromePeek) return null
     if (showMobileCardPieListInFactory) return 'cardPie'
-    if (cartListPanelOpen) return 'cart'
-    if (historyListPanelOpen) return 'history'
     return null
   }, [
     mobileFactoryChromePeek,
     showMobileCardPieListInFactory,
-    cartListPanelOpen,
-    historyListPanelOpen,
   ])
 
   const canCyclePlanPies = planPies.length > 0
@@ -675,30 +670,21 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                     mobileFactoryChromePeek ? 'peek' : undefined
                   }
                 >
-                  <div
-                    className={styles.mobileFormEditorLayer}
-                    aria-hidden={mobileFactoryListOverlayKey != null}
+                  <MobileDateListSlotActionsProvider
+                    onCartListSelectEntry={onCartListSelectEntry}
+                    onCartListDateEditEntry={onCartListDateEditEntry}
+                    onHistoryListSelectEntry={onHistoryListSelectEntry}
                   >
-                    <CardSectionEditor />
-                  </div>
+                    <div
+                      className={styles.mobileFormEditorLayer}
+                      aria-hidden={mobileFactoryListOverlayKey != null}
+                    >
+                      <CardSectionEditor />
+                    </div>
+                  </MobileDateListSlotActionsProvider>
                   {mobileFactoryListOverlayKey === 'cardPie' ? (
                     <div className={styles.mobileFormListOverlay}>
                       <CardPieLeftSlot />
-                    </div>
-                  ) : null}
-                  {mobileFactoryListOverlayKey === 'cart' ? (
-                    <div className={styles.mobileFormListOverlay}>
-                      <MobileCartListSlot
-                        onSelectEntry={onCartListSelectEntry}
-                        onDateEditEntry={onCartListDateEditEntry}
-                      />
-                    </div>
-                  ) : null}
-                  {mobileFactoryListOverlayKey === 'history' ? (
-                    <div className={styles.mobileFormListOverlay}>
-                      <MobileHistoryListSlot
-                        onSelectEntry={onHistoryListSelectEntry}
-                      />
                     </div>
                   ) : null}
                 </div>

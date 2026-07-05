@@ -3,24 +3,27 @@ import {
   CartListPanel,
   type CartListPanelItem,
 } from '@cart/presentation/CartListPanel'
-import styles from './MobileCartListSlot.module.scss'
+import { useMobileDateListSlotActions } from './MobileDateListSlotActionsContext'
 
 type MobileCartListSlotProps = {
-  onSelectEntry: (item: CartListPanelItem) => void
-  onDateEditEntry: (item: CartListPanelItem) => void
+  onSelectEntry?: (item: CartListPanelItem) => void
+  onDateEditEntry?: (item: CartListPanelItem) => void
 }
 
 export const MobileCartListSlot: React.FC<MobileCartListSlotProps> = ({
-  onSelectEntry,
-  onDateEditEntry,
-}) => (
-  <div className={styles.root}>
-    <div className={styles.panelWrap}>
-      <CartListPanel
-        onSelectEntry={onSelectEntry}
-        onDateEditEntry={onDateEditEntry}
-        leadIconKeyOverride="date"
-      />
-    </div>
-  </div>
-)
+  onSelectEntry: onSelectEntryProp,
+  onDateEditEntry: onDateEditEntryProp,
+}) => {
+  const {
+    onCartListSelectEntry,
+    onCartListDateEditEntry,
+  } = useMobileDateListSlotActions()
+
+  return (
+    <CartListPanel
+      onSelectEntry={onSelectEntryProp ?? onCartListSelectEntry}
+      onDateEditEntry={onDateEditEntryProp ?? onCartListDateEditEntry}
+      leadIconKeyOverride="date"
+    />
+  )
+}
