@@ -53,7 +53,7 @@
   }
 
   &[data-mobile-section-surface='date-history'] {
-    @include notebookTab.mobile-notebook-history-tab-gutter-gradient;
+    @include notebookTab.mobile-notebook-history-tab-frame-backdrop;
   }
 
   &[data-mobile-section-surface='neutral'] {

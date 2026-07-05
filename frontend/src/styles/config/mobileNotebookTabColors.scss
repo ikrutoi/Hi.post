@@ -94,3 +94,20 @@ $mobile-notebook-history-tab-blue: color.mix(
     $color-preview-indicator-error 80% 100%
   );
 }
+
+/** Factory frame: 5 равных полос по высоте chrome-зоны (без safe-area padding). */
+@mixin mobile-notebook-history-tab-frame-backdrop {
+  background-color: $color-preview-indicator-error;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: var(--mobile-form-layout-padding-bottom, var(--mobile-form-padding-bottom));
+    z-index: 0;
+    pointer-events: none;
+    @include mobile-notebook-history-tab-gutter-gradient;
+  }
+}
