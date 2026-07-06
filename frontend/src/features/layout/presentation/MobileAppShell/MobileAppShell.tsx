@@ -2,7 +2,11 @@ import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { store } from '@app/state/store'
-import { openCardphotoFromMiniStripRequested } from '@cardphoto/infrastructure/state'
+import {
+  openCardphotoFromMiniStripRequested,
+  setCardphotoListPanelOpen,
+} from '@cardphoto/infrastructure/state'
+import { selectIsListPanelOpen } from '@cardphoto/infrastructure/selectors'
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import {
   selectCartListPanelOpen,
@@ -31,8 +35,10 @@ import {
   selectHistoryListSelectedLocalId,
   selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
-import { addEditorPiePlanToCart } from '@date/infrastructure/state'
+import { setCardtextListPanelOpen } from '@cardtext/infrastructure/state'
+import { selectIsCardtextListPanelOpen } from '@cardtext/infrastructure/selectors'
 import { dispatchCardPieToolbarIconState } from '@toolbar/application/syncCardPieToolbarIcons'
+import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { CardSection, IconKey } from '@shared/config/constants'
 import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
 import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDevContext'
@@ -367,6 +373,28 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     (section: CardSection) => {
       onBeforeLeftPieInteraction()
       const state = store.getState()
+      const currentActiveSection = selectActiveSection(state)
+
+      if (section === 'cardphoto' && currentActiveSection === 'cardphoto') {
+        const cardphotoListOpen = selectIsListPanelOpen(state)
+        const nextOpen = !cardphotoListOpen
+        dispatch(setCardphotoListPanelOpen(nextOpen))
+        dispatch(
+          updateToolbarIcon({
+            section: 'cardphoto',
+            key: 'listCardphoto',
+            value: nextOpen ? 'active' : 'enabled',
+          }),
+        )
+        return
+      }
+
+      if (section === 'cardtext' && currentActiveSection === 'cardtext') {
+        const cardtextListOpen = selectIsCardtextListPanelOpen(state)
+        dispatch(setCardtextListPanelOpen(!cardtextListOpen))
+        return
+      }
+
       const notebookStripTab = selectNotebookStripTab(state)
       if (selectIsCardPieListPanelOpen(state)) {
         dispatch(setCardPieListPanelOpen(false))
@@ -386,7 +414,18 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         dispatch(setNotebookStripTab('date'))
       }
       if (section === 'cardphoto') {
+        dispatch(setCardphotoListPanelOpen(false))
+        dispatch(
+          updateToolbarIcon({
+            section: 'cardphoto',
+            key: 'listCardphoto',
+            value: 'enabled',
+          }),
+        )
         dispatch(openCardphotoFromMiniStripRequested())
+      }
+      if (section === 'cardtext') {
+        dispatch(setCardtextListPanelOpen(false))
       }
       dispatch(setActiveSection(section))
     },
