@@ -5,7 +5,7 @@ import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { useMobileScenarioToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import { setCardphotoListPanelOpen } from '@cardphoto/infrastructure/state'
-import { selectIsListPanelOpen } from '@cardphoto/infrastructure/selectors'
+import { selectIsListPanelOpen, selectCardphotoAssetData, selectCardphotoAssetDisplayPreviewUrl, selectCardphotoTitle } from '@cardphoto/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import type { IconKey } from '@shared/config/constants'
@@ -43,9 +43,14 @@ export const CardphotoListMobileFactoryLowerToolbar: React.FC = () => {
   return null
 }
 
-/** Mobile factory: верхний ряд — return справа. */
+/** Mobile factory: верхний ряд — заголовок слева, return справа. */
 export const CardphotoListMobileFactoryUpperToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
+  const title = useAppSelector(selectCardphotoTitle)
+  const assetId = useAppSelector(selectCardphotoAssetData)?.id
+  const previewUrl = useAppSelector(selectCardphotoAssetDisplayPreviewUrl)
+  const centralTemplateTitle =
+    assetId && previewUrl ? title.trim() || null : null
 
   const closeList = useCallback(() => {
     dispatch(setCardphotoListPanelOpen(false))
@@ -69,11 +74,18 @@ export const CardphotoListMobileFactoryUpperToolbar: React.FC = () => {
 
   return (
     <div className={styles.upperRow}>
-      <Toolbar
-        section="cardphotoCreate"
-        groupsOverride={CARDPHOTO_LIST_FACTORY_UPPER_TOOLBAR}
-        onActionClick={handleAction}
-      />
+      {centralTemplateTitle ? (
+        <div className={styles.upperTitle} title={centralTemplateTitle}>
+          {centralTemplateTitle}
+        </div>
+      ) : null}
+      <div className={styles.upperToolbar}>
+        <Toolbar
+          section="cardphotoCreate"
+          groupsOverride={CARDPHOTO_LIST_FACTORY_UPPER_TOOLBAR}
+          onActionClick={handleAction}
+        />
+      </div>
     </div>
   )
 }

@@ -5,7 +5,9 @@ import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { useMobileScenarioToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import { setCardtextListPanelOpen } from '@cardtext/infrastructure/state'
-import { selectIsCardtextListPanelOpen } from '@cardtext/infrastructure/selectors'
+import { selectIsCardtextListPanelOpen, selectCardtextId, selectCardtextSessionData } from '@cardtext/infrastructure/selectors'
+import { getCardtextTemplateDisplayTitle } from '@cardtext/application/helpers'
+import { cardtextHasRenderableContent } from '@cardtext/domain/editor/editor.types'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import type { IconKey } from '@shared/config/constants'
 import type { ToolbarConfig } from '@toolbar/domain/types'
@@ -42,9 +44,15 @@ export const CardtextListMobileFactoryLowerToolbar: React.FC = () => {
   return null
 }
 
-/** Mobile factory: верхний ряд — return справа. */
+/** Mobile factory: верхний ряд — заголовок слева, return справа. */
 export const CardtextListMobileFactoryUpperToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
+  const templateId = useAppSelector(selectCardtextId)
+  const session = useAppSelector(selectCardtextSessionData)
+  const centralTemplateTitle = useMemo(() => {
+    if (!templateId || !cardtextHasRenderableContent(session)) return null
+    return getCardtextTemplateDisplayTitle(session)
+  }, [session, templateId])
 
   const closeList = useCallback(() => {
     dispatch(setCardtextListPanelOpen(false))
@@ -61,11 +69,18 @@ export const CardtextListMobileFactoryUpperToolbar: React.FC = () => {
 
   return (
     <div className={styles.upperRow}>
-      <Toolbar
-        section="cardtextCreate"
-        groupsOverride={CARDTEXT_LIST_FACTORY_UPPER_TOOLBAR}
-        onActionClick={handleAction}
-      />
+      {centralTemplateTitle ? (
+        <div className={styles.upperTitle} title={centralTemplateTitle}>
+          {centralTemplateTitle}
+        </div>
+      ) : null}
+      <div className={styles.upperToolbar}>
+        <Toolbar
+          section="cardtextCreate"
+          groupsOverride={CARDTEXT_LIST_FACTORY_UPPER_TOOLBAR}
+          onActionClick={handleAction}
+        />
+      </div>
     </div>
   )
 }

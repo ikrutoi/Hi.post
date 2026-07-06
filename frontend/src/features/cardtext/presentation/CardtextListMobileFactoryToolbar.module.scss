@@ -1,3 +1,6 @@
+@use '@styles/config/colors' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
+
 .upperRow {
   flex: 1 1 auto;
   align-self: stretch;
@@ -6,15 +9,49 @@
   min-height: 0;
   display: flex;
   align-items: center;
+  gap: 0.5rem;
+}
+
+.upperTitle {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-left: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: $color-font-enabled-light;
+}
+
+.upperToolbar {
+  flex: 0 0 auto;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+  min-height: 0;
 
   > * {
-    flex: 1 1 auto;
-    align-self: stretch;
-    width: 100%;
+    flex: 0 0 auto;
+    width: auto;
     min-width: 0;
     min-height: 0;
     display: flex;
     align-items: center;
     justify-content: flex-end;
+  }
+
+  :global([class*='toolbarCardphotoCreate']),
+  :global([class*='toolbarCardtextCreate']) {
+    width: auto;
+    margin-left: 0;
+    justify-content: flex-end;
+
+    :global([class*='toolbarGroup']) {
+      justify-content: flex-end;
+    }
   }
 }
