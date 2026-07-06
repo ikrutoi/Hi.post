@@ -21,9 +21,8 @@ export const CardtextListMobileSlot: React.FC = () => {
   const handleSelect = useCallback(
     (entry: CardtextContent) => {
       handleSelectTemplate(entry)
-      handleClose()
     },
-    [handleClose, handleSelectTemplate],
+    [handleSelectTemplate],
   )
 
   if (!isOpen || !isMobileLayout) return null

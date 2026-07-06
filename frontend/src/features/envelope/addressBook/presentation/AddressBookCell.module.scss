@@ -66,6 +66,7 @@
 }
 
 .rootCardtext {
+  overflow: hidden;
   background-color: $color-cardtext-input;
   border-color: $color-cardtext-input-border;
 
@@ -78,14 +79,19 @@
   }
 
   &[data-selected='true'] {
+    overflow: visible;
     background-color: darken($color-cardtext-input, 2%);
     border-color: $color-cardtext-input-border;
-    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
+    box-shadow:
+      -1px 0 0 0 #fff,
+      calc(-1px - #{$list-entry-accent-bar-width}) 0 0 0 $color-toggle-active;
   }
 
   &[data-selected='true'][data-focused='true'] {
     border-color: $color-cardtext-input-border;
-    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
+    box-shadow:
+      -1px 0 0 0 #fff,
+      calc(-1px - #{$list-entry-accent-bar-width}) 0 0 0 $color-toggle-active;
   }
 }
 

@@ -35,3 +35,17 @@ export const selectCardtextViewInQuickList = createSelector(
   (plainText, templates, assetId): boolean =>
     isCardtextInQuickList(plainText, templates, assetId),
 )
+
+/** cardtextView: текущий шаблон в списке (inLine) или выбранный в открытой панели. */
+export const selectCardtextListHighlightTemplateId = createSelector(
+  [
+    selectCardtextViewInQuickList,
+    selectCardtextId,
+    (state: RootState) => state.cardtext.templatesListSelectedId,
+  ],
+  (inQuickList, assetId, listSelectedId): string | null => {
+    if (inQuickList && assetId != null) return String(assetId)
+    if (listSelectedId != null) return String(listSelectedId)
+    return null
+  },
+)

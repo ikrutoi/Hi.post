@@ -8,11 +8,10 @@ import {
   ListPanelCornerReturn,
   listPanelCornerReturnPanelProps,
 } from '@shared/ui/ListPanelCornerReturn/ListPanelCornerReturn'
-import { selectCardtextAssetStatus } from '@cardtext/infrastructure/selectors'
 import {
   selectCardtextTemplatesListItems,
   selectCardtextTemplatesListLoading,
-  selectCardtextId,
+  selectCardtextListHighlightTemplateId,
   selectCardtextListPanelDensity,
   selectCardtextListSortDirection,
 } from '@cardtext/infrastructure/selectors'
@@ -64,21 +63,7 @@ export const CardtextListPanel: React.FC<Props> = ({
     [items, sortDirection],
   )
   const isLoading = useAppSelector(selectCardtextTemplatesListLoading)
-  const selectedTemplateId = useAppSelector(selectCardtextId)
-  const cardtextAssetStatus = useAppSelector(selectCardtextAssetStatus)
-  const templatesListSelectedId = useAppSelector(
-    (state) => state.cardtext.templatesListSelectedId,
-  )
-
-  const highlightAssetTemplateInList =
-    cardtextAssetStatus === 'inLine' || cardtextAssetStatus === 'outLine'
-
-  const listHighlightId =
-    cardtextAssetStatus !== 'processed' &&
-    highlightAssetTemplateInList &&
-    selectedTemplateId != null
-      ? selectedTemplateId
-      : templatesListSelectedId
+  const listHighlightId = useAppSelector(selectCardtextListHighlightTemplateId)
 
   const handleSelect = useCallback(
     (entry: CardtextContent) => {

@@ -38,6 +38,16 @@ import {
 import { setCardtextListPanelOpen } from '@cardtext/infrastructure/state'
 import { selectIsCardtextListPanelOpen } from '@cardtext/infrastructure/selectors'
 import {
+  selectCardtextId,
+  selectCardtextSessionData,
+} from '@cardtext/infrastructure/selectors'
+import {
+  cardtextHasRenderableContent,
+  cardtextValueForReadOnlyPreview,
+  clampCardtextFontSizeStep,
+} from '@cardtext/domain/editor/editor.types'
+import { CardtextView } from '@cardtext/presentation/CardtextView/CardtextView'
+import {
   closeAddressList,
   setActiveAddressList,
 } from '@envelope/infrastructure/state'
@@ -105,6 +115,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const cardphotoAssetPreviewUrl = useAppSelector(
     selectCardphotoAssetDisplayPreviewUrl,
   )
+  const cardtextListPanelOpen = useAppSelector(selectIsCardtextListPanelOpen)
+  const cardtextSession = useAppSelector(selectCardtextSessionData)
+  const cardtextTemplateId = useAppSelector(selectCardtextId)
   const activeCartPostcardCount = useAppSelector(selectActiveCartPostcardCount)
   const blockedCartPostcardCount = useAppSelector(selectBlockedCartPostcardCount)
   const cartSlotVisualMode = useMemo(() => {
@@ -259,13 +272,38 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     rightPieCardphotoPeekNoToolbar,
   ])
 
+  const mobileCardtextListTemplatePreview = useMemo(() => {
+    if (!cardtextListPanelOpen || activeSection !== 'cardtext') return null
+    if (rightPieCardtextPeekNoToolbar) return null
+    if (!cardtextTemplateId) return null
+    if (!cardtextHasRenderableContent(cardtextSession)) return null
+    return {
+      id: cardtextTemplateId,
+      value: cardtextValueForReadOnlyPreview(cardtextSession),
+      style: {
+        ...cardtextSession.style,
+        fontSizeStep: clampCardtextFontSizeStep(
+          (cardtextSession.style?.fontSizeStep ?? 3) - 2,
+        ),
+      },
+    }
+  }, [
+    activeSection,
+    cardtextListPanelOpen,
+    cardtextSession,
+    cardtextTemplateId,
+    rightPieCardtextPeekNoToolbar,
+  ])
+
   const mobileCentralPieDisplay = useMemo(():
     | 'archive'
     | 'cardphotoTemplate'
+    | 'cardtextTemplate'
     | 'hidden'
     | 'assembly' => {
     if (mobileCentralArchivePreview != null) return 'archive'
     if (mobileCardphotoListTemplatePreview != null) return 'cardphotoTemplate'
+    if (mobileCardtextListTemplatePreview != null) return 'cardtextTemplate'
     if (
       mobileListArchiveSlotActive ||
       notebookStripSection === 'cart' ||
@@ -277,6 +315,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   }, [
     mobileCentralArchivePreview,
     mobileCardphotoListTemplatePreview,
+    mobileCardtextListTemplatePreview,
     mobileListArchiveSlotActive,
     notebookStripSection,
   ])
@@ -632,6 +671,19 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                             src={mobileCardphotoListTemplatePreview.previewUrl}
                             alt=""
                             decoding="async"
+                          />
+                        </div>
+                      ) : mobileCentralPieDisplay === 'cardtextTemplate' &&
+                        mobileCardtextListTemplatePreview != null ? (
+                        <div
+                          className={styles.mobileCardtextListTemplatePreview}
+                          aria-label="Selected text template preview"
+                        >
+                          <CardtextView
+                            key={mobileCardtextListTemplatePreview.id}
+                            contentKey={`list-preview-${mobileCardtextListTemplatePreview.id}`}
+                            value={mobileCardtextListTemplatePreview.value}
+                            style={mobileCardtextListTemplatePreview.style}
                           />
                         </div>
                       ) : mobileCentralPieDisplay === 'assembly' ? (
