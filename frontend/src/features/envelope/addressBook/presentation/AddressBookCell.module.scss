@@ -89,6 +89,12 @@
     padding: 0.26rem 0.28rem 0.22rem;
     background-color: $color-app-inner;
     border-radius: calc(#{$list-entry-radius-lg} - 1px);
+    box-sizing: border-box;
+    font-size: 0.76rem;
+    font-weight: 600;
+    line-height: 1.22;
+    color: $color-font-enabled;
+    height: calc(0.76rem * 1.22 * 2 + 0.26rem + 0.22rem);
   }
 
   .templateDetailBlock {
@@ -98,6 +104,9 @@
   &[data-density-level='2'] {
     .templateTitleText {
       padding: 0.22rem 0.24rem 0.18rem;
+      font-size: 0.68rem;
+      line-height: 1.18;
+      height: calc(0.68rem * 1.18 * 2 + 0.22rem + 0.18rem);
     }
 
     .templateDetailBlock {
