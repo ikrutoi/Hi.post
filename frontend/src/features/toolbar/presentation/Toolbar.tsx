@@ -19,7 +19,7 @@ import { getToolbarIcon } from '@shared/utils/icons'
 import { capitalize } from '@/shared/utils/helpers'
 import {
   selectAppliedImage,
-  selectCardphotoAssetToolbar,
+  selectCardphotoViewTemplateInList,
   selectIsCurrentCropApplied,
   selectCardphotoListSortMode,
   selectCardphotoListPanelDensity,
@@ -250,9 +250,7 @@ export const Toolbar = ({
 
   const cardtextViewInQuickList = useAppSelector(selectCardtextViewInQuickList)
   const cardphotoViewTemplateInList = useAppSelector(
-    (s) =>
-      selectCardphotoAssetToolbar(s) === 'cardphotoView' &&
-      s.cardphoto.state?.assetData?.status === 'inLine',
+    selectCardphotoViewTemplateInList,
   )
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)

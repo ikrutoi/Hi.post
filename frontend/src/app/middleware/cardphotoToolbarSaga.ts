@@ -612,7 +612,6 @@ export function* handleCardphotoToolbarAction(
         yield call(handleDeleteCardphotoFromViewSaga)
         return
       case 'addList':
-        yield call(ensureCardphotoTemplatesListPanelOpenSaga)
         yield call(handlePromoteProcessedToInlineSaga)
         return
       case 'removeFromList': {
@@ -721,7 +720,6 @@ export function* handleCardphotoToolbarAction(
     case 'listAdd':
     case 'addList': {
       if (section === 'cardphotoProcessed' || section === 'cardphotoView') {
-        yield call(ensureCardphotoTemplatesListPanelOpenSaga)
         yield call(handlePromoteProcessedToInlineSaga)
       }
       break

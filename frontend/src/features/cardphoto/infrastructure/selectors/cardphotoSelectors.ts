@@ -199,6 +199,21 @@ export const selectActiveImage = (state: RootState): ImageMeta | null => {
   return cp.assetData
 }
 
+/** cardphotoView: текущая картинка есть в быстром списке шаблонов (inLine). */
+export const selectCardphotoViewTemplateInList = createSelector(
+  [selectCardphotoAssetToolbar, selectCardphotoAssetData],
+  (assetToolbar, assetData): boolean =>
+    assetToolbar === 'cardphotoView' &&
+    assetData?.status === 'inLine' &&
+    !!assetData.id,
+)
+
+export const selectCardphotoListHighlightTemplateId = createSelector(
+  [selectCardphotoViewTemplateInList, selectCardphotoAssetData],
+  (inList, assetData): string | null =>
+    inList && assetData?.id ? assetData.id : null,
+)
+
 export const selectCardphotoTitle = (state: RootState): string =>
   state.cardphoto.state?.assetData?.title?.trim() ?? ''
 

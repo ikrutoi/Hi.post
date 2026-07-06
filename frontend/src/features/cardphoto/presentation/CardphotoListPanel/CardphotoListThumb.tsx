@@ -10,6 +10,7 @@ type Props = {
   onSelect: () => void | Promise<void>
   /** sortDown/sortUp → низ справа; sortAZDown/sortAZUp → верх справа. */
   sortEmphasis?: CardphotoListSortEmphasis
+  isSelected?: boolean
 }
 
 export const CardphotoListThumb: React.FC<Props> = ({
@@ -19,6 +20,7 @@ export const CardphotoListThumb: React.FC<Props> = ({
   cellPx,
   onSelect,
   sortEmphasis,
+  isSelected = false,
 }) => {
   const cellStyle = {
     width: cellPx,
@@ -36,6 +38,7 @@ export const CardphotoListThumb: React.FC<Props> = ({
       className={styles.thumbCell}
       data-cardphoto-thumb={id}
       data-sort-emphasis={sortEmphasis}
+      data-selected={isSelected ? 'true' : undefined}
       style={cellStyle}
       onClick={runSelect}
     >

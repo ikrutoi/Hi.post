@@ -10,6 +10,7 @@ import { storeAdapters } from '@db/adapters/storeAdapters'
 import { useAppSelector } from '@app/hooks'
 import {
   selectCardphotoInlineTemplateListRevision,
+  selectCardphotoListHighlightTemplateId,
   selectCardphotoListTemplateGridCols,
 } from '@cardphoto/infrastructure/selectors'
 import { useCardphotoListSort } from '@cardphoto/application/hooks/useCardphotoListSort'
@@ -69,6 +70,7 @@ export const CardphotoListPanel: React.FC<Props> = ({
   factoryChrome = false,
 }) => {
   const listRevision = useAppSelector(selectCardphotoInlineTemplateListRevision)
+  const listHighlightId = useAppSelector(selectCardphotoListHighlightTemplateId)
   const columns = useAppSelector(selectCardphotoListTemplateGridCols)
   const [rows, setRows] = useState<Row[]>([])
   const objectUrlsRef = useRef<string[]>([])
@@ -199,6 +201,9 @@ export const CardphotoListPanel: React.FC<Props> = ({
                     cellPx={cellPx}
                     onSelect={() => onSelectTemplate(row.id)}
                     sortEmphasis={sortEmphasis}
+                    isSelected={
+                      listHighlightId != null && row.id === listHighlightId
+                    }
                   />
                 ))}
               </div>

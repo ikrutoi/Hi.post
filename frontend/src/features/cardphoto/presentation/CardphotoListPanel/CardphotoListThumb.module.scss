@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as *;
 
 .thumbCell {
   position: relative;
@@ -9,6 +10,13 @@
   background-color: $color-app-header;
   overflow: hidden;
   cursor: pointer;
+
+  &[data-selected='true'] {
+    overflow: visible;
+    box-shadow:
+      -1px 0 0 0 #fff,
+      calc(-1px - #{$list-entry-accent-bar-width}) 0 0 0 $color-toggle-active;
+  }
 }
 
 .thumbImg {
