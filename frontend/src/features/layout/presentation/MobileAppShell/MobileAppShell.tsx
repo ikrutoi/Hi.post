@@ -51,7 +51,6 @@ import { RightSidebarHistoryBadgeSync } from '@toolbar/presentation/RightSidebar
 import { CalendarModeToolbarBadgesSync } from '@toolbar/presentation/CalendarModeToolbarBadgesSync'
 import { UserLoginRightSlot } from '@features/auth/presentation/UserLoginRightSlot'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
-import { CalendarNotebookTabs } from '@date/presentation/CalendarNotebookTabs'
 import { useDateStripSectionForNotebookTabs } from '@date/presentation/useDateStripSectionForNotebookTabs'
 import { useMobileVisualViewport } from '@layout/application/hooks/useMobileVisualViewport'
 import type { MobileAppShellProps } from './mobileAppShell.types'
@@ -243,12 +242,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     mobileListArchiveSlotActive,
     notebookStripSection,
   ])
-
-  /** Peek фабрики: закладки Date/Cart/History в хедере не подсвечиваются. */
-  const suppressHeaderNotebookTabHighlight =
-    mobileFactoryChromePeek ||
-    cartListPanelOpen ||
-    historyListPanelOpen
 
   const mobileCentralArchivePostcardStatus = useMemo(() => {
     if (mobileCentralArchivePreview == null) return undefined
@@ -489,13 +482,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       onClick={onAppClick}
     >
       <MarkStampYearDevProvider>
-        <div className={styles.mobileHeaderTabsOverlay}>
-          <CalendarNotebookTabs
-            variant="header"
-            section={notebookStripSection}
-            suppressTabHighlight={suppressHeaderNotebookTabHighlight}
-          />
-        </div>
         <div className={styles.mobileSubstrate}>
           <header className={styles.mobileHeader}>
             <div className={styles.mobileHeaderLeft}>

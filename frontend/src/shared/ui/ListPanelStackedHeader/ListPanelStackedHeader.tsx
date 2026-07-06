@@ -27,8 +27,12 @@ export type ListPanelStackedHeaderProps = {
   /** Клик по ведущей иконке (например мобильный список → календарь). */
   onLeadIconClick?: () => void
   leadIconAriaLabel?: string
-  onClose: () => void
-  closeAriaLabel: string
+  /** Скрыть ведущую иконку (мобильные списки cart/history). */
+  hideLeadIcon?: boolean
+  /** Скрыть кнопку закрытия (мобильные списки cart/history). */
+  hideClose?: boolean
+  onClose?: () => void
+  closeAriaLabel?: string
 }
 
 export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
@@ -41,12 +45,16 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
   cardPieListHeaderIcons = false,
   onLeadIconClick,
   leadIconAriaLabel,
+  hideLeadIcon = false,
+  hideClose = false,
   onClose,
-  closeAriaLabel,
+  closeAriaLabel = 'Close list',
 }) => {
   const hasToolbar = toolbar != null && toolbar !== false
   const showDividerOnly = !hasToolbar && showDividerWithoutToolbar
   const hasTopCenter = headerTopCenter != null && headerTopCenter !== false
+  const showLeadIcon = !hideLeadIcon
+  const showClose = !hideClose
   const leadIconContent = leadIconOverride ?? getToolbarIcon({ key: leadIconKey })
   const leadIconClassName = clsx(
     styles.headerLead,
@@ -65,42 +73,51 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
             : styles.headerCompact),
       )}
     >
-      <div className={styles.headerTopRow}>
-        {onLeadIconClick != null ? (
-          <button
-            type="button"
-            className={leadIconClassName}
-            data-icon-state="enabled"
-            data-lead-icon={leadIconOverride ? undefined : leadIconKey}
-            onClick={onLeadIconClick}
-            aria-label={leadIconAriaLabel ?? 'Open calendar'}
-          >
-            {leadIconContent}
-          </button>
-        ) : (
-          <div
-            className={leadIconClassName}
-            aria-hidden
-            data-icon-state="enabled"
-            data-lead-icon={leadIconOverride ? undefined : leadIconKey}
-          >
-            {leadIconContent}
-          </div>
+      <div
+        className={clsx(
+          styles.headerTopRow,
+          !showLeadIcon && !showClose && styles.headerTopRowMinimal,
         )}
+      >
+        {showLeadIcon ? (
+          onLeadIconClick != null ? (
+            <button
+              type="button"
+              className={leadIconClassName}
+              data-icon-state="enabled"
+              data-lead-icon={leadIconOverride ? undefined : leadIconKey}
+              onClick={onLeadIconClick}
+              aria-label={leadIconAriaLabel ?? 'Open calendar'}
+            >
+              {leadIconContent}
+            </button>
+          ) : (
+            <div
+              className={leadIconClassName}
+              aria-hidden
+              data-icon-state="enabled"
+              data-lead-icon={leadIconOverride ? undefined : leadIconKey}
+            >
+              {leadIconContent}
+            </div>
+          )
+        ) : null}
         <div
           className={styles.headerTopCenterSlot}
           {...(!hasTopCenter ? { 'aria-hidden': true as const } : {})}
         >
           {hasTopCenter ? headerTopCenter : null}
         </div>
-        <button
-          type="button"
-          className={styles.closeBtn}
-          onClick={onClose}
-          aria-label={closeAriaLabel}
-        >
-          <IconX />
-        </button>
+        {showClose ? (
+          <button
+            type="button"
+            className={styles.closeBtn}
+            onClick={onClose}
+            aria-label={closeAriaLabel}
+          >
+            <IconX />
+          </button>
+        ) : null}
       </div>
       {hasToolbar ? (
         <>

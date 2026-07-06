@@ -43,11 +43,13 @@ function formatDispatchDateLabel(d: DispatchDate): string {
 export type HistoryListRightSlotProps = {
   onSelectEntry?: (item: HistoryListPanelItem) => void
   leadIconKeyOverride?: IconKey
+  hideListHeaderChrome?: boolean
 }
 
 export const HistoryListRightSlot: React.FC<HistoryListRightSlotProps> = ({
   onSelectEntry: onSelectEntryProp,
   leadIconKeyOverride,
+  hideListHeaderChrome = false,
 }) => {
   const dispatch = useAppDispatch()
   const { historyListPanelOpen } = useCalendarFacade()
@@ -197,6 +199,7 @@ export const HistoryListRightSlot: React.FC<HistoryListRightSlotProps> = ({
       calendarFooterAlwaysEnabled
       calendarCartHistoryFooter
       leadIconKeyOverride={leadIconKeyOverride}
+      hideListHeaderChrome={hideListHeaderChrome}
     />
   )
 }

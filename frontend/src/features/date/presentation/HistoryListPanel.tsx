@@ -59,6 +59,8 @@ type Props = {
   calendarCartHistoryFooter?: boolean
   /** Мобильный список: иконка «Дата» вместо истории. */
   leadIconKeyOverride?: IconKey
+  /** Мобильный список: без иконки «Дата» и кнопки закрытия в шапке. */
+  hideListHeaderChrome?: boolean
   // section: 'date' | 'history'
 }
 
@@ -112,6 +114,7 @@ export const HistoryListPanel: React.FC<Props> = ({
   calendarFooterAlwaysEnabled = false,
   calendarCartHistoryFooter = false,
   leadIconKeyOverride,
+  hideListHeaderChrome = false,
   // section,
 }) => {
   const dispatch = useAppDispatch()
@@ -142,8 +145,12 @@ export const HistoryListPanel: React.FC<Props> = ({
       <ListPanelStackedHeader
         leadIconKey={leadIconKeyOverride ?? 'listHistory'}
         cardPieListHeaderIcons
+        hideLeadIcon={hideListHeaderChrome}
+        hideClose={hideListHeaderChrome}
         onLeadIconClick={
-          leadIconKeyOverride != null ? handleLeadIconClick : undefined
+          !hideListHeaderChrome && leadIconKeyOverride != null
+            ? handleLeadIconClick
+            : undefined
         }
         leadIconAriaLabel="History calendar"
         headerTopCenter={
@@ -153,7 +160,7 @@ export const HistoryListPanel: React.FC<Props> = ({
         }
         toolbar={hasRows ? <Toolbar section="historyList" /> : false}
         showDividerWithoutToolbar={!hasRows}
-        onClose={onClose}
+        onClose={hideListHeaderChrome ? undefined : onClose}
         closeAriaLabel="Close date list"
       />
       <div className={styles.panelScrollTrack} aria-hidden />

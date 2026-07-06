@@ -23,7 +23,7 @@ export const MobileCartListSlot: React.FC<MobileCartListSlotProps> = ({
     <CartListPanel
       onSelectEntry={onSelectEntryProp ?? onCartListSelectEntry}
       onDateEditEntry={onDateEditEntryProp ?? onCartListDateEditEntry}
-      leadIconKeyOverride="date"
+      hideListHeaderChrome
     />
   )
 }

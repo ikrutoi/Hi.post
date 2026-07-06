@@ -58,6 +58,8 @@ type Props = {
   onDateEditEntry?: (item: CartListPanelItem) => void
   /** Мобильный список: иконка «Дата» вместо корзины / blocked. */
   leadIconKeyOverride?: IconKey
+  /** Мобильный список: без иконки «Дата» и кнопки закрытия в шапке. */
+  hideListHeaderChrome?: boolean
 }
 
 function formatDispatchDateLabel(d: DispatchDate): string {
@@ -222,6 +224,7 @@ export const CartListPanel: React.FC<Props> = ({
   onSelectEntry,
   onDateEditEntry,
   leadIconKeyOverride,
+  hideListHeaderChrome = false,
 }) => {
   const dispatch = useAppDispatch()
   const cartItems = useAppSelector(selectCartItems)
@@ -412,8 +415,12 @@ export const CartListPanel: React.FC<Props> = ({
       <ListPanelStackedHeader
         leadIconKey={listLeadIconKey}
         cardPieListHeaderIcons
+        hideLeadIcon={hideListHeaderChrome}
+        hideClose={hideListHeaderChrome}
         onLeadIconClick={
-          leadIconKeyOverride != null ? handleLeadIconClick : undefined
+          !hideListHeaderChrome && leadIconKeyOverride != null
+            ? handleLeadIconClick
+            : undefined
         }
         leadIconAriaLabel="Cart calendar"
         headerTopCenter={
@@ -490,7 +497,7 @@ export const CartListPanel: React.FC<Props> = ({
           )
         }
         showDividerWithoutToolbar={!hasRows}
-        onClose={handleCloseList}
+        onClose={hideListHeaderChrome ? undefined : handleCloseList}
         closeAriaLabel="Close cart list"
       />
       <div className={styles.panelScrollTrack} aria-hidden />

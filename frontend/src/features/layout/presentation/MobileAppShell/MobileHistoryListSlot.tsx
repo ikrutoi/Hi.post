@@ -15,7 +15,7 @@ export const MobileHistoryListSlot: React.FC<MobileHistoryListSlotProps> = ({
   return (
     <HistoryListRightSlot
       onSelectEntry={onSelectEntryProp ?? onHistoryListSelectEntry}
-      leadIconKeyOverride="date"
+      hideListHeaderChrome
     />
   )
 }

@@ -89,8 +89,7 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
 }
 
 .mobileShell[data-envelope-address-create='true'] {
-  .mobileHeader,
-  .mobileHeaderTabsOverlay {
+  .mobileHeader {
     display: none;
   }
 
@@ -159,17 +158,6 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   .mobileEditorSection {
     padding-top: 0;
   }
-}
-
-.mobileHeaderTabsOverlay {
-  position: absolute;
-  left: 50%;
-  top: calc(env(safe-area-inset-top, 0px));
-  transform: translateX(-50%);
-  z-index: 8;
-  pointer-events: auto;
-  width: var(--mobile-pie-size);
-  box-sizing: border-box;
 }
 
 .mobileSubstrate {
