@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import clsx from 'clsx'
 import { CardEditor } from './CardEditor/CardEditor'
 import { CardtextView } from './CardtextView/CardtextView'
@@ -31,6 +31,9 @@ import {
   selectCardtextTemplatesListLoading,
 } from '@cardtext/infrastructure/selectors'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
+import { CARDTEXT_VIEW_TOOLBAR } from '@toolbar/domain/types/cardtext.types'
+import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
+import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import styles from './Cardtext.module.scss'
 import viewStyles from './CardtextView/CardtextView.module.scss'
 import cardphotoViewStyles from '@cardphoto/presentation/CardphotoView/CardphotoView.module.scss'
@@ -132,6 +135,10 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
   // console.log('CARDTEXT STATE', state)
 
   const dispatch = useAppDispatch()
+  const { isMobileLayout } = useSizeFacade()
+  const viewToolbarState = useAppSelector(
+    selectToolbarSectionState('cardtextView'),
+  )
 
   const {
     titleInputRef,
@@ -168,6 +175,24 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
     currentTemplateId,
     isCardtextViewEditMode: state.isCardtextViewEditMode,
   })
+
+  const cardtextViewToolbarGroupsOverride = useMemo(() => {
+    if (toolbarSection === 'cardtextView' && isMobileLayout) {
+      return CARDTEXT_VIEW_TOOLBAR.map((group) =>
+        group.group === 'close'
+          ? { ...group, icons: [{ key: 'delete' as const, state: 'enabled' as const }] }
+          : group,
+      )
+    }
+    return undefined
+  }, [isMobileLayout, toolbarSection])
+
+  const cardtextViewToolbarStateOverride = useMemo(() => {
+    if (toolbarSection === 'cardtextView' && isMobileLayout && viewToolbarState?.close) {
+      return { delete: viewToolbarState.close }
+    }
+    return undefined
+  }, [isMobileLayout, toolbarSection, viewToolbarState])
 
   const showReadOnlyCardtext =
     state.assetData != null &&
@@ -219,7 +244,11 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
             emptyClassName={styles.cardtextToolbarRowEmpty}
             show={showCardtextToolbarControls}
           >
-            <Toolbar section={toolbarSection} />
+            <Toolbar
+              section={toolbarSection}
+              groupsOverride={cardtextViewToolbarGroupsOverride}
+              stateOverride={cardtextViewToolbarStateOverride}
+            />
           </MobileInlineToolbarRow>
           <div className={styles.cardtextViewContent}>
             {displayTitle && showTemplateTitleStrip && (
@@ -312,7 +341,7 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
                   value={value}
                   style={style}
                   titleStripEditing={forceEditingTitle}
-                  onDelete={handleViewDelete}
+                  onDelete={isMobileLayout ? undefined : handleViewDelete}
                 />
               </div>
             ) : (

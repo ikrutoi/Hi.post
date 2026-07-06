@@ -7,6 +7,7 @@ import type { CardtextValue, CardtextStyle } from '../../domain/types'
 import { renderLeaf } from '../renderLeaf'
 import { renderElement } from '../renderElement'
 import { getToolbarIcon } from '@shared/utils/icons'
+import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import styles from './CardtextView.module.scss'
 
 const COLOR_CLASS_MAP: Record<string, keyof typeof styles> = {
@@ -35,6 +36,7 @@ export const CardtextView: React.FC<Props> = ({
   onDelete,
   sectionFrame = false,
 }) => {
+  const { isMobileLayout } = useSizeFacade()
   const slateKey =
     contentKey ??
     (value?.length
@@ -83,7 +85,7 @@ export const CardtextView: React.FC<Props> = ({
           />
         </Slate>
       </div>
-      {onDelete ? (
+      {onDelete && !isMobileLayout ? (
         <button
           type="button"
           className={styles.viewDeleteBtn}

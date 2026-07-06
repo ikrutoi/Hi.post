@@ -20,6 +20,8 @@ $cardtext-view-overlay-chip-radius: 0.47rem;
   height: 100%;
   // margin-top: 1rem;
   @include overlay.sectionViewOverlayViewContainerPadding(2.15rem);
+  padding-left: 0;
+  padding-right: 0;
   box-sizing: border-box;
   overflow: visible;
   user-select: none;
@@ -53,6 +55,8 @@ $cardtext-view-overlay-chip-radius: 0.47rem;
   min-height: 0;
   width: 100%;
   overflow: hidden;
+  padding: 0.5rem 0.75rem;
+  box-sizing: border-box;
 }
 
 /** Упрощённый режим правого CardPie: те же габариты, что у cardphoto viewContainer. */

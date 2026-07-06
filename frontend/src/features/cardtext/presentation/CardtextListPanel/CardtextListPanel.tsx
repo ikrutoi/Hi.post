@@ -30,6 +30,8 @@ import styles from './CardtextListPanel.module.scss'
 type Props = {
   onClose: () => void
   onSelect?: (entry: CardtextContent) => void
+  /** Mobile factory: toolbars live in shell, not in panel header. */
+  factoryChrome?: boolean
 }
 
 function sortTemplatesByTitle(
@@ -46,9 +48,14 @@ function sortTemplatesByTitle(
   return direction === 'desc' ? sorted.reverse() : sorted
 }
 
-export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
+export const CardtextListPanel: React.FC<Props> = ({
+  onClose,
+  onSelect,
+  factoryChrome = false,
+}) => {
   const dispatch = useAppDispatch()
   const { isMobileLayout } = useSizeFacade()
+  const useFactoryChrome = factoryChrome && isMobileLayout
   const items = useAppSelector(selectCardtextTemplatesListItems)
   const sortDirection = useAppSelector(selectCardtextListSortDirection)
   const panelDensity = useAppSelector(selectCardtextListPanelDensity)
@@ -89,19 +96,25 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
 
   return (
     <div
-      className={clsx(styles.panel, !hasRows && styles.panelEmptyNoToolbar)}
-      {...listPanelCornerReturnPanelProps(isMobileLayout)}
+      className={clsx(
+        styles.panel,
+        !hasRows && styles.panelEmptyNoToolbar,
+        useFactoryChrome && styles.panelFactoryChrome,
+      )}
+      {...(useFactoryChrome ? {} : listPanelCornerReturnPanelProps(isMobileLayout))}
     >
-      <ListPanelStackedHeader
-        leadIconKey="listCardtext"
-        variant="sectionToolbar"
-        cardPieListHeaderIcons
-        toolbar={hasRows ? <Toolbar section="cardtextList" /> : false}
-        showDividerWithoutToolbar={!hasRows}
-        hideClose={isMobileLayout}
-        onClose={onClose}
-        closeAriaLabel="Close text templates list"
-      />
+      {!useFactoryChrome ? (
+        <ListPanelStackedHeader
+          leadIconKey="listCardtext"
+          variant="sectionToolbar"
+          cardPieListHeaderIcons
+          toolbar={hasRows ? <Toolbar section="cardtextList" /> : false}
+          showDividerWithoutToolbar={!hasRows}
+          hideClose={isMobileLayout}
+          onClose={onClose}
+          closeAriaLabel="Close text templates list"
+        />
+      ) : null}
       <div className={styles.panelScrollTrack} aria-hidden />
       <ScrollArea className={styles.listScrollArea}>
         <div
@@ -132,10 +145,12 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
             ))}
         </div>
       </ScrollArea>
-      <ListPanelCornerReturn
-        onClick={onClose}
-        ariaLabel="Return to cardtext section"
-      />
+      {!useFactoryChrome ? (
+        <ListPanelCornerReturn
+          onClick={onClose}
+          ariaLabel="Return to cardtext section"
+        />
+      ) : null}
     </div>
   )
 }

@@ -6,6 +6,7 @@ import { setCardtextListPanelOpen } from '@cardtext/infrastructure/state'
 import { selectIsCardtextListPanelOpen } from '@cardtext/infrastructure/selectors'
 import type { CardtextContent } from '@cardtext/domain/editor/editor.types'
 import { CardtextListPanel } from './CardtextListPanel/CardtextListPanel'
+import { CardtextListMobileFactoryLowerToolbar } from './CardtextListMobileFactoryToolbar'
 
 export const CardtextListMobileSlot: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -27,5 +28,14 @@ export const CardtextListMobileSlot: React.FC = () => {
 
   if (!isOpen || !isMobileLayout) return null
 
-  return <CardtextListPanel onClose={handleClose} onSelect={handleSelect} />
+  return (
+    <>
+      <CardtextListMobileFactoryLowerToolbar />
+      <CardtextListPanel
+        factoryChrome
+        onClose={handleClose}
+        onSelect={handleSelect}
+      />
+    </>
+  )
 }
