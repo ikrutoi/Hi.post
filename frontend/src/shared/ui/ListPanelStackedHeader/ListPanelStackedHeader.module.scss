@@ -301,4 +301,10 @@
       margin-right: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
     }
   }
+
+  :global([data-mobile-factory-section-frame='true']) {
+    .headerDivider {
+      border-top-color: var(--mobile-section-surface-bg, $color-cardphoto-input-border);
+    }
+  }
 }

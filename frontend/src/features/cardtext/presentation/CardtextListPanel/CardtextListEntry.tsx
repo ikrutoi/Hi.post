@@ -56,7 +56,7 @@ export const CardtextListEntry: React.FC<Props> = ({
 
   return (
     <div
-      className={cellStyles.root}
+      className={clsx(cellStyles.root, cellStyles.rootCardtext)}
       data-cardtext-template-entry
       data-density-level={density}
       data-selected={isSelected ? 'true' : undefined}

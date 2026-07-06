@@ -65,6 +65,30 @@
   }
 }
 
+.rootCardtext {
+  background-color: $color-cardtext-input;
+  border-color: $color-cardtext-input-border;
+
+  &:hover {
+    background-color: darken($color-cardtext-input, 2%);
+  }
+
+  &[data-focused='true']:not([data-selected='true']) {
+    border-color: darken($color-cardtext-input-border, 10%);
+  }
+
+  &[data-selected='true'] {
+    background-color: darken($color-cardtext-input, 2%);
+    border-color: $color-cardtext-input-border;
+    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
+  }
+
+  &[data-selected='true'][data-focused='true'] {
+    border-color: $color-cardtext-input-border;
+    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
+  }
+}
+
 .body {
   display: flex;
   flex: 1 1 auto;
