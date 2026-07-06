@@ -64,7 +64,7 @@ import {
 import {
   selectSenderEntriesState,
 } from '@envelope/sender/infrastructure/selectors'
-import { formatAddressGridCellLines } from '@envelope/addressBook/presentation/addressSummaryLines'
+import { formatAddressPreviewLines } from '@envelope/addressBook/presentation/addressSummaryLines'
 import { dispatchCardPieToolbarIconState } from '@toolbar/application/syncCardPieToolbarIcons'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { CardSection, IconKey } from '@shared/config/constants'
@@ -338,7 +338,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       return {
         role: 'sender' as const,
         id: entry.id,
-        lines: formatAddressGridCellLines(entry),
+        lines: formatAddressPreviewLines(entry),
       }
     }
 
@@ -350,7 +350,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       return {
         role: 'recipient' as const,
         id: entry.id,
-        lines: formatAddressGridCellLines(entry),
+        lines: formatAddressPreviewLines(entry),
       }
     }
 
@@ -820,27 +820,21 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                           }
                           aria-label="Selected address template preview"
                         >
-                          <div
-                            className={
-                              styles.mobileAddressListTemplatePreviewTitle
-                            }
-                          >
-                            {mobileAddressListTemplatePreview.lines.nameLine}
-                          </div>
-                          <div
-                            className={
-                              styles.mobileAddressListTemplatePreviewDetail
-                            }
-                          >
-                            <div>
-                              {mobileAddressListTemplatePreview.lines.cityLine}
-                            </div>
-                            <div>
-                              {
-                                mobileAddressListTemplatePreview.lines
-                                  .countryLine
-                              }
-                            </div>
+                          <div className={styles.mobileAddressListTemplatePreviewLines}>
+                            {mobileAddressListTemplatePreview.lines.map(
+                              (line) => (
+                                <div
+                                  key={line.field}
+                                  className={clsx(
+                                    styles.mobileAddressListTemplatePreviewLine,
+                                    line.isName &&
+                                      styles.mobileAddressListTemplatePreviewLineName,
+                                  )}
+                                >
+                                  {line.text}
+                                </div>
+                              ),
+                            )}
                           </div>
                         </div>
                         ) : (

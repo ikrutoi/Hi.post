@@ -1,3 +1,5 @@
+import type { AddressField } from '@shared/config/constants'
+import { ADDRESS_FIELD_ORDER } from '@shared/config/constants'
 import type { AddressBookEntry } from '../domain/types'
 
 export type AddressSummaryLines = {
@@ -9,6 +11,24 @@ export type AddressGridCellLines = {
   nameLine: string
   cityLine: string
   countryLine: string
+}
+
+export type AddressPreviewLine = {
+  field: AddressField
+  text: string
+  isName: boolean
+}
+
+export function formatAddressPreviewLines(
+  entry: AddressBookEntry,
+): AddressPreviewLine[] {
+  return ADDRESS_FIELD_ORDER.map((field) => {
+    const text =
+      field === 'name'
+        ? entry.address.name?.trim() || entry.label?.trim() || '—'
+        : entry.address[field]?.trim() || '—'
+    return { field, text, isName: field === 'name' }
+  })
 }
 
 export function formatAddressGridCellLines(
