@@ -25,38 +25,47 @@
   margin-bottom: calc(-1 * var(--mobile-form-layout-padding-bottom, var(--mobile-form-padding-bottom)));
 
   &[data-mobile-section-surface='cardphoto'] {
+    --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-cardphoto};
     background-color: sectionGutter.$mobile-section-gutter-cardphoto;
   }
 
   &[data-mobile-section-surface='cardtext'] {
+    --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-cardtext};
     background-color: sectionGutter.$mobile-section-gutter-cardtext;
   }
 
   &[data-mobile-section-surface='envelope'] {
+    --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-envelope};
     background-color: sectionGutter.$mobile-section-gutter-envelope;
   }
 
   &[data-mobile-section-surface='envelope-sender'] {
+    --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-envelope-sender};
     background-color: sectionGutter.$mobile-section-gutter-envelope-sender;
   }
 
   &[data-mobile-section-surface='aroma'] {
+    --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-aroma};
     background-color: sectionGutter.$mobile-section-gutter-aroma;
   }
 
   &[data-mobile-section-surface='date'] {
+    --mobile-section-surface-bg: #{notebookTab.$mobile-notebook-date-tab-date};
     background-color: notebookTab.$mobile-notebook-date-tab-date;
   }
 
   &[data-mobile-section-surface='date-cart'] {
+    --mobile-section-surface-bg: #{notebookTab.$mobile-notebook-cart-tab-top};
     @include notebookTab.mobile-notebook-cart-tab-gutter-gradient;
   }
 
   &[data-mobile-section-surface='date-history'] {
+    --mobile-section-surface-bg: #{notebookTab.$mobile-notebook-history-tab-yellow};
     @include notebookTab.mobile-notebook-history-tab-frame-backdrop;
   }
 
   &[data-mobile-section-surface='neutral'] {
+    --mobile-section-surface-bg: transparent;
     background-color: transparent;
   }
 }

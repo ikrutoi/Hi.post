@@ -53,7 +53,7 @@
 .rowDivider {
   flex: 0 0 1px;
   margin-inline: 0.5rem;
-  background-color: $color-section-light;
+  background-color: var(--mobile-section-surface-bg, $color-section-light);
 }
 
 .rowDividerHidden {
