@@ -11,10 +11,6 @@ import { selectIsHistoryListPanelOpen } from '@date/calendar/infrastructure/sele
 import { MobileCartListSlot } from '@layout/presentation/MobileAppShell/MobileCartListSlot'
 import { MobileHistoryListSlot } from '@layout/presentation/MobileAppShell/MobileHistoryListSlot'
 import { CardtextListMobileSlot } from '@cardtext/presentation/CardtextListMobileSlot'
-import {
-  selectRecipientListPanelOpen,
-  selectSenderListPanelOpen,
-} from '@envelope/infrastructure/selectors'
 import { AddressListMobileSlot } from '@envelope/addressBook/presentation/AddressListMobileSlot'
 import { EnvelopeMobileAddressFocusProvider } from '@envelope/presentation/EnvelopeMobileAddressFocusContext'
 import { useMobileFactoryListChrome } from '../application/hooks/useMobileFactoryListChrome'
@@ -37,7 +33,6 @@ export const CardSectionEditor: React.FC = () => {
   const { activeSection } = useSectionMenuFacade()
   const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
   const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
-  const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const { currentView: cardtextCurrentView } = useCardtextFacade()
   const {
@@ -52,9 +47,6 @@ export const CardSectionEditor: React.FC = () => {
     }
     if (historyListPanelOpen && !mobileDateListChromePeek) {
       return 'date-history'
-    }
-    if (activeSection === 'envelope' && senderListPanelOpen) {
-      return 'envelope-sender'
     }
     if (activeSection === 'date') {
       if (mobileFactoryChromePeek) {
@@ -83,7 +75,6 @@ export const CardSectionEditor: React.FC = () => {
     }
   }, [
     activeSection,
-    senderListPanelOpen,
     notebookStripTab,
     mobileFactoryChromePeek,
     mobileDateListChromePeek,
