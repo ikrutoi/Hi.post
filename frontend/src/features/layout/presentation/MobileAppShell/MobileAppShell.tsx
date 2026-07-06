@@ -6,7 +6,8 @@ import {
   openCardphotoFromMiniStripRequested,
   setCardphotoListPanelOpen,
 } from '@cardphoto/infrastructure/state'
-import { selectIsListPanelOpen } from '@cardphoto/infrastructure/selectors'
+import { selectIsListPanelOpen, selectCardphotoAssetData } from '@cardphoto/infrastructure/selectors'
+import { resolveCardphotoMetaPreviewUrl } from '@cardphoto/application/helpers'
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import {
   selectCartListPanelOpen,
@@ -100,6 +101,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const cartItems = useAppSelector(selectCartItems)
   const notebookStripSection = useDateStripSectionForNotebookTabs()
   const activeSection = useAppSelector(selectActiveSection)
+  const cardphotoListPanelOpen = useAppSelector(selectIsListPanelOpen)
+  const cardphotoAssetData = useAppSelector(selectCardphotoAssetData)
   const activeCartPostcardCount = useAppSelector(selectActiveCartPostcardCount)
   const blockedCartPostcardCount = useAppSelector(selectBlockedCartPostcardCount)
   const cartSlotVisualMode = useMemo(() => {
@@ -241,8 +244,26 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     notebookStripSection,
   ])
 
-  const mobileCentralPieDisplay = useMemo((): 'archive' | 'hidden' | 'assembly' => {
+  const mobileCardphotoListTemplatePreview = useMemo(() => {
+    if (!cardphotoListPanelOpen || activeSection !== 'cardphoto') return null
+    if (rightPieCardphotoPeekNoToolbar) return null
+    const previewUrl = resolveCardphotoMetaPreviewUrl(cardphotoAssetData)
+    if (!previewUrl || !cardphotoAssetData?.id) return null
+    return { id: cardphotoAssetData.id, previewUrl }
+  }, [
+    activeSection,
+    cardphotoAssetData,
+    cardphotoListPanelOpen,
+    rightPieCardphotoPeekNoToolbar,
+  ])
+
+  const mobileCentralPieDisplay = useMemo(():
+    | 'archive'
+    | 'cardphotoTemplate'
+    | 'hidden'
+    | 'assembly' => {
     if (mobileCentralArchivePreview != null) return 'archive'
+    if (mobileCardphotoListTemplatePreview != null) return 'cardphotoTemplate'
     if (
       mobileListArchiveSlotActive ||
       notebookStripSection === 'cart' ||
@@ -253,6 +274,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     return 'assembly'
   }, [
     mobileCentralArchivePreview,
+    mobileCardphotoListTemplatePreview,
     mobileListArchiveSlotActive,
     notebookStripSection,
   ])
@@ -597,6 +619,19 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                             !showTopCardStripFullSpan
                           }
                         />
+                      ) : mobileCentralPieDisplay === 'cardphotoTemplate' &&
+                        mobileCardphotoListTemplatePreview != null ? (
+                        <div
+                          className={styles.mobileCardphotoListTemplatePreview}
+                          aria-label="Selected photo template preview"
+                        >
+                          <img
+                            key={mobileCardphotoListTemplatePreview.id}
+                            src={mobileCardphotoListTemplatePreview.previewUrl}
+                            alt=""
+                            decoding="async"
+                          />
+                        </div>
                       ) : mobileCentralPieDisplay === 'assembly' ? (
                         <CardPie
                           fillContainer

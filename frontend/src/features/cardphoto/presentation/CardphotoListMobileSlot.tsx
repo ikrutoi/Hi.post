@@ -29,9 +29,8 @@ export const CardphotoListMobileSlot: React.FC = () => {
   const handleSelectTemplate = useCallback(
     (id: string) => {
       dispatch(selectInLineTemplate(id))
-      handleClose()
     },
-    [dispatch, handleClose],
+    [dispatch],
   )
 
   if (!isOpen || !isMobileLayout) return null
