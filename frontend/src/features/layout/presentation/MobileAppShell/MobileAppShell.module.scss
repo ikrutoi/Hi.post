@@ -343,7 +343,6 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   scrollbar-width: none;
   pointer-events: auto;
   box-sizing: border-box;
-  padding-right: calc(1px + #{$list-entry-accent-bar-width});
   border-radius: var(--mobile-pie-gutter-mini-radius);
   background-color: $color-app-inner;
 
@@ -396,15 +395,13 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   }
 }
 
-// Выбранный мини-пай: как ячейка выбранного шаблона cardtext, полоска справа.
+// Выбранный мини-пай: внешний бордер в цвет центральной кнопки пая.
 .mobilePieGutterMiniItem[data-selected='true'] {
-  overflow: visible;
-  padding: 1px;
-  background-color: #fff;
-  border-color: $color-cardtext-input-border;
-  box-shadow:
-    1px 0 0 0 #fff,
-    calc(1px + #{$list-entry-accent-bar-width}) 0 0 0 $color-toggle-active;
+  border-color: $color-app-substrate-border;
+}
+
+.mobilePieGutterMiniItem[data-selected='true'][data-ready='true'] {
+  border-color: var(--logo-color, #008aed);
 }
 
 // Centered on screen; minis sit in the left slot via absolute positioning.
