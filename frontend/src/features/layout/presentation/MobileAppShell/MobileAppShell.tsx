@@ -37,6 +37,14 @@ import {
 } from '@date/calendar/infrastructure/selectors'
 import { setCardtextListPanelOpen } from '@cardtext/infrastructure/state'
 import { selectIsCardtextListPanelOpen } from '@cardtext/infrastructure/selectors'
+import {
+  closeAddressList,
+  setActiveAddressList,
+} from '@envelope/infrastructure/state'
+import {
+  selectRecipientListPanelOpen,
+  selectSenderListPanelOpen,
+} from '@envelope/infrastructure/selectors'
 import { dispatchCardPieToolbarIconState } from '@toolbar/application/syncCardPieToolbarIcons'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { CardSection, IconKey } from '@shared/config/constants'
@@ -395,6 +403,21 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         return
       }
 
+      if (section === 'envelope' && currentActiveSection === 'envelope') {
+        const senderListOpen = selectSenderListPanelOpen(state)
+        const recipientListOpen = selectRecipientListPanelOpen(state)
+        if (!senderListOpen && !recipientListOpen) {
+          dispatch(setActiveAddressList('sender'))
+          return
+        }
+        if (senderListOpen) {
+          dispatch(setActiveAddressList('recipients'))
+          return
+        }
+        dispatch(closeAddressList())
+        return
+      }
+
       const notebookStripTab = selectNotebookStripTab(state)
       if (selectIsCardPieListPanelOpen(state)) {
         dispatch(setCardPieListPanelOpen(false))
@@ -426,6 +449,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       }
       if (section === 'cardtext') {
         dispatch(setCardtextListPanelOpen(false))
+      }
+      if (section === 'envelope') {
+        dispatch(closeAddressList())
       }
       dispatch(setActiveSection(section))
     },
