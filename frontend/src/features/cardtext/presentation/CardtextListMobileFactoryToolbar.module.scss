@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as *;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
 .upperRow {
@@ -18,7 +19,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding-left: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
+  padding: 0.22rem 0.5rem 0.22rem iconButton.$toolbar-mobile-toolbar-key-margin-inline;
+  background-color: $color-app-inner;
+  border-radius: calc(#{$list-entry-radius-lg} - 1px);
   font-size: 0.95rem;
   font-weight: 600;
   line-height: 1.2;

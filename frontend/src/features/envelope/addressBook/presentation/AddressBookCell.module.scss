@@ -67,20 +67,21 @@
 
 .rootCardtext {
   overflow: hidden;
-  background-color: $color-cardtext-input;
+  padding: 1px;
+  background-color: #fff;
   border-color: $color-cardtext-input-border;
 
   &:hover {
-    background-color: darken($color-cardtext-input, 2%);
+    background-color: #fff;
   }
 
   &[data-focused='true']:not([data-selected='true']) {
-    border-color: darken($color-cardtext-input-border, 10%);
+    border-color: darken($color-cardtext-input-border, 8%);
   }
 
   &[data-selected='true'] {
     overflow: visible;
-    background-color: darken($color-cardtext-input, 2%);
+    background-color: #fff;
     border-color: $color-cardtext-input-border;
     box-shadow:
       -1px 0 0 0 #fff,
@@ -92,6 +93,34 @@
     box-shadow:
       -1px 0 0 0 #fff,
       calc(-1px - #{$list-entry-accent-bar-width}) 0 0 0 $color-toggle-active;
+  }
+
+  .templateTextBlock {
+    gap: 0.16rem;
+  }
+
+  .templatePreviewText {
+    padding: 0.16rem 0.26rem 0.14rem;
+  }
+
+  .templateTitleText {
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0.26rem 0.28rem 0.22rem;
+    background-color: $color-app-inner;
+    border-radius: calc(#{$list-entry-radius-lg} - 1px);
+  }
+
+  &[data-density-level='2'] {
+    padding: 1px;
+
+    .templateTitleText {
+      padding: 0.22rem 0.24rem 0.18rem;
+    }
+
+    .templatePreviewText {
+      padding: 0.14rem 0.22rem 0.12rem;
+    }
   }
 }
 
@@ -230,7 +259,7 @@
 }
 
 /* 5 ячеек в ряд — компактнее типографика */
-.root[data-density-level='2'] {
+.root[data-density-level='2']:not(.rootCardtext) {
   padding: 0.28rem 0.24rem 0.22rem;
 
   .nameLine,

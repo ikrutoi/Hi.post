@@ -430,6 +430,11 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
     overflow: hidden;
     box-shadow: none;
   }
+
+  &[data-mobile-central-pie-mode='cardtextTemplate'] {
+    box-sizing: border-box;
+    border: 1px solid darken($color-app-inner, 8%);
+  }
 }
 
 .mobileCardtextListTemplatePreview {
