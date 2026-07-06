@@ -3,7 +3,7 @@ import { PayloadAction } from '@reduxjs/toolkit'
 import { call, put, select } from 'redux-saga/effects'
 import { postcardLocalDataChanged } from '@features/sync/store/postcardSync.actions'
 import { clearCardPieWorkspaceAfterCartAdd } from './editorPieHandlers'
-import { buildNotebookCartTabCommands } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
+import { buildCartCalendarCommands } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 import { updateLastViewedCalendarDate } from '@date/calendar/infrastructure/state'
 import { postcardsAdapter, storeAdapters } from '@db/adapters/storeAdapters'
 import { addItem } from '@cart/infrastructure/state'
@@ -422,7 +422,7 @@ function* maybeClearCardPieWorkspaceAfterSingleAdd(
 
 /** После «в корзину» из Card pie: закладка Cart + центральная секция «Дата» (как клик по cart в sidebar). */
 function* focusCartNotebookOnDateSection(date: DispatchDate): SagaIterator {
-  for (const command of buildNotebookCartTabCommands()) {
+  for (const command of buildCartCalendarCommands()) {
     yield put(command)
   }
   yield put(

@@ -1,23 +1,22 @@
 import { takeEvery, put, select, call } from 'redux-saga/effects'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { toolbarAction } from '@toolbar/application/helpers'
-import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
-import {
-  setCartListPanelOpen,
-  setCartListStatusSegment,
-} from '@cart/infrastructure/state'
+import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
+import { setHistoryListPanelOpen } from '@date/calendar/infrastructure/state'
 import {
-  setCartCalendarDatePickMode,
-  setHistoryListPanelOpen,
-  setNotebookStripTab,
-} from '@date/calendar/infrastructure/state'
+  selectIsHistoryListPanelOpen,
+  selectNotebookStripTab,
+} from '@date/calendar/infrastructure/selectors'
+import {
+  buildCartArchiveToggleCommands,
+  buildHistoryArchiveToggleCommands,
+} from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { setUserLoginPanelOpen } from '@features/auth/infrastructure/state/auth.slice'
 import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
 import {
-  syncSectionMenuVisuals,
   syncSectionMenuVisualsAllEnabled,
 } from './sectionEditorMenuHandlers'
 import {
@@ -36,7 +35,14 @@ function* syncRightSidebarVisuals(clickedKey: RightSidebarKey) {
       }),
     )
   }
+}
 
+function* dispatchCommands(
+  commands: ReturnType<typeof buildCartArchiveToggleCommands>,
+) {
+  for (const command of commands) {
+    yield put(command)
+  }
 }
 
 export function* handleRightSidebarToolbarAction(
@@ -77,59 +83,55 @@ export function* handleRightSidebarToolbarAction(
   }
 
   if (key === 'cart') {
-    const isCartActive: boolean = yield select(selectCartListPanelOpen)
-    const nextOpen = !isCartActive
-    yield put(setCartListPanelOpen(nextOpen))
-    if (nextOpen) {
-      yield put(setHistoryListPanelOpen(false))
-      yield put(setUserLoginPanelOpen(false))
-      /** Полоса держится сагой синхронизации (`cart.isActive` → `cart`). */
-      yield put(setCartCalendarDatePickMode(false))
-      yield put(setCartListStatusSegment('cart'))
-      yield put(setNotebookStripTab('cart'))
-      yield put(setActiveSection('date'))
-      /** `setActiveSection('date')` без смены Redux-секции не триггерит сагу — всё равно снимаем active с иконки «Дата» в меню. */
-      yield call(syncSectionMenuVisualsAllEnabled)
-    } else {
-      const activeSection = yield select(selectActiveSection)
-      if (activeSection != null) {
-        yield call(syncSectionMenuVisuals, activeSection)
-      }
-    }
+    const cartListPanelOpen: boolean = yield select(selectCartListPanelOpen)
+    const notebookStripTab = yield select(selectNotebookStripTab)
+    yield put(setUserLoginPanelOpen(false))
+    yield* dispatchCommands(
+      buildCartArchiveToggleCommands({
+        cartListPanelOpen,
+        notebookStripTab,
+        isMobileLayout: false,
+      }),
+    )
+    yield call(syncSectionMenuVisualsAllEnabled)
     yield put(
       updateToolbarIcon({
         section: 'rightSidebar',
         key: 'cart',
-        value: nextOpen ? 'active' : 'enabled',
+        value: 'active',
       }),
     )
-    if (nextOpen) {
-      for (const iconKey of RIGHT_SIDEBAR_KEYS) {
-        if (iconKey === 'cart') continue
-        yield put(
-          updateToolbarIcon({
-            section: 'rightSidebar',
-            key: iconKey,
-            value: 'enabled',
-          }),
-        )
-      }
+    for (const iconKey of RIGHT_SIDEBAR_KEYS) {
+      if (iconKey === 'cart') continue
+      yield put(
+        updateToolbarIcon({
+          section: 'rightSidebar',
+          key: iconKey,
+          value: 'enabled',
+        }),
+      )
     }
     return
   }
 
-  yield* syncRightSidebarVisuals(key)
-
   if (key === 'history') {
-    const cartListOpen: boolean = yield select(selectCartListPanelOpen)
-    if (cartListOpen) {
-      yield put(setCartListPanelOpen(false))
-    }
+    const historyListPanelOpen: boolean = yield select(selectIsHistoryListPanelOpen)
+    const notebookStripTab = yield select(selectNotebookStripTab)
+    const activeSection = yield select(selectActiveSection)
     yield put(setUserLoginPanelOpen(false))
-    yield put(setNotebookStripTab('history'))
-    yield put(setHistoryListPanelOpen(true))
-    yield put(setActiveSection('history'))
+    yield* dispatchCommands(
+      buildHistoryArchiveToggleCommands({
+        historyListPanelOpen,
+        notebookStripTab,
+        activeSection,
+        isMobileLayout: false,
+      }),
+    )
+    yield* syncRightSidebarVisuals('history')
+    return
   }
+
+  yield* syncRightSidebarVisuals(key)
 }
 
 export function* rightSidebarToolbarSaga() {

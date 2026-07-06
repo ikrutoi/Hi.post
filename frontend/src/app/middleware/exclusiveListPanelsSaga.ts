@@ -57,14 +57,22 @@ function* syncListPanelToolbarIcons(): SagaIterator {
 
   const cartListOpen: boolean = yield select(selectCartListPanelOpen)
   const notebookStripTab = yield select(selectNotebookStripTab)
-  /** Закладка «Дата» на календаре: иконка корзины в сайдбаре без active, даже если список открыт. */
-  const cartSidebarHighlightActive =
-    cartListOpen && notebookStripTab !== 'date'
+  /** Календарь или список корзины: иконка active; режим «Дата» — без подсветки. */
+  const cartSidebarHighlightActive = notebookStripTab === 'cart'
   yield put(
     updateToolbarIcon({
       section: 'rightSidebar',
       key: 'cart',
       value: cartSidebarHighlightActive ? 'active' : 'enabled',
+    }),
+  )
+
+  const historySidebarHighlightActive = notebookStripTab === 'history'
+  yield put(
+    updateToolbarIcon({
+      section: 'rightSidebar',
+      key: 'history',
+      value: historySidebarHighlightActive ? 'active' : 'enabled',
     }),
   )
 

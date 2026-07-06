@@ -14,8 +14,8 @@ import {
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import {
-  buildMobileCartSlotOpenCommands,
-  buildMobileHistorySlotOpenCommands,
+  buildCartArchiveToggleCommands,
+  buildHistoryArchiveToggleCommands,
 } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 import {
   setCardPieListPanelOpen,
@@ -426,46 +426,46 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const handleCartSlotClick = useCallback(
     (event: React.MouseEvent) => {
       event.stopPropagation()
-      if (selectCartListPanelOpen(store.getState())) {
-        if (mobileFactoryChromePeek) {
-          clearMobileFactoryPeek()
-        }
-        return
-      }
       clearMobileFactoryPeek()
       if (selectIsCardPieListPanelOpen(store.getState())) {
         dispatch(setCardPieListPanelOpen(false))
         dispatchCardPieToolbarIconState(dispatch, false)
       }
-      for (const command of buildMobileCartSlotOpenCommands()) {
+      const state = store.getState()
+      for (const command of buildCartArchiveToggleCommands({
+        cartListPanelOpen: selectCartListPanelOpen(state),
+        notebookStripTab: selectNotebookStripTab(state),
+        isMobileLayout: true,
+      })) {
         dispatch(command)
       }
     },
-    [dispatch, mobileFactoryChromePeek, clearMobileFactoryPeek],
+    [dispatch, clearMobileFactoryPeek],
   )
 
   const handleHistorySlotClick = useCallback(
     (event: React.MouseEvent) => {
       event.stopPropagation()
-      if (selectIsHistoryListPanelOpen(store.getState())) {
-        if (mobileFactoryChromePeek) {
-          clearMobileFactoryPeek()
-        }
-        return
-      }
       clearMobileFactoryPeek()
       if (selectIsCardPieListPanelOpen(store.getState())) {
         dispatch(setCardPieListPanelOpen(false))
         dispatchCardPieToolbarIconState(dispatch, false)
       }
-      for (const command of buildMobileHistorySlotOpenCommands()) {
+      const state = store.getState()
+      for (const command of buildHistoryArchiveToggleCommands({
+        historyListPanelOpen: selectIsHistoryListPanelOpen(state),
+        notebookStripTab: selectNotebookStripTab(state),
+        activeSection: selectActiveSection(state),
+        isMobileLayout: true,
+      })) {
         dispatch(command)
       }
     },
-    [dispatch, mobileFactoryChromePeek, clearMobileFactoryPeek],
+    [dispatch, clearMobileFactoryPeek],
   )
 
-  const historyStripActive = historyListPanelOpen
+  const historyStripActive =
+    historyListPanelOpen || notebookStripSection === 'history'
 
   const cardWidthStyle =
     sizeCard?.width != null && sizeCard.width > 0
@@ -602,7 +602,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                                 styles.mobilePieRightSlotItemCartModeBlockedOnly,
                             )}
                             aria-label="Cart postcards"
-                            aria-pressed={cartListPanelOpen}
+                            aria-pressed={
+                              cartListPanelOpen || notebookStripSection === 'cart'
+                            }
                             onClick={handleCartSlotClick}
                           >
                             <div

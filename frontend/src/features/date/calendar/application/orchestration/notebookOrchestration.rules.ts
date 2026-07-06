@@ -16,7 +16,41 @@ import {
   setNotebookStripTab,
 } from '@date/calendar/infrastructure/state'
 import type { DateStripSection } from '@date/presentation/dateStripSection.types'
+import type { CardMenuSection } from '@shared/config/constants'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+
+export type CartArchiveViewMode = 'inactive' | 'calendar' | 'list'
+export type HistoryArchiveViewMode = 'inactive' | 'calendar' | 'list'
+
+export function resolveCartArchiveViewMode(input: {
+  cartListPanelOpen: boolean
+  notebookStripTab: DateStripSection
+}): CartArchiveViewMode {
+  if (input.cartListPanelOpen) return 'list'
+  if (input.notebookStripTab === 'cart') return 'calendar'
+  return 'inactive'
+}
+
+export function resolveHistoryArchiveViewMode(input: {
+  historyListPanelOpen: boolean
+  notebookStripTab: DateStripSection
+  activeSection: CardMenuSection | null
+}): HistoryArchiveViewMode {
+  if (input.historyListPanelOpen) return 'list'
+  if (
+    input.notebookStripTab === 'history' &&
+    (input.activeSection === 'history' || input.activeSection === 'date')
+  ) {
+    return 'calendar'
+  }
+  return 'inactive'
+}
+
+export function resolveNextArchiveViewOnClick(
+  mode: CartArchiveViewMode | HistoryArchiveViewMode,
+): 'calendar' | 'list' {
+  return mode === 'calendar' ? 'list' : 'calendar'
+}
 
 export const buildNotebookDateTabCommands = (): UnknownAction[] => [
   setNotebookStripDateOverCart(true),
@@ -43,26 +77,29 @@ export const buildNotebookDateTabCommandsMobile = (): UnknownAction[] => [
   setActiveSection('date'),
 ]
 
-/** Mobile header Cart tab: календарь в режиме «Корзина», без списка. */
-export const buildNotebookCartTabCommandsMobile = (): UnknownAction[] => [
-  setCartListPanelOpen(false),
+/** Календарь в режиме «Корзина», список закрыт (desktop sidebar / mobile). */
+export const buildCartCalendarCommands = (): UnknownAction[] => [
   setHistoryListPanelOpen(false),
   closeDayPanel(),
+  updateToolbarIcon({
+    section: 'history',
+    key: 'listHistory',
+    value: 'enabled',
+  }),
+  setCartListPanelOpen(false),
+  updateToolbarIcon({
+    section: 'rightSidebar',
+    key: 'cart',
+    value: 'active',
+  }),
   setCartCalendarDatePickMode(false),
+  setCartListStatusSegment('cart'),
   setNotebookStripTab('cart'),
   setActiveSection('date'),
 ]
 
-/** Mobile header History tab: календарь в режиме «История», без списка. */
-export const buildNotebookHistoryTabCommandsMobile = (): UnknownAction[] => [
-  setCartListPanelOpen(false),
-  setHistoryListPanelOpen(false),
-  closeDayPanel(),
-  setNotebookStripTab('history'),
-  setActiveSection('date'),
-]
-
-export const buildNotebookCartTabCommands = (): UnknownAction[] => [
+/** Список корзины (desktop sidebar / mobile). */
+export const buildCartListCommands = (): UnknownAction[] => [
   setHistoryListPanelOpen(false),
   closeDayPanel(),
   updateToolbarIcon({
@@ -77,20 +114,99 @@ export const buildNotebookCartTabCommands = (): UnknownAction[] => [
     value: 'active',
   }),
   setCartCalendarDatePickMode(false),
+  setCartListStatusSegment('cart'),
   setNotebookStripTab('cart'),
   setActiveSection('date'),
 ]
 
-export const buildNotebookHistoryTabCommands = (): UnknownAction[] => [
+/** Mobile header Cart tab: календарь в режиме «Корзина», без списка. */
+export const buildNotebookCartTabCommandsMobile = (): UnknownAction[] => [
+  setCartListPanelOpen(false),
+  setHistoryListPanelOpen(false),
+  closeDayPanel(),
+  setCartCalendarDatePickMode(false),
+  setCartListStatusSegment('cart'),
+  setNotebookStripTab('cart'),
+  setActiveSection('date'),
+]
+
+/** Mobile header History tab: календарь в режиме «История», без списка. */
+export const buildNotebookHistoryTabCommandsMobile = (): UnknownAction[] => [
+  setCartListPanelOpen(false),
+  setHistoryListPanelOpen(false),
+  closeDayPanel(),
+  setNotebookStripTab('history'),
+  setActiveSection('date'),
+]
+
+/** @deprecated Используйте `buildCartListCommands` или `buildCartArchiveToggleCommands`. */
+export const buildNotebookCartTabCommands = (): UnknownAction[] =>
+  buildCartListCommands()
+
+/** Календарь в режиме «История», список закрыт (desktop). */
+export const buildHistoryCalendarCommandsDesktop = (): UnknownAction[] => [
   setCartListPanelOpen(false),
   updateToolbarIcon({
     section: 'rightSidebar',
     key: 'cart',
     value: 'enabled',
   }),
+  setHistoryListPanelOpen(false),
+  closeDayPanel(),
   setNotebookStripTab('history'),
   setActiveSection('history'),
 ]
+
+/** Список истории (desktop sidebar / mobile). */
+export const buildHistoryListCommands = (): UnknownAction[] => [
+  setCartListPanelOpen(false),
+  updateToolbarIcon({
+    section: 'rightSidebar',
+    key: 'cart',
+    value: 'enabled',
+  }),
+  setHistoryListPanelOpen(true),
+  setNotebookStripTab('history'),
+  setActiveSection('history'),
+]
+
+export const buildNotebookHistoryTabCommands = (): UnknownAction[] =>
+  buildHistoryCalendarCommandsDesktop()
+
+export function buildCartArchiveToggleCommands(input: {
+  cartListPanelOpen: boolean
+  notebookStripTab: DateStripSection
+  isMobileLayout: boolean
+}): UnknownAction[] {
+  const mode = resolveCartArchiveViewMode(input)
+  const next = resolveNextArchiveViewOnClick(mode)
+  if (next === 'list') {
+    return input.isMobileLayout
+      ? buildMobileCartSlotOpenCommands()
+      : buildCartListCommands()
+  }
+  return input.isMobileLayout
+    ? buildNotebookCartTabCommandsMobile()
+    : buildCartCalendarCommands()
+}
+
+export function buildHistoryArchiveToggleCommands(input: {
+  historyListPanelOpen: boolean
+  notebookStripTab: DateStripSection
+  activeSection: CardMenuSection | null
+  isMobileLayout: boolean
+}): UnknownAction[] {
+  const mode = resolveHistoryArchiveViewMode(input)
+  const next = resolveNextArchiveViewOnClick(mode)
+  if (next === 'list') {
+    return input.isMobileLayout
+      ? buildMobileHistorySlotOpenCommands()
+      : buildHistoryListCommands()
+  }
+  return input.isMobileLayout
+    ? buildNotebookHistoryTabCommandsMobile()
+    : buildHistoryCalendarCommandsDesktop()
+}
 
 /** Mobile Cart slot: только список корзины, режим календаря не меняется. */
 export const buildMobileCartSlotOpenCommands = (): UnknownAction[] => [
@@ -149,22 +265,10 @@ export const buildNotebookSessionRestoreCommands = (
   tab: DateStripSection | null,
 ): UnknownAction[] => {
   if (tab === 'cart') {
-    return [
-      setCartListPanelOpen(true),
-      setHistoryListPanelOpen(false),
-      setActiveSection('date'),
-      setCartCalendarDatePickMode(false),
-      setCartListStatusSegment('cart'),
-      setNotebookStripTab('cart'),
-    ]
+    return buildCartCalendarCommands()
   }
   if (tab === 'history') {
-    return [
-      setCartListPanelOpen(false),
-      setHistoryListPanelOpen(true),
-      setActiveSection('history'),
-      setNotebookStripTab('history'),
-    ]
+    return buildHistoryCalendarCommandsDesktop()
   }
   return []
 }

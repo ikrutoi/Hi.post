@@ -1,6 +1,9 @@
 import type { SagaIterator } from 'redux-saga'
 import { call, put, select, takeEvery } from 'redux-saga/effects'
 import { selectIsMobileLayout } from '@layout/infrastructure/selectors'
+import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
+import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
+import { selectIsHistoryListPanelOpen, selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
 import { closeCardPieListPanelAndSyncIconsSaga } from '@app/middleware/exclusiveListPanelsSaga'
 import {
   notebookSessionRestored,
@@ -10,12 +13,10 @@ import {
 } from '@date/calendar/application/orchestration/notebookOrchestration.events'
 import { bumpNotebookDateTabPeekClearTick } from '@date/calendar/infrastructure/state'
 import {
-  buildNotebookCartTabCommands,
-  buildNotebookCartTabCommandsMobile,
+  buildCartArchiveToggleCommands,
+  buildHistoryArchiveToggleCommands,
   buildNotebookDateTabCommands,
   buildNotebookDateTabCommandsMobile,
-  buildNotebookHistoryTabCommands,
-  buildNotebookHistoryTabCommandsMobile,
   buildNotebookSessionRestoreCommands,
 } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 
@@ -38,22 +39,36 @@ function* handleNotebookTabDateClicked(): SagaIterator {
 
 function* handleNotebookTabCartClicked(): SagaIterator {
   const isMobileLayout: boolean = yield select(selectIsMobileLayout)
+  const cartListPanelOpen: boolean = yield select(selectCartListPanelOpen)
+  const notebookStripTab = yield select(selectNotebookStripTab)
   if (isMobileLayout) {
     yield call(closeCardPieListPanelAndSyncIconsSaga)
-    yield* dispatchCommands(buildNotebookCartTabCommandsMobile())
-    return
   }
-  yield* dispatchCommands(buildNotebookCartTabCommands())
+  yield* dispatchCommands(
+    buildCartArchiveToggleCommands({
+      cartListPanelOpen,
+      notebookStripTab,
+      isMobileLayout,
+    }),
+  )
 }
 
 function* handleNotebookTabHistoryClicked(): SagaIterator {
   const isMobileLayout: boolean = yield select(selectIsMobileLayout)
+  const historyListPanelOpen: boolean = yield select(selectIsHistoryListPanelOpen)
+  const notebookStripTab = yield select(selectNotebookStripTab)
+  const activeSection = yield select(selectActiveSection)
   if (isMobileLayout) {
     yield call(closeCardPieListPanelAndSyncIconsSaga)
-    yield* dispatchCommands(buildNotebookHistoryTabCommandsMobile())
-    return
   }
-  yield* dispatchCommands(buildNotebookHistoryTabCommands())
+  yield* dispatchCommands(
+    buildHistoryArchiveToggleCommands({
+      historyListPanelOpen,
+      notebookStripTab,
+      activeSection,
+      isMobileLayout,
+    }),
+  )
 }
 
 function* handleNotebookSessionRestored(
