@@ -51,6 +51,43 @@ export function useMobileFactoryListChrome() {
   /** Suppress cart/history list chrome while any archive section peek is active. */
   const mobileDateListChromePeek = mobileArchiveSectionPeek
 
+  const showMobileSectionTemplateList = useMemo(() => {
+    if (!isMobileLayout) return false
+    if (mobileArchiveSectionPeek) return false
+    if (
+      activeSection === 'cardphoto' &&
+      cardphotoListPanelOpen &&
+      !rightPieCardphotoPeekNoToolbar
+    ) {
+      return true
+    }
+    if (
+      activeSection === 'cardtext' &&
+      cardtextListPanelOpen &&
+      !rightPieCardtextPeekNoToolbar
+    ) {
+      return true
+    }
+    if (
+      activeSection === 'envelope' &&
+      addressListPanelOpen &&
+      !rightPieEnvelopePeekNoToolbar
+    ) {
+      return true
+    }
+    return false
+  }, [
+    isMobileLayout,
+    mobileArchiveSectionPeek,
+    activeSection,
+    cardphotoListPanelOpen,
+    cardtextListPanelOpen,
+    addressListPanelOpen,
+    rightPieCardphotoPeekNoToolbar,
+    rightPieCardtextPeekNoToolbar,
+    rightPieEnvelopePeekNoToolbar,
+  ])
+
   const showMobileTemplateList = useMemo(() => {
     if (!isMobileLayout) return false
     if (cartListPanelOpen && !mobileDateListChromePeek) return true
@@ -104,7 +141,7 @@ export function useMobileFactoryListChrome() {
     ) {
       return true
     }
-    if (showMobileTemplateList) return true
+    if (showMobileTemplateList && !showMobileSectionTemplateList) return true
     if (activeSection === 'date' && cardPieListPanelOpen) return true
     return false
   }, [
@@ -115,12 +152,29 @@ export function useMobileFactoryListChrome() {
     rightPieAromaPeekNoToolbar,
     rightPieDatePeekNoToolbar,
     showMobileTemplateList,
+    showMobileSectionTemplateList,
     activeSection,
     cardPieListPanelOpen,
   ])
 
+  const showMobileCardphotoListFactoryChrome = useMemo(
+    () =>
+      showMobileSectionTemplateList &&
+      activeSection === 'cardphoto' &&
+      cardphotoListPanelOpen &&
+      !rightPieCardphotoPeekNoToolbar,
+    [
+      showMobileSectionTemplateList,
+      activeSection,
+      cardphotoListPanelOpen,
+      rightPieCardphotoPeekNoToolbar,
+    ],
+  )
+
   return {
     showMobileTemplateList,
+    showMobileSectionTemplateList,
+    showMobileCardphotoListFactoryChrome,
     hideUpperToolbar,
     mobileFactoryChromePeek,
     mobileDateListChromePeek,

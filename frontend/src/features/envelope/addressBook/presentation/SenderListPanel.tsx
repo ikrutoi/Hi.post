@@ -2,6 +2,10 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
+import {
+  ListPanelCornerReturn,
+  listPanelCornerReturnPanelProps,
+} from '@shared/ui/ListPanelCornerReturn/ListPanelCornerReturn'
 import { IconUser } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { AddressBookCell } from './AddressBookCell'
@@ -14,6 +18,7 @@ import {
   selectSenderViewEditMode,
 } from '@envelope/infrastructure/selectors'
 import { useAppSelector } from '@app/hooks'
+import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import styles from './SenderListPanel.module.scss'
 
 type Props = {
@@ -26,6 +31,7 @@ export const SenderListPanel: React.FC<Props> = ({
   selectedId = null,
 }) => {
   const { entries, starredSenderIds, closePanel } = useSenderListPanelFacade()
+  const { isMobileLayout } = useSizeFacade()
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const addressListPanelDensity = useAppSelector(
     selectSenderAddressListPanelDensity,
@@ -130,6 +136,7 @@ export const SenderListPanel: React.FC<Props> = ({
         styles.panel,
         combinedEntries.length > 0 && styles.panelToolbarBelow,
       )}
+      {...listPanelCornerReturnPanelProps(isMobileLayout)}
     >
       <ListPanelStackedHeader
         leadIconKey="addressList"
@@ -143,6 +150,7 @@ export const SenderListPanel: React.FC<Props> = ({
           )
         }
         showDividerWithoutToolbar={combinedEntries.length === 0}
+        hideClose={isMobileLayout}
         onClose={closePanel}
         closeAriaLabel="Close address list"
       />
@@ -214,6 +222,10 @@ export const SenderListPanel: React.FC<Props> = ({
           )}
         </div>
       </ScrollArea>
+      <ListPanelCornerReturn
+        onClick={closePanel}
+        ariaLabel="Return to envelope section"
+      />
     </div>
   )
 }

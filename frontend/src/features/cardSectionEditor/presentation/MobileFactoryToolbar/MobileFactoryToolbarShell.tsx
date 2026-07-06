@@ -8,6 +8,7 @@ import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/
 import { useMobileFactoryListChrome } from '../../application/hooks/useMobileFactoryListChrome'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { CardSectionToolbar } from '@features/cardSectionToolbar/presentation/CardSectionToolbar'
+import { CardphotoListMobileFactoryUpperToolbar } from '@cardphoto/presentation/CardphotoListMobileFactoryToolbar'
 import { MobileDateCalendarToolbarNav } from '@date/dateHeader/presentation/MobileDateCalendarToolbarNav'
 import { useMobileScenarioToolbarSnapshot } from './MobileScenarioToolbarContext'
 import styles from './MobileFactoryToolbarShell.module.scss'
@@ -18,7 +19,8 @@ export const MobileFactoryToolbarShell: React.FC = () => {
   const activeSection = useAppSelector(selectActiveSection)
   const senderView = useAppSelector(selectSenderView)
   const recipientView = useAppSelector(selectRecipientView)
-  const { hideUpperToolbar } = useMobileFactoryListChrome()
+  const { hideUpperToolbar, showMobileCardphotoListFactoryChrome } =
+    useMobileFactoryListChrome()
   const { rightPieEnvelopePeekNoToolbar } = useRightListArchiveMini()
 
   const envelopeAddressCreateMode =
@@ -31,13 +33,18 @@ export const MobileFactoryToolbarShell: React.FC = () => {
     (activeSection === 'date' || activeSection === 'history')
 
   const showUpperContent = !hideUpperToolbar
+  const showCardphotoListFactoryUpper = showMobileCardphotoListFactoryChrome
   const showSectionUpperToolbar =
-    showUpperContent && !suppressMobileCalendarUpperRow
+    showUpperContent &&
+    !suppressMobileCalendarUpperRow &&
+    !showCardphotoListFactoryUpper
   const showMobileDateCalendarNavRow =
     suppressMobileCalendarUpperRow && showUpperContent
-  const showLowerRow = scenarioToolbar != null
+  const showLowerRow =
+    scenarioToolbar != null || showMobileCardphotoListFactoryChrome
   const showShell =
     showSectionUpperToolbar ||
+    showCardphotoListFactoryUpper ||
     showLowerRow ||
     showMobileDateCalendarNavRow
   const hideToolbarDivider =
@@ -49,7 +56,9 @@ export const MobileFactoryToolbarShell: React.FC = () => {
   return (
     <div className={styles.shell} aria-label="Section toolbars">
       <div className={styles.rowUpper}>
-        {showSectionUpperToolbar ? (
+        {showCardphotoListFactoryUpper ? (
+          <CardphotoListMobileFactoryUpperToolbar />
+        ) : showSectionUpperToolbar ? (
           <CardSectionToolbar />
         ) : showMobileDateCalendarNavRow ? (
           <MobileDateCalendarToolbarNav />

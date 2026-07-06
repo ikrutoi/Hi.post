@@ -33,6 +33,14 @@ $list-panel-scroll-inset: 0.35rem;
       padding-top: $list-panel-compact-header-band-section-toolbar;
     }
 
+    &.panelFactoryChrome {
+      padding-top: 0;
+
+      &.panelEmptyNoToolbar {
+        padding-top: 0;
+      }
+    }
+
     .panelScrollTrack {
       display: none;
     }

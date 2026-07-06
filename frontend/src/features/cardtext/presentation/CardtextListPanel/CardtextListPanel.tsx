@@ -4,6 +4,10 @@ import { IconListCardtext } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
+import {
+  ListPanelCornerReturn,
+  listPanelCornerReturnPanelProps,
+} from '@shared/ui/ListPanelCornerReturn/ListPanelCornerReturn'
 import { selectCardtextAssetStatus } from '@cardtext/infrastructure/selectors'
 import {
   selectCardtextTemplatesListItems,
@@ -18,6 +22,7 @@ import {
 } from '@cardtext/infrastructure/state'
 import type { CardtextContent } from '@cardtext/domain/types'
 import { getCardtextTemplateDisplayTitle } from '@cardtext/application/helpers'
+import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import { CardtextListEntry } from './CardtextListEntry'
 import clsx from 'clsx'
 import styles from './CardtextListPanel.module.scss'
@@ -43,6 +48,7 @@ function sortTemplatesByTitle(
 
 export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
   const dispatch = useAppDispatch()
+  const { isMobileLayout } = useSizeFacade()
   const items = useAppSelector(selectCardtextTemplatesListItems)
   const sortDirection = useAppSelector(selectCardtextListSortDirection)
   const panelDensity = useAppSelector(selectCardtextListPanelDensity)
@@ -82,13 +88,17 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
   const hasRows = sortedTemplates.length > 0
 
   return (
-    <div className={clsx(styles.panel, !hasRows && styles.panelEmptyNoToolbar)}>
+    <div
+      className={clsx(styles.panel, !hasRows && styles.panelEmptyNoToolbar)}
+      {...listPanelCornerReturnPanelProps(isMobileLayout)}
+    >
       <ListPanelStackedHeader
         leadIconKey="listCardtext"
         variant="sectionToolbar"
         cardPieListHeaderIcons
         toolbar={hasRows ? <Toolbar section="cardtextList" /> : false}
         showDividerWithoutToolbar={!hasRows}
+        hideClose={isMobileLayout}
         onClose={onClose}
         closeAriaLabel="Close text templates list"
       />
@@ -122,6 +132,10 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
             ))}
         </div>
       </ScrollArea>
+      <ListPanelCornerReturn
+        onClick={onClose}
+        ariaLabel="Return to cardtext section"
+      />
     </div>
   )
 }

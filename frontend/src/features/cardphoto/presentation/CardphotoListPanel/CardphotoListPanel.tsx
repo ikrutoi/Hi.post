@@ -14,6 +14,7 @@ import {
 } from '@cardphoto/infrastructure/selectors'
 import { useCardphotoListSort } from '@cardphoto/application/hooks/useCardphotoListSort'
 import { getCardphotoListSortEmphasis } from '@cardphoto/application/helpers/cardphotoListSort'
+import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import type { ImageMeta } from '@cardphoto/domain/types'
@@ -24,6 +25,8 @@ import clsx from 'clsx'
 type Props = {
   onClose: () => void
   onSelectTemplate: (id: string) => void | Promise<void>
+  /** Mobile factory: toolbars live in shell, not in panel header. */
+  factoryChrome?: boolean
 }
 
 type Row = {
@@ -63,6 +66,7 @@ function remToPx(rem: number): number {
 export const CardphotoListPanel: React.FC<Props> = ({
   onClose,
   onSelectTemplate,
+  factoryChrome = false,
 }) => {
   const listRevision = useAppSelector(selectCardphotoInlineTemplateListRevision)
   const columns = useAppSelector(selectCardphotoListTemplateGridCols)
@@ -74,6 +78,8 @@ export const CardphotoListPanel: React.FC<Props> = ({
   const [cellPx, setCellPx] = useState(56)
 
   const { sortedRows, sortMode } = useCardphotoListSort(rows)
+  const { isMobileLayout } = useSizeFacade()
+  const useFactoryChrome = factoryChrome && isMobileLayout
 
   useLayoutEffect(() => {
     const contentEl = listContentRef.current
@@ -144,17 +150,24 @@ export const CardphotoListPanel: React.FC<Props> = ({
 
   return (
     <div
-      className={clsx(styles.panel, !hasRows && styles.panelEmptyNoToolbar)}
+      className={clsx(
+        styles.panel,
+        !hasRows && styles.panelEmptyNoToolbar,
+        useFactoryChrome && styles.panelFactoryChrome,
+      )}
     >
-      <ListPanelStackedHeader
-        leadIconKey="listCardphoto"
-        variant="sectionToolbar"
-        cardPieListHeaderIcons
-        toolbar={hasRows ? <Toolbar section="cardphotoList" /> : false}
-        showDividerWithoutToolbar={!hasRows}
-        onClose={onClose}
-        closeAriaLabel="Close photo templates list"
-      />
+      {!useFactoryChrome ? (
+        <ListPanelStackedHeader
+          leadIconKey="listCardphoto"
+          variant="sectionToolbar"
+          cardPieListHeaderIcons
+          toolbar={hasRows ? <Toolbar section="cardphotoList" /> : false}
+          showDividerWithoutToolbar={!hasRows}
+          hideClose={isMobileLayout}
+          onClose={onClose}
+          closeAriaLabel="Close photo templates list"
+        />
+      ) : null}
 
       <div className={styles.panelScrollTrack} aria-hidden />
 

@@ -1,0 +1,23 @@
+@use '@styles/mixins/sectionViewOverlayChip' as overlay;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
+
+.returnBtn {
+  @include overlay.sectionViewOverlayDeleteButton;
+
+  :global([data-shell-layout='mobile']) & {
+    @include iconButton.toolbar-icon-button-size-mobile-toolbar(true);
+    width: iconButton.$toolbar-hit-size-mobile-toolbar;
+    height: iconButton.$toolbar-hit-size-mobile-toolbar;
+    min-width: iconButton.$toolbar-hit-size-mobile-toolbar;
+  }
+}
+
+:global([data-shell-layout='mobile']) {
+  :global([data-list-panel-corner-return='true']) {
+    [class*='listScrollArea'] > [class*='list'] {
+      padding-bottom: calc(
+        0.5rem + #{iconButton.$toolbar-hit-size-mobile-toolbar}
+      );
+    }
+  }
+}

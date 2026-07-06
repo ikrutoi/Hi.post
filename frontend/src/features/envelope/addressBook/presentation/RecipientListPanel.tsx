@@ -2,6 +2,10 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
+import {
+  ListPanelCornerReturn,
+  listPanelCornerReturnPanelProps,
+} from '@shared/ui/ListPanelCornerReturn/ListPanelCornerReturn'
 import { IconUsers } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { AddressBookCell } from './AddressBookCell'
@@ -10,6 +14,7 @@ import { getNextAddressBookGridIndex } from './addressBookGridKeyboard'
 import type { AddressBookEntry } from '../domain/types'
 import { useRecipientListPanelFacade } from '../../application/facades'
 import { useAppSelector } from '@app/hooks'
+import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import {
   selectRecipientAddressListPanelDensity,
   selectRecipientViewEditMode,
@@ -32,6 +37,7 @@ export const RecipientListPanel: React.FC<Props> = ({
   const gridColumns = getAddressBookGridColumns(addressListPanelDensity)
   const { entries, starredRecipientIds, closePanel } =
     useRecipientListPanelFacade()
+  const { isMobileLayout } = useSizeFacade()
 
   const { favoriteEntries, restEntries, combinedEntries } = useMemo(() => {
     const fav = entries.filter((e) => starredRecipientIds.has(e.id))
@@ -133,6 +139,7 @@ export const RecipientListPanel: React.FC<Props> = ({
         styles.panel,
         combinedEntries.length > 0 && styles.panelToolbarBelow,
       )}
+      {...listPanelCornerReturnPanelProps(isMobileLayout)}
     >
       <ListPanelStackedHeader
         leadIconKey="addressList"
@@ -146,6 +153,7 @@ export const RecipientListPanel: React.FC<Props> = ({
           )
         }
         showDividerWithoutToolbar={combinedEntries.length === 0}
+        hideClose={isMobileLayout}
         onClose={closePanel}
         closeAriaLabel="Close address list"
       />
@@ -213,6 +221,10 @@ export const RecipientListPanel: React.FC<Props> = ({
           )}
         </div>
       </ScrollArea>
+      <ListPanelCornerReturn
+        onClick={closePanel}
+        ariaLabel="Return to envelope section"
+      />
     </div>
   )
 }

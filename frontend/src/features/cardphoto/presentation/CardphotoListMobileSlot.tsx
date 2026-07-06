@@ -8,6 +8,7 @@ import {
 import { selectIsListPanelOpen } from '@cardphoto/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { CardphotoListPanel } from './CardphotoListPanel/CardphotoListPanel'
+import { CardphotoListMobileFactoryLowerToolbar } from './CardphotoListMobileFactoryToolbar'
 
 export const CardphotoListMobileSlot: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -36,9 +37,13 @@ export const CardphotoListMobileSlot: React.FC = () => {
   if (!isOpen || !isMobileLayout) return null
 
   return (
-    <CardphotoListPanel
-      onClose={handleClose}
-      onSelectTemplate={handleSelectTemplate}
-    />
+    <>
+      <CardphotoListMobileFactoryLowerToolbar />
+      <CardphotoListPanel
+        factoryChrome
+        onClose={handleClose}
+        onSelectTemplate={handleSelectTemplate}
+      />
+    </>
   )
 }
