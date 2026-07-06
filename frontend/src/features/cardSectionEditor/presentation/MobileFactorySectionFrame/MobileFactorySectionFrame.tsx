@@ -18,6 +18,8 @@ type MobileFactorySectionFrameProps = {
   showTemplateList: boolean
   templateList: React.ReactNode
   toolbar: React.ReactNode
+  /** Archive peek: keep toolbar band height for background layout, hide toolbar UI. */
+  reserveToolbarBand?: boolean
   children: React.ReactNode
 }
 
@@ -26,12 +28,17 @@ export const MobileFactorySectionFrame: React.FC<MobileFactorySectionFrameProps>
   showTemplateList,
   templateList,
   toolbar,
+  reserveToolbarBand = false,
   children,
 }) => (
   <div
-    className={clsx(styles.frame, showTemplateList && styles.frameTemplateList)}
+    className={clsx(
+      styles.frame,
+      showTemplateList && styles.frameTemplateList,
+    )}
     data-mobile-section-surface={surface}
     data-mobile-factory-section-frame="true"
+    data-mobile-factory-peek-band={reserveToolbarBand ? 'true' : undefined}
   >
     <div
       className={clsx(
@@ -45,7 +52,15 @@ export const MobileFactorySectionFrame: React.FC<MobileFactorySectionFrameProps>
         </div>
       ) : (
         <>
-          <div className={styles.toolbarSlot}>{toolbar}</div>
+          <div
+            className={clsx(
+              styles.toolbarSlot,
+              reserveToolbarBand && styles.toolbarSlotReserved,
+            )}
+            aria-hidden={reserveToolbarBand ? true : undefined}
+          >
+            {reserveToolbarBand ? null : toolbar}
+          </div>
           <div
             className={styles.centralWorkZone}
             data-mobile-central-work-zone="true"

@@ -37,8 +37,8 @@ export const CardSectionEditor: React.FC = () => {
   const { currentView: cardtextCurrentView } = useCardtextFacade()
   const {
     showMobileTemplateList,
-    mobileFactoryChromePeek,
     mobileDateListChromePeek,
+    mobileArchiveSectionPeek,
   } = useMobileFactoryListChrome()
 
   const mobileSectionSurface = useMemo((): MobileFactorySectionSurface => {
@@ -49,7 +49,7 @@ export const CardSectionEditor: React.FC = () => {
       return 'date-history'
     }
     if (activeSection === 'date') {
-      if (mobileFactoryChromePeek) {
+      if (mobileArchiveSectionPeek) {
         return 'date'
       }
       switch (notebookStripTab) {
@@ -76,7 +76,7 @@ export const CardSectionEditor: React.FC = () => {
   }, [
     activeSection,
     notebookStripTab,
-    mobileFactoryChromePeek,
+    mobileArchiveSectionPeek,
     mobileDateListChromePeek,
     cartListPanelOpen,
     historyListPanelOpen,
@@ -143,6 +143,7 @@ export const CardSectionEditor: React.FC = () => {
       showTemplateList={showMobileTemplateList}
       templateList={mobileTemplateList}
       toolbar={<MobileFactoryToolbarShell />}
+      reserveToolbarBand={mobileArchiveSectionPeek && !showMobileTemplateList}
     >
       {activeSection === 'cardtext' && (
         <div className={styles.cardtextToolbarTop}>

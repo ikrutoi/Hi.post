@@ -928,14 +928,6 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   padding-top: var(--mobile-factory-toolbar-gap);
   padding-bottom: var(--mobile-form-layout-padding-bottom);
 
-  &[data-mobile-factory-chrome='peek'] {
-    padding-top: 0;
-
-    .mobileFormListOverlay {
-      padding-top: 0;
-    }
-  }
-
   :global([class*='cardSectionEditor']) {
     justify-content: flex-start;
     flex: 1 1 auto;

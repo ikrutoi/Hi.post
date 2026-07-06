@@ -36,19 +36,26 @@ export function useMobileFactoryListChrome() {
     rightPieDatePeekNoToolbar,
   } = useRightListArchiveMini()
 
+  const mobileArchiveSectionPeek =
+    rightPieCardphotoPeekNoToolbar ||
+    rightPieCardtextPeekNoToolbar ||
+    rightPieEnvelopePeekNoToolbar ||
+    rightPieAromaPeekNoToolbar ||
+    rightPieDatePeekNoToolbar
+
   const mobileFactoryChromePeek =
     rightPieCardphotoPeekNoToolbar ||
     rightPieCardtextPeekNoToolbar ||
     rightPieEnvelopePeekNoToolbar
 
-  const mobileDateListChromePeek =
-    mobileFactoryChromePeek || rightPieDatePeekNoToolbar
+  /** Suppress cart/history list chrome while any archive section peek is active. */
+  const mobileDateListChromePeek = mobileArchiveSectionPeek
 
   const showMobileTemplateList = useMemo(() => {
     if (!isMobileLayout) return false
     if (cartListPanelOpen && !mobileDateListChromePeek) return true
     if (historyListPanelOpen && !mobileDateListChromePeek) return true
-    if (mobileFactoryChromePeek) return false
+    if (mobileArchiveSectionPeek) return false
     if (
       activeSection === 'cardphoto' &&
       cardphotoListPanelOpen &&
@@ -73,7 +80,6 @@ export function useMobileFactoryListChrome() {
     return false
   }, [
     isMobileLayout,
-    mobileFactoryChromePeek,
     mobileDateListChromePeek,
     cartListPanelOpen,
     historyListPanelOpen,
@@ -81,6 +87,7 @@ export function useMobileFactoryListChrome() {
     cardphotoListPanelOpen,
     cardtextListPanelOpen,
     addressListPanelOpen,
+    mobileArchiveSectionPeek,
     rightPieCardphotoPeekNoToolbar,
     rightPieCardtextPeekNoToolbar,
     rightPieEnvelopePeekNoToolbar,
@@ -117,5 +124,6 @@ export function useMobileFactoryListChrome() {
     hideUpperToolbar,
     mobileFactoryChromePeek,
     mobileDateListChromePeek,
+    mobileArchiveSectionPeek,
   }
 }

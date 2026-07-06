@@ -94,6 +94,13 @@
   @include mobile-factory-inset-horizontal;
 }
 
+.toolbarSlotReserved {
+  flex: 0 0 var(--mobile-factory-toolbar-shell-height);
+  min-height: var(--mobile-factory-toolbar-shell-height);
+  visibility: hidden;
+  pointer-events: none;
+}
+
 /** Квадратная рабочая зона: одинаковые отступы слева, справа и снизу. */
 .centralWorkZone {
   position: relative;
