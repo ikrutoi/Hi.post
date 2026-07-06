@@ -5,26 +5,14 @@ import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { useMobileScenarioToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import { setCardphotoListPanelOpen } from '@cardphoto/infrastructure/state'
-import { selectIsListPanelOpen, selectCardphotoViewTemplateInList } from '@cardphoto/infrastructure/selectors'
+import { selectIsListPanelOpen } from '@cardphoto/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import type { IconKey } from '@shared/config/constants'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import styles from './CardphotoListMobileFactoryToolbar.module.scss'
 
-const buildCardphotoListFactoryUpperToolbar = (
-  viewTemplateInList: boolean,
-): ToolbarConfig => [
-  {
-    group: 'crop',
-    icons: [
-      {
-        key: viewTemplateInList ? 'applyMediumCheck' : 'applyMedium',
-        state: 'enabled',
-      },
-    ],
-    status: 'enabled',
-  },
+const CARDPHOTO_LIST_FACTORY_UPPER_TOOLBAR: ToolbarConfig = [
   {
     group: 'close',
     icons: [{ key: 'return', state: 'enabled' }],
@@ -55,14 +43,9 @@ export const CardphotoListMobileFactoryLowerToolbar: React.FC = () => {
   return null
 }
 
-/** Mobile factory: верхний ряд — applyMedium слева, return справа. */
+/** Mobile factory: верхний ряд — return справа. */
 export const CardphotoListMobileFactoryUpperToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
-  const viewTemplateInList = useAppSelector(selectCardphotoViewTemplateInList)
-  const upperToolbar = useMemo(
-    () => buildCardphotoListFactoryUpperToolbar(viewTemplateInList),
-    [viewTemplateInList],
-  )
 
   const closeList = useCallback(() => {
     dispatch(setCardphotoListPanelOpen(false))
@@ -77,13 +60,7 @@ export const CardphotoListMobileFactoryUpperToolbar: React.FC = () => {
 
   const handleAction = useCallback(
     (key: IconKey) => {
-      if (
-        key !== 'applyMedium' &&
-        key !== 'applyMediumCheck' &&
-        key !== 'return'
-      ) {
-        return
-      }
+      if (key !== 'return') return
       closeList()
       return false
     },
@@ -94,7 +71,7 @@ export const CardphotoListMobileFactoryUpperToolbar: React.FC = () => {
     <div className={styles.upperRow}>
       <Toolbar
         section="cardphotoCreate"
-        groupsOverride={upperToolbar}
+        groupsOverride={CARDPHOTO_LIST_FACTORY_UPPER_TOOLBAR}
         onActionClick={handleAction}
       />
     </div>
