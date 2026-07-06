@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { store } from '@app/state/store'
 import {
+  deleteCardphotoFromViewRequested,
   openCardphotoFromMiniStripRequested,
   setCardphotoListPanelOpen,
 } from '@cardphoto/infrastructure/state'
@@ -35,7 +36,7 @@ import {
   selectHistoryListSelectedLocalId,
   selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
-import { setCardtextListPanelOpen } from '@cardtext/infrastructure/state'
+import { setCardtextListPanelOpen, deleteCardtextFromViewRequested } from '@cardtext/infrastructure/state'
 import { selectIsCardtextListPanelOpen } from '@cardtext/infrastructure/selectors'
 import {
   selectCardtextId,
@@ -69,6 +70,7 @@ import { useMobilePlanCardPies } from './useMobilePlanCardPies'
 import { CardPieLeftSlot } from '@features/cardPie/presentation/CardPieLeftSlot'
 import { EditorPieListCardPieBadgeSync } from '@features/cardPie/presentation/EditorPieListCardPieBadgeSync'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
+import type { ToolbarConfig } from '@toolbar/domain/types'
 import { CardSectionEditor } from '@features/cardSectionEditor/presentation/CardSectionEditor'
 import { DateToolbarListDateBadgeSync } from '@date/presentation/DateToolbarListDateBadgeSync'
 import { RightSidebarHistoryBadgeSync } from '@toolbar/presentation/RightSidebarHistoryBadgeSync'
@@ -79,6 +81,18 @@ import { useDateStripSectionForNotebookTabs } from '@date/presentation/useDateSt
 import { useMobileVisualViewport } from '@layout/application/hooks/useMobileVisualViewport'
 import type { MobileAppShellProps } from './mobileAppShell.types'
 import styles from './MobileAppShell.module.scss'
+
+const MOBILE_TEMPLATE_PREVIEW_PIE_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'main',
+    icons: [
+      { key: 'empty', state: 'disabled' },
+      { key: 'empty', state: 'disabled' },
+      { key: 'delete', state: 'enabled' },
+    ],
+    status: 'enabled',
+  },
+]
 
 export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   formRef,
@@ -335,6 +349,31 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     mobileCentralPieDisplay === 'archive' &&
     mobileCentralArchivePostcardStatus != null &&
     mobileCentralArchivePostcardStatus !== 'cart'
+
+  const canDeleteCardphotoTemplatePreview =
+    cardphotoAssetData?.status === 'inLine' ||
+    cardphotoAssetData?.status === 'outLine' ||
+    cardphotoAssetData?.status === 'processed'
+
+  const showMobileCentralTemplatePreviewPieToolbar =
+    (mobileCentralPieDisplay === 'cardphotoTemplate' &&
+      canDeleteCardphotoTemplatePreview) ||
+    mobileCentralPieDisplay === 'cardtextTemplate'
+
+  const handleTemplatePreviewPieToolbarAction = useCallback(
+    (key: IconKey) => {
+      if (key !== 'delete') return
+      if (mobileCentralPieDisplay === 'cardphotoTemplate') {
+        dispatch(deleteCardphotoFromViewRequested())
+        return false
+      }
+      if (mobileCentralPieDisplay === 'cardtextTemplate') {
+        dispatch(deleteCardtextFromViewRequested())
+        return false
+      }
+    },
+    [dispatch, mobileCentralPieDisplay],
+  )
 
   const handleLeftPieCenterPress = useCallback(() => {
     if (activePieSide === 'right') {
@@ -703,6 +742,16 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                         />
                       ) : null}
                   </div>
+                    {showMobileCentralTemplatePreviewPieToolbar ? (
+                      <div className={styles.mobilePieToolbar}>
+                        <Toolbar
+                          section="editorPie"
+                          groupsOverride={MOBILE_TEMPLATE_PREVIEW_PIE_TOOLBAR}
+                          mergedWithCenter
+                          onActionClick={handleTemplatePreviewPieToolbarAction}
+                        />
+                      </div>
+                    ) : null}
                     {mobileCentralPieDisplay === 'assembly' ? (
                       <div className={styles.mobilePieToolbar}>
                         <Toolbar
