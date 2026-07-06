@@ -1,15 +1,18 @@
 import type { ImageMeta } from '@cardphoto/domain/types'
+import { hydrateMeta } from '@app/middleware/cardphotoHelpers'
 
-/** URL для превью в CardPie / списке — без blob (только персистентные ссылки). */
+/** URL для превью в CardPie / списке. */
 export function resolveCardphotoMetaPreviewUrl(
   meta: ImageMeta | null | undefined,
 ): string | null {
   if (!meta) return null
-  const thumb = meta.thumbnail?.url?.trim()
+  const hydrated = hydrateMeta(meta)
+  const source = hydrated ?? meta
+  const thumb = source.thumbnail?.url?.trim()
   if (thumb) return thumb
-  const url = meta.url?.trim()
+  const url = source.url?.trim()
   if (url) return url
-  const full = meta.full?.url?.trim()
+  const full = source.full?.url?.trim()
   if (full) return full
   return null
 }

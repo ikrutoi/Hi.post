@@ -6,8 +6,7 @@ import {
   openCardphotoFromMiniStripRequested,
   setCardphotoListPanelOpen,
 } from '@cardphoto/infrastructure/state'
-import { selectIsListPanelOpen, selectCardphotoAssetData } from '@cardphoto/infrastructure/selectors'
-import { resolveCardphotoMetaPreviewUrl } from '@cardphoto/application/helpers'
+import { selectIsListPanelOpen, selectCardphotoAssetData, selectCardphotoAssetDisplayPreviewUrl } from '@cardphoto/infrastructure/selectors'
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import {
   selectCartListPanelOpen,
@@ -103,6 +102,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const activeSection = useAppSelector(selectActiveSection)
   const cardphotoListPanelOpen = useAppSelector(selectIsListPanelOpen)
   const cardphotoAssetData = useAppSelector(selectCardphotoAssetData)
+  const cardphotoAssetPreviewUrl = useAppSelector(
+    selectCardphotoAssetDisplayPreviewUrl,
+  )
   const activeCartPostcardCount = useAppSelector(selectActiveCartPostcardCount)
   const blockedCartPostcardCount = useAppSelector(selectBlockedCartPostcardCount)
   const cartSlotVisualMode = useMemo(() => {
@@ -247,12 +249,12 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const mobileCardphotoListTemplatePreview = useMemo(() => {
     if (!cardphotoListPanelOpen || activeSection !== 'cardphoto') return null
     if (rightPieCardphotoPeekNoToolbar) return null
-    const previewUrl = resolveCardphotoMetaPreviewUrl(cardphotoAssetData)
-    if (!previewUrl || !cardphotoAssetData?.id) return null
-    return { id: cardphotoAssetData.id, previewUrl }
+    if (!cardphotoAssetPreviewUrl || !cardphotoAssetData?.id) return null
+    return { id: cardphotoAssetData.id, previewUrl: cardphotoAssetPreviewUrl }
   }, [
     activeSection,
-    cardphotoAssetData,
+    cardphotoAssetData?.id,
+    cardphotoAssetPreviewUrl,
     cardphotoListPanelOpen,
     rightPieCardphotoPeekNoToolbar,
   ])

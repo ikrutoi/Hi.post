@@ -75,7 +75,7 @@ import type {
   ImageRecord,
 } from '@cardphoto/domain/types'
 import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
-import { prepareForRedux } from './cardphotoHelpers'
+import { prepareForRedux, hydrateMeta } from './cardphotoHelpers'
 import { persistGlobalSession } from './sessionSaga'
 import { setAsset } from '@/entities/assetRegistry/infrastructure/state'
 import { ImageAsset } from '@/entities/assetRegistry/domain/types'
@@ -530,7 +530,10 @@ export function* handlePromoteProcessedToInlineSaga(): SagaIterator {
     updated as ImageMeta & { id: string },
   )
 
-  yield put(setProcessedImage(prepareForRedux(updated)))
+  const hydrated = hydrateMeta(updated)
+  if (!hydrated) return
+
+  yield put(setProcessedImage(prepareForRedux(hydrated)))
   yield put(bumpCardphotoInlineTemplateList())
   yield put(clearSessionPendingProcessedId())
   if (state.userOriginalData) {

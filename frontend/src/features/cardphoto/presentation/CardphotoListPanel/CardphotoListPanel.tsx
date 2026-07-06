@@ -7,6 +7,10 @@ import React, {
 import { IconListCardphoto } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { storeAdapters } from '@db/adapters/storeAdapters'
+import { hydrateMeta } from '@app/middleware/cardphotoHelpers'
+import { collectReferencedBlobUrls } from '@app/middleware/blobUrlRevokeGuards'
+import { store } from '@app/state/store'
+import type { RootState } from '@app/state'
 import { useAppSelector } from '@app/hooks'
 import {
   selectCardphotoInlineTemplateListRevision,
@@ -38,22 +42,41 @@ type Row = {
 }
 
 function buildThumbSrc(meta: ImageMeta): { src: string; revoke: boolean } {
-  if (meta.thumbnail?.blob instanceof Blob) {
-    return { src: URL.createObjectURL(meta.thumbnail.blob), revoke: true }
+  const hydrated = hydrateMeta(meta)
+  if (!hydrated) return { src: '', revoke: false }
+  if (hydrated.thumbnail?.url) {
+    const url = hydrated.thumbnail.url
+    return {
+      src: url,
+      revoke: url.startsWith('blob:'),
+    }
   }
-  if (meta.full?.blob instanceof Blob) {
-    return { src: URL.createObjectURL(meta.full.blob), revoke: true }
+  if (hydrated.url) {
+    const url = hydrated.url
+    return { src: url, revoke: url.startsWith('blob:') }
   }
-  if (meta.thumbnail?.url) {
-    return { src: meta.thumbnail.url, revoke: false }
-  }
-  if (meta.url) {
-    return { src: meta.url, revoke: false }
-  }
-  if (meta.full?.url) {
-    return { src: meta.full.url, revoke: false }
+  if (hydrated.full?.url) {
+    const url = hydrated.full.url
+    return { src: url, revoke: url.startsWith('blob:') }
   }
   return { src: '', revoke: false }
+}
+
+function revokeUnreferencedListObjectUrls(urls: string[]) {
+  const state = store.getState() as RootState
+  const referenced = collectReferencedBlobUrls({
+    cardphoto: state.cardphoto.state,
+    cards: state.card.cards,
+    cartItems: state.cart.items,
+    assetRegistryImages: state.assetRegistry.images,
+    calendarPreviewCache: state.card.calendarPreviewCache,
+  })
+  for (const url of urls) {
+    if (!url.startsWith('blob:')) continue
+    if (!referenced.has(url)) {
+      URL.revokeObjectURL(url)
+    }
+  }
 }
 
 const MIN_CELL_PX = 28
@@ -130,22 +153,27 @@ export const CardphotoListPanel: React.FC<Props> = ({
       }
 
       if (cancelled) {
-        created.forEach((u) => URL.revokeObjectURL(u))
+        created.forEach((u) => revokeUnreferencedListObjectUrls([u]))
         return
       }
 
       const prevRevoke = objectUrlsRef.current
       objectUrlsRef.current = created
       setRows(nextRows)
-      prevRevoke.forEach((u) => URL.revokeObjectURL(u))
+      revokeUnreferencedListObjectUrls(prevRevoke)
     })()
 
     return () => {
       cancelled = true
-      objectUrlsRef.current.forEach((u) => URL.revokeObjectURL(u))
-      objectUrlsRef.current = []
     }
   }, [listRevision])
+
+  useEffect(() => {
+    return () => {
+      revokeUnreferencedListObjectUrls(objectUrlsRef.current)
+      objectUrlsRef.current = []
+    }
+  }, [])
 
   const hasRows = sortedRows.length > 0
   const sortEmphasis = getCardphotoListSortEmphasis(sortMode)

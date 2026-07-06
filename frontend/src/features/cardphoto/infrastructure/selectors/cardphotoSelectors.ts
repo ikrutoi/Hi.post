@@ -2,6 +2,7 @@ import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from '@app/state'
 import { roundTo } from '@shared/utils/layout'
 import { checkIsCropFull } from '../../application/helpers'
+import { resolveCardphotoMetaPreviewUrl } from '../../application/helpers/resolveCardphotoMetaPreviewUrl'
 import { computeCardphotoAssetToolbar } from '../../application/helpers/computeCardphotoAssetToolbar'
 import { selectSizeCard } from '@layout/infrastructure/selectors'
 import type {
@@ -212,6 +213,21 @@ export const selectCardphotoListHighlightTemplateId = createSelector(
   [selectCardphotoViewTemplateInList, selectCardphotoAssetData],
   (inList, assetData): string | null =>
     inList && assetData?.id ? assetData.id : null,
+)
+
+/** Превью текущего asset: registry → meta (для mobile CardPie при открытом списке). */
+export const selectCardphotoAssetDisplayPreviewUrl = createSelector(
+  [
+    selectCardphotoAssetData,
+    (state: RootState) => state.assetRegistry.images,
+  ],
+  (asset, registryImages): string | null => {
+    if (!asset?.id) return null
+    const reg = registryImages[asset.id]
+    const fromRegistry = (reg?.thumbUrl || reg?.url || '').trim()
+    if (fromRegistry) return fromRegistry
+    return resolveCardphotoMetaPreviewUrl(asset)
+  },
 )
 
 export const selectCardphotoTitle = (state: RootState): string =>

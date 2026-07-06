@@ -44,7 +44,7 @@ import {
   setOriginalUploadReminderActive,
 } from '@cardphoto/infrastructure/state'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
-import { prepareForRedux, prepareConfigForRedux } from './cardphotoHelpers'
+import { prepareForRedux, prepareConfigForRedux, hydrateMeta } from './cardphotoHelpers'
 import {
   selectCardphotoState,
   selectCardphotoWorkingCardLayer,
@@ -59,7 +59,6 @@ import {
   updateToolbarSection,
   updateToolbarIcon,
 } from '@toolbar/infrastructure/state'
-import {} from './cardphotoHelpers'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import { updateGroupStatus } from '@toolbar/infrastructure/state'
 import {
@@ -294,15 +293,18 @@ function* onSelectInLineTemplateSaga(
 
     if (record.status !== 'inLine') return
 
+    const hydrated = hydrateMeta(record)
+    if (!hydrated) return
+
     const cardphotoState: CardphotoState | null = yield select(
       selectCardphotoState,
     )
 
     yield put(setCardphotoViewEditMode(false))
     yield put(clearCardphotoViewReturnSnapshot())
-    yield put(setProcessedImage(prepareForRedux(record)))
+    yield put(setProcessedImage(prepareForRedux(hydrated)))
 
-    yield call(rebuildConfigFromMeta, record, false)
+    yield call(rebuildConfigFromMeta, hydrated, false)
 
     if (cardphotoState?.userOriginalData) {
       yield put(clearSessionPendingProcessedId())
