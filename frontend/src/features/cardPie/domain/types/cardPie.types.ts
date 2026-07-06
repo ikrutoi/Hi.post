@@ -50,6 +50,8 @@ export interface CardPieProps {
   sectorsInteractive?: boolean
   /** Правый пирог: центральная кнопка (напр. переход к календарю истории на месяц открытки). */
   onRightPieCenterClick?: () => void
+  /** Правый пирог: серый центр без индикатора статуса (пустой archive preview). */
+  rightPieCenterEmpty?: boolean
 }
 
 export interface CardPieRefs {

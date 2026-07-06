@@ -11,6 +11,7 @@ import { CardSectionToolbar } from '@features/cardSectionToolbar/presentation/Ca
 import { CardphotoListMobileFactoryUpperToolbar } from '@cardphoto/presentation/CardphotoListMobileFactoryToolbar'
 import { CardtextListMobileFactoryUpperToolbar } from '@cardtext/presentation/CardtextListMobileFactoryToolbar'
 import { AddressListMobileFactoryUpperToolbar } from '@envelope/addressBook/presentation/AddressListMobileFactoryToolbar'
+import { HistoryListMobileFactoryUpperToolbar } from '@date/presentation/HistoryListMobileFactoryToolbar'
 import { MobileDateCalendarToolbarNav } from '@date/dateHeader/presentation/MobileDateCalendarToolbarNav'
 import { useMobileScenarioToolbarSnapshot } from './MobileScenarioToolbarContext'
 import styles from './MobileFactoryToolbarShell.module.scss'
@@ -21,7 +22,7 @@ export const MobileFactoryToolbarShell: React.FC = () => {
   const activeSection = useAppSelector(selectActiveSection)
   const senderView = useAppSelector(selectSenderView)
   const recipientView = useAppSelector(selectRecipientView)
-  const { hideUpperToolbar, showMobileCardphotoListFactoryChrome, showMobileCardtextListFactoryChrome, showMobileAddressListFactoryChrome } =
+  const { hideUpperToolbar, showMobileCardphotoListFactoryChrome, showMobileCardtextListFactoryChrome, showMobileAddressListFactoryChrome, showMobileHistoryListFactoryChrome } =
     useMobileFactoryListChrome()
   const { rightPieEnvelopePeekNoToolbar } = useRightListArchiveMini()
 
@@ -38,7 +39,8 @@ export const MobileFactoryToolbarShell: React.FC = () => {
   const showMobileListFactoryUpper =
     showMobileCardphotoListFactoryChrome ||
     showMobileCardtextListFactoryChrome ||
-    showMobileAddressListFactoryChrome
+    showMobileAddressListFactoryChrome ||
+    showMobileHistoryListFactoryChrome
   const showSectionUpperToolbar =
     showUpperContent &&
     !suppressMobileCalendarUpperRow &&
@@ -67,6 +69,8 @@ export const MobileFactoryToolbarShell: React.FC = () => {
           <CardtextListMobileFactoryUpperToolbar />
         ) : showMobileAddressListFactoryChrome ? (
           <AddressListMobileFactoryUpperToolbar />
+        ) : showMobileHistoryListFactoryChrome ? (
+          <HistoryListMobileFactoryUpperToolbar />
         ) : showSectionUpperToolbar ? (
           <CardSectionToolbar />
         ) : showMobileDateCalendarNavRow ? (
@@ -77,6 +81,7 @@ export const MobileFactoryToolbarShell: React.FC = () => {
         className={clsx(
           styles.rowDivider,
           hideToolbarDivider && styles.rowDividerHidden,
+          showMobileHistoryListFactoryChrome && styles.rowDividerCart,
         )}
         aria-hidden
       />

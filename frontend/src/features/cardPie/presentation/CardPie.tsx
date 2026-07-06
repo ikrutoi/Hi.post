@@ -74,6 +74,7 @@ export const CardPie: React.FC<CardPieProps> = ({
   hideEmptySectorPlaceholders = false,
   sectorsInteractive = true,
   onRightPieCenterClick,
+  rightPieCenterEmpty = false,
 }) => {
   const pieDefsUid = React.useId().replace(/:/g, '')
   const [leftLogoPressSeq, setLeftLogoPressSeq] = React.useState(0)
@@ -873,7 +874,9 @@ export const CardPie: React.FC<CardPieProps> = ({
               <span
                 className={clsx(
                   styles.pieCenterIndicator,
-                  styles[status ?? ''],
+                  rightPieCenterEmpty
+                    ? styles.pieCenterIndicatorEmpty
+                    : styles[status ?? ''],
                 )}
               ></span>
             )}

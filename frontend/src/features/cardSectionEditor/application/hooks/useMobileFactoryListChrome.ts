@@ -130,6 +130,14 @@ export function useMobileFactoryListChrome() {
     rightPieEnvelopePeekNoToolbar,
   ])
 
+  const showMobileHistoryListFactoryChrome = useMemo(
+    () =>
+      isMobileLayout &&
+      historyListPanelOpen &&
+      !mobileDateListChromePeek,
+    [isMobileLayout, historyListPanelOpen, mobileDateListChromePeek],
+  )
+
   const hideUpperToolbar = useMemo(() => {
     if (!isMobileLayout) return false
     if (
@@ -141,7 +149,13 @@ export function useMobileFactoryListChrome() {
     ) {
       return true
     }
-    if (showMobileTemplateList && !showMobileSectionTemplateList) return true
+    if (
+      showMobileTemplateList &&
+      !showMobileSectionTemplateList &&
+      !showMobileHistoryListFactoryChrome
+    ) {
+      return true
+    }
     if (activeSection === 'date' && cardPieListPanelOpen) return true
     return false
   }, [
@@ -153,6 +167,7 @@ export function useMobileFactoryListChrome() {
     rightPieDatePeekNoToolbar,
     showMobileTemplateList,
     showMobileSectionTemplateList,
+    showMobileHistoryListFactoryChrome,
     activeSection,
     cardPieListPanelOpen,
   ])
@@ -199,12 +214,20 @@ export function useMobileFactoryListChrome() {
     ],
   )
 
+  const showMobileTemplateListInCentralZone = useMemo(
+    () =>
+      showMobileSectionTemplateList || showMobileHistoryListFactoryChrome,
+    [showMobileSectionTemplateList, showMobileHistoryListFactoryChrome],
+  )
+
   return {
     showMobileTemplateList,
     showMobileSectionTemplateList,
+    showMobileTemplateListInCentralZone,
     showMobileCardphotoListFactoryChrome,
     showMobileCardtextListFactoryChrome,
     showMobileAddressListFactoryChrome,
+    showMobileHistoryListFactoryChrome,
     hideUpperToolbar,
     mobileFactoryChromePeek,
     mobileDateListChromePeek,

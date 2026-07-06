@@ -15,6 +15,7 @@ import clsx from 'clsx'
 import type { IconKey } from '@shared/config/constants'
 import type { PanelDensity2Size } from '@shared/ui/icons'
 import { PostcardIndicator } from '@toolbar/presentation/PostcardIndictor'
+import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import {
   selectHistoryListPanelDensity,
   selectHistoryListSortMode,
@@ -61,6 +62,8 @@ type Props = {
   leadIconKeyOverride?: IconKey
   /** Мобильный список: без иконки «Дата» и кнопки закрытия в шапке. */
   hideListHeaderChrome?: boolean
+  /** Mobile factory: toolbars live in shell, not in panel header. */
+  factoryChrome?: boolean
   // section: 'date' | 'history'
 }
 
@@ -115,9 +118,12 @@ export const HistoryListPanel: React.FC<Props> = ({
   calendarCartHistoryFooter = false,
   leadIconKeyOverride,
   hideListHeaderChrome = false,
+  factoryChrome = false,
   // section,
 }) => {
   const dispatch = useAppDispatch()
+  const { isMobileLayout } = useSizeFacade()
+  const useFactoryChrome = factoryChrome && isMobileLayout
   const historyListSortMode = useAppSelector(selectHistoryListSortMode)
   const historyListPanelDensity = useAppSelector(selectHistoryListPanelDensity)
   const sortEmphasis = getHistoryListSortEmphasis(historyListSortMode)
@@ -140,29 +146,35 @@ export const HistoryListPanel: React.FC<Props> = ({
 
   return (
     <div
-      className={clsx(styles.panel, !hasRows && styles.panelEmptyNoToolbar)}
+      className={clsx(
+        styles.panel,
+        !hasRows && styles.panelEmptyNoToolbar,
+        useFactoryChrome && styles.panelFactoryChrome,
+      )}
     >
-      <ListPanelStackedHeader
-        leadIconKey={leadIconKeyOverride ?? 'listHistory'}
-        cardPieListHeaderIcons
-        hideLeadIcon={hideListHeaderChrome}
-        hideClose={hideListHeaderChrome}
-        onLeadIconClick={
-          !hideListHeaderChrome && leadIconKeyOverride != null
-            ? handleLeadIconClick
-            : undefined
-        }
-        leadIconAriaLabel="History calendar"
-        headerTopCenter={
-          <div className={styles.headerPostcardDots}>
-            <PostcardIndicator />
-          </div>
-        }
-        toolbar={hasRows ? <Toolbar section="historyList" /> : false}
-        showDividerWithoutToolbar={!hasRows}
-        onClose={hideListHeaderChrome ? undefined : onClose}
-        closeAriaLabel="Close date list"
-      />
+      {!useFactoryChrome ? (
+        <ListPanelStackedHeader
+          leadIconKey={leadIconKeyOverride ?? 'listHistory'}
+          cardPieListHeaderIcons
+          hideLeadIcon={hideListHeaderChrome}
+          hideClose={hideListHeaderChrome}
+          onLeadIconClick={
+            !hideListHeaderChrome && leadIconKeyOverride != null
+              ? handleLeadIconClick
+              : undefined
+          }
+          leadIconAriaLabel="History calendar"
+          headerTopCenter={
+            <div className={styles.headerPostcardDots}>
+              <PostcardIndicator />
+            </div>
+          }
+          toolbar={hasRows ? <Toolbar section="historyList" /> : false}
+          showDividerWithoutToolbar={!hasRows}
+          onClose={hideListHeaderChrome ? undefined : onClose}
+          closeAriaLabel="Close date list"
+        />
+      ) : null}
       <div className={styles.panelScrollTrack} aria-hidden />
       <ScrollArea className={styles.listScrollArea}>
         <div

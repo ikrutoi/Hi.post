@@ -73,6 +73,8 @@ import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDev
 import { IconLogo, IconSectionMenuEnvelopeV2 } from '@shared/ui/icons'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
+import { emptyCardPieInnerData } from '@features/cardPie/infrastructure/planEntryCardPieViewModel'
+import { buildPieSectionFlagsFromInner } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import { MobileCardPieGutterMinis } from './MobileCardPieGutterMinis'
 import { MobileDateListSlotActionsProvider } from './MobileDateListSlotActionsContext'
 import { useMobilePlanCardPies } from './useMobilePlanCardPies'
@@ -90,6 +92,12 @@ import { useDateStripSectionForNotebookTabs } from '@date/presentation/useDateSt
 import { useMobileVisualViewport } from '@layout/application/hooks/useMobileVisualViewport'
 import type { MobileAppShellProps } from './mobileAppShell.types'
 import styles from './MobileAppShell.module.scss'
+
+const MOBILE_EMPTY_ARCHIVE_PIE_INNER = emptyCardPieInnerData()
+const MOBILE_EMPTY_ARCHIVE_PIE_SECTIONS = buildPieSectionFlagsFromInner(
+  MOBILE_EMPTY_ARCHIVE_PIE_INNER,
+  false,
+)
 
 const MOBILE_TEMPLATE_PREVIEW_PIE_TOOLBAR: ToolbarConfig = [
   {
@@ -238,8 +246,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const canCyclePlanPies = planPies.length > 0
   /**
    * Mobile: один центральный CardPie вместо пары left/right на десктопе.
-   * При открытом списке корзины/истории — только archive pie выбранной строки;
-   * без выбора pie скрыт (не показываем сборку). После закрытия списка archive
+   * При открытом списке корзины/истории — archive pie выбранной строки;
+   * без выбора — пустой archive CardPie. После закрытия списка archive
    * может оставаться, пока activePieSide === 'right'.
    */
   const mobileCentralArchivePreview = useMemo((): {
@@ -285,6 +293,16 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     historyListSelectedLocalId,
     mirrorTargetLocalId,
     mirrorListArchiveSource,
+    notebookStripSection,
+  ])
+
+  const mobileCentralArchiveEmptySource = useMemo((): 'cart' | 'history' | null => {
+    if (cartListPanelOpen || notebookStripSection === 'cart') return 'cart'
+    if (historyListPanelOpen || notebookStripSection === 'history') return 'history'
+    return null
+  }, [
+    cartListPanelOpen,
+    historyListPanelOpen,
     notebookStripSection,
   ])
 
@@ -370,7 +388,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     | 'cardphotoTemplate'
     | 'cardtextTemplate'
     | 'addressTemplate'
-    | 'hidden'
+    | 'emptyArchive'
     | 'assembly' => {
     if (mobileCentralArchivePreview != null) return 'archive'
     if (mobileCardphotoListTemplatePreview != null) return 'cardphotoTemplate'
@@ -381,7 +399,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       notebookStripSection === 'cart' ||
       notebookStripSection === 'history'
     ) {
-      return 'hidden'
+      return 'emptyArchive'
     }
     return 'assembly'
   }, [
@@ -766,7 +784,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                   <div
                     className={styles.mobilePieWrap}
                     data-mobile-central-pie-mode={mobileCentralPieDisplay}
-                    aria-hidden={mobileCentralPieDisplay === 'hidden'}
                   >
                       {mobileCentralPieDisplay === 'archive' &&
                       mobileCentralArchivePreview != null ? (
@@ -845,6 +862,18 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                             <IconSectionMenuEnvelopeV2 />
                           </div>
                         )
+                      ) : mobileCentralPieDisplay === 'emptyArchive' ? (
+                        <CardPie
+                          fillContainer
+                          station="right"
+                          pieInner={MOBILE_EMPTY_ARCHIVE_PIE_INNER}
+                          pieSections={MOBILE_EMPTY_ARCHIVE_PIE_SECTIONS}
+                          rightListSource={mobileCentralArchiveEmptySource}
+                          rightPieCenterEmpty
+                          sectorsInteractive={false}
+                          onRightPieCenterClick={handleLeftPieCenterPress}
+                          leftPieCenterClickable={!showTopCardStripFullSpan}
+                        />
                       ) : mobileCentralPieDisplay === 'assembly' ? (
                         <CardPie
                           fillContainer

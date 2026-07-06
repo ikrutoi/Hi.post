@@ -38,6 +38,7 @@ export const CardSectionEditor: React.FC = () => {
   const {
     showMobileTemplateList,
     showMobileSectionTemplateList,
+    showMobileTemplateListInCentralZone,
     mobileDateListChromePeek,
     mobileArchiveSectionPeek,
   } = useMobileFactoryListChrome()
@@ -142,7 +143,7 @@ export const CardSectionEditor: React.FC = () => {
     <MobileFactorySectionFrame
       surface={mobileSectionSurface}
       showTemplateList={showMobileTemplateList}
-      templateListInCentralZone={showMobileSectionTemplateList}
+      templateListInCentralZone={showMobileTemplateListInCentralZone}
       templateList={mobileTemplateList}
       toolbar={<MobileFactoryToolbarShell />}
       reserveToolbarBand={mobileArchiveSectionPeek && !showMobileTemplateList}

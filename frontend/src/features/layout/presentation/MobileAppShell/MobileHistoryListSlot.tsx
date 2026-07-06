@@ -1,6 +1,7 @@
 import React from 'react'
 import { HistoryListRightSlot } from '@date/presentation/HistoryListRightSlot'
 import type { HistoryListPanelItem } from '@date/presentation/HistoryListPanel'
+import { HistoryListMobileFactoryLowerToolbar } from '@date/presentation/HistoryListMobileFactoryToolbar'
 import { useMobileDateListSlotActions } from './MobileDateListSlotActionsContext'
 
 type MobileHistoryListSlotProps = {
@@ -13,9 +14,12 @@ export const MobileHistoryListSlot: React.FC<MobileHistoryListSlotProps> = ({
   const { onHistoryListSelectEntry } = useMobileDateListSlotActions()
 
   return (
-    <HistoryListRightSlot
-      onSelectEntry={onSelectEntryProp ?? onHistoryListSelectEntry}
-      hideListHeaderChrome
-    />
+    <>
+      <HistoryListMobileFactoryLowerToolbar />
+      <HistoryListRightSlot
+        factoryChrome
+        onSelectEntry={onSelectEntryProp ?? onHistoryListSelectEntry}
+      />
+    </>
   )
 }

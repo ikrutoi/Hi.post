@@ -44,12 +44,15 @@ export type HistoryListRightSlotProps = {
   onSelectEntry?: (item: HistoryListPanelItem) => void
   leadIconKeyOverride?: IconKey
   hideListHeaderChrome?: boolean
+  /** Mobile factory: toolbars live in shell, not in panel header. */
+  factoryChrome?: boolean
 }
 
 export const HistoryListRightSlot: React.FC<HistoryListRightSlotProps> = ({
   onSelectEntry: onSelectEntryProp,
   leadIconKeyOverride,
   hideListHeaderChrome = false,
+  factoryChrome = false,
 }) => {
   const dispatch = useAppDispatch()
   const { historyListPanelOpen } = useCalendarFacade()
@@ -200,6 +203,7 @@ export const HistoryListRightSlot: React.FC<HistoryListRightSlotProps> = ({
       calendarCartHistoryFooter
       leadIconKeyOverride={leadIconKeyOverride}
       hideListHeaderChrome={hideListHeaderChrome}
+      factoryChrome={factoryChrome}
     />
   )
 }

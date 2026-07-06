@@ -41,6 +41,18 @@ $list-panel-footer-band: calc(
     background-color: #fff;
     border-radius: 0.5rem;
     border: none;
+
+    &.panelFactoryChrome {
+      padding-top: 0;
+
+      &.panelEmptyNoToolbar {
+        padding-top: 0;
+      }
+    }
+
+    &.panelFactoryChrome .panelScrollTrack {
+      display: none;
+    }
   }
 }
 

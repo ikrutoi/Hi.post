@@ -340,6 +340,10 @@ $pie-center-disc-size-ratio: 20%;
   }
 }
 
+.pieCenterIndicatorEmpty {
+  background-color: $color-app-substrate-border;
+}
+
 .pieFavoriteButton {
   position: absolute;
   top: 0.35rem;
