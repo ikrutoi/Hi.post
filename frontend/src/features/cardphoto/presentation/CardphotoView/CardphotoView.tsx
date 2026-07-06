@@ -6,6 +6,7 @@ import {
   selectCardphotoAssetToolbar,
 } from '@cardphoto/infrastructure/selectors'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
+import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import styles from './CardphotoView.module.scss'
 import { IconSectionMenuCardphoto } from '@shared/ui/icons'
 import { getToolbarIcon } from '@shared/utils/icons'
@@ -27,6 +28,7 @@ export const CardphotoView: React.FC<Props> = ({
   const createToolbarState = useAppSelector(
     selectToolbarSectionState('cardphotoCreate'),
   )
+  const { isMobileLayout } = useSizeFacade()
   const isCreateCropActive = createToolbarState?.crop?.state === 'active'
   const showEmptyPlaceholder = !activeImage
   const showCreateOverlay =
@@ -37,6 +39,7 @@ export const CardphotoView: React.FC<Props> = ({
     activeImage?.status === 'outLine' ||
     activeImage?.status === 'processed'
   const showDeleteOverlay =
+    !isMobileLayout &&
     !!onDelete &&
     ((showViewOverlay && canDeleteViewTemplate) ||
       (showCreateOverlay && !isCreateCropActive))

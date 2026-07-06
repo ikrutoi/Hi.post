@@ -13,8 +13,9 @@ import {
   selectCardphotoTitle,
 } from '@cardphoto/infrastructure/selectors'
 import { toolbarAction } from '@toolbar/application/helpers'
-import { CARDPHOTO_CREATE_TOOLBAR } from '@toolbar/domain/types/cardphoto.types'
+import { CARDPHOTO_CREATE_TOOLBAR, CARDPHOTO_VIEW_TOOLBAR } from '@toolbar/domain/types/cardphoto.types'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
+import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
@@ -84,20 +85,47 @@ const CardphotoRightListMirror: React.FC = () => {
 
 const CardphotoSessionEditor: React.FC = () => {
   const dispatch = useAppDispatch()
+  const { isMobileLayout } = useSizeFacade()
   const { activeImage, assetToolbar } = useCardphotoFacade()
   const title = useAppSelector(selectCardphotoTitle)
   const createToolbarState = useAppSelector(
     selectToolbarSectionState('cardphotoCreate'),
   )
+  const viewToolbarState = useAppSelector(
+    selectToolbarSectionState('cardphotoView'),
+  )
   const isCreateCropActive = createToolbarState?.crop?.state === 'active'
-  const cardphotoCreateGroupsOverride = useMemo(() => {
-    if (assetToolbar !== 'cardphotoCreate' || isCreateCropActive) return undefined
-    return CARDPHOTO_CREATE_TOOLBAR.map((group) =>
-      group.group === 'close'
-        ? { ...group, icons: [{ key: 'close' as const, state: 'enabled' as const }] }
-        : group,
-    )
-  }, [assetToolbar, isCreateCropActive])
+  const assetToolbarGroupsOverride = useMemo(() => {
+    if (assetToolbar === 'cardphotoCreate' && !isCreateCropActive) {
+      return CARDPHOTO_CREATE_TOOLBAR.map((group) =>
+        group.group === 'close'
+          ? {
+              ...group,
+              icons: [
+                {
+                  key: (isMobileLayout ? 'delete' : 'close') as 'delete' | 'close',
+                  state: 'enabled' as const,
+                },
+              ],
+            }
+          : group,
+      )
+    }
+    if (assetToolbar === 'cardphotoView' && isMobileLayout) {
+      return CARDPHOTO_VIEW_TOOLBAR.map((group) =>
+        group.group === 'close'
+          ? { ...group, icons: [{ key: 'delete' as const, state: 'enabled' as const }] }
+          : group,
+      )
+    }
+    return undefined
+  }, [assetToolbar, isCreateCropActive, isMobileLayout])
+  const assetToolbarStateOverride = useMemo(() => {
+    if (assetToolbar === 'cardphotoView' && isMobileLayout && viewToolbarState?.close) {
+      return { delete: viewToolbarState.close }
+    }
+    return undefined
+  }, [assetToolbar, isMobileLayout, viewToolbarState])
   const showAssetToolbar = !!activeImage && !!assetToolbar
   const showTemplateTitleStrip = assetToolbar === 'cardphotoView' && !!activeImage
   const displayTitle = title.trim()
@@ -139,7 +167,8 @@ const CardphotoSessionEditor: React.FC = () => {
         >
           <Toolbar
             section={assetToolbar!}
-            groupsOverride={cardphotoCreateGroupsOverride}
+            groupsOverride={assetToolbarGroupsOverride}
+            stateOverride={assetToolbarStateOverride}
           />
         </MobileInlineToolbarRow>
         <div className={styles.cardphotoViewContent}>
