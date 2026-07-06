@@ -10,6 +10,7 @@ import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiv
 import { CardSectionToolbar } from '@features/cardSectionToolbar/presentation/CardSectionToolbar'
 import { CardphotoListMobileFactoryUpperToolbar } from '@cardphoto/presentation/CardphotoListMobileFactoryToolbar'
 import { CardtextListMobileFactoryUpperToolbar } from '@cardtext/presentation/CardtextListMobileFactoryToolbar'
+import { AddressListMobileFactoryUpperToolbar } from '@envelope/addressBook/presentation/AddressListMobileFactoryToolbar'
 import { MobileDateCalendarToolbarNav } from '@date/dateHeader/presentation/MobileDateCalendarToolbarNav'
 import { useMobileScenarioToolbarSnapshot } from './MobileScenarioToolbarContext'
 import styles from './MobileFactoryToolbarShell.module.scss'
@@ -20,7 +21,7 @@ export const MobileFactoryToolbarShell: React.FC = () => {
   const activeSection = useAppSelector(selectActiveSection)
   const senderView = useAppSelector(selectSenderView)
   const recipientView = useAppSelector(selectRecipientView)
-  const { hideUpperToolbar, showMobileCardphotoListFactoryChrome, showMobileCardtextListFactoryChrome } =
+  const { hideUpperToolbar, showMobileCardphotoListFactoryChrome, showMobileCardtextListFactoryChrome, showMobileAddressListFactoryChrome } =
     useMobileFactoryListChrome()
   const { rightPieEnvelopePeekNoToolbar } = useRightListArchiveMini()
 
@@ -35,7 +36,9 @@ export const MobileFactoryToolbarShell: React.FC = () => {
 
   const showUpperContent = !hideUpperToolbar
   const showMobileListFactoryUpper =
-    showMobileCardphotoListFactoryChrome || showMobileCardtextListFactoryChrome
+    showMobileCardphotoListFactoryChrome ||
+    showMobileCardtextListFactoryChrome ||
+    showMobileAddressListFactoryChrome
   const showSectionUpperToolbar =
     showUpperContent &&
     !suppressMobileCalendarUpperRow &&
@@ -62,6 +65,8 @@ export const MobileFactoryToolbarShell: React.FC = () => {
           <CardphotoListMobileFactoryUpperToolbar />
         ) : showMobileCardtextListFactoryChrome ? (
           <CardtextListMobileFactoryUpperToolbar />
+        ) : showMobileAddressListFactoryChrome ? (
+          <AddressListMobileFactoryUpperToolbar />
         ) : showSectionUpperToolbar ? (
           <CardSectionToolbar />
         ) : showMobileDateCalendarNavRow ? (

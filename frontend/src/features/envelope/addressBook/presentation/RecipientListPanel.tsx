@@ -24,11 +24,14 @@ import styles from './RecipientListPanel.module.scss'
 type Props = {
   onSelect: (entry: AddressBookEntry) => void
   selectedIds?: string[]
+  /** Mobile factory: toolbars live in shell, not in panel header. */
+  factoryChrome?: boolean
 }
 
 export const RecipientListPanel: React.FC<Props> = ({
   onSelect,
   selectedIds = [],
+  factoryChrome = false,
 }) => {
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const addressListPanelDensity = useAppSelector(
@@ -38,6 +41,7 @@ export const RecipientListPanel: React.FC<Props> = ({
   const { entries, starredRecipientIds, closePanel } =
     useRecipientListPanelFacade()
   const { isMobileLayout } = useSizeFacade()
+  const useFactoryChrome = factoryChrome && isMobileLayout
 
   const { favoriteEntries, restEntries, combinedEntries } = useMemo(() => {
     const fav = entries.filter((e) => starredRecipientIds.has(e.id))
@@ -137,26 +141,31 @@ export const RecipientListPanel: React.FC<Props> = ({
     <div
       className={clsx(
         styles.panel,
-        combinedEntries.length > 0 && styles.panelToolbarBelow,
+        !useFactoryChrome &&
+          combinedEntries.length > 0 &&
+          styles.panelToolbarBelow,
+        useFactoryChrome && styles.panelFactoryChrome,
       )}
-      {...listPanelCornerReturnPanelProps(isMobileLayout)}
+      {...(useFactoryChrome ? {} : listPanelCornerReturnPanelProps(isMobileLayout))}
     >
-      <ListPanelStackedHeader
-        leadIconKey="addressList"
-        variant="sectionToolbar"
-        cardPieListHeaderIcons
-        toolbar={
-          combinedEntries.length > 0 ? (
-            <Toolbar section="addressListRecipients" />
-          ) : (
-            false
-          )
-        }
-        showDividerWithoutToolbar={combinedEntries.length === 0}
-        hideClose={isMobileLayout}
-        onClose={closePanel}
-        closeAriaLabel="Close address list"
-      />
+      {!useFactoryChrome ? (
+        <ListPanelStackedHeader
+          leadIconKey="addressList"
+          variant="sectionToolbar"
+          cardPieListHeaderIcons
+          toolbar={
+            combinedEntries.length > 0 ? (
+              <Toolbar section="addressListRecipients" />
+            ) : (
+              false
+            )
+          }
+          showDividerWithoutToolbar={combinedEntries.length === 0}
+          hideClose={isMobileLayout}
+          onClose={closePanel}
+          closeAriaLabel="Close address list"
+        />
+      ) : null}
       <div
         ref={setScrollbarTrackRef}
         className={styles.panelScrollTrack}
@@ -221,10 +230,12 @@ export const RecipientListPanel: React.FC<Props> = ({
           )}
         </div>
       </ScrollArea>
-      <ListPanelCornerReturn
-        onClick={closePanel}
-        ariaLabel="Return to envelope section"
-      />
+      {!useFactoryChrome ? (
+        <ListPanelCornerReturn
+          onClick={closePanel}
+          ariaLabel="Return to envelope section"
+        />
+      ) : null}
     </div>
   )
 }

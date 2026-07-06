@@ -54,14 +54,23 @@ import {
 } from '@envelope/infrastructure/state'
 import {
   selectRecipientListPanelOpen,
+  selectRecipientListPendingIds,
   selectSenderListPanelOpen,
+  selectSenderSelectedId,
 } from '@envelope/infrastructure/selectors'
+import {
+  selectRecipientEntriesState,
+} from '@envelope/recipient/infrastructure/selectors'
+import {
+  selectSenderEntriesState,
+} from '@envelope/sender/infrastructure/selectors'
+import { formatAddressGridCellLines } from '@envelope/addressBook/presentation/addressSummaryLines'
 import { dispatchCardPieToolbarIconState } from '@toolbar/application/syncCardPieToolbarIcons'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { CardSection, IconKey } from '@shared/config/constants'
 import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
 import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDevContext'
-import { IconLogo } from '@shared/ui/icons'
+import { IconLogo, IconSectionMenuEnvelopeV2 } from '@shared/ui/icons'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { MobileCardPieGutterMinis } from './MobileCardPieGutterMinis'
@@ -132,6 +141,12 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const cardtextListPanelOpen = useAppSelector(selectIsCardtextListPanelOpen)
   const cardtextSession = useAppSelector(selectCardtextSessionData)
   const cardtextTemplateId = useAppSelector(selectCardtextId)
+  const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
+  const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
+  const senderSelectedId = useAppSelector(selectSenderSelectedId)
+  const recipientListPendingIds = useAppSelector(selectRecipientListPendingIds)
+  const senderEntries = useAppSelector(selectSenderEntriesState)
+  const recipientEntries = useAppSelector(selectRecipientEntriesState)
   const activeCartPostcardCount = useAppSelector(selectActiveCartPostcardCount)
   const blockedCartPostcardCount = useAppSelector(selectBlockedCartPostcardCount)
   const cartSlotVisualMode = useMemo(() => {
@@ -309,15 +324,58 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     rightPieCardtextPeekNoToolbar,
   ])
 
+  const mobileAddressListChromeActive =
+    activeSection === 'envelope' &&
+    (senderListPanelOpen || recipientListPanelOpen) &&
+    !rightPieEnvelopePeekNoToolbar
+
+  const mobileAddressListTemplatePreview = useMemo(() => {
+    if (!mobileAddressListChromeActive) return null
+
+    if (senderListPanelOpen && senderSelectedId) {
+      const entry = senderEntries.find((e) => e.id === senderSelectedId)
+      if (!entry) return null
+      return {
+        role: 'sender' as const,
+        id: entry.id,
+        lines: formatAddressGridCellLines(entry),
+      }
+    }
+
+    if (recipientListPanelOpen && recipientListPendingIds.length > 0) {
+      const lastId =
+        recipientListPendingIds[recipientListPendingIds.length - 1]
+      const entry = recipientEntries.find((e) => e.id === lastId)
+      if (!entry) return null
+      return {
+        role: 'recipient' as const,
+        id: entry.id,
+        lines: formatAddressGridCellLines(entry),
+      }
+    }
+
+    return null
+  }, [
+    mobileAddressListChromeActive,
+    senderListPanelOpen,
+    senderSelectedId,
+    senderEntries,
+    recipientListPanelOpen,
+    recipientListPendingIds,
+    recipientEntries,
+  ])
+
   const mobileCentralPieDisplay = useMemo(():
     | 'archive'
     | 'cardphotoTemplate'
     | 'cardtextTemplate'
+    | 'addressTemplate'
     | 'hidden'
     | 'assembly' => {
     if (mobileCentralArchivePreview != null) return 'archive'
     if (mobileCardphotoListTemplatePreview != null) return 'cardphotoTemplate'
     if (mobileCardtextListTemplatePreview != null) return 'cardtextTemplate'
+    if (mobileAddressListChromeActive) return 'addressTemplate'
     if (
       mobileListArchiveSlotActive ||
       notebookStripSection === 'cart' ||
@@ -330,6 +388,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     mobileCentralArchivePreview,
     mobileCardphotoListTemplatePreview,
     mobileCardtextListTemplatePreview,
+    mobileAddressListChromeActive,
     mobileListArchiveSlotActive,
     notebookStripSection,
   ])
@@ -418,6 +477,33 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         selectCartListPanelOpen(state) || selectIsHistoryListPanelOpen(state)
       const exitingHeaderCartHistoryStrip =
         notebookStripTab === 'cart' || notebookStripTab === 'history'
+      const cardphotoListOpen = selectIsListPanelOpen(state)
+      const cardtextListOpen = selectIsCardtextListPanelOpen(state)
+      const addressListOpen =
+        selectSenderListPanelOpen(state) || selectRecipientListPanelOpen(state)
+      const factoryTemplateListOpen =
+        cardphotoListOpen || cardtextListOpen || addressListOpen
+
+      if (factoryTemplateListOpen) {
+        onBeforeLeftPieInteraction()
+
+        if (cardphotoListOpen) {
+          dispatch(setCardphotoListPanelOpen(false))
+          dispatch(
+            updateToolbarIcon({
+              section: 'cardphoto',
+              key: 'listCardphoto',
+              value: 'enabled',
+            }),
+          )
+        }
+        if (cardtextListOpen) {
+          dispatch(setCardtextListPanelOpen(false))
+        }
+        if (addressListOpen) {
+          dispatch(closeAddressList())
+        }
+      }
 
       if (
         exitingListArchiveSlot ||
@@ -725,6 +811,46 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                             style={mobileCardtextListTemplatePreview.style}
                           />
                         </div>
+                      ) : mobileCentralPieDisplay === 'addressTemplate' ? (
+                        mobileAddressListTemplatePreview != null ? (
+                        <div
+                          className={styles.mobileAddressListTemplatePreview}
+                          data-address-list-preview-role={
+                            mobileAddressListTemplatePreview.role
+                          }
+                          aria-label="Selected address template preview"
+                        >
+                          <div
+                            className={
+                              styles.mobileAddressListTemplatePreviewTitle
+                            }
+                          >
+                            {mobileAddressListTemplatePreview.lines.nameLine}
+                          </div>
+                          <div
+                            className={
+                              styles.mobileAddressListTemplatePreviewDetail
+                            }
+                          >
+                            <div>
+                              {mobileAddressListTemplatePreview.lines.cityLine}
+                            </div>
+                            <div>
+                              {
+                                mobileAddressListTemplatePreview.lines
+                                  .countryLine
+                              }
+                            </div>
+                          </div>
+                        </div>
+                        ) : (
+                          <div
+                            className={styles.mobileAddressListTemplatePlaceholder}
+                            aria-hidden
+                          >
+                            <IconSectionMenuEnvelopeV2 />
+                          </div>
+                        )
                       ) : mobileCentralPieDisplay === 'assembly' ? (
                         <CardPie
                           fillContainer

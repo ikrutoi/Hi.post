@@ -24,14 +24,18 @@ import styles from './SenderListPanel.module.scss'
 type Props = {
   onSelect: (entry: AddressBookEntry) => void
   selectedId?: string | null
+  /** Mobile factory: toolbars live in shell, not in panel header. */
+  factoryChrome?: boolean
 }
 
 export const SenderListPanel: React.FC<Props> = ({
   onSelect,
   selectedId = null,
+  factoryChrome = false,
 }) => {
   const { entries, starredSenderIds, closePanel } = useSenderListPanelFacade()
   const { isMobileLayout } = useSizeFacade()
+  const useFactoryChrome = factoryChrome && isMobileLayout
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const addressListPanelDensity = useAppSelector(
     selectSenderAddressListPanelDensity,
@@ -134,26 +138,31 @@ export const SenderListPanel: React.FC<Props> = ({
     <div
       className={clsx(
         styles.panel,
-        combinedEntries.length > 0 && styles.panelToolbarBelow,
+        !useFactoryChrome &&
+          combinedEntries.length > 0 &&
+          styles.panelToolbarBelow,
+        useFactoryChrome && styles.panelFactoryChrome,
       )}
-      {...listPanelCornerReturnPanelProps(isMobileLayout)}
+      {...(useFactoryChrome ? {} : listPanelCornerReturnPanelProps(isMobileLayout))}
     >
-      <ListPanelStackedHeader
-        leadIconKey="addressList"
-        variant="sectionToolbar"
-        cardPieListHeaderIcons
-        toolbar={
-          combinedEntries.length > 0 ? (
-            <Toolbar section="addressListSender" />
-          ) : (
-            false
-          )
-        }
-        showDividerWithoutToolbar={combinedEntries.length === 0}
-        hideClose={isMobileLayout}
-        onClose={closePanel}
-        closeAriaLabel="Close address list"
-      />
+      {!useFactoryChrome ? (
+        <ListPanelStackedHeader
+          leadIconKey="addressList"
+          variant="sectionToolbar"
+          cardPieListHeaderIcons
+          toolbar={
+            combinedEntries.length > 0 ? (
+              <Toolbar section="addressListSender" />
+            ) : (
+              false
+            )
+          }
+          showDividerWithoutToolbar={combinedEntries.length === 0}
+          hideClose={isMobileLayout}
+          onClose={closePanel}
+          closeAriaLabel="Close address list"
+        />
+      ) : null}
       <div
         ref={setScrollbarTrackRef}
         className={styles.panelScrollTrack}
@@ -222,10 +231,12 @@ export const SenderListPanel: React.FC<Props> = ({
           )}
         </div>
       </ScrollArea>
-      <ListPanelCornerReturn
-        onClick={closePanel}
-        ariaLabel="Return to envelope section"
-      />
+      {!useFactoryChrome ? (
+        <ListPanelCornerReturn
+          onClick={closePanel}
+          ariaLabel="Return to envelope section"
+        />
+      ) : null}
     </div>
   )
 }

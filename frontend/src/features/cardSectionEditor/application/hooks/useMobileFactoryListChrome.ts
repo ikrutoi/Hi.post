@@ -185,11 +185,26 @@ export function useMobileFactoryListChrome() {
     ],
   )
 
+  const showMobileAddressListFactoryChrome = useMemo(
+    () =>
+      showMobileSectionTemplateList &&
+      activeSection === 'envelope' &&
+      addressListPanelOpen &&
+      !rightPieEnvelopePeekNoToolbar,
+    [
+      showMobileSectionTemplateList,
+      activeSection,
+      addressListPanelOpen,
+      rightPieEnvelopePeekNoToolbar,
+    ],
+  )
+
   return {
     showMobileTemplateList,
     showMobileSectionTemplateList,
     showMobileCardphotoListFactoryChrome,
     showMobileCardtextListFactoryChrome,
+    showMobileAddressListFactoryChrome,
     hideUpperToolbar,
     mobileFactoryChromePeek,
     mobileDateListChromePeek,

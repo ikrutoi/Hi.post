@@ -12,7 +12,7 @@
   box-sizing: border-box;
   cursor: default;
   padding: 0.35rem 0.3rem 0.28rem;
-  background-color: $color-envelope-recipient-input;
+  background-color: #fff;
   border: 1px solid $color-envelope-recipient-border;
   border-radius: $list-entry-radius-lg;
   user-select: none;
@@ -22,7 +22,7 @@
     box-shadow 0.15s ease;
 
   &:hover {
-    background-color: darken($color-envelope-recipient-input, 2%);
+    background-color: #fff;
   }
 
   &[data-focused='true']:not([data-selected='true']) {
@@ -30,23 +30,28 @@
   }
 
   &[data-selected='true'] {
-    background-color: darken($color-envelope-recipient-input, 2%);
+    overflow: visible;
+    background-color: #fff;
     border-color: $color-envelope-recipient-border;
-    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
+    box-shadow:
+      -1px 0 0 0 #fff,
+      calc(-1px - #{$list-entry-accent-bar-width}) 0 0 0 $color-toggle-active;
   }
 
   &[data-selected='true'][data-focused='true'] {
     border-color: $color-envelope-recipient-border;
-    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
+    box-shadow:
+      -1px 0 0 0 #fff,
+      calc(-1px - #{$list-entry-accent-bar-width}) 0 0 0 $color-toggle-active;
   }
 }
 
 .rootSender {
-  background-color: $color-envelope-sender-input;
+  background-color: #fff;
   border-color: $color-envelope-sender-border;
 
   &:hover {
-    background-color: darken($color-envelope-sender-input, 2%);
+    background-color: #fff;
   }
 
   &[data-focused='true']:not([data-selected='true']) {
@@ -54,14 +59,50 @@
   }
 
   &[data-selected='true'] {
-    background-color: darken($color-envelope-sender-input, 2%);
+    overflow: visible;
+    background-color: #fff;
     border-color: $color-envelope-sender-border;
-    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
+    box-shadow:
+      -1px 0 0 0 #fff,
+      calc(-1px - #{$list-entry-accent-bar-width}) 0 0 0 $color-toggle-active;
   }
 
   &[data-selected='true'][data-focused='true'] {
     border-color: $color-envelope-sender-border;
-    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
+    box-shadow:
+      -1px 0 0 0 #fff,
+      calc(-1px - #{$list-entry-accent-bar-width}) 0 0 0 $color-toggle-active;
+  }
+}
+
+.root:not(.rootCardtext) {
+  overflow: hidden;
+  padding: 1px;
+
+  .templateTextBlock {
+    gap: 0.16rem;
+  }
+
+  .templateTitleText {
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0.26rem 0.28rem 0.22rem;
+    background-color: $color-app-inner;
+    border-radius: calc(#{$list-entry-radius-lg} - 1px);
+  }
+
+  .templateDetailBlock {
+    padding: 0 0.26rem 0.12rem;
+  }
+
+  &[data-density-level='2'] {
+    .templateTitleText {
+      padding: 0.22rem 0.24rem 0.18rem;
+    }
+
+    .templateDetailBlock {
+      padding-inline: 0.22rem;
+    }
   }
 }
 
@@ -147,7 +188,10 @@
   gap: 0.22rem;
 }
 
-.root:not([data-density-level='2']) .templateTextBlock {
+.root:not([data-density-level='2']):not([data-address-book-entry]):not(
+    [data-cardtext-template-entry]
+  )
+  .templateTextBlock {
   gap: 0.34rem;
 }
 
@@ -260,8 +304,6 @@
 
 /* 5 ячеек в ряд — компактнее типографика */
 .root[data-density-level='2']:not(.rootCardtext) {
-  padding: 0.28rem 0.24rem 0.22rem;
-
   .nameLine,
   .cityLine,
   .countryLine {

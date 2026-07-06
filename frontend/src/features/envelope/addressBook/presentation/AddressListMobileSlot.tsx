@@ -11,6 +11,7 @@ import { useSenderFacade } from '@envelope/sender/application/facades'
 import type { AddressBookEntry } from '../domain/types'
 import { RecipientListPanel } from './RecipientListPanel'
 import { SenderListPanel } from './SenderListPanel'
+import { AddressListMobileFactoryLowerToolbar } from './AddressListMobileFactoryToolbar'
 
 export const AddressListMobileSlot: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -34,17 +35,25 @@ export const AddressListMobileSlot: React.FC = () => {
 
   if (senderListOpen) {
     return (
-      <SenderListPanel
-        onSelect={handleSenderSelect}
-        selectedId={senderFacade.selectedId}
-      />
+      <>
+        <AddressListMobileFactoryLowerToolbar />
+        <SenderListPanel
+          factoryChrome
+          onSelect={handleSenderSelect}
+          selectedId={senderFacade.selectedId}
+        />
+      </>
     )
   }
 
   return (
-    <RecipientListPanel
-      onSelect={recipientFacade.selectFromList}
-      selectedIds={recipientFacade.listSelectedIds}
-    />
+    <>
+      <AddressListMobileFactoryLowerToolbar />
+      <RecipientListPanel
+        factoryChrome
+        onSelect={recipientFacade.selectFromList}
+        selectedIds={recipientFacade.listSelectedIds}
+      />
+    </>
   )
 }
