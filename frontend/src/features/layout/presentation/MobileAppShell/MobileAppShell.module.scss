@@ -441,8 +441,32 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   }
 
   &[data-mobile-central-pie-mode='addressTemplate'],
+  &[data-mobile-central-pie-mode='cardtextTemplate'],
   &[data-mobile-central-pie-mode='emptyArchive'] {
     background-color: #fff;
+  }
+}
+
+// CardPie cardtext sector empty placeholder in central pie preview.
+$mobile-central-pie-cardtext-empty-icon-width: 40%;
+
+.mobileCardtextListTemplatePlaceholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  pointer-events: none;
+  color: $color-app-inner;
+
+  svg {
+    flex-shrink: 0;
+    width: $mobile-central-pie-cardtext-empty-icon-width;
+    height: auto;
+    aspect-ratio: 1;
+    fill: none;
+    stroke: currentColor;
   }
 }
 

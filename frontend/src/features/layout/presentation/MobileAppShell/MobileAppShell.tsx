@@ -70,7 +70,7 @@ import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { CardSection, IconKey } from '@shared/config/constants'
 import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
 import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDevContext'
-import { IconCardPie, IconLogo, IconSectionMenuEnvelopeV2 } from '@shared/ui/icons'
+import { IconCardPie, IconLogo, IconSectionMenuCardtext, IconSectionMenuEnvelopeV2 } from '@shared/ui/icons'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { MobileCardPieGutterMinis } from './MobileCardPieGutterMinis'
@@ -324,6 +324,11 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     rightPieCardtextPeekNoToolbar,
   ])
 
+  const mobileCardtextListChromeActive =
+    activeSection === 'cardtext' &&
+    cardtextListPanelOpen &&
+    !rightPieCardtextPeekNoToolbar
+
   const mobileAddressListChromeActive =
     activeSection === 'envelope' &&
     (senderListPanelOpen || recipientListPanelOpen) &&
@@ -374,7 +379,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     | 'assembly' => {
     if (mobileCentralArchivePreview != null) return 'archive'
     if (mobileCardphotoListTemplatePreview != null) return 'cardphotoTemplate'
-    if (mobileCardtextListTemplatePreview != null) return 'cardtextTemplate'
+    if (mobileCardtextListChromeActive) return 'cardtextTemplate'
     if (mobileAddressListChromeActive) return 'addressTemplate'
     if (
       mobileListArchiveSlotActive ||
@@ -387,7 +392,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   }, [
     mobileCentralArchivePreview,
     mobileCardphotoListTemplatePreview,
-    mobileCardtextListTemplatePreview,
+    mobileCardtextListChromeActive,
     mobileAddressListChromeActive,
     mobileListArchiveSlotActive,
     notebookStripSection,
@@ -417,7 +422,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const showMobileCentralTemplatePreviewPieToolbar =
     (mobileCentralPieDisplay === 'cardphotoTemplate' &&
       canDeleteCardphotoTemplatePreview) ||
-    mobileCentralPieDisplay === 'cardtextTemplate'
+    (mobileCentralPieDisplay === 'cardtextTemplate' &&
+      mobileCardtextListTemplatePreview != null)
 
   const handleTemplatePreviewPieToolbarAction = useCallback(
     (key: IconKey) => {
@@ -797,7 +803,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                             decoding="async"
                           />
                         </div>
-                      ) : mobileCentralPieDisplay === 'cardtextTemplate' &&
+                      ) : mobileCentralPieDisplay === 'cardtextTemplate' ? (
                         mobileCardtextListTemplatePreview != null ? (
                         <div
                           className={styles.mobileCardtextListTemplatePreview}
@@ -810,6 +816,14 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                             style={mobileCardtextListTemplatePreview.style}
                           />
                         </div>
+                        ) : (
+                          <div
+                            className={styles.mobileCardtextListTemplatePlaceholder}
+                            aria-hidden
+                          >
+                            <IconSectionMenuCardtext />
+                          </div>
+                        )
                       ) : mobileCentralPieDisplay === 'addressTemplate' ? (
                         mobileAddressListTemplatePreview != null ? (
                         <div
