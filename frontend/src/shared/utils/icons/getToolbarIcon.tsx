@@ -96,5 +96,5 @@ export const getToolbarIcon = ({
     )
   }
 
-  return <>{getIconByKey(key)}</>
+  return cloneElement(getIconByKey(key), iconProps)
 }

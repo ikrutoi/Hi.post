@@ -7,6 +7,7 @@ import {
   openAromaPreview,
   setAroma,
   stepAromaPreview,
+  clear as clearAroma,
 } from '@aroma/infrastructure/state'
 import {
   selectAromaPreviewIndex,
@@ -88,6 +89,18 @@ function* handleAromaToolbarAction(
     case 'apply': {
       const previewIndex: ReturnType<typeof selectAromaPreviewIndex> =
         yield select(selectAromaPreviewIndex)
+      const selectedAroma: ReturnType<typeof selectSelectedAroma> =
+        yield select(selectSelectedAroma)
+      const applyMatchesSelection =
+        previewIndex != null &&
+        selectedAroma != null &&
+        previewIndex === selectedAroma.index
+
+      if (applyMatchesSelection) {
+        yield put(clearAroma())
+        break
+      }
+
       if (previewIndex == null) return
       yield put(setAroma({ index: previewIndex }))
       yield put(closeAromaPreview())
@@ -107,7 +120,13 @@ function* handleAromaToolbarAction(
 function* watchAromaToolbar(): SagaIterator {
   yield takeEvery(toolbarAction.type, handleAromaToolbarAction)
   yield takeEvery(
-    [openAromaPreview.type, closeAromaPreview.type, stepAromaPreview.type],
+    [
+      openAromaPreview.type,
+      closeAromaPreview.type,
+      stepAromaPreview.type,
+      setAroma.type,
+      clearAroma.type,
+    ],
     syncAromaToolbarState,
   )
 }

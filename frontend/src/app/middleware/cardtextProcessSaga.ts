@@ -393,6 +393,9 @@ export function* cardtextProcessSaga(): SagaIterator {
             section === 'cardtextView')
         ) {
           yield call(syncCardtextAddToolbarState)
+          if (key === 'apply') {
+            yield call(syncCardtextMainToolbarApply)
+          }
         }
       },
     ),

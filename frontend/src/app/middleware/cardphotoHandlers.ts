@@ -7,6 +7,7 @@ import { storeAdapters } from '@db/adapters/storeAdapters'
 import {
   commitWorkingConfig,
   applyFinal,
+  clearApply,
   type CardphotoSliceState,
   markLoading,
   markLoaded,
@@ -723,6 +724,15 @@ export function* handleBackToOriginalSaga() {
 
 export function* handleApplyAction() {
   const state: CardphotoState = yield select(selectCardphotoState)
+  const assetId = state.assetData?.id ?? null
+  const appliedId = state.appliedData?.id ?? null
+  const isCurrentApplied = !!assetId && !!appliedId && assetId === appliedId
+
+  if (isCurrentApplied) {
+    yield put(clearApply())
+    return
+  }
+
   const currentImageMeta = state.assetData
 
   if (currentImageMeta) {

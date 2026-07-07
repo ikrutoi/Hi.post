@@ -28,7 +28,7 @@ export const buildCardtextToolbarState = (
   state.apply = options?.disableApply
     ? 'disabled'
     : applyMatchesPostcard
-      ? 'disabled'
+      ? 'selected'
       : hasContent
         ? 'enabled'
         : 'disabled'

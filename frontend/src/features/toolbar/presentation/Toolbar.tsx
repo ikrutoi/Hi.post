@@ -5,8 +5,16 @@ import { useToolbarFacade } from '../application/facades'
 import { useCardtextFacade } from '@cardtext/application/facades'
 import { useSizeFacade } from '@layout/application/facades'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
-import { selectSenderViewId } from '@envelope/sender/infrastructure/selectors'
-import { selectRecipientViewId } from '@envelope/recipient/infrastructure/selectors'
+import { selectSenderViewId, selectSenderApplied } from '@envelope/sender/infrastructure/selectors'
+import {
+  selectRecipientViewId,
+  selectRecipientApplied,
+} from '@envelope/recipient/infrastructure/selectors'
+import {
+  selectAromaPreviewOpen,
+  selectAromaPreviewIndex,
+  selectSelectedAroma,
+} from '@aroma/infrastructure/selectors'
 import {
   doesDraftMatchInList,
   doesDraftMatchAnyTemplate,
@@ -16,6 +24,7 @@ import {
 import type { AddressFields } from '@shared/config/constants'
 import type { RootState } from '@app/state'
 import { getToolbarIcon } from '@shared/utils/icons'
+import { IconApplyBold } from '@shared/ui/icons/IconApplyBold'
 import { capitalize } from '@/shared/utils/helpers'
 import {
   selectAppliedImage,
@@ -61,6 +70,7 @@ import { CardtextAlignButton } from './CardtextAlignButton'
 import { CardtextColorButton } from './CardtextColorButton'
 import { CardphotoPrintQualitySlot } from './CardphotoPrintQualitySlot'
 import { UserLoginToolbarIcon } from './UserLoginToolbarIcon'
+import { getApplyToolbarIconColor } from './applyToolbarIconColor'
 import styles from './Toolbar.module.scss'
 
 export const Toolbar = ({
@@ -111,6 +121,20 @@ export const Toolbar = ({
     selectCardtextAssetMatchesApplied,
   )
   const cardtextPlainText = useAppSelector(selectCardtextPlainText)
+  const senderAppliedIds = useAppSelector(selectSenderApplied)
+  const senderViewIdForApply = useAppSelector(selectSenderViewId)
+  const recipientAppliedIds = useAppSelector(selectRecipientApplied)
+  const recipientViewIdForApply = useAppSelector(selectRecipientViewId)
+  const recipientViewIds = useAppSelector((state: RootState) => {
+    const recipient = state.recipient
+    if (!recipient) return []
+    return recipient.currentRecipientsList === 'second'
+      ? (recipient.recipientsViewIdsSecondList ?? [])
+      : (recipient.recipientsViewIdsFirstList ?? [])
+  })
+  const aromaPreviewOpen = useAppSelector(selectAromaPreviewOpen)
+  const aromaPreviewIndex = useAppSelector(selectAromaPreviewIndex)
+  const selectedAroma = useAppSelector(selectSelectedAroma)
   const isCardtextCurrentTemplateApplied = cardtextAssetMatchesApplied
   const isAlreadyApplied =
     section === 'cardtext' || section === 'cardtextView'
@@ -377,28 +401,53 @@ export const Toolbar = ({
       buttonStatus = 'enabled'
     }
 
-    if (key === 'apply' && section === 'cardphoto') {
-      buttonStatus = isAlreadyApplied ? 'selected' : buttonStatus
-    }
     if (key === 'apply' && section === 'cardtext') {
       if (cardtextCreateFormDisplayed) {
         buttonStatus = 'disabled'
       } else if (cardtextEmpty) {
         buttonStatus = 'disabled'
-      } else if (isCardtextCurrentTemplateApplied) {
-        buttonStatus = 'selected'
-      } else {
-        buttonStatus = 'enabled'
       }
     }
-    if (key === 'apply' && section === 'cardtextView') {
-      if (cardtextEmpty) {
-        buttonStatus = 'disabled'
-      } else if (isCardtextCurrentTemplateApplied) {
-        buttonStatus = 'selected'
-      } else {
-        buttonStatus = 'enabled'
-      }
+    if (key === 'apply' && section === 'cardtextView' && cardtextEmpty) {
+      buttonStatus = 'disabled'
+    }
+    if (key === 'apply' && buttonStatus !== 'disabled') {
+      const recipientsMultiApplyMatches =
+        recipientViewIds.length > 0 &&
+        recipientAppliedIds.length === recipientViewIds.length &&
+        recipientAppliedIds.length > 0 &&
+        recipientAppliedIds.every((id) => recipientViewIds.includes(id)) &&
+        recipientViewIds.every((id) => recipientAppliedIds.includes(id))
+      const recipientSingleApplyMatches =
+        recipientViewIds.length === 0 &&
+        recipientViewIdForApply != null &&
+        recipientAppliedIds.length === 1 &&
+        recipientAppliedIds[0] === recipientViewIdForApply
+      const aromaApplyMatches =
+        aromaPreviewOpen &&
+        aromaPreviewIndex != null &&
+        selectedAroma != null &&
+        aromaPreviewIndex === selectedAroma.index
+      const senderApplyMatches =
+        senderViewIdForApply != null &&
+        senderAppliedIds.length === 1 &&
+        senderAppliedIds[0] === senderViewIdForApply
+      const applyMatchesPostcard =
+        section === 'cardphoto' ||
+        section === 'cardphotoView' ||
+        section === 'cardphotoProcessed'
+          ? cardphotoApplied
+          : section === 'cardtext' || section === 'cardtextView'
+            ? isCardtextCurrentTemplateApplied
+            : section === 'aroma'
+              ? aromaApplyMatches
+              : section === 'sender'
+                ? senderApplyMatches
+                : section === 'recipients'
+                  ? recipientsMultiApplyMatches || recipientSingleApplyMatches
+                  : false
+
+      buttonStatus = applyMatchesPostcard ? 'selected' : 'enabled'
     }
     if (key === 'edit' && section === 'senderView' && senderViewEditMode) {
       buttonStatus = 'active'
@@ -428,6 +477,11 @@ export const Toolbar = ({
 
     const badgeDot =
       mergedOptions?.badgeDot ?? (rawData as any)?.options?.badgeDot
+
+    const applyIconColor =
+      effectiveIconKey === 'apply'
+        ? getApplyToolbarIconColor(buttonStatus)
+        : undefined
 
     const visualStatus =
       (section === 'cardtext' ||
@@ -522,6 +576,7 @@ export const Toolbar = ({
           ],
           groupStatus === 'disabled' && styles.toolbarKeyDisabled,
         )}
+        style={applyIconColor != null ? { color: applyIconColor } : undefined}
         data-icon-key={effectiveIconKey}
         data-icon-state={buttonStatus}
         disabled={buttonStatus === 'disabled' || groupStatus === 'disabled'}
@@ -557,6 +612,8 @@ export const Toolbar = ({
             userId={authUser.id}
             passportColors={authUser.passportColors}
           />
+        ) : effectiveIconKey === 'apply' ? (
+          <IconApplyBold style={{ color: applyIconColor }} />
         ) : (
           getToolbarIcon({
             key: effectiveIconKey as IconKey,

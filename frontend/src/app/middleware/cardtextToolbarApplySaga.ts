@@ -16,6 +16,7 @@ import {
   selectCardtextStyle,
   selectCardtextPlainText,
   selectCardtextLines,
+  selectCardtextAssetMatchesApplied,
 } from '@cardtext/infrastructure/selectors'
 import { templateService } from '@entities/templates/domain/services/templateService'
 import { suggestCardtextTemplateTitle } from '@cardtext/application/helpers/suggestCardtextTemplateTitle'
@@ -28,6 +29,14 @@ import { suggestCardtextTemplateTitle } from '@cardtext/application/helpers/sugg
 export function* applyCardtextFromToolbar(
   _action: ReturnType<typeof toolbarAction>,
 ): SagaIterator {
+  const assetMatchesApplied: boolean = yield select(
+    selectCardtextAssetMatchesApplied,
+  )
+  if (assetMatchesApplied) {
+    yield put(setCardtextAppliedData(null))
+    return
+  }
+
   const { assetData } = yield select((s: RootState) => s.cardtext)
   if (assetData == null) return
 

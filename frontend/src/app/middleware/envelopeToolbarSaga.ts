@@ -1229,7 +1229,20 @@ function* handleEnvelopeToolbarAction(
 
   if (key === 'apply') {
     if (section === 'sender') {
+      const sender: SenderState = yield select(selectSenderState)
       const senderViewId: string | null = yield select(selectSenderViewId)
+      const senderAppliedIds = sender.applied ?? []
+      const senderViewMatchesApplied =
+        sender.currentView === 'senderView' &&
+        senderViewId != null &&
+        senderAppliedIds.length === 1 &&
+        senderAppliedIds[0] === senderViewId
+
+      if (senderViewMatchesApplied) {
+        yield put(setSenderApplied(false))
+        return
+      }
+
       if (senderViewId) {
         const displayAddress: Readonly<Record<string, string>> =
           yield select(selectSenderAddress)
@@ -1246,11 +1259,22 @@ function* handleEnvelopeToolbarAction(
         recipient.currentRecipientsList === 'second'
           ? (recipient.recipientsViewIdsSecondList ?? [])
           : (recipient.recipientsViewIdsFirstList ?? [])
+      const appliedIds = recipient.applied ?? []
 
       if (ids.length === 0) {
         const recipientViewId: string | null = yield select(
           selectRecipientViewId,
         )
+        const singleViewMatchesApplied =
+          recipientViewId != null &&
+          appliedIds.length === 1 &&
+          appliedIds[0] === recipientViewId
+
+        if (singleViewMatchesApplied) {
+          yield put(setRecipientApplied(false))
+          return
+        }
+
         if (recipientViewId) {
           const displayAddress: Readonly<Record<string, string>> =
             yield select(selectRecipientDisplayAddress)
@@ -1259,6 +1283,17 @@ function* handleEnvelopeToolbarAction(
         } else {
           yield put(recipientSaveRequested({ listStatus: 'outList' }))
         }
+        return
+      }
+
+      const recipientsViewIdsEqual =
+        appliedIds.length === ids.length &&
+        appliedIds.length > 0 &&
+        appliedIds.every((id) => ids.includes(id)) &&
+        ids.every((id) => appliedIds.includes(id))
+
+      if (recipientsViewIdsEqual) {
+        yield put(setRecipientApplied(false))
         return
       }
 

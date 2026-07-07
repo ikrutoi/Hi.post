@@ -76,6 +76,39 @@
       cursor: default;
     }
 
+    /* apply: выше базового &Enabled (& sidebar-icon); явный stroke на path */
+    &[data-icon-key='apply'].toolbarKeyEnabled {
+      color: $color-font-enabled-light;
+
+      svg [data-apply-part='frame'],
+      svg [data-apply-part='check'] {
+        stroke: $color-font-enabled-light;
+      }
+
+      @include iconButton.toolbar-key-hover-fine-pointer {
+        &:hover {
+          color: $color-font-enabled;
+          background-color: white;
+          cursor: pointer;
+
+          svg [data-apply-part='frame'],
+          svg [data-apply-part='check'] {
+            stroke: $color-font-enabled;
+          }
+        }
+      }
+    }
+
+    &[data-icon-key='apply'].toolbarKeySelected,
+    &[data-icon-key='apply'].toolbarKeyActive {
+      color: $color-indicator-hight;
+
+      svg [data-apply-part='frame'],
+      svg [data-apply-part='check'] {
+        stroke: $color-indicator-hight;
+      }
+    }
+
     @include iconButton.toolbar-key-hover-fine-pointer {
       &Active:hover {
         background-color: $color-enabled;
@@ -129,7 +162,7 @@
     background-color: $color-section-dark-completed;
   }
 
-  /* apply: enabled — зелёный контур, серая галочка; selected/active — всё зелёное */
+  /* apply: enabled — стандартный цвет; selected/active — зелёные галочка и контур */
   $toolbar-apply-green: $color-indicator-hight;
 
   [data-icon-key='apply'].toolbarKeyEnabled,
@@ -144,25 +177,14 @@
       transition: filter 0.15s ease;
     }
 
+    svg [data-apply-part='frame'],
     svg [data-apply-part='check'] {
       stroke: currentColor;
-    }
-
-    svg [data-apply-part='frame'] {
-      stroke: $toolbar-apply-green;
     }
 
     &:hover {
       color: $color-font-enabled;
       background-color: #fff;
-
-      svg [data-apply-part='check'] {
-        stroke: currentColor;
-      }
-
-      svg [data-apply-part='frame'] {
-        stroke: $toolbar-apply-green;
-      }
     }
   }
 
@@ -470,6 +492,23 @@
 
   .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
     color: $color-font-enabled-light;
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        color: $color-font-enabled;
+        background-color: transparent;
+      }
+    }
+  }
+
+  [data-icon-key='apply'].toolbarKeyEnabled,
+  .toolbarKeyApply.toolbarKeyEnabled {
+    color: $color-font-enabled-light;
+
+    svg [data-apply-part='frame'],
+    svg [data-apply-part='check'] {
+      stroke: $color-font-enabled-light;
+    }
 
     @media (hover: hover) and (pointer: fine) {
       &:hover {
@@ -849,6 +888,33 @@
   .toolbarKey[data-icon-key='listDelete'].toolbarKeyEnabled:hover,
   .toolbarKey[data-icon-key='listClose'].toolbarKeyEnabled:hover {
     background-color: $color-app-inner;
+  }
+}
+
+.toolbarCardphoto,
+.toolbarCardphotoView,
+.toolbarCardphotoCreate,
+.toolbarCardphotoProcessed,
+.toolbarCardtext,
+.toolbarCardtextView,
+.toolbarCardtextEditor,
+.toolbarCardtextCreate,
+.toolbarSender,
+.toolbarRecipients,
+.toolbarAroma,
+.toolbarAromaUpperApply {
+  [data-icon-key='apply'].toolbarKeyEnabled,
+  .toolbarKeyApply.toolbarKeyEnabled {
+    color: $color-font-enabled-light;
+
+    svg [data-apply-part='frame'],
+    svg [data-apply-part='check'] {
+      stroke: $color-font-enabled-light;
+    }
+
+    &:hover {
+      color: $color-font-enabled;
+    }
   }
 }
 
@@ -1871,6 +1937,25 @@
         color: $color-font-enabled;
       }
     }
+
+    [data-icon-key='apply'].toolbarKeyEnabled,
+    .toolbarKeyApply.toolbarKeyEnabled {
+      color: $color-font-enabled-light;
+
+      svg [data-apply-part='frame'],
+      svg [data-apply-part='check'] {
+        stroke: currentColor;
+      }
+
+      &:hover {
+        color: $color-font-enabled-light;
+        background-color: transparent;
+      }
+
+      &:active {
+        color: $color-font-enabled;
+      }
+    }
   }
 
   .toolbarCardphoto,
@@ -1988,6 +2073,25 @@
     [data-icon-key='apply'].toolbarKeySelected:hover,
     [data-icon-key='apply'].toolbarKeyActive:hover {
       background-color: #fff;
+    }
+
+    [data-icon-key='apply'].toolbarKeyEnabled,
+    .toolbarKeyApply.toolbarKeyEnabled {
+      color: $color-font-enabled-light;
+
+      svg [data-apply-part='frame'],
+      svg [data-apply-part='check'] {
+        stroke: currentColor;
+      }
+
+      &:hover {
+        color: $color-font-enabled;
+        background-color: #fff;
+      }
+
+      &:active {
+        color: $color-font-enabled;
+      }
     }
 
     .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
@@ -2119,4 +2223,45 @@
   width: iconButton.$toolbar-logo-size-mobile-chrome;
   height: iconButton.$toolbar-logo-size-mobile-chrome;
   min-width: iconButton.$toolbar-logo-size-mobile-chrome;
+}
+
+/* apply: enabled-light после снятия active/selected; зелёный только при selected/active. */
+.toolbar .toolbarGroup .toolbarKey[data-icon-key='apply'].toolbarKeyEnabled,
+.toolbar .toolbarGroup .toolbarKey.toolbarKeyApply.toolbarKeyEnabled {
+  color: $color-font-enabled-light;
+
+  svg [data-apply-part='frame'],
+  svg [data-apply-part='check'] {
+    stroke: $color-font-enabled-light;
+  }
+
+  &:hover {
+    color: $color-font-enabled;
+
+    svg [data-apply-part='frame'],
+    svg [data-apply-part='check'] {
+      stroke: $color-font-enabled;
+    }
+  }
+}
+
+.toolbar .toolbarGroup .toolbarKey[data-icon-key='apply'].toolbarKeySelected,
+.toolbar .toolbarGroup .toolbarKey[data-icon-key='apply'].toolbarKeyActive,
+.toolbar .toolbarGroup .toolbarKey.toolbarKeyApply.toolbarKeySelected,
+.toolbar .toolbarGroup .toolbarKey.toolbarKeyApply.toolbarKeyActive {
+  color: $color-indicator-hight;
+
+  svg [data-apply-part='frame'],
+  svg [data-apply-part='check'] {
+    stroke: $color-indicator-hight;
+  }
+
+  &:hover {
+    color: $color-indicator-hight;
+
+    svg [data-apply-part='frame'],
+    svg [data-apply-part='check'] {
+      stroke: $color-indicator-hight;
+    }
+  }
 }
