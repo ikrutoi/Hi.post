@@ -8,9 +8,18 @@ import { setCardphotoListPanelOpen } from '@cardphoto/infrastructure/state'
 import { selectIsListPanelOpen, selectCardphotoAssetData, selectCardphotoAssetDisplayPreviewUrl, selectCardphotoTitle } from '@cardphoto/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
+import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
 import type { IconKey } from '@shared/config/constants'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import styles from './CardphotoListMobileFactoryToolbar.module.scss'
+
+const CARDPHOTO_LIST_FACTORY_UPPER_APPLY_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'cardphoto',
+    icons: [{ key: 'apply', state: 'disabled' }],
+    status: 'enabled',
+  },
+]
 
 const CARDPHOTO_LIST_FACTORY_UPPER_TOOLBAR: ToolbarConfig = [
   {
@@ -43,7 +52,7 @@ export const CardphotoListMobileFactoryLowerToolbar: React.FC = () => {
   return null
 }
 
-/** Mobile factory: верхний ряд — заголовок слева, return справа. */
+/** Mobile factory: верхний ряд — apply слева, заголовок, return справа. */
 export const CardphotoListMobileFactoryUpperToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
   const title = useAppSelector(selectCardphotoTitle)
@@ -74,6 +83,11 @@ export const CardphotoListMobileFactoryUpperToolbar: React.FC = () => {
 
   return (
     <div className={styles.upperRow}>
+      <Toolbar
+        section="cardphoto"
+        groupsOverride={CARDPHOTO_LIST_FACTORY_UPPER_APPLY_TOOLBAR}
+        className={toolbarStyles.toolbarAromaUpperApply}
+      />
       {centralTemplateTitle ? (
         <div className={styles.upperTitle} title={centralTemplateTitle}>
           {centralTemplateTitle}
