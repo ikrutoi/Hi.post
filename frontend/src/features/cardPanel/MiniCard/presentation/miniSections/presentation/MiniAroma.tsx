@@ -1,5 +1,6 @@
 import React from 'react'
-import { useAromaFacade } from '@aroma/application/facades'
+import { useAppSelector } from '@app/hooks'
+import { selectSelectedAroma } from '@aroma/infrastructure/selectors'
 import { AROMA_IMAGES } from '@entities/aroma/domain/types'
 import styles from './MiniAroma.module.scss'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
@@ -9,7 +10,7 @@ import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiv
 interface MiniAromaProps {}
 
 export const MiniAroma: React.FC<MiniAromaProps> = () => {
-  const { selectedAroma } = useAromaFacade()
+  const selectedAroma = useAppSelector(selectSelectedAroma)
   const { setHovered, isSectionHovered } = useCardEditorFacade()
   const isHovered = isSectionHovered('aroma')
   const { centerStripListMirrorEnabled, mirrorInner } = useRightListArchiveMini()

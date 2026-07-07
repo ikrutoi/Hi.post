@@ -35,9 +35,9 @@ export interface AromaItem {
 
 export interface AromaState {
   selectedAroma: AromaItem | null
+  /** Draft for CardPie preview and tile highlight; applied only via apply toolbar. */
+  viewAroma: AromaItem | null
   isComplete: boolean
-  previewOpen: boolean
-  previewIndex: AromaSlot | null
 }
 
 const LEGACY_STRING_SLOT: Record<string, AromaSlot> = {

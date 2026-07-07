@@ -3,71 +3,38 @@ import type { SagaIterator } from 'redux-saga'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
 import {
-  closeAromaPreview,
-  openAromaPreview,
+  setViewAroma,
   setAroma,
-  stepAromaPreview,
   clear as clearAroma,
+  clearApplied,
+  clearViewAroma,
 } from '@aroma/infrastructure/state'
 import {
-  selectAromaPreviewIndex,
-  selectAromaPreviewOpen,
+  selectViewAroma,
   selectSelectedAroma,
+  selectAromaApplyMatches,
 } from '@aroma/infrastructure/selectors'
 
-const AROMA_PREVIEW_TOOLBAR_NAV_ENABLED = {
-  chevronLeft: { state: 'enabled' as const },
-  chevronRight: { state: 'enabled' as const },
-  return: { state: 'enabled' as const },
-}
-
-const AROMA_PREVIEW_TOOLBAR_DISABLED = {
-  apply: { state: 'disabled' as const },
-  chevronLeft: { state: 'disabled' as const },
-  chevronRight: { state: 'disabled' as const },
-  close: { state: 'disabled' as const },
-  return: { state: 'disabled' as const },
-}
-
-function buildAromaPreviewToolbarState(
-  previewIndex: ReturnType<typeof selectAromaPreviewIndex>,
-  selectedAroma: ReturnType<typeof selectSelectedAroma>,
-) {
-  const applyMatchesSelection =
-    previewIndex != null &&
-    selectedAroma != null &&
-    previewIndex === selectedAroma.index
-
-  return {
-    apply: {
-      state: applyMatchesSelection ? ('active' as const) : ('enabled' as const),
-    },
-    ...AROMA_PREVIEW_TOOLBAR_NAV_ENABLED,
-  }
-}
-
 function* syncAromaToolbarState(): SagaIterator {
-  const previewOpen: boolean = yield select(selectAromaPreviewOpen)
-  if (!previewOpen) {
-    yield put(
-      updateToolbarSection({
-        section: 'aroma',
-        value: AROMA_PREVIEW_TOOLBAR_DISABLED,
-      }),
-    )
-    return
-  }
-
-  const previewIndex: ReturnType<typeof selectAromaPreviewIndex> = yield select(
-    selectAromaPreviewIndex,
-  )
-  const selectedAroma: ReturnType<typeof selectSelectedAroma> =
-    yield select(selectSelectedAroma)
+  const viewAroma: ReturnType<typeof selectViewAroma> =
+    yield select(selectViewAroma)
+  const applyMatches: boolean = yield select(selectAromaApplyMatches)
 
   yield put(
     updateToolbarSection({
       section: 'aroma',
-      value: buildAromaPreviewToolbarState(previewIndex, selectedAroma),
+      value: {
+        apply: {
+          state: !viewAroma
+            ? ('disabled' as const)
+            : applyMatches
+              ? ('active' as const)
+              : ('enabled' as const),
+        },
+        return: {
+          state: viewAroma ? ('enabled' as const) : ('disabled' as const),
+        },
+      },
     }),
   )
 }
@@ -78,55 +45,35 @@ function* handleAromaToolbarAction(
   const { section, key } = action.payload
   if (section !== 'aroma') return
 
-  const previewOpen: boolean = yield select(selectAromaPreviewOpen)
-  if (!previewOpen) return
-
-  switch (key) {
-    case 'close':
-    case 'return':
-      yield put(closeAromaPreview())
-      break
-    case 'apply': {
-      const previewIndex: ReturnType<typeof selectAromaPreviewIndex> =
-        yield select(selectAromaPreviewIndex)
-      const selectedAroma: ReturnType<typeof selectSelectedAroma> =
-        yield select(selectSelectedAroma)
-      const applyMatchesSelection =
-        previewIndex != null &&
-        selectedAroma != null &&
-        previewIndex === selectedAroma.index
-
-      if (applyMatchesSelection) {
-        yield put(clearAroma())
-        break
-      }
-
-      if (previewIndex == null) return
-      yield put(setAroma({ index: previewIndex }))
-      yield put(closeAromaPreview())
-      break
+  if (key === 'return') {
+    const viewAroma: ReturnType<typeof selectViewAroma> =
+      yield select(selectViewAroma)
+    if (viewAroma) {
+      yield put(clearViewAroma())
     }
-    case 'chevronLeft':
-      yield put(stepAromaPreview(-1))
-      break
-    case 'chevronRight':
-      yield put(stepAromaPreview(1))
-      break
-    default:
-      break
+    return
+  }
+
+  if (key !== 'apply') return
+
+  const viewAroma: ReturnType<typeof selectViewAroma> =
+    yield select(selectViewAroma)
+  const applyMatches: boolean = yield select(selectAromaApplyMatches)
+
+  if (applyMatches) {
+    yield put(clearApplied())
+    return
+  }
+
+  if (viewAroma) {
+    yield put(setAroma(viewAroma))
   }
 }
 
 function* watchAromaToolbar(): SagaIterator {
   yield takeEvery(toolbarAction.type, handleAromaToolbarAction)
   yield takeEvery(
-    [
-      openAromaPreview.type,
-      closeAromaPreview.type,
-      stepAromaPreview.type,
-      setAroma.type,
-      clearAroma.type,
-    ],
+    [setViewAroma.type, clearViewAroma.type, setAroma.type, clearAroma.type, clearApplied.type],
     syncAromaToolbarState,
   )
 }

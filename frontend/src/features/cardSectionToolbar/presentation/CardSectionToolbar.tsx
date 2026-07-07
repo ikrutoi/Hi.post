@@ -9,8 +9,7 @@ import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/fa
 import { EnvelopeInnerToolbar } from '@envelope/presentation/EnvelopeInnerToolbar'
 import { MobileDateCalendarToolbarNav } from '@date/dateHeader/presentation/MobileDateCalendarToolbarNav'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
-import { selectAromaPreviewOpen } from '@aroma/infrastructure/selectors'
-import { AROMA_PREVIEW_APPLY_TOOLBAR, AROMA_PREVIEW_UPPER_RETURN_TOOLBAR } from '@toolbar/domain/types/aroma.types'
+import { AROMA_UPPER_APPLY_TOOLBAR, AROMA_UPPER_RETURN_TOOLBAR } from '@toolbar/domain/types/aroma.types'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
 import styles from './CardSectionToolbar.module.scss'
@@ -18,7 +17,6 @@ import styles from './CardSectionToolbar.module.scss'
 export const CardSectionToolbar: React.FC = () => {
   const { activeSection } = useSectionMenuFacade()
   const isMobileLayout = useAppSelector(selectIsMobileLayout)
-  const aromaPreviewOpen = useAppSelector(selectAromaPreviewOpen)
   const cardPieCopyStripExpanded = useAppSelector(selectCardPieCopyStripExpanded)
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const showCalendarToolbar =
@@ -33,18 +31,15 @@ export const CardSectionToolbar: React.FC = () => {
     showCalendarToolbar && !isMobileLayout
   const showMobileDateCalendarNav =
     showCalendarToolbar && isMobileLayout
-  const showMobileAromaPreviewApplyToolbar =
-    activeSection === 'aroma' && isMobileLayout && aromaPreviewOpen
-  const aromaPreviewApplyToolbar = useMemo(
-    () => (showMobileAromaPreviewApplyToolbar ? AROMA_PREVIEW_APPLY_TOOLBAR : undefined),
-    [showMobileAromaPreviewApplyToolbar],
+  const showMobileAromaUpperToolbar =
+    activeSection === 'aroma' && isMobileLayout
+  const aromaUpperApplyToolbar = useMemo(
+    () => (showMobileAromaUpperToolbar ? AROMA_UPPER_APPLY_TOOLBAR : undefined),
+    [showMobileAromaUpperToolbar],
   )
-  const aromaPreviewUpperReturnToolbar = useMemo(
-    () =>
-      showMobileAromaPreviewApplyToolbar
-        ? AROMA_PREVIEW_UPPER_RETURN_TOOLBAR
-        : undefined,
-    [showMobileAromaPreviewApplyToolbar],
+  const aromaUpperReturnToolbar = useMemo(
+    () => (showMobileAromaUpperToolbar ? AROMA_UPPER_RETURN_TOOLBAR : undefined),
+    [showMobileAromaUpperToolbar],
   )
 
   if (activeSection === 'envelope' && !isMobileLayout) {
@@ -70,16 +65,16 @@ export const CardSectionToolbar: React.FC = () => {
           <Toolbar section="cardtext" />
         </div>
       )}
-      {showMobileAromaPreviewApplyToolbar ? (
+      {showMobileAromaUpperToolbar ? (
         <div className={styles.cardSectionToolbarAromaUpper}>
           <Toolbar
             section="aroma"
-            groupsOverride={aromaPreviewApplyToolbar}
+            groupsOverride={aromaUpperApplyToolbar}
             className={toolbarStyles.toolbarAromaUpperApply}
           />
           <Toolbar
             section="aroma"
-            groupsOverride={aromaPreviewUpperReturnToolbar}
+            groupsOverride={aromaUpperReturnToolbar}
             className={toolbarStyles.toolbarAromaUpperReturn}
           />
         </div>

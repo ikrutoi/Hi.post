@@ -65,6 +65,9 @@ import {
   selectSenderEntriesState,
 } from '@envelope/sender/infrastructure/selectors'
 import { formatAddressPreviewLines } from '@envelope/addressBook/presentation/addressSummaryLines'
+import { clearViewAroma } from '@aroma/infrastructure/state'
+import { selectViewAroma } from '@aroma/infrastructure/selectors'
+import { getAromaImage } from '@entities/aroma/mappers/aromaImageMap'
 import { dispatchCardPieToolbarIconState } from '@toolbar/application/syncCardPieToolbarIcons'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { CardSection, IconKey } from '@shared/config/constants'
@@ -147,6 +150,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const recipientListPendingIds = useAppSelector(selectRecipientListPendingIds)
   const senderEntries = useAppSelector(selectSenderEntriesState)
   const recipientEntries = useAppSelector(selectRecipientEntriesState)
+  const viewAroma = useAppSelector(selectViewAroma)
   const activeCartPostcardCount = useAppSelector(selectActiveCartPostcardCount)
   const blockedCartPostcardCount = useAppSelector(selectBlockedCartPostcardCount)
   const cartSlotVisualMode = useMemo(() => {
@@ -370,17 +374,28 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     recipientEntries,
   ])
 
+  const mobileAromaPreview = useMemo(() => {
+    if (activeSection !== 'aroma') return null
+    if (rightPieAromaPeekNoToolbar) return null
+    if (!viewAroma) return null
+    const src = getAromaImage(viewAroma.index)
+    if (!src) return null
+    return { index: viewAroma.index, src }
+  }, [activeSection, rightPieAromaPeekNoToolbar, viewAroma])
+
   const mobileCentralPieDisplay = useMemo(():
     | 'archive'
     | 'cardphotoTemplate'
     | 'cardtextTemplate'
     | 'addressTemplate'
+    | 'aromaPreview'
     | 'emptyArchive'
     | 'assembly' => {
     if (mobileCentralArchivePreview != null) return 'archive'
     if (mobileCardphotoListTemplatePreview != null) return 'cardphotoTemplate'
     if (mobileCardtextListChromeActive) return 'cardtextTemplate'
     if (mobileAddressListChromeActive) return 'addressTemplate'
+    if (mobileAromaPreview != null) return 'aromaPreview'
     if (
       mobileListArchiveSlotActive ||
       notebookStripSection === 'cart' ||
@@ -394,6 +409,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     mobileCardphotoListTemplatePreview,
     mobileCardtextListChromeActive,
     mobileAddressListChromeActive,
+    mobileAromaPreview,
     mobileListArchiveSlotActive,
     notebookStripSection,
   ])
@@ -447,6 +463,10 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     }
 
     if (canCyclePlanPies) {
+      if (selectViewAroma(store.getState())) {
+        dispatch(clearViewAroma())
+      }
+
       const nextPlanPieId = cyclePlanPie()
       if (nextPlanPieId == null) return
 
@@ -474,6 +494,10 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
 
   const handleSelectPlanPie = useCallback(
     (id: string) => {
+      if (selectViewAroma(store.getState())) {
+        dispatch(clearViewAroma())
+      }
+
       const pie = planPies.find((entry) => entry.id === id)
       if (pie == null) return
 
@@ -858,6 +882,24 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                             <IconSectionMenuEnvelopeV2 />
                           </div>
                         )
+                      ) : mobileCentralPieDisplay === 'aromaPreview' &&
+                        mobileAromaPreview != null ? (
+                        <div
+                          className={styles.mobileAromaPreview}
+                          aria-label="Selected aroma preview"
+                        >
+                          <img
+                            key={mobileAromaPreview.index}
+                            src={mobileAromaPreview.src}
+                            alt={
+                              mobileAromaPreview.index === 0
+                                ? ''
+                                : `Aroma slot ${mobileAromaPreview.index}`
+                            }
+                            decoding="async"
+                            draggable={false}
+                          />
+                        </div>
                       ) : mobileCentralPieDisplay === 'emptyArchive' ? (
                         <div
                           className={styles.mobileListArchiveEmptyPlaceholder}

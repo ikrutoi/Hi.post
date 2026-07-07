@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as *;
 
 .tile {
   position: relative;
@@ -18,18 +19,23 @@
   align-items: center;
   justify-content: center;
   border-radius: 0.5rem;
-  border: 1px solid $color-section-light;
+  border: 1px solid $color-aroma-input-border;
   cursor: pointer;
-  background-color: $color-base;
+  background-color: #fff;
   transition:
     background-color 0.2s ease,
-    border-color 0.2s ease;
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .tileSelected,
 .tileSelected:hover {
-  background-color: $color-disabled;
-  border-color: $color-section-dark-completed;
+  overflow: visible;
+  background-color: #fff;
+  border-color: $color-aroma-input-border;
+  box-shadow:
+    -1px 0 0 0 #fff,
+    calc(-1px - #{$list-entry-accent-bar-width}) 0 0 0 $color-toggle-active;
 }
 
 .tileSelected:hover {

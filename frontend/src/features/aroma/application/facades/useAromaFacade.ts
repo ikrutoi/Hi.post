@@ -1,27 +1,29 @@
 import { aromaSlotOrder } from '@entities/aroma/domain/types'
 import { useCallback } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import {
-  setAroma,
-  clear,
-  openAromaPreview,
-  closeAromaPreview,
-} from '../../infrastructure/state'
+import { setViewAroma, setAroma, clear } from '../../infrastructure/state'
 import {
   selectSelectedAroma,
+  selectViewAroma,
+  selectAromaDisplayAroma,
   selectIsAromaComplete,
-  selectAromaPreviewOpen,
-  selectAromaPreviewIndex,
 } from '../../infrastructure/selectors'
-import type { AromaItem, AromaSlot } from '@entities/aroma/domain/types'
+import type { AromaItem } from '@entities/aroma/domain/types'
 
 export const useAromaFacade = () => {
   const dispatch = useAppDispatch()
 
   const selectedAroma = useAppSelector(selectSelectedAroma)
+  const viewAroma = useAppSelector(selectViewAroma)
+  const displayAroma = useAppSelector(selectAromaDisplayAroma)
   const isComplete = useAppSelector(selectIsAromaComplete)
-  const previewOpen = useAppSelector(selectAromaPreviewOpen)
-  const previewIndex = useAppSelector(selectAromaPreviewIndex)
+
+  const previewAroma = useCallback(
+    (aroma: AromaItem) => {
+      dispatch(setViewAroma(aroma))
+    },
+    [dispatch],
+  )
 
   const chooseAroma = useCallback(
     (aroma: AromaItem) => {
@@ -30,31 +32,18 @@ export const useAromaFacade = () => {
     [dispatch],
   )
 
-  const openPreview = useCallback(
-    (index: AromaSlot) => {
-      dispatch(openAromaPreview(index))
-    },
-    [dispatch],
-  )
-
-  const closePreview = useCallback(() => {
-    dispatch(closeAromaPreview())
-  }, [dispatch])
-
   const clearAroma = useCallback(() => {
     dispatch(clear())
   }, [dispatch])
 
   return {
     selectedAroma,
+    viewAroma,
+    displayAroma,
     isComplete,
-    previewOpen,
-    previewIndex,
     aromaSlotOrder,
-
+    previewAroma,
     chooseAroma,
-    openPreview,
-    closePreview,
     clearAroma,
   }
 }

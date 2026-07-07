@@ -10,11 +10,7 @@ import {
   selectRecipientViewId,
   selectRecipientApplied,
 } from '@envelope/recipient/infrastructure/selectors'
-import {
-  selectAromaPreviewOpen,
-  selectAromaPreviewIndex,
-  selectSelectedAroma,
-} from '@aroma/infrastructure/selectors'
+import { selectAromaApplyMatches } from '@aroma/infrastructure/selectors'
 import {
   doesDraftMatchInList,
   doesDraftMatchAnyTemplate,
@@ -132,9 +128,7 @@ export const Toolbar = ({
       ? (recipient.recipientsViewIdsSecondList ?? [])
       : (recipient.recipientsViewIdsFirstList ?? [])
   })
-  const aromaPreviewOpen = useAppSelector(selectAromaPreviewOpen)
-  const aromaPreviewIndex = useAppSelector(selectAromaPreviewIndex)
-  const selectedAroma = useAppSelector(selectSelectedAroma)
+  const aromaApplyMatches = useAppSelector(selectAromaApplyMatches)
   const isCardtextCurrentTemplateApplied = cardtextAssetMatchesApplied
   const isAlreadyApplied =
     section === 'cardtext' || section === 'cardtextView'
@@ -423,11 +417,6 @@ export const Toolbar = ({
         recipientViewIdForApply != null &&
         recipientAppliedIds.length === 1 &&
         recipientAppliedIds[0] === recipientViewIdForApply
-      const aromaApplyMatches =
-        aromaPreviewOpen &&
-        aromaPreviewIndex != null &&
-        selectedAroma != null &&
-        aromaPreviewIndex === selectedAroma.index
       const senderApplyMatches =
         senderViewIdForApply != null &&
         senderAppliedIds.length === 1 &&
