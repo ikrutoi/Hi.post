@@ -11,7 +11,9 @@ import { MobileInlineToolbarRow } from '@features/cardSectionEditor/presentation
 import { setCartItemCardAroma } from '@cart/infrastructure/state'
 import { getAromaImage } from '@entities/aroma/mappers/aromaImageMap'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
+import { AROMA_PREVIEW_NAV_TOOLBAR } from '@toolbar/domain/types/aroma.types'
 import { closeAromaPreview } from '@aroma/infrastructure/state'
+import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import { selectActiveSection } from '@layout/infrastructure/selectors'
 import styles from './Aroma.module.scss'
 import type { AromaItem } from '@entities/aroma/domain/types'
@@ -19,19 +21,29 @@ import type { AromaItem } from '@entities/aroma/domain/types'
 const AromaSectionShell: React.FC<{
   children: React.ReactNode
   showToolbar?: boolean
-}> = ({ children, showToolbar = false }) => (
-  <div className={styles.aroma}>
-    <div className={styles.aromaViewWrap}>
-      <MobileInlineToolbarRow
-        className={styles.aromaToolbarRow}
-        show={showToolbar}
-      >
-        <Toolbar section="aroma" />
-      </MobileInlineToolbarRow>
-      <div className={styles.aromaViewContent}>{children}</div>
+}> = ({ children, showToolbar = false }) => {
+  const { isMobileLayout } = useSizeFacade()
+  const aromaPreviewToolbarGroups = isMobileLayout
+    ? AROMA_PREVIEW_NAV_TOOLBAR
+    : undefined
+
+  return (
+    <div className={styles.aroma}>
+      <div className={styles.aromaViewWrap}>
+        <MobileInlineToolbarRow
+          className={styles.aromaToolbarRow}
+          show={showToolbar}
+        >
+          <Toolbar
+            section="aroma"
+            groupsOverride={aromaPreviewToolbarGroups}
+          />
+        </MobileInlineToolbarRow>
+        <div className={styles.aromaViewContent}>{children}</div>
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 export const Aroma: React.FC = () => {
   const notebookTabsOuter = useSectionEditorNotebookTabsOuter()

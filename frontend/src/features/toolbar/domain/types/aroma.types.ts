@@ -7,6 +7,7 @@ export const AROMA_KEYS = [
   'chevronLeft',
   'chevronRight',
   'close',
+  'return',
 ] as const satisfies readonly IconKey[]
 
 export type AromaKey = (typeof AROMA_KEYS)[number]
@@ -36,6 +37,25 @@ export const AROMA_TOOLBAR: ToolbarConfig = [
     status: 'enabled',
   },
 ]
+
+/** Mobile factory upper row: только apply при превью аромы. */
+export const AROMA_PREVIEW_APPLY_TOOLBAR: ToolbarConfig = AROMA_TOOLBAR.filter(
+  (group) => group.group === 'apply',
+)
+
+/** Mobile factory upper row: return справа. */
+export const AROMA_PREVIEW_UPPER_RETURN_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'close',
+    icons: [{ key: 'return', state: 'disabled' }],
+    status: 'enabled',
+  },
+]
+
+/** Mobile factory lower row: навигация без apply и close. */
+export const AROMA_PREVIEW_NAV_TOOLBAR: ToolbarConfig = AROMA_TOOLBAR.filter(
+  (group) => group.group === 'nav',
+)
 
 export const initialAromaToolbarState: AromaToolbarState = {
   ...Object.fromEntries(flattenIcons(AROMA_TOOLBAR)),

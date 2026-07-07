@@ -71,6 +71,7 @@ export const Toolbar = ({
   mergedWithCenter = false,
   justifyGroupsEnd = false,
   layout,
+  className,
 }: {
   section: ToolbarSection
   stateOverride?: Record<string, unknown>
@@ -83,6 +84,7 @@ export const Toolbar = ({
   justifyGroupsEnd?: boolean
   /** Mobile shell layouts for sectionEditorMenu / rightSidebar. */
   layout?: 'bottomBar' | 'headerBar' | 'headerStack' | 'sidebarChrome'
+  className?: string
 }) => {
   const {
     state: storeState,
@@ -621,6 +623,7 @@ export const Toolbar = ({
           styles.toolbarRightSidebarHeaderStack,
         mergedWithCenter && styles.toolbarMergedWithCenter,
         justifyGroupsEnd && styles.toolbarGroupsJustifyEnd,
+        className,
       )}
       style={toolbarStyle}
     >

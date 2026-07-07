@@ -17,7 +17,7 @@ import {
 const AROMA_PREVIEW_TOOLBAR_NAV_ENABLED = {
   chevronLeft: { state: 'enabled' as const },
   chevronRight: { state: 'enabled' as const },
-  close: { state: 'enabled' as const },
+  return: { state: 'enabled' as const },
 }
 
 const AROMA_PREVIEW_TOOLBAR_DISABLED = {
@@ -25,6 +25,7 @@ const AROMA_PREVIEW_TOOLBAR_DISABLED = {
   chevronLeft: { state: 'disabled' as const },
   chevronRight: { state: 'disabled' as const },
   close: { state: 'disabled' as const },
+  return: { state: 'disabled' as const },
 }
 
 function buildAromaPreviewToolbarState(
@@ -81,6 +82,7 @@ function* handleAromaToolbarAction(
 
   switch (key) {
     case 'close':
+    case 'return':
       yield put(closeAromaPreview())
       break
     case 'apply': {
