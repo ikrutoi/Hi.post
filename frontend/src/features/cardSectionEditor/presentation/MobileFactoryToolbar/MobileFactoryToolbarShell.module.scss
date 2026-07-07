@@ -83,6 +83,7 @@
   :global([class*='toolbarAddressListSender']) :global([class*='toolbarKey']),
   :global([class*='toolbarAddressListRecipients']) :global([class*='toolbarKey']),
   :global([class*='toolbarHistoryList']) :global([class*='toolbarKey']),
+  :global([class*='toolbarCartList']) :global([class*='toolbarKey']),
   :global([class*='toolbarCardphoto'])
     :global([class*='toolbarKey'][class*='toolbarKeyEnabled']:hover),
   :global([class*='toolbarCardphoto'])
@@ -124,6 +125,12 @@
   :global([class*='toolbarHistoryList'])
     :global([class*='toolbarKey'][class*='toolbarKeyActive']:hover),
   :global([class*='toolbarHistoryList'])
+    :global([class*='toolbarKey'][class*='toolbarKeyDisabled']:hover),
+  :global([class*='toolbarCartList'])
+    :global([class*='toolbarKey'][class*='toolbarKeyEnabled']:hover),
+  :global([class*='toolbarCartList'])
+    :global([class*='toolbarKey'][class*='toolbarKeyActive']:hover),
+  :global([class*='toolbarCartList'])
     :global([class*='toolbarKey'][class*='toolbarKeyDisabled']:hover) {
     background-color: #fff;
   }
@@ -152,6 +159,7 @@
   :global([class*='toolbarSender']) :global([class*='toolbarKey']),
   :global([class*='toolbarRecipient']) :global([class*='toolbarKey']),
   :global([class*='toolbarHistory']) :global([class*='toolbarKey']),
+  :global([class*='toolbarCart']) :global([class*='toolbarKey']),
   :global([class*='toolbarCardphoto'])
     :global([class*='toolbarKey'][class*='toolbarKeyEnabled']:hover),
   :global([class*='toolbarCardphoto'])
@@ -181,6 +189,12 @@
   :global([class*='toolbarHistory'])
     :global([class*='toolbarKey'][class*='toolbarKeyActive']:hover),
   :global([class*='toolbarHistory'])
+    :global([class*='toolbarKey'][class*='toolbarKeyDisabled']:hover),
+  :global([class*='toolbarCart'])
+    :global([class*='toolbarKey'][class*='toolbarKeyEnabled']:hover),
+  :global([class*='toolbarCart'])
+    :global([class*='toolbarKey'][class*='toolbarKeyActive']:hover),
+  :global([class*='toolbarCart'])
     :global([class*='toolbarKey'][class*='toolbarKeyDisabled']:hover) {
     background-color: #fff;
   }

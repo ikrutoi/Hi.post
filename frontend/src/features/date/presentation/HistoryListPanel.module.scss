@@ -48,6 +48,10 @@ $list-panel-footer-band: calc(
       &.panelEmptyNoToolbar {
         padding-top: 0;
       }
+
+      .indicators {
+        border-top: none;
+      }
     }
 
     &.panelFactoryChrome .panelScrollTrack {

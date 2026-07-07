@@ -31,9 +31,9 @@ $cart-list-header-skew-offset: $cart-list-header-square-h *
 $cart-list-header-skew-offset-mobile: $cart-list-header-square-h-mobile *
   math.tan($cart-list-header-skew-deg);
 $cart-list-header-corner-radius: 0.2rem;
-/** Неактивный сегмент — половина контейнера; активный — 65%. */
+/** Неактивный сегмент — половина контейнера; активный — 70%. */
 $cart-list-header-segment-inactive-w: 50%;
-$cart-list-header-segment-active-w: 65%;
+$cart-list-header-segment-active-w: 70%;
 $cart-list-header-segments-header-w: 30%;
 $cart-list-header-segments-header-w-container: 30cqw;
 $cart-list-header-segments-header-w-mobile: 40%;
@@ -59,6 +59,18 @@ $cart-list-header-segment-count-inset: 1.5rem;
     background-color: #fff;
     border-radius: 0.5rem;
     border: none;
+
+    &.panelFactoryChrome {
+      padding-top: 0;
+
+      &.panelEmptyNoToolbar {
+        padding-top: 0;
+      }
+
+      .panelScrollTrack {
+        display: none;
+      }
+    }
   }
 }
 
@@ -113,6 +125,24 @@ $cart-list-header-segment-count-inset: 1.5rem;
       flex-basis: $cart-list-header-segments-header-w-container-mobile;
       width: $cart-list-header-segments-header-w-container-mobile;
       min-width: $cart-list-header-segments-header-w-container-mobile;
+    }
+  }
+}
+
+.cartHeaderSegmentsFactoryToolbar {
+  flex: 0 0 auto;
+  width: 100%;
+  min-width: 0;
+
+  :global([data-shell-layout='mobile']) & {
+    flex-basis: auto;
+    width: 100%;
+    min-width: 0;
+
+    @supports (width: 1cqw) {
+      flex-basis: auto;
+      width: 100%;
+      min-width: 0;
     }
   }
 }

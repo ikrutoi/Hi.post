@@ -3,6 +3,7 @@ import {
   CartListPanel,
   type CartListPanelItem,
 } from '@cart/presentation/CartListPanel'
+import { CartListMobileFactoryLowerToolbar } from '@cart/presentation/CartListMobileFactoryToolbar'
 import { useMobileDateListSlotActions } from './MobileDateListSlotActionsContext'
 
 type MobileCartListSlotProps = {
@@ -20,10 +21,13 @@ export const MobileCartListSlot: React.FC<MobileCartListSlotProps> = ({
   } = useMobileDateListSlotActions()
 
   return (
-    <CartListPanel
-      onSelectEntry={onSelectEntryProp ?? onCartListSelectEntry}
-      onDateEditEntry={onDateEditEntryProp ?? onCartListDateEditEntry}
-      hideListHeaderChrome
-    />
+    <>
+      <CartListMobileFactoryLowerToolbar />
+      <CartListPanel
+        factoryChrome
+        onSelectEntry={onSelectEntryProp ?? onCartListSelectEntry}
+        onDateEditEntry={onDateEditEntryProp ?? onCartListDateEditEntry}
+      />
+    </>
   )
 }

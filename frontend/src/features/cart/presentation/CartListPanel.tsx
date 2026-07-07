@@ -3,6 +3,7 @@ import { useListCardPreviewUrl } from '@entities/card/application/hooks/useListC
 import { cardListPreviewUrlFromCard } from '@entities/card/domain/helpers'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import { IconCardBlocked, IconCart } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
@@ -17,15 +18,14 @@ import {
 } from '@cart/infrastructure/selectors'
 import {
   setCartListCheckedLocalIds,
-  setCartListStatusSegment,
   toggleCartListEntryChecked,
 } from '@cart/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
-import { setCartCalendarDatePickMode } from '@date/calendar/infrastructure/state'
 import { notebookTabCartClicked } from '@date/calendar/application/orchestration/notebookOrchestration.events'
 import type { CartListStatusSegment } from '@cart/domain/types'
 import { listEntryPriceLine } from '@shared/utils/listEntryPriceLine'
 import { CartListEntry, type CartListEntryVariant } from './CartListEntry'
+import { CartHeaderSegments } from './CartHeaderSegments'
 import type { PostcardHydrated } from '@entities/postcard'
 import type { DispatchDate } from '@entities/date/domain/types'
 import { getCurrentDate } from '@shared/utils/date'
@@ -60,6 +60,8 @@ type Props = {
   leadIconKeyOverride?: IconKey
   /** Мобильный список: без иконки «Дата» и кнопки закрытия в шапке. */
   hideListHeaderChrome?: boolean
+  /** Mobile factory: toolbars live in shell, not in panel header. */
+  factoryChrome?: boolean
 }
 
 function formatDispatchDateLabel(d: DispatchDate): string {
@@ -225,8 +227,11 @@ export const CartListPanel: React.FC<Props> = ({
   onDateEditEntry,
   leadIconKeyOverride,
   hideListHeaderChrome = false,
+  factoryChrome = false,
 }) => {
   const dispatch = useAppDispatch()
+  const { isMobileLayout } = useSizeFacade()
+  const useFactoryChrome = factoryChrome && isMobileLayout
   const cartItems = useAppSelector(selectCartItems)
   const listSegment = useAppSelector(selectCartListStatusSegment)
   const checkedLocalIds = useAppSelector(selectCartListCheckedLocalIds)
@@ -282,21 +287,6 @@ export const CartListPanel: React.FC<Props> = ({
     entriesProp,
     listSegment,
   ])
-
-  const handleSelectCartSegment = useCallback(() => {
-    if (listSegment === 'cartBlocked') {
-      dispatch(setCartCalendarDatePickMode(false))
-    }
-    dispatch(setCartListStatusSegment('cart'))
-  }, [dispatch, listSegment])
-
-  const cartSegmentCounts = useMemo(() => {
-    const cart = cartItems.filter((p) => p.status === 'cart').length
-    const cartBlocked = cartItems.filter(
-      (p) => p.status === 'cartBlocked',
-    ).length
-    return { cart, cartBlocked }
-  }, [cartItems])
 
   const entriesFromStore = useMemo(() => {
     if (entriesProp != null) return []
@@ -410,96 +400,40 @@ export const CartListPanel: React.FC<Props> = ({
         styles.panel,
         !showCartFooter && styles.panelNoFooter,
         !hasRows && styles.panelEmptyNoToolbar,
+        useFactoryChrome && styles.panelFactoryChrome,
       )}
     >
-      <ListPanelStackedHeader
-        leadIconKey={listLeadIconKey}
-        cardPieListHeaderIcons
-        hideLeadIcon={hideListHeaderChrome}
-        hideClose={hideListHeaderChrome}
-        onLeadIconClick={
-          !hideListHeaderChrome && leadIconKeyOverride != null
-            ? handleLeadIconClick
-            : undefined
-        }
-        leadIconAriaLabel="Cart calendar"
-        headerTopCenter={
-          entriesProp == null ? (
-            <div
-              className={styles.cartHeaderSegments}
-              role="group"
-              aria-label="Cart list header actions"
-            >
-              <button
-                type="button"
-                className={clsx(
-                  styles.cartHeaderSegmentButton,
-                  styles.cart,
-                )}
-                aria-label={
-                  cartSegmentCounts.cart > 0
-                    ? `Cart, ${cartSegmentCounts.cart} postcards`
-                    : 'Cart'
-                }
-                aria-pressed={listSegment === 'cart'}
-                onClick={handleSelectCartSegment}
+      {!useFactoryChrome ? (
+        <ListPanelStackedHeader
+          leadIconKey={listLeadIconKey}
+          cardPieListHeaderIcons
+          hideLeadIcon={hideListHeaderChrome}
+          hideClose={hideListHeaderChrome}
+          onLeadIconClick={
+            !hideListHeaderChrome && leadIconKeyOverride != null
+              ? handleLeadIconClick
+              : undefined
+          }
+          leadIconAriaLabel="Cart calendar"
+          headerTopCenter={
+            entriesProp == null ? <CartHeaderSegments /> : undefined
+          }
+          toolbar={
+            hasRows ? (
+              <Toolbar
+                section="cartList"
+                groupsOverride={cartListToolbarGroupsOverride}
+                justifyGroupsEnd={cartListToolbarGroupsOverride != null}
               />
-              {cartSegmentCounts.cart > 0 ? (
-                <span
-                  className={clsx(
-                    styles.cartHeaderSegmentCount,
-                    styles.cartHeaderSegmentCountCart,
-                  )}
-                  aria-hidden
-                >
-                  {cartSegmentCounts.cart}
-                </span>
-              ) : null}
-              <button
-                type="button"
-                className={clsx(
-                  styles.cartHeaderSegmentButton,
-                  styles.cartBlocked,
-                )}
-                aria-label={
-                  cartSegmentCounts.cartBlocked > 0
-                    ? `Cart blocked, ${cartSegmentCounts.cartBlocked} postcards`
-                    : 'Cart blocked'
-                }
-                aria-pressed={listSegment === 'cartBlocked'}
-                onClick={() =>
-                  dispatch(setCartListStatusSegment('cartBlocked'))
-                }
-              />
-              {cartSegmentCounts.cartBlocked > 0 ? (
-                <span
-                  className={clsx(
-                    styles.cartHeaderSegmentCount,
-                    styles.cartHeaderSegmentCountBlocked,
-                  )}
-                  aria-hidden
-                >
-                  {cartSegmentCounts.cartBlocked}
-                </span>
-              ) : null}
-            </div>
-          ) : undefined
-        }
-        toolbar={
-          hasRows ? (
-            <Toolbar
-              section="cartList"
-              groupsOverride={cartListToolbarGroupsOverride}
-              justifyGroupsEnd={cartListToolbarGroupsOverride != null}
-            />
-          ) : (
-            false
-          )
-        }
-        showDividerWithoutToolbar={!hasRows}
-        onClose={hideListHeaderChrome ? undefined : handleCloseList}
-        closeAriaLabel="Close cart list"
-      />
+            ) : (
+              false
+            )
+          }
+          showDividerWithoutToolbar={!hasRows}
+          onClose={hideListHeaderChrome ? undefined : handleCloseList}
+          closeAriaLabel="Close cart list"
+        />
+      ) : null}
       <div className={styles.panelScrollTrack} aria-hidden />
       <ScrollArea className={styles.listScrollArea}>
         <div

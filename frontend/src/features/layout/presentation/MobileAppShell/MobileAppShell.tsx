@@ -70,11 +70,9 @@ import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { CardSection, IconKey } from '@shared/config/constants'
 import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
 import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDevContext'
-import { IconLogo, IconSectionMenuEnvelopeV2 } from '@shared/ui/icons'
+import { IconCardPie, IconLogo, IconSectionMenuEnvelopeV2 } from '@shared/ui/icons'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
-import { emptyCardPieInnerData } from '@features/cardPie/infrastructure/planEntryCardPieViewModel'
-import { buildPieSectionFlagsFromInner } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import { MobileCardPieGutterMinis } from './MobileCardPieGutterMinis'
 import { MobileDateListSlotActionsProvider } from './MobileDateListSlotActionsContext'
 import { useMobilePlanCardPies } from './useMobilePlanCardPies'
@@ -92,12 +90,6 @@ import { useDateStripSectionForNotebookTabs } from '@date/presentation/useDateSt
 import { useMobileVisualViewport } from '@layout/application/hooks/useMobileVisualViewport'
 import type { MobileAppShellProps } from './mobileAppShell.types'
 import styles from './MobileAppShell.module.scss'
-
-const MOBILE_EMPTY_ARCHIVE_PIE_INNER = emptyCardPieInnerData()
-const MOBILE_EMPTY_ARCHIVE_PIE_SECTIONS = buildPieSectionFlagsFromInner(
-  MOBILE_EMPTY_ARCHIVE_PIE_INNER,
-  false,
-)
 
 const MOBILE_TEMPLATE_PREVIEW_PIE_TOOLBAR: ToolbarConfig = [
   {
@@ -247,8 +239,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   /**
    * Mobile: один центральный CardPie вместо пары left/right на десктопе.
    * При открытом списке корзины/истории — archive pie выбранной строки;
-   * без выбора — пустой archive CardPie. После закрытия списка archive
-   * может оставаться, пока activePieSide === 'right'.
+   * без выбора — пустой белый placeholder вместо archive CardPie.
+   * После закрытия списка archive может оставаться, пока activePieSide === 'right'.
    */
   const mobileCentralArchivePreview = useMemo((): {
     localId: number
@@ -293,16 +285,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     historyListSelectedLocalId,
     mirrorTargetLocalId,
     mirrorListArchiveSource,
-    notebookStripSection,
-  ])
-
-  const mobileCentralArchiveEmptySource = useMemo((): 'cart' | 'history' | null => {
-    if (cartListPanelOpen || notebookStripSection === 'cart') return 'cart'
-    if (historyListPanelOpen || notebookStripSection === 'history') return 'history'
-    return null
-  }, [
-    cartListPanelOpen,
-    historyListPanelOpen,
     notebookStripSection,
   ])
 
@@ -863,17 +845,12 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                           </div>
                         )
                       ) : mobileCentralPieDisplay === 'emptyArchive' ? (
-                        <CardPie
-                          fillContainer
-                          station="right"
-                          pieInner={MOBILE_EMPTY_ARCHIVE_PIE_INNER}
-                          pieSections={MOBILE_EMPTY_ARCHIVE_PIE_SECTIONS}
-                          rightListSource={mobileCentralArchiveEmptySource}
-                          rightPieCenterEmpty
-                          sectorsInteractive={false}
-                          onRightPieCenterClick={handleLeftPieCenterPress}
-                          leftPieCenterClickable={!showTopCardStripFullSpan}
-                        />
+                        <div
+                          className={styles.mobileListArchiveEmptyPlaceholder}
+                          aria-hidden
+                        >
+                          <IconCardPie />
+                        </div>
                       ) : mobileCentralPieDisplay === 'assembly' ? (
                         <CardPie
                           fillContainer

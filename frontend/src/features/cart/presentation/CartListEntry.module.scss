@@ -10,10 +10,6 @@ $list-entry-border: $color-cart-list-border;
 
 @mixin cart-list-entry-indicator-border($indicator-color) {
   border-color: $indicator-color;
-
-  .thumb {
-    border-color: $indicator-color;
-  }
 }
 
 $list-entry-bg: #fff;
@@ -376,7 +372,6 @@ $list-entry-bg-selected: #f5f5f5;
   align-items: center;
   justify-content: center;
   background-color: $color-app-inner;
-  border: 1px solid $color-preview-indicator-cart;
 }
 
 .statusIndicator {

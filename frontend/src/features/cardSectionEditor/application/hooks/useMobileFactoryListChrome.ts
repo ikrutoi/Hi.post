@@ -138,6 +138,14 @@ export function useMobileFactoryListChrome() {
     [isMobileLayout, historyListPanelOpen, mobileDateListChromePeek],
   )
 
+  const showMobileCartListFactoryChrome = useMemo(
+    () =>
+      isMobileLayout &&
+      cartListPanelOpen &&
+      !mobileDateListChromePeek,
+    [isMobileLayout, cartListPanelOpen, mobileDateListChromePeek],
+  )
+
   const hideUpperToolbar = useMemo(() => {
     if (!isMobileLayout) return false
     if (
@@ -152,7 +160,8 @@ export function useMobileFactoryListChrome() {
     if (
       showMobileTemplateList &&
       !showMobileSectionTemplateList &&
-      !showMobileHistoryListFactoryChrome
+      !showMobileHistoryListFactoryChrome &&
+      !showMobileCartListFactoryChrome
     ) {
       return true
     }
@@ -168,6 +177,7 @@ export function useMobileFactoryListChrome() {
     showMobileTemplateList,
     showMobileSectionTemplateList,
     showMobileHistoryListFactoryChrome,
+    showMobileCartListFactoryChrome,
     activeSection,
     cardPieListPanelOpen,
   ])
@@ -216,8 +226,14 @@ export function useMobileFactoryListChrome() {
 
   const showMobileTemplateListInCentralZone = useMemo(
     () =>
-      showMobileSectionTemplateList || showMobileHistoryListFactoryChrome,
-    [showMobileSectionTemplateList, showMobileHistoryListFactoryChrome],
+      showMobileSectionTemplateList ||
+      showMobileHistoryListFactoryChrome ||
+      showMobileCartListFactoryChrome,
+    [
+      showMobileSectionTemplateList,
+      showMobileHistoryListFactoryChrome,
+      showMobileCartListFactoryChrome,
+    ],
   )
 
   return {
@@ -228,6 +244,7 @@ export function useMobileFactoryListChrome() {
     showMobileCardtextListFactoryChrome,
     showMobileAddressListFactoryChrome,
     showMobileHistoryListFactoryChrome,
+    showMobileCartListFactoryChrome,
     hideUpperToolbar,
     mobileFactoryChromePeek,
     mobileDateListChromePeek,

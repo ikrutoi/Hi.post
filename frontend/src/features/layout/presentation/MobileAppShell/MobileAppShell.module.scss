@@ -426,20 +426,47 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
 
   &[data-mobile-central-pie-mode='cardphotoTemplate'],
   &[data-mobile-central-pie-mode='cardtextTemplate'],
-  &[data-mobile-central-pie-mode='addressTemplate'] {
+  &[data-mobile-central-pie-mode='addressTemplate'],
+  &[data-mobile-central-pie-mode='emptyArchive'] {
     border-radius: 0.5rem;
     overflow: hidden;
     box-shadow: none;
   }
 
   &[data-mobile-central-pie-mode='cardtextTemplate'],
-  &[data-mobile-central-pie-mode='addressTemplate'] {
+  &[data-mobile-central-pie-mode='addressTemplate'],
+  &[data-mobile-central-pie-mode='emptyArchive'] {
     box-sizing: border-box;
     border: 1px solid darken($color-app-inner, 8%);
   }
 
-  &[data-mobile-central-pie-mode='addressTemplate'] {
+  &[data-mobile-central-pie-mode='addressTemplate'],
+  &[data-mobile-central-pie-mode='emptyArchive'] {
     background-color: #fff;
+  }
+}
+
+// CardPie / archive list empty placeholder in central pie preview.
+$mobile-central-pie-archive-empty-icon-width: 40%;
+
+.mobileListArchiveEmptyPlaceholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  pointer-events: none;
+  background-color: #fff;
+  color: $color-app-inner;
+
+  svg {
+    flex-shrink: 0;
+    width: $mobile-central-pie-archive-empty-icon-width;
+    height: auto;
+    aspect-ratio: 1;
+    fill: none;
+    stroke: currentColor;
   }
 }
 

@@ -1,0 +1,66 @@
+@use '@styles/config/colors' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
+
+.upperRow {
+  position: relative;
+  flex: 1 1 auto;
+  align-self: stretch;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upperSegments {
+  flex: 0 0 auto;
+  width: var(--mobile-pie-size);
+  max-width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+
+  > * {
+    pointer-events: auto;
+  }
+}
+
+.upperToolbar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+  min-height: 0;
+  pointer-events: none;
+
+  > * {
+    pointer-events: auto;
+  }
+
+  > * {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  :global([class*='toolbarCart']) {
+    width: auto;
+    margin-left: 0;
+    justify-content: flex-end;
+
+    :global([class*='toolbarGroup']) {
+      justify-content: flex-end;
+    }
+  }
+}
