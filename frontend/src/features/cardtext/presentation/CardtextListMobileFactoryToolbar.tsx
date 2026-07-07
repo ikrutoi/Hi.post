@@ -9,9 +9,18 @@ import { selectIsCardtextListPanelOpen, selectCardtextId, selectCardtextSessionD
 import { getCardtextTemplateDisplayTitle } from '@cardtext/application/helpers'
 import { cardtextHasRenderableContent } from '@cardtext/domain/editor/editor.types'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
+import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
 import type { IconKey } from '@shared/config/constants'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import styles from './CardtextListMobileFactoryToolbar.module.scss'
+
+const CARDTEXT_LIST_FACTORY_UPPER_APPLY_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'cardtext',
+    icons: [{ key: 'apply', state: 'disabled' }],
+    status: 'enabled',
+  },
+]
 
 const CARDTEXT_LIST_FACTORY_UPPER_TOOLBAR: ToolbarConfig = [
   {
@@ -44,7 +53,7 @@ export const CardtextListMobileFactoryLowerToolbar: React.FC = () => {
   return null
 }
 
-/** Mobile factory: верхний ряд — заголовок слева, return справа. */
+/** Mobile factory: верхний ряд — apply слева, заголовок, return справа. */
 export const CardtextListMobileFactoryUpperToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
   const templateId = useAppSelector(selectCardtextId)
@@ -69,6 +78,13 @@ export const CardtextListMobileFactoryUpperToolbar: React.FC = () => {
 
   return (
     <div className={styles.upperRow}>
+      <div className={styles.upperApply}>
+        <Toolbar
+          section="cardtext"
+          groupsOverride={CARDTEXT_LIST_FACTORY_UPPER_APPLY_TOOLBAR}
+          className={toolbarStyles.toolbarAromaUpperApply}
+        />
+      </div>
       {centralTemplateTitle ? (
         <div className={styles.upperTitle} title={centralTemplateTitle}>
           {centralTemplateTitle}

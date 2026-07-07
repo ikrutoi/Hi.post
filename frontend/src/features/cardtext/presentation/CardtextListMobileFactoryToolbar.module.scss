@@ -3,6 +3,7 @@
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
 .upperRow {
+  position: relative;
   flex: 1 1 auto;
   align-self: stretch;
   width: 100%;
@@ -10,16 +11,36 @@
   min-height: 0;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+}
+
+.upperApply {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  min-height: 0;
+  pointer-events: none;
+
+  > * {
+    pointer-events: auto;
+  }
 }
 
 .upperTitle {
-  flex: 1 1 auto;
+  flex: 0 0 auto;
+  width: var(--mobile-pie-size);
+  max-width: 100%;
   min-width: 0;
+  box-sizing: border-box;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding: 0.22rem 0.5rem 0.22rem iconButton.$toolbar-mobile-toolbar-key-margin-inline;
+  text-align: left;
+  padding: 0.22rem 0.5rem;
   background-color: $color-app-inner;
   border-radius: calc(#{$list-entry-radius-lg} - 1px);
   font-size: 0.95rem;
@@ -29,15 +50,19 @@
 }
 
 .upperToolbar {
-  flex: 0 0 auto;
-  margin-left: auto;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   min-width: 0;
   min-height: 0;
+  pointer-events: none;
 
   > * {
+    pointer-events: auto;
     flex: 0 0 auto;
     width: auto;
     min-width: 0;
