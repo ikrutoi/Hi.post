@@ -10,9 +10,26 @@ import {
   selectSenderListPanelOpen,
 } from '@envelope/infrastructure/selectors'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
+import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
 import type { IconKey } from '@shared/config/constants'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import styles from './AddressListMobileFactoryToolbar.module.scss'
+
+const SENDER_LIST_FACTORY_UPPER_APPLY_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'address',
+    icons: [{ key: 'apply', state: 'disabled' }],
+    status: 'enabled',
+  },
+]
+
+const RECIPIENTS_LIST_FACTORY_UPPER_APPLY_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'recipients',
+    icons: [{ key: 'apply', state: 'disabled' }],
+    status: 'enabled',
+  },
+]
 
 const ADDRESS_LIST_FACTORY_UPPER_TOOLBAR: ToolbarConfig = [
   {
@@ -47,10 +64,14 @@ export const AddressListMobileFactoryLowerToolbar: React.FC = () => {
   return null
 }
 
-/** Mobile factory: верхний ряд — return справа. */
+/** Mobile factory: верхний ряд — apply слева, return справа. */
 export const AddressListMobileFactoryUpperToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
   const senderListOpen = useAppSelector(selectSenderListPanelOpen)
+  const applySection = senderListOpen ? 'sender' : 'recipients'
+  const applyToolbar = senderListOpen
+    ? SENDER_LIST_FACTORY_UPPER_APPLY_TOOLBAR
+    : RECIPIENTS_LIST_FACTORY_UPPER_APPLY_TOOLBAR
   const upperSection = senderListOpen ? 'senderView' : 'recipientView'
 
   const closeList = useCallback(() => {
@@ -68,6 +89,11 @@ export const AddressListMobileFactoryUpperToolbar: React.FC = () => {
 
   return (
     <div className={styles.upperRow}>
+      <Toolbar
+        section={applySection}
+        groupsOverride={applyToolbar}
+        className={toolbarStyles.toolbarAromaUpperApply}
+      />
       <div className={styles.upperToolbar}>
         <Toolbar
           section={upperSection}
