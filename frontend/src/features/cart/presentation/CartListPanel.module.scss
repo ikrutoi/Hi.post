@@ -192,7 +192,7 @@ $cart-list-header-segment-count-inset: 1.5rem;
   z-index: 2;
   color: $color-font-enabled-light-hover;
   font-family: sans-serif;
-  font-size: 0.75rem;
+  font-size: $cart-list-amount-font-size;
   font-weight: 700;
   line-height: 1;
   font-variant-numeric: tabular-nums;
@@ -200,7 +200,7 @@ $cart-list-header-segment-count-inset: 1.5rem;
   transform: translate(-50%, -50%);
 
   :global([data-shell-layout='mobile']) & {
-    font-size: 0.9rem;
+    font-size: $cart-list-amount-font-size-mobile;
   }
 }
 
@@ -393,7 +393,7 @@ $cart-list-header-segment-count-inset: 1.5rem;
 .footerAmount {
   flex-shrink: 0;
   max-width: 60%;
-  font-size: 0.72rem;
+  font-size: $cart-list-amount-font-size;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   line-height: 1.2;
@@ -402,4 +402,8 @@ $cart-list-header-segment-count-inset: 1.5rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  :global([data-shell-layout='mobile']) & {
+    font-size: $cart-list-amount-font-size-mobile;
+  }
 }

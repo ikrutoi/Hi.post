@@ -166,6 +166,7 @@ const CartListPanelRow: React.FC<{
   isSelected?: boolean
   isChecked?: boolean
   onToggleChecked?: (localId: number) => void
+  hideRowDelete?: boolean
 }> = ({
   item,
   onSelectEntry,
@@ -173,6 +174,7 @@ const CartListPanelRow: React.FC<{
   isSelected = false,
   isChecked = false,
   onToggleChecked,
+  hideRowDelete = false,
 }) => {
   const { removeItem } = useCartFacade()
   const { displayUrl, onPreviewImgError } = useListCardPreviewUrl(
@@ -187,9 +189,10 @@ const CartListPanelRow: React.FC<{
     if (lid != null) removeItem(lid)
   }, [item.postcard?.localId, removeItem])
 
-  const onDeleteRow =
-    item.onDelete ??
-    (item.postcard?.localId != null ? handleRemoveFromCart : undefined)
+  const onDeleteRow = hideRowDelete
+    ? undefined
+    : (item.onDelete ??
+      (item.postcard?.localId != null ? handleRemoveFromCart : undefined))
 
   return (
     <CartListEntry
@@ -457,6 +460,7 @@ export const CartListPanel: React.FC<Props> = ({
                     item={item}
                     onSelectEntry={onSelectEntry}
                     onDateEditEntry={onDateEditEntry}
+                    hideRowDelete={isMobileLayout}
                     isSelected={
                       item.postcard?.localId != null &&
                       item.postcard.localId === listSelectedLocalId
@@ -479,6 +483,7 @@ export const CartListPanel: React.FC<Props> = ({
                       item={item}
                       onSelectEntry={onSelectEntry}
                       onDateEditEntry={onDateEditEntry}
+                      hideRowDelete={isMobileLayout}
                       isSelected={
                         item.postcard?.localId != null &&
                         item.postcard.localId === listSelectedLocalId
