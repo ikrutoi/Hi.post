@@ -249,7 +249,6 @@ const calendarSlice = createSlice({
       const wasOpen = state.historyListPanelOpen
       state.historyListPanelOpen = action.payload
       if (!action.payload) {
-        state.historyListSelectedLocalId = null
         return
       }
       state.dateListPanelOpen = false
