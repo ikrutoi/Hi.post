@@ -36,7 +36,7 @@ const CardphotoInnerPreviewOnly: React.FC<{
   const hasPhoto = url != null && url !== ''
 
   return (
-    <div className={styles.cardphoto}>
+    <div className={clsx(styles.cardphoto, styles.cardphotoSectionFrame)}>
       <div className={styles.cardphotoViewWrap}>
         <MobileInlineToolbarRow
           className={styles.cardphotoToolbarRow}
@@ -45,8 +45,18 @@ const CardphotoInnerPreviewOnly: React.FC<{
         >
           {null}
         </MobileInlineToolbarRow>
-        <div className={styles.cardphotoViewContent}>
-          <div className={viewStyles.viewContainer}>
+        <div
+          className={clsx(
+            styles.cardphotoViewContent,
+            styles.cardphotoViewContentSectionFrame,
+          )}
+        >
+          <div
+            className={clsx(
+              viewStyles.viewContainer,
+              viewStyles.viewContainerSectionFrame,
+            )}
+          >
             <div className={viewStyles.stageRoot}>
               {hasPhoto ? (
                 <img

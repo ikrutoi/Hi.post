@@ -160,6 +160,35 @@
   }
 }
 
+/** Упрощённый peek / зеркало архива: без внешней рамки и тени вокруг превью. */
+.cardphotoSectionFrame {
+  border: none;
+  box-shadow: none;
+  background-color: transparent;
+
+  :global([data-shell-layout='mobile']) & {
+    border: none;
+    box-shadow: none;
+    background-color: transparent;
+  }
+
+  :global([data-shell-layout='desktop']) & {
+    border: none;
+    box-shadow: none;
+    background-color: transparent;
+  }
+}
+
+.cardphotoViewContentSectionFrame {
+  border: none;
+  background-color: transparent;
+
+  :global([data-shell-layout='desktop']) & {
+    border: none;
+    background-color: transparent;
+  }
+}
+
 /** Right list mirror: preview matches mini strip, not session `cardphoto` slice. */
 .mirrorPreview {
   max-width: 100%;
