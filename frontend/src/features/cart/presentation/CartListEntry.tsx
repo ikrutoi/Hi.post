@@ -64,8 +64,9 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
   isFocused = false,
 }) => {
   const interactive = Boolean(onSelect)
-  const inactive = variant === 'inactive'
   const isBlockedEntry = previewStatus === 'cartBlocked'
+  /** В «Заблокированных» дата/имя как у активных, без серого `inactive`. */
+  const inactive = variant === 'inactive' && !isBlockedEntry
   const showCartCheckbox = !isBlockedEntry && !inactive
   const showDelete = Boolean(onDelete)
   const labelForAria = [detailLine ? `${dateLabel}, ${detailLine}` : dateLabel, priceLine]

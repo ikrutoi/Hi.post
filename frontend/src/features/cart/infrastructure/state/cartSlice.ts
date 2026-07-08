@@ -34,12 +34,21 @@ const cartSlice = createSlice({
     setCartListPanelOpen(state, action: PayloadAction<boolean>) {
       const wasOpen = state.isActive
       state.isActive = action.payload
-      /** Сброс выбора только при смене open/closed; повторное `true` (закладка «Корзина») — сохраняем строку для правого CardPie. */
-      if (wasOpen !== action.payload) {
-        state.listSelectedLocalId = null
-      }
       if (!action.payload) {
         state.cardPieCopyStripExpanded = false
+        return
+      }
+      /** Закрыть → открыть: сохраняем выбранную в календаре открытку и сегмент списка по её статусу. */
+      if (!wasOpen) {
+        const localId = state.listSelectedLocalId
+        if (localId != null) {
+          const postcard = state.items.find((p) => p.localId === localId)
+          if (postcard?.status === 'cartBlocked') {
+            state.listStatusSegment = 'cartBlocked'
+          } else if (postcard?.status === 'cart') {
+            state.listStatusSegment = 'cart'
+          }
+        }
       }
     },
     setCardPieCopyStripExpanded(state, action: PayloadAction<boolean>) {

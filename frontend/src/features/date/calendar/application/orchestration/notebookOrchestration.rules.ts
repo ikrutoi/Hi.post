@@ -114,7 +114,6 @@ export const buildCartListCommands = (): UnknownAction[] => [
     value: 'active',
   }),
   setCartCalendarDatePickMode(false),
-  setCartListStatusSegment('cart'),
   setNotebookStripTab('cart'),
   setActiveSection('date'),
 ]
