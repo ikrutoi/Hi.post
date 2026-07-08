@@ -125,12 +125,26 @@
     &[data-icon-key='historyPanelDensity'].toolbarKeyEnabled,
     &[data-icon-key='panelDensity2'].toolbarKeyEnabled,
     &[data-icon-key='addressList'].toolbarKeyEnabled,
-    &[data-icon-key='addressAdd'].toolbarKeyEnabled {
+    &[data-icon-key='addressAdd'].toolbarKeyEnabled,
+    &[data-icon-key='cardPieEdit'].toolbarKeyEnabled,
+    &[data-icon-key='cardPieCopy'].toolbarKeyEnabled {
       color: $color-font-enabled-light;
 
       @include iconButton.toolbar-key-hover-fine-pointer {
         &:hover {
           color: $color-font-enabled;
+          background-color: #fff;
+        }
+      }
+    }
+
+    &[data-icon-key='cardPieEdit'].toolbarKeyActive,
+    &[data-icon-key='cardPieCopy'].toolbarKeyActive {
+      color: $color-font-active;
+
+      @include iconButton.toolbar-key-hover-fine-pointer {
+        &:hover {
+          color: $color-font-active;
           background-color: #fff;
         }
       }

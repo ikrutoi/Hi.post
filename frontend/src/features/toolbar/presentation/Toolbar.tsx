@@ -66,7 +66,7 @@ import { CardtextAlignButton } from './CardtextAlignButton'
 import { CardtextColorButton } from './CardtextColorButton'
 import { CardphotoPrintQualitySlot } from './CardphotoPrintQualitySlot'
 import { UserLoginToolbarIcon } from './UserLoginToolbarIcon'
-import { getApplyToolbarIconColor } from './applyToolbarIconColor'
+import { getApplyToolbarIconColor, getCardPieEditToolbarIconColor } from './applyToolbarIconColor'
 import styles from './Toolbar.module.scss'
 
 export const Toolbar = ({
@@ -471,6 +471,11 @@ export const Toolbar = ({
       effectiveIconKey === 'apply'
         ? getApplyToolbarIconColor(buttonStatus)
         : undefined
+    const cardPieEditIconColor =
+      section === 'postcardPieCart' && effectiveIconKey === 'cardPieEdit'
+        ? getCardPieEditToolbarIconColor(buttonStatus)
+        : undefined
+    const forcedIconColor = applyIconColor ?? cardPieEditIconColor
 
     const visualStatus =
       (section === 'cardtext' ||
@@ -565,7 +570,7 @@ export const Toolbar = ({
           ],
           groupStatus === 'disabled' && styles.toolbarKeyDisabled,
         )}
-        style={applyIconColor != null ? { color: applyIconColor } : undefined}
+        style={forcedIconColor != null ? { color: forcedIconColor } : undefined}
         data-icon-key={effectiveIconKey}
         data-icon-state={buttonStatus}
         disabled={buttonStatus === 'disabled' || groupStatus === 'disabled'}

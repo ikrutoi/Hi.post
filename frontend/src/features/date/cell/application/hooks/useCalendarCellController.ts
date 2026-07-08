@@ -123,17 +123,21 @@ export const useCalendarCellController = ({
     dateKey: string,
     dayData: CardCalendarIndex,
   ) => {
-    if (!historyListPanelOpen) {
-      dispatch(setHistoryListPanelOpen(true))
-      dispatch(
-        updateToolbarIcon({
-          section: 'history',
-          key: 'listHistory',
-          value: 'active',
-        }),
-      )
+    if (!isMobileLayout) {
+      if (!historyListPanelOpen) {
+        dispatch(setHistoryListPanelOpen(true))
+        dispatch(
+          updateToolbarIcon({
+            section: 'history',
+            key: 'listHistory',
+            value: 'active',
+          }),
+        )
+      }
+      dispatch(openDayPanel({ dateKey, dayData }))
+    } else {
+      dispatch(openDayPanel({ dateKey, dayData }))
     }
-    dispatch(openDayPanel({ dateKey, dayData }))
     const primaryLid = getHistoryOpenDayPanelPrimaryPostcardLocalId(
       dayData,
       cartItems,

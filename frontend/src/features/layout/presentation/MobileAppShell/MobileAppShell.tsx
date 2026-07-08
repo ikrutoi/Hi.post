@@ -421,14 +421,17 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     )?.status
   }, [cartItems, mobileCentralArchivePreview])
 
+  const isCartArchivePiePostcardStatus =
+    mobileCentralArchivePostcardStatus === 'cart' ||
+    mobileCentralArchivePostcardStatus === 'cartBlocked'
+
   const showMobileCentralPostcardPieCartToolbar =
-    mobileCentralPieDisplay === 'archive' &&
-    mobileCentralArchivePostcardStatus === 'cart'
+    mobileCentralPieDisplay === 'archive' && isCartArchivePiePostcardStatus
 
   const showMobileCentralPostcardPieHistoryToolbar =
     mobileCentralPieDisplay === 'archive' &&
     mobileCentralArchivePostcardStatus != null &&
-    mobileCentralArchivePostcardStatus !== 'cart'
+    !isCartArchivePiePostcardStatus
 
   const canDeleteCardphotoTemplatePreview =
     cardphotoAssetData?.status === 'inLine' ||
