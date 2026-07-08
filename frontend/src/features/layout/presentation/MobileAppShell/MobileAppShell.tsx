@@ -16,6 +16,7 @@ import {
   selectBlockedCartPostcardCount,
   selectCartItems,
 } from '@cart/infrastructure/selectors'
+import { CartHeaderTotal } from '@cart/presentation/CartHeaderTotal'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import {
@@ -775,10 +776,13 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                 <IconLogo />
               </div>
             </div>
-            <SectionEditorRightSidebar
-              variant="headerStack"
-              pinActiveTab={pinActiveTab}
-            />
+            <div className={styles.mobileHeaderRight}>
+              <CartHeaderTotal />
+              <SectionEditorRightSidebar
+                variant="headerStack"
+                pinActiveTab={pinActiveTab}
+              />
+            </div>
           </header>
 
           <div className={styles.mobileMain}>

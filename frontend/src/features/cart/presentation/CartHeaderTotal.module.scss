@@ -1,0 +1,12 @@
+@use '@styles/config/colors' as *;
+
+.root {
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: $color-font-enabled-light;
+  white-space: nowrap;
+  user-select: none;
+}

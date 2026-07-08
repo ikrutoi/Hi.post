@@ -16,15 +16,19 @@ $list-panel-compact-header-band: calc(
 $list-panel-scroll-inset: 0.35rem;
 /** 1px зазор: последняя строка списка не заходит под верхний бордер футера. */
 $list-panel-list-footer-gap: 1px;
-/** Футер: одна строка хедера + тот же межстрочный gap (0.35rem), без второй строки toolbar. */
-$list-panel-footer-row-band: calc(
-  #{iconButton.$toolbar-hit-size-card-pie-list-header} + 0.35rem
-);
-$list-panel-footer-band: calc(
-  #{$list-panel-footer-row-band} + #{$list-panel-list-footer-gap}
-);
+/** Как левый padding списка (`.list` / `list-panel-scroll-padding`). */
+$cart-list-panel-inline-inset: 0.5rem;
 $cart-list-header-square-h: 1.35rem;
 $cart-list-header-square-h-mobile: 1.5rem;
+/** Высота chip суммы — как ширина cart/history в mobilePieRightSlot (off). */
+$cart-list-footer-amount-h: iconButton.$toolbar-logo-size-mobile-right-sidebar;
+/** Бордер chip суммы — как пустой центральный CardPie (`mobilePieWrap` empty). */
+$cart-list-footer-amount-border: darken($color-app-inner, 8%);
+/** Футер: высота chip суммы + нижний inset. */
+$list-panel-footer-band: calc(
+  #{$cart-list-panel-inline-inset} + #{$cart-list-footer-amount-h} +
+    #{$list-panel-list-footer-gap}
+);
 $cart-list-header-skew-deg: 30deg;
 $cart-list-header-skew-offset: $cart-list-header-square-h *
   math.tan($cart-list-header-skew-deg);
@@ -39,14 +43,9 @@ $cart-list-header-segments-header-w-container: 30cqw;
 $cart-list-header-segments-header-w-mobile: 40%;
 $cart-list-header-segments-header-w-container-mobile: 40cqw;
 $cart-list-header-segment-count-inset: 1.5rem;
-$cart-list-entry-shell-padding-end: 2rem;
-$cart-list-entry-shell-padding-end-mobile: 0.35rem;
-$cart-list-entry-root-padding-end: 0.5rem;
-$cart-list-footer-amount-padding-end: calc(
-  #{$cart-list-entry-shell-padding-end} + #{$cart-list-entry-root-padding-end}
-);
-$cart-list-footer-amount-padding-end-mobile: calc(
-  #{$cart-list-entry-shell-padding-end-mobile} + #{$cart-list-entry-root-padding-end}
+/** Как правый padding списка: `0.25rem + scroll-gutter` из `list-panel-scroll-padding`. */
+$cart-list-panel-inline-end-inset: calc(
+  0.25rem + #{$list-panel-scroll-gutter}
 );
 
 .panel {
@@ -68,6 +67,10 @@ $cart-list-footer-amount-padding-end-mobile: calc(
     background-color: #fff;
     border-radius: 0.5rem;
     border: none;
+    padding-bottom: calc(
+      #{$cart-list-panel-inline-inset} + #{$cart-list-footer-amount-h} +
+        #{$list-panel-list-footer-gap}
+    );
 
     &.panelFactoryChrome {
       padding-top: 0;
@@ -103,10 +106,6 @@ $cart-list-footer-amount-padding-end-mobile: calc(
       #{$list-panel-compact-header-band} - #{$list-panel-scroll-inset} +
         #{$list-panel-list-footer-gap}
     );
-  }
-
-  .footer {
-    height: $list-panel-compact-header-band;
   }
 }
 
@@ -315,8 +314,8 @@ $cart-list-footer-amount-padding-end-mobile: calc(
   position: absolute;
   top: calc(#{$list-panel-stacked-band} - #{$list-panel-scroll-inset});
   bottom: calc(
-    #{$list-panel-footer-row-band} - #{$list-panel-scroll-inset} +
-      #{$list-panel-list-footer-gap}
+    #{$cart-list-panel-inline-inset} + #{$cart-list-footer-amount-h} -
+      #{$list-panel-scroll-inset} + #{$list-panel-list-footer-gap}
   );
   @include list-panel-scroll-track-right;
   width: 0.75rem;
@@ -378,32 +377,39 @@ $cart-list-footer-amount-padding-end-mobile: calc(
 
 .footer {
   position: absolute;
-  left: 0.5rem;
-  bottom: 0;
+  left: $cart-list-panel-inline-inset;
+  right: $cart-list-panel-inline-end-inset;
+  bottom: $cart-list-panel-inline-inset;
   z-index: 2;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 0.5rem;
-  @include list-panel-footer-width;
-  height: $list-panel-footer-row-band;
-  padding: 0 $cart-list-footer-amount-padding-end 0 0.35rem;
+  width: auto;
+  height: auto;
+  padding: 0;
   box-sizing: border-box;
-  background-color: #fff;
-
-  :global([data-shell-layout='mobile']) & {
-    padding-right: $cart-list-footer-amount-padding-end-mobile;
-  }
+  background-color: transparent;
 }
 
 .footerAmount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  max-width: 60%;
+  max-width: 100%;
+  box-sizing: border-box;
+  height: $cart-list-footer-amount-h;
+  min-height: $cart-list-footer-amount-h;
+  padding: 0 0.45rem;
+  border: none;
+  border-radius: $cart-list-header-corner-radius;
+  background-color: $color-app-inner;
+  box-shadow: inset 0 0 0 1px $cart-list-footer-amount-border;
   font-size: $cart-list-amount-font-size;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  line-height: 1.2;
-  color: $color-font-enabled;
+  line-height: 1;
+  color: $color-font-enabled-light;
   text-align: right;
   white-space: nowrap;
   overflow: hidden;

@@ -24,6 +24,7 @@ import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { notebookTabCartClicked } from '@date/calendar/application/orchestration/notebookOrchestration.events'
 import type { CartListStatusSegment } from '@cart/domain/types'
 import { listEntryPriceLine } from '@shared/utils/listEntryPriceLine'
+import { cartListTotalDisplayFromPostcards } from '@cart/application/logic/cartListTotalDisplay'
 import { CartListEntry, type CartListEntryVariant } from './CartListEntry'
 import { CartHeaderSegments } from './CartHeaderSegments'
 import type { PostcardHydrated } from '@entities/postcard'
@@ -113,21 +114,6 @@ function formatRecipientLine(
   const region = country || city
   if (name && region) return `${name}, ${region}`
   return name || region || undefined
-}
-
-/** Leading amount in a list price string (aligned with row `priceLine` / `listEntryPriceLine`). */
-function numericFromPriceLine(line: string): number {
-  const m = line.match(/[\d]+(?:[.,]\d+)?/)
-  if (!m) return 0
-  return parseFloat(m[0].replace(',', '.')) || 0
-}
-
-/** Text after the first number (e.g. `USD` from `6.00 USD`). */
-function currencySuffixFromPriceLine(line: string): string {
-  const m = line.match(/[\d]+(?:[.,]\d+)?/)
-  if (!m) return 'USD'
-  const tail = line.slice(line.indexOf(m[0]) + m[0].length).trim()
-  return tail || 'USD'
 }
 
 function cartPostcardsToEntries(
@@ -344,22 +330,11 @@ export const CartListPanel: React.FC<Props> = ({
       : `${listSegment}|${entries.map((e) => e.id).join('|')}`
 
   const cartTotalDisplay = useMemo(() => {
-    const entriesForTotal = entries.filter((e) => e.variant !== 'inactive')
-
-    if (entriesForTotal.length === 0) {
-      const emptyLine = listEntryPriceLine(undefined)
-      return `0.00 ${currencySuffixFromPriceLine(emptyLine)}`
-    }
-    let sum = 0
-    for (const e of entriesForTotal) {
-      const line = e.priceLine ?? listEntryPriceLine(e.postcard)
-      sum += numericFromPriceLine(line)
-    }
-    const suffix = currencySuffixFromPriceLine(
-      entriesForTotal[0].priceLine ??
-        listEntryPriceLine(entriesForTotal[0].postcard),
-    )
-    return `${sum.toFixed(2)} ${suffix}`
+    const postcards = entries
+      .filter((e) => e.variant !== 'inactive')
+      .map((e) => e.postcard)
+      .filter((p): p is PostcardHydrated => p != null)
+    return cartListTotalDisplayFromPostcards(postcards)
   }, [entries])
 
   const handleCloseList = useCallback(() => {

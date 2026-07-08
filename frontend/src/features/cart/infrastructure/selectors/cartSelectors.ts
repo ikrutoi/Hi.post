@@ -4,6 +4,11 @@ import type { PostcardHydrated } from '@entities/postcard'
 import { createSelector } from '@reduxjs/toolkit'
 import { getCurrentDate } from '@shared/utils/date'
 import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
+import {
+  cartBillablePostcards,
+  cartListTotalDisplayFromPostcards,
+  cartListTotalNumeric,
+} from '@cart/application/logic/cartListTotalDisplay'
 
 export const selectCartListPanelOpen = (state: RootState): boolean =>
   state.cart.isActive
@@ -78,3 +83,18 @@ export const selectIsCartListEntryChecked = (
   state: RootState,
   localId: number,
 ): boolean => state.cart.listCheckedLocalIds?.includes(localId) ?? false
+
+export const selectCartBillablePostcards = createSelector(
+  [selectCartItems],
+  (items) => cartBillablePostcards(items),
+)
+
+export const selectCartBillableTotalNumeric = createSelector(
+  [selectCartBillablePostcards],
+  (postcards) => cartListTotalNumeric(postcards),
+)
+
+export const selectCartBillableTotalDisplay = createSelector(
+  [selectCartBillablePostcards],
+  (postcards) => cartListTotalDisplayFromPostcards(postcards),
+)
