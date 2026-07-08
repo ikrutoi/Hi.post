@@ -253,9 +253,8 @@ const calendarSlice = createSlice({
         return
       }
       state.dateListPanelOpen = false
-      /** Переход закрыть → открыть: чистый список истории; повторное `true` (сага при том же меню) — сохраняем строку и панель дня для правого CardPie. */
+      /** Переход закрыть → открыть: сохраняем выбранную в календаре открытку; сбрасываем только панель дня. */
       if (!wasOpen) {
-        state.historyListSelectedLocalId = null
         state.openDayPanel = null
         state.notebookStripDateOverHistory = false
       }

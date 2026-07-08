@@ -13,6 +13,7 @@ import { CardtextListMobileFactoryUpperToolbar } from '@cardtext/presentation/Ca
 import { AddressListMobileFactoryUpperToolbar } from '@envelope/addressBook/presentation/AddressListMobileFactoryToolbar'
 import { HistoryListMobileFactoryUpperToolbar } from '@date/presentation/HistoryListMobileFactoryToolbar'
 import { CartListMobileFactoryUpperToolbar } from '@cart/presentation/CartListMobileFactoryToolbar'
+import { ArchivePeekUpperToolbar } from './ArchivePeekUpperToolbar'
 import { MobileDateCalendarToolbarNav } from '@date/dateHeader/presentation/MobileDateCalendarToolbarNav'
 import { useMobileScenarioToolbarSnapshot } from './MobileScenarioToolbarContext'
 import styles from './MobileFactoryToolbarShell.module.scss'
@@ -75,26 +76,28 @@ export const MobileFactoryToolbarShell: React.FC = () => {
 
   return (
     <div className={styles.shell} aria-label="Section toolbars">
-      <div
-        className={styles.rowUpper}
-        aria-hidden={showPeekEmptyToolbarShell ? true : undefined}
-      >
-        {!showPeekEmptyToolbarShell &&
-          (showMobileCardphotoListFactoryChrome ? (
-            <CardphotoListMobileFactoryUpperToolbar />
-          ) : showMobileCardtextListFactoryChrome ? (
-            <CardtextListMobileFactoryUpperToolbar />
-          ) : showMobileAddressListFactoryChrome ? (
-            <AddressListMobileFactoryUpperToolbar />
-          ) : showMobileCartListFactoryChrome ? (
-            <CartListMobileFactoryUpperToolbar />
-          ) : showMobileHistoryListFactoryChrome ? (
-            <HistoryListMobileFactoryUpperToolbar />
-          ) : showSectionUpperToolbar ? (
-            <CardSectionToolbar />
-          ) : showMobileDateCalendarNavRow ? (
-            <MobileDateCalendarToolbarNav />
-          ) : null)}
+      <div className={styles.rowUpper}>
+        {showPeekEmptyToolbarShell ? (
+          <ArchivePeekUpperToolbar />
+        ) : (
+          <>
+            {showMobileCardphotoListFactoryChrome ? (
+              <CardphotoListMobileFactoryUpperToolbar />
+            ) : showMobileCardtextListFactoryChrome ? (
+              <CardtextListMobileFactoryUpperToolbar />
+            ) : showMobileAddressListFactoryChrome ? (
+              <AddressListMobileFactoryUpperToolbar />
+            ) : showMobileCartListFactoryChrome ? (
+              <CartListMobileFactoryUpperToolbar />
+            ) : showMobileHistoryListFactoryChrome ? (
+              <HistoryListMobileFactoryUpperToolbar />
+            ) : showSectionUpperToolbar ? (
+              <CardSectionToolbar />
+            ) : showMobileDateCalendarNavRow ? (
+              <MobileDateCalendarToolbarNav />
+            ) : null}
+          </>
+        )}
       </div>
       <div
         className={clsx(

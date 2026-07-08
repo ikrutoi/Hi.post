@@ -23,6 +23,7 @@ import {
 import { MiniSectionsSlot } from './features/cardPanel/presentation/MiniSectionsSlot'
 import { CardSectionEditor } from '@features/cardSectionEditor/presentation/CardSectionEditor'
 import { CardSectionToolbar } from '@features/cardSectionToolbar/presentation/CardSectionToolbar'
+import { ArchivePeekUpperToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar/ArchivePeekUpperToolbar'
 import {
   CartListPanel,
   type CartListPanelItem,
@@ -1338,12 +1339,13 @@ const App = () => {
                 <div className={clsx(styles.appMainContentCenter)}>
                   {!isMobileLayout ? (
                     <div className={styles.mainCardSectionToolbar}>
-                      {activeSection !== 'envelope' &&
-                      !rightPieCardphotoPeekNoToolbar &&
-                      !rightPieCardtextPeekNoToolbar &&
-                      !rightPieEnvelopePeekNoToolbar &&
-                      !rightPieAromaPeekNoToolbar &&
-                      !rightPieDatePeekNoToolbar ? (
+                      {rightPieCardphotoPeekNoToolbar ||
+                      rightPieCardtextPeekNoToolbar ||
+                      rightPieEnvelopePeekNoToolbar ||
+                      rightPieAromaPeekNoToolbar ||
+                      rightPieDatePeekNoToolbar ? (
+                        <ArchivePeekUpperToolbar />
+                      ) : activeSection !== 'envelope' ? (
                         <CardSectionToolbar />
                       ) : null}
                     </div>
