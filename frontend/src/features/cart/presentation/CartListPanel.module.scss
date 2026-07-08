@@ -39,6 +39,15 @@ $cart-list-header-segments-header-w-container: 30cqw;
 $cart-list-header-segments-header-w-mobile: 40%;
 $cart-list-header-segments-header-w-container-mobile: 40cqw;
 $cart-list-header-segment-count-inset: 1.5rem;
+$cart-list-entry-shell-padding-end: 2rem;
+$cart-list-entry-shell-padding-end-mobile: 0.35rem;
+$cart-list-entry-root-padding-end: 0.5rem;
+$cart-list-footer-amount-padding-end: calc(
+  #{$cart-list-entry-shell-padding-end} + #{$cart-list-entry-root-padding-end}
+);
+$cart-list-footer-amount-padding-end-mobile: calc(
+  #{$cart-list-entry-shell-padding-end-mobile} + #{$cart-list-entry-root-padding-end}
+);
 
 .panel {
   position: relative;
@@ -374,25 +383,16 @@ $cart-list-header-segment-count-inset: 1.5rem;
   z-index: 2;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 0.5rem;
   @include list-panel-footer-width;
   height: $list-panel-footer-row-band;
-  padding: 0 0.35rem;
+  padding: 0 $cart-list-footer-amount-padding-end 0 0.35rem;
   box-sizing: border-box;
-  border-top: 1px solid $color-cardphoto-input-border;
   background-color: #fff;
-}
-
-.footerLabel {
-  flex-shrink: 0;
-  font-size: $cart-list-amount-font-size;
-  font-weight: 600;
-  color: $color-font-enabled-light;
-  line-height: 1.2;
 
   :global([data-shell-layout='mobile']) & {
-    font-size: $cart-list-amount-font-size-mobile;
+    padding-right: $cart-list-footer-amount-padding-end-mobile;
   }
 }
 

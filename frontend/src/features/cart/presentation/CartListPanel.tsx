@@ -344,16 +344,7 @@ export const CartListPanel: React.FC<Props> = ({
       : `${listSegment}|${entries.map((e) => e.id).join('|')}`
 
   const cartTotalDisplay = useMemo(() => {
-    const billableEntries = entries.filter((e) => e.variant !== 'inactive')
-    const sumOnlyChecked =
-      entriesProp == null && listSegment === 'cart'
-    const entriesForTotal = sumOnlyChecked
-      ? billableEntries.filter(
-          (e) =>
-            e.postcard?.localId != null &&
-            checkedLocalIdSet.has(e.postcard.localId),
-        )
-      : billableEntries
+    const entriesForTotal = entries.filter((e) => e.variant !== 'inactive')
 
     if (entriesForTotal.length === 0) {
       const emptyLine = listEntryPriceLine(undefined)
@@ -369,7 +360,7 @@ export const CartListPanel: React.FC<Props> = ({
         listEntryPriceLine(entriesForTotal[0].postcard),
     )
     return `${sum.toFixed(2)} ${suffix}`
-  }, [checkedLocalIdSet, entries, entriesProp, listSegment])
+  }, [entries])
 
   const handleCloseList = useCallback(() => {
     setCartListPanelOpen(false)
@@ -507,13 +498,8 @@ export const CartListPanel: React.FC<Props> = ({
       {showCartFooter ? (
         <footer
           className={styles.footer}
-          aria-label={
-            listSegment === 'cart' && entriesProp == null
-              ? `Cart total for selected postcards ${cartTotalDisplay}`
-              : `Cart total ${cartTotalDisplay}`
-          }
+          aria-label={`Cart total ${cartTotalDisplay}`}
         >
-          <span className={styles.footerLabel}>Total</span>
           <span className={styles.footerAmount}>{cartTotalDisplay}</span>
         </footer>
       ) : null}

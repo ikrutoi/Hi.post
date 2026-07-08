@@ -14,7 +14,6 @@ $list-entry-border: $color-cart-list-border;
 
 $list-entry-bg: #fff;
 $list-entry-bg-hover: #fafafa;
-$list-entry-bg-selected: #f5f5f5;
 
 .shell {
   position: relative;
@@ -47,11 +46,14 @@ $list-entry-bg-selected: #f5f5f5;
   }
 
   /**
-   * Внешний контейнер: рамка без изменений; слева полоска как в Конверте.
-   * (`$color-toggle-active` — и корзина, и заблокированные.)
+   * Выбранная строка — как шаблон cardtext: белый фон внутри, слева полоска
+   * с 1px белым зазором от рамки.
    */
   &[data-selected='true'] {
-    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
+    overflow: visible;
+    box-shadow:
+      -1px 0 0 0 #fff,
+      calc(-1px - #{$list-entry-accent-bar-width}) 0 0 0 $color-toggle-active;
   }
 
   :global([data-shell-layout='mobile']) & {
@@ -256,6 +258,12 @@ $list-entry-bg-selected: #f5f5f5;
     }
   }
 
+  &[data-selected='true'],
+  &[data-selected='true']:hover,
+  &[data-selected='true'][data-focused='true'] {
+    background-color: $list-entry-bg;
+  }
+
   &[data-clickable='true'] {
     &:focus {
       outline: none;
@@ -281,62 +289,10 @@ $list-entry-bg-selected: #f5f5f5;
     background-color: $list-entry-bg;
   }
 
-  /** Сегмент «Корзина». */
-  &[data-selected='true']:not([data-cart-blocked='true']),
-  &[data-date-edit-active='true'][data-selected='true']:not([data-cart-blocked='true']) {
-    background-color: $list-entry-bg-selected;
-  }
-
-  &[data-selected='true']:not([data-cart-blocked='true']):hover,
-  &[data-selected='true']:not([data-cart-blocked='true'])[data-focused='true'],
-  &[data-date-edit-active='true'][data-selected='true']:not([data-cart-blocked='true']):hover,
-  &[data-date-edit-active='true'][data-selected='true']:not(
-      [data-cart-blocked='true']
-    )[data-focused='true'] {
-    background-color: $list-entry-bg-selected;
-  }
-
-  &[data-selected='true'][data-inactive='true']:not([data-cart-blocked='true']),
-  &[data-date-edit-active='true'][data-selected='true'][data-inactive='true']:not(
-      [data-cart-blocked='true']
-    ) {
-    background-color: $list-entry-bg-selected;
-  }
-
-  &[data-selected='true'][data-inactive='true']:not([data-cart-blocked='true']):hover,
-  &[data-selected='true'][data-inactive='true']:not([data-cart-blocked='true'])[data-focused='true'],
-  &[data-date-edit-active='true'][data-selected='true'][data-inactive='true']:not(
-      [data-cart-blocked='true']
-    ):hover,
-  &[data-date-edit-active='true'][data-selected='true'][data-inactive='true']:not(
-      [data-cart-blocked='true']
-    )[data-focused='true'] {
-    background-color: $list-entry-bg-selected;
-  }
-
-  /** Сегмент «Заблокированные». */
-  &[data-cart-blocked='true'][data-selected='true'],
-  &[data-cart-blocked='true'][data-date-edit-active='true'][data-selected='true'] {
-    background-color: $list-entry-bg-selected;
-  }
-
-  &[data-cart-blocked='true'][data-selected='true']:hover,
-  &[data-cart-blocked='true'][data-selected='true'][data-focused='true'],
-  &[data-cart-blocked='true'][data-date-edit-active='true'][data-selected='true']:hover,
-  &[data-cart-blocked='true'][data-date-edit-active='true'][data-selected='true'][data-focused='true'] {
-    background-color: $list-entry-bg-selected;
-  }
-
-  &[data-cart-blocked='true'][data-selected='true'][data-inactive='true'],
-  &[data-cart-blocked='true'][data-date-edit-active='true'][data-selected='true'][data-inactive='true'] {
-    background-color: $list-entry-bg-selected;
-  }
-
-  &[data-cart-blocked='true'][data-selected='true'][data-inactive='true']:hover,
-  &[data-cart-blocked='true'][data-selected='true'][data-inactive='true'][data-focused='true'],
-  &[data-cart-blocked='true'][data-date-edit-active='true'][data-selected='true'][data-inactive='true']:hover,
-  &[data-cart-blocked='true'][data-date-edit-active='true'][data-selected='true'][data-inactive='true'][data-focused='true'] {
-    background-color: $list-entry-bg-selected;
+  &[data-date-edit-active='true'][data-selected='true'],
+  &[data-date-edit-active='true'][data-selected='true']:hover,
+  &[data-date-edit-active='true'][data-selected='true'][data-focused='true'] {
+    background-color: $list-entry-bg;
   }
 }
 
@@ -483,7 +439,7 @@ $list-entry-bg-selected: #f5f5f5;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   line-height: 1.2;
-  color: $color-font-enabled;
+  color: $color-font-enabled-light;
   text-align: right;
   white-space: nowrap;
   overflow: hidden;
