@@ -384,10 +384,14 @@ $cart-list-header-segment-count-inset: 1.5rem;
 
 .footerLabel {
   flex-shrink: 0;
-  font-size: 0.72rem;
+  font-size: $cart-list-amount-font-size;
   font-weight: 600;
   color: $color-font-enabled-light;
   line-height: 1.2;
+
+  :global([data-shell-layout='mobile']) & {
+    font-size: $cart-list-amount-font-size-mobile;
+  }
 }
 
 .footerAmount {

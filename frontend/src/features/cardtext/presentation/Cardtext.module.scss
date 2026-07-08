@@ -1,5 +1,6 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
+@use '@styles/mixins/sectionToolbarRow' as sectionToolbarRow;
 
 .cardtextContainer {
   position: relative;
@@ -98,6 +99,7 @@
   min-height: $section-inner-toolbar-height-desktop;
   max-height: $section-inner-toolbar-height-desktop;
   box-sizing: border-box;
+  @include sectionToolbarRow.section-toolbar-row-empty-divider;
 
   :global([data-shell-layout='mobile']) & {
     flex: 0 0 var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});

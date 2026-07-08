@@ -1,0 +1,17 @@
+@use '@styles/config/colors' as *;
+
+/** Горизонтальная полоска под пустым рядом toolbar (peek / archive preview). */
+@mixin section-toolbar-row-empty-divider {
+  position: relative;
+  box-sizing: border-box;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0.5rem;
+    right: 0.5rem;
+    bottom: 0;
+    height: 1px;
+    background-color: var(--mobile-section-surface-bg, $color-section-light);
+  }
+}

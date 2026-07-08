@@ -223,7 +223,13 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
       <div className={styles.envelopeViewWrap}>
         {!isMobile &&
           (rightPieEnvelopePeekNoToolbar ? (
-            <div className={styles.envelopeToolbarRow} aria-hidden />
+            <div
+              className={clsx(
+                styles.envelopeToolbarRow,
+                styles.envelopeToolbarRowEmpty,
+              )}
+              aria-hidden
+            />
           ) : showMobileAddressForm ? null : (
             showEnvelopeToolbar ? (
               <EnvelopeInnerToolbar />

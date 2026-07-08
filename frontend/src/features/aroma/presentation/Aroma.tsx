@@ -7,16 +7,27 @@ import { useAromaFacade } from '../application/facades'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
+import { MobileInlineToolbarRow } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import { setCartItemCardAroma } from '@cart/infrastructure/state'
 import { getAromaImage } from '@entities/aroma/mappers/aromaImageMap'
 import styles from './Aroma.module.scss'
 import type { AromaItem } from '@entities/aroma/domain/types'
 
-const AromaSectionShell: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => (
+const AromaSectionShell: React.FC<{
+  children: React.ReactNode
+  peekToolbar?: boolean
+}> = ({ children, peekToolbar = false }) => (
   <div className={styles.aroma}>
     <div className={styles.aromaViewWrap}>
+      {peekToolbar ? (
+        <MobileInlineToolbarRow
+          className={styles.aromaToolbarRow}
+          emptyClassName={styles.aromaToolbarRowEmpty}
+          show={false}
+        >
+          {null}
+        </MobileInlineToolbarRow>
+      ) : null}
       <div className={styles.aromaViewContent}>{children}</div>
     </div>
   </div>
@@ -66,6 +77,7 @@ export const Aroma: React.FC = () => {
         key={
           listRowLocalId != null ? `peek-aroma-${listRowLocalId}` : 'peek-aroma'
         }
+        peekToolbar
       >
         <div className={clsx(styles.form, styles.formPeek)}>
           {peekSrc ? (

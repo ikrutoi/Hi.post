@@ -23,8 +23,15 @@ export const MobileFactoryToolbarShell: React.FC = () => {
   const activeSection = useAppSelector(selectActiveSection)
   const senderView = useAppSelector(selectSenderView)
   const recipientView = useAppSelector(selectRecipientView)
-  const { hideUpperToolbar, showMobileCardphotoListFactoryChrome, showMobileCardtextListFactoryChrome, showMobileAddressListFactoryChrome, showMobileHistoryListFactoryChrome, showMobileCartListFactoryChrome } =
-    useMobileFactoryListChrome()
+  const {
+    hideUpperToolbar,
+    mobileArchiveSectionPeek,
+    showMobileCardphotoListFactoryChrome,
+    showMobileCardtextListFactoryChrome,
+    showMobileAddressListFactoryChrome,
+    showMobileHistoryListFactoryChrome,
+    showMobileCartListFactoryChrome,
+  } = useMobileFactoryListChrome()
   const { rightPieEnvelopePeekNoToolbar } = useRightListArchiveMini()
 
   const envelopeAddressCreateMode =
@@ -35,6 +42,9 @@ export const MobileFactoryToolbarShell: React.FC = () => {
   const suppressMobileCalendarUpperRow =
     isMobileLayout &&
     (activeSection === 'date' || activeSection === 'history')
+
+  const showPeekEmptyToolbarShell =
+    isMobileLayout && mobileArchiveSectionPeek && !envelopeAddressCreateMode
 
   const showUpperContent = !hideUpperToolbar
   const showMobileListFactoryUpper =
@@ -52,34 +62,39 @@ export const MobileFactoryToolbarShell: React.FC = () => {
   const showLowerRow =
     scenarioToolbar != null || showMobileListFactoryUpper
   const showShell =
+    showPeekEmptyToolbarShell ||
     showSectionUpperToolbar ||
     showMobileListFactoryUpper ||
     showLowerRow ||
     showMobileDateCalendarNavRow
   const hideToolbarDivider =
-    isMobileLayout && activeSection === 'date'
+    !showPeekEmptyToolbarShell && isMobileLayout && activeSection === 'date'
 
   if (envelopeAddressCreateMode) return null
   if (!showShell) return null
 
   return (
     <div className={styles.shell} aria-label="Section toolbars">
-      <div className={styles.rowUpper}>
-        {showMobileCardphotoListFactoryChrome ? (
-          <CardphotoListMobileFactoryUpperToolbar />
-        ) : showMobileCardtextListFactoryChrome ? (
-          <CardtextListMobileFactoryUpperToolbar />
-        ) : showMobileAddressListFactoryChrome ? (
-          <AddressListMobileFactoryUpperToolbar />
-        ) : showMobileCartListFactoryChrome ? (
-          <CartListMobileFactoryUpperToolbar />
-        ) : showMobileHistoryListFactoryChrome ? (
-          <HistoryListMobileFactoryUpperToolbar />
-        ) : showSectionUpperToolbar ? (
-          <CardSectionToolbar />
-        ) : showMobileDateCalendarNavRow ? (
-          <MobileDateCalendarToolbarNav />
-        ) : null}
+      <div
+        className={styles.rowUpper}
+        aria-hidden={showPeekEmptyToolbarShell ? true : undefined}
+      >
+        {!showPeekEmptyToolbarShell &&
+          (showMobileCardphotoListFactoryChrome ? (
+            <CardphotoListMobileFactoryUpperToolbar />
+          ) : showMobileCardtextListFactoryChrome ? (
+            <CardtextListMobileFactoryUpperToolbar />
+          ) : showMobileAddressListFactoryChrome ? (
+            <AddressListMobileFactoryUpperToolbar />
+          ) : showMobileCartListFactoryChrome ? (
+            <CartListMobileFactoryUpperToolbar />
+          ) : showMobileHistoryListFactoryChrome ? (
+            <HistoryListMobileFactoryUpperToolbar />
+          ) : showSectionUpperToolbar ? (
+            <CardSectionToolbar />
+          ) : showMobileDateCalendarNavRow ? (
+            <MobileDateCalendarToolbarNav />
+          ) : null)}
       </div>
       <div
         className={clsx(
@@ -93,9 +108,9 @@ export const MobileFactoryToolbarShell: React.FC = () => {
       />
       <div
         className={styles.rowLower}
-        aria-hidden={!showLowerRow ? true : undefined}
+        aria-hidden={showPeekEmptyToolbarShell || !showLowerRow ? true : undefined}
       >
-        {showLowerRow ? scenarioToolbar : null}
+        {!showPeekEmptyToolbarShell && showLowerRow ? scenarioToolbar : null}
       </div>
     </div>
   )

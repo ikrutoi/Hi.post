@@ -1,6 +1,7 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
 @use '@styles/config/historyFooterChrome' as historyFooter;
+@use '@styles/mixins/sectionToolbarRow' as sectionToolbarRow;
 
 $mobile-date-calendar-chrome-row-height: 2rem;
 $mobile-date-calendar-chrome-gap: 0.125rem;
@@ -76,6 +77,24 @@ $mobile-date-calendar-chrome-gap: 0.125rem;
   align-items: center;
   width: 100%;
   background-color: #fff;
+
+  :global([data-shell-layout='mobile']) & {
+    flex: 0 0 var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
+    min-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
+    max-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
+  }
+
+  :global([data-shell-layout='desktop']) & {
+    border-radius: 0.5rem 0.5rem 0 0;
+  }
+}
+
+.dateToolbarRowEmpty {
+  flex: 0 0 $section-inner-toolbar-height-desktop;
+  min-height: $section-inner-toolbar-height-desktop;
+  max-height: $section-inner-toolbar-height-desktop;
+  box-sizing: border-box;
+  @include sectionToolbarRow.section-toolbar-row-empty-divider;
 
   :global([data-shell-layout='mobile']) & {
     flex: 0 0 var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});

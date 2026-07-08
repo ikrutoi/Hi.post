@@ -65,6 +65,14 @@ export function stripPostcardAtCycleIndex<T extends { date: DispatchDate }>(
   return items[safeIndex] ?? null
 }
 
+export function stripPostcardIndexByLocalId(
+  items: readonly { localId: number }[],
+  localId: number | null | undefined,
+): number {
+  if (localId == null) return -1
+  return items.findIndex((item) => item.localId === localId)
+}
+
 export function nextStripMonthCycleIndex(
   cycleIndex: number,
   itemCount: number,

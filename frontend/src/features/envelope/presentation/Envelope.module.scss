@@ -1,6 +1,7 @@
 @use 'sass:color';
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
+@use '@styles/mixins/sectionToolbarRow' as sectionToolbarRow;
 
 .envelope {
   display: flex;
@@ -107,6 +108,11 @@
   > * {
     min-width: 0;
   }
+}
+
+.envelopeToolbarRowEmpty {
+  @include sectionToolbarRow.section-toolbar-row-empty-divider;
+  padding: 0;
 }
 
 .envelopeToolbarSlotSender,

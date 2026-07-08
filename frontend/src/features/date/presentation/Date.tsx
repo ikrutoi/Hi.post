@@ -60,6 +60,7 @@ const DateSectionShell: React.FC<{
     <div className={styles.dateViewWrap}>
       <MobileInlineToolbarRow
         className={styles.dateToolbarRow}
+        emptyClassName={styles.dateToolbarRowEmpty}
         show={showMobileSliderToolbar}
       >
         <MobileDateCalendarToolbarSlider />

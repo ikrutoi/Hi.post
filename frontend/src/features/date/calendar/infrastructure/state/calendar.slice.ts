@@ -310,9 +310,12 @@ const calendarSlice = createSlice({
         status: string
         localIdsKey: string
         itemCount: number
+        /** Индекс уже выбранной в календаре / списке открытки — цикл от неё. */
+        selectedIndex?: number
       }>,
     ) {
-      const { strip, status, localIdsKey, itemCount } = action.payload
+      const { strip, status, localIdsKey, itemCount, selectedIndex } =
+        action.payload
 
       if (state.stripMonthCycleIndices == null) {
         state.stripMonthCycleIndices = {
@@ -343,9 +346,19 @@ const calendarSlice = createSlice({
         return
       }
 
-      const index = indices[status] ?? 0
-      state.lastStripMonthCycleStep = { strip, status, index }
-      indices[status] = nextStripMonthCycleIndex(index, itemCount)
+      let displayIndex: number
+      if (
+        selectedIndex != null &&
+        selectedIndex >= 0 &&
+        selectedIndex < itemCount
+      ) {
+        displayIndex = nextStripMonthCycleIndex(selectedIndex, itemCount)
+      } else {
+        displayIndex = indices[status] ?? 0
+      }
+
+      state.lastStripMonthCycleStep = { strip, status, index: displayIndex }
+      indices[status] = nextStripMonthCycleIndex(displayIndex, itemCount)
     },
   },
   extraReducers: (builder) => {

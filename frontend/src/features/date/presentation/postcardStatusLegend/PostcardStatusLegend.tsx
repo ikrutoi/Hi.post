@@ -7,12 +7,13 @@ import {
   setHistoryListSelectedLocalId,
   stepStripMonthCycle,
 } from '@date/calendar/infrastructure/state'
-import { selectLastStripMonthCycleStep } from '@date/calendar/infrastructure/selectors'
-import { selectCartItems } from '@cart/infrastructure/selectors'
+import { selectLastStripMonthCycleStep, selectHistoryListSelectedLocalId } from '@date/calendar/infrastructure/selectors'
+import { selectCartItems, selectCartListSelectedLocalId } from '@cart/infrastructure/selectors'
 import {
   calendarMonthAtStripCycleIndex,
   orderedStripPostcardsByDispatchDate,
   stripPostcardAtCycleIndex,
+  stripPostcardIndexByLocalId,
   stripPostcardsLocalIdsKey,
   type CalendarStripKind,
   type CartStripMonthCycleStatus,
@@ -157,6 +158,13 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
       if (items.length === 0) return
 
       const localIdsKey = stripPostcardsLocalIdsKey(items)
+      const selectedLocalId =
+        archiveSource === 'cart'
+          ? selectCartListSelectedLocalId(store.getState())
+          : archiveSource === 'history'
+            ? selectHistoryListSelectedLocalId(store.getState())
+            : null
+      const selectedIndex = stripPostcardIndexByLocalId(items, selectedLocalId)
 
       dispatch(
         stepStripMonthCycle({
@@ -164,6 +172,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
           status,
           localIdsKey,
           itemCount: items.length,
+          selectedIndex: selectedIndex >= 0 ? selectedIndex : undefined,
         }),
       )
 
