@@ -48,7 +48,7 @@ interface CellProps {
    * и без отдельной стилизации номера дня (бейдж).
    */
   suppressDispatchSelectionStyle?: boolean
-  /** Правый CardPie по открытке из списка — день её даты отправки (рамка `$color-date-multi`). */
+  /** Правый CardPie по открытке из списка — день её даты отправки (левая полоска 2px, `$color-toggle-active`). */
   rightArchiveCardPieDay?: boolean
   children?: React.ReactNode
 }

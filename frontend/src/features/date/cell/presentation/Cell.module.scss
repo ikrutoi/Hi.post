@@ -1,5 +1,6 @@
 @use 'sass:color';
 @use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as *;
 
 $cell-border-radius: 0.35rem;
 
@@ -138,27 +139,17 @@ $cart-date-edit-wave-overlay: color.change($cart-date-edit-tint, $alpha: 0.48);
   /**
    * День даты отправки открытки, для которой открыт правый CardPie
    * (список корзины, список истории, панель дня в «Истории»).
-   * Рамка 1px по периметру поверх превью (`::after`), без левой полосы.
+   * Слева полоска 2px, как у выбранной строки списка.
    */
   &.rightArchiveCardPieDay {
     z-index: 2;
     border-color: transparent;
-    box-shadow: none;
-
-    &::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      border-radius: inherit;
-      pointer-events: none;
-      box-shadow: inset 0 0 0 1px $color-date-multi;
-    }
+    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
   }
 
   &.rightArchiveCardPieDay:hover:not(.disabled) {
     border-color: transparent;
-    box-shadow: none;
+    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
   }
 }
 
@@ -516,7 +507,7 @@ button.navArrowWrap {
 .cell.rightArchiveCardPieDay:hover:not(.disabled),
 .cell.rightArchiveCardPieDay.current:hover:not(.disabled) {
   border-color: transparent;
-  box-shadow: none;
+  box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
   cursor: pointer;
 }
 

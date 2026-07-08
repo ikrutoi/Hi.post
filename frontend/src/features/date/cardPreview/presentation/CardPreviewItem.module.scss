@@ -60,7 +60,6 @@
 
 .previewItemActiveCardPie {
   z-index: 1;
-  @include calendar-active-cardpie-preview-shadow;
 }
 
 .previewItemSelected {
