@@ -307,17 +307,15 @@ export const Toolbar = ({
   ) => {
     const elementKey = iconIndex != null ? `${key}-${iconIndex}` : key
     const rawData = sectionState[key]
-    // editorPie: первая иконка-дырка становится «добавить в корзину» у комплектной открытки.
+    // editorPie: первая иконка-дырка — addCart (disabled, если открытка некомплектна).
     const editorPieCartAdd =
       section === 'editorPie' &&
       key === 'empty' &&
-      iconIndex === 0 &&
-      editorPieComplete
+      iconIndex === 0
     const editorPieDelete =
       section === 'editorPie' &&
       key === 'empty' &&
-      iconIndex === 2 &&
-      editorPieProgress > 0
+      iconIndex === 2
     const templateInQuickList =
       section === 'senderView'
         ? senderTemplateInQuickList
@@ -457,6 +455,12 @@ export const Toolbar = ({
         : recipientCreateDraftComplete && !recipientCreateDraftDuplicate
           ? 'enabled'
           : 'disabled'
+    }
+    if (editorPieCartAdd && !editorPieComplete) {
+      buttonStatus = 'disabled'
+    }
+    if (editorPieDelete && editorPieProgress === 0) {
+      buttonStatus = 'disabled'
     }
     const badge = mergedOptions?.badge ?? (rawData as any)?.options?.badge
     const hasBadge =
