@@ -346,6 +346,8 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   justify-content: flex-start;
   align-items: stretch;
   gap: var(--mobile-section-inset);
+  // Резерв справа под акцентную полосу выбранного мини-пая.
+  padding-right: #{$list-entry-accent-bar-width};
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -373,6 +375,10 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   border: 1px solid transparent;
   border-radius: var(--mobile-pie-gutter-mini-radius);
   background: transparent;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   appearance: none;
@@ -405,13 +411,10 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
   }
 }
 
-// Выбранный мини-пай: внешний бордер в цвет центральной кнопки пая.
+// Выбранный мини-пай: только акцентная полоса справа (без обводки по периметру).
 .mobilePieGutterMiniItem[data-selected='true'] {
-  border-color: $color-app-substrate-border;
-}
-
-.mobilePieGutterMiniItem[data-selected='true'][data-ready='true'] {
-  border-color: var(--logo-color, #008aed);
+  overflow: visible;
+  box-shadow: #{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
 }
 
 // Centered on screen; minis sit in the left slot via absolute positioning.
