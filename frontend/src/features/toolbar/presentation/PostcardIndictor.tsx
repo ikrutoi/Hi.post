@@ -67,7 +67,9 @@ export const PostcardIndicator: React.FC<PostcardIndicatorProps> = ({
         const dotClassName = clsx(
           styles.postcardIndicator,
           className,
-          !active && styles.postcardIndicatorHidden,
+          active && styles.postcardIndicatorOn,
+          interactive && !active && styles.postcardIndicatorOff,
+          !interactive && !active && styles.postcardIndicatorHidden,
         )
 
         if (interactive) {
@@ -80,7 +82,7 @@ export const PostcardIndicator: React.FC<PostcardIndicatorProps> = ({
               aria-label={ariaLabel}
               onClick={() => togglePostcardStatus(status)}
             >
-              <span className={dotClassName} aria-hidden={!active} />
+              <span className={dotClassName} aria-hidden={!interactive && !active} />
             </button>
           )
         }
@@ -89,7 +91,7 @@ export const PostcardIndicator: React.FC<PostcardIndicatorProps> = ({
           <span
             key={status}
             className={dotClassName}
-            aria-hidden={!active}
+            aria-hidden={!interactive && !active}
           />
         )
       })}

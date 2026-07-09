@@ -28,7 +28,7 @@
   justify-content: center;
   margin: 0;
   padding: 0;
-  border: 1px solid blue;
+  border: none;
   background: transparent;
   cursor: pointer;
   appearance: none;
@@ -53,9 +53,29 @@
     height: $mobile-calendar-preview-indicator-dot-size;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.32);
   }
+
+  &.postcardIndicatorOn {
+    width: calc(0.55rem * 1.25);
+    height: calc(0.55rem * 1.25);
+
+    :global([data-shell-layout='mobile']) & {
+      width: calc(#{$mobile-calendar-preview-indicator-dot-size} * 1.25);
+      height: calc(#{$mobile-calendar-preview-indicator-dot-size} * 1.25);
+    }
+  }
+
+  &.postcardIndicatorOff {
+    width: calc(0.55rem * 0.9);
+    height: calc(0.55rem * 0.9);
+
+    :global([data-shell-layout='mobile']) & {
+      width: calc(#{$mobile-calendar-preview-indicator-dot-size} * 0.9);
+      height: calc(#{$mobile-calendar-preview-indicator-dot-size} * 0.9);
+    }
+  }
 }
 
-/** Фильтр выключен — точка не показывается, но место под неё остаётся (без скачка ширины). */
+/** Неинтерактивный режим: фильтр выключен — точка скрыта, место сохраняется. */
 .postcardIndicatorHidden {
   visibility: hidden;
 }
