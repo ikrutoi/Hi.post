@@ -31,21 +31,20 @@
 }
 
 .upperTitle {
+  @include list-panel-header-chip-band;
+  @include list-panel-header-chip-text;
   flex: 0 0 auto;
   width: var(--mobile-pie-size);
   max-width: 100%;
   min-width: 0;
-  box-sizing: border-box;
+  display: flex;
+  align-items: center;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   text-align: left;
-  padding: 0.22rem 0.5rem;
+  padding-inline: $list-panel-header-chip-padding-inline;
   background-color: $color-app-inner;
-  border-radius: calc(#{$list-entry-radius-lg} - 1px);
-  font-size: 0.95rem;
-  font-weight: 600;
-  line-height: 1.2;
   color: $color-font-enabled-light;
 }
 

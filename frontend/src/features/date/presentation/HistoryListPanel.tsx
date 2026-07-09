@@ -166,7 +166,9 @@ export const HistoryListPanel: React.FC<Props> = ({
           leadIconAriaLabel="History calendar"
           headerTopCenter={
             <div className={styles.headerPostcardDots}>
-              <PostcardIndicator />
+              <div className={styles.headerPostcardDotsChrome}>
+                <PostcardIndicator interactive />
+              </div>
             </div>
           }
           toolbar={hasRows ? <Toolbar section="historyList" /> : false}

@@ -163,12 +163,27 @@ $list-panel-footer-band: calc(
   justify-content: center;
   pointer-events: none;
 
-  /** Корень индикатора по умолчанию `width: 100%` — сжимаем к контенту и центрируем группу точек. */
+  > * {
+    pointer-events: auto;
+  }
+}
+
+// Как `.upperTitle` / `.templateTitleText` в списке шаблонов cardtext.
+.headerPostcardDotsChrome {
+  @include list-panel-header-chip-band;
+  width: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  box-sizing: border-box;
+  padding: 0;
+  background-color: $color-app-inner;
+
   :global([data-postcard-indicator]) {
-    width: auto;
+    width: 100%;
+    height: 100%;
     max-width: 100%;
-    justify-content: center;
-    margin-inline: auto;
+    margin-inline: 0;
     pointer-events: auto;
   }
 }

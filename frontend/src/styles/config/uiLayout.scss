@@ -33,6 +33,31 @@ $list-entry-radius-lg: 0.375rem; // 6px
 $list-entry-thumb-inset-md: 0.375rem; // 6px
 $list-entry-thumb-inset-sm: 0.3125rem; // 5px
 
+/**
+ * Shared band height: mobile factory template title chip, history status bar,
+ * cart active/blocked header segments.
+ */
+$list-panel-header-chip-font-size: 0.95rem;
+$list-panel-header-chip-line-height: 1.2;
+$list-panel-header-chip-padding-block: 0.28rem;
+$list-panel-header-chip-padding-inline: 0.5rem;
+$list-panel-header-chip-height: $list-panel-header-chip-font-size *
+  $list-panel-header-chip-line-height + 2 * $list-panel-header-chip-padding-block;
+$list-panel-header-chip-radius: calc(#{$list-entry-radius-lg} - 1px);
+
+@mixin list-panel-header-chip-band {
+  box-sizing: border-box;
+  height: $list-panel-header-chip-height;
+  min-height: $list-panel-header-chip-height;
+  border-radius: $list-panel-header-chip-radius;
+}
+
+@mixin list-panel-header-chip-text {
+  font-size: $list-panel-header-chip-font-size;
+  font-weight: 600;
+  line-height: $list-panel-header-chip-line-height;
+}
+
 /** Cart list: segment counts, row price, footer total. */
 $cart-list-amount-font-size: 0.75rem;
 $cart-list-amount-font-size-mobile: 0.9rem;

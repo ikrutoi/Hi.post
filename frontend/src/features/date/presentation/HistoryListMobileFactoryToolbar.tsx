@@ -68,7 +68,9 @@ export const HistoryListMobileFactoryUpperToolbar: React.FC = () => {
   return (
     <div className={styles.upperRow}>
       <div className={styles.upperIndicator}>
-        <PostcardIndicator />
+        <div className={styles.upperIndicatorChrome}>
+          <PostcardIndicator interactive />
+        </div>
       </div>
       <div className={styles.upperToolbar}>
         <Toolbar

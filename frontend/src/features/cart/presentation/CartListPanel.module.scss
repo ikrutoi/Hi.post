@@ -18,8 +18,6 @@ $list-panel-scroll-inset: 0.35rem;
 $list-panel-list-footer-gap: 1px;
 /** Как левый padding списка (`.list` / `list-panel-scroll-padding`). */
 $cart-list-panel-inline-inset: 0.5rem;
-$cart-list-header-square-h: 1.35rem;
-$cart-list-header-square-h-mobile: 1.5rem;
 /** Высота chip суммы — как ширина cart/history в mobilePieRightSlot (off). */
 $cart-list-footer-amount-h: iconButton.$toolbar-logo-size-mobile-right-sidebar;
 /** Бордер chip суммы — как пустой центральный CardPie (`mobilePieWrap` empty). */
@@ -30,11 +28,9 @@ $list-panel-footer-band: calc(
     #{$list-panel-list-footer-gap}
 );
 $cart-list-header-skew-deg: 30deg;
-$cart-list-header-skew-offset: $cart-list-header-square-h *
+$cart-list-header-skew-offset: $list-panel-header-chip-height *
   math.tan($cart-list-header-skew-deg);
-$cart-list-header-skew-offset-mobile: $cart-list-header-square-h-mobile *
-  math.tan($cart-list-header-skew-deg);
-$cart-list-header-corner-radius: calc(#{$list-entry-radius-lg} - 1px);
+$cart-list-header-corner-radius: $list-panel-header-chip-radius;
 /** Неактивный сегмент — половина контейнера; активный — 70%. */
 $cart-list-header-segment-inactive-w: 50%;
 $cart-list-header-segment-active-w: 70%;
@@ -114,7 +110,7 @@ $cart-list-panel-inline-end-inset: calc(
   flex: 0 0 $cart-list-header-segments-header-w;
   width: $cart-list-header-segments-header-w;
   min-width: $cart-list-header-segments-header-w;
-  height: $cart-list-header-square-h;
+  height: $list-panel-header-chip-height;
   background-color: #fff;
 
   @supports (width: 1cqw) {
@@ -127,7 +123,6 @@ $cart-list-panel-inline-end-inset: calc(
     flex-basis: $cart-list-header-segments-header-w-mobile;
     width: $cart-list-header-segments-header-w-mobile;
     min-width: $cart-list-header-segments-header-w-mobile;
-    height: $cart-list-header-square-h-mobile;
 
     @supports (width: 1cqw) {
       flex-basis: $cart-list-header-segments-header-w-container-mobile;
@@ -141,6 +136,7 @@ $cart-list-panel-inline-end-inset: calc(
   flex: 0 0 auto;
   width: 100%;
   min-width: 0;
+  height: $list-panel-header-chip-height;
   border-radius: $cart-list-header-corner-radius;
   overflow: hidden;
 
@@ -165,7 +161,7 @@ $cart-list-panel-inline-end-inset: calc(
   align-items: center;
   justify-content: flex-start;
   width: $cart-list-header-segment-inactive-w;
-  height: $cart-list-header-square-h;
+  height: $list-panel-header-chip-height;
   box-sizing: border-box;
   padding: 0;
   margin: 0;
@@ -189,10 +185,6 @@ $cart-list-panel-inline-end-inset: calc(
 
   &:focus-visible {
     outline: none;
-  }
-
-  :global([data-shell-layout='mobile']) & {
-    height: $cart-list-header-square-h-mobile;
   }
 }
 
@@ -257,7 +249,7 @@ $cart-list-panel-inline-end-inset: calc(
     clip-path: polygon(
       0 0,
       100% 0,
-      calc(100% - #{$cart-list-header-skew-offset-mobile}) 100%,
+      calc(100% - #{$cart-list-header-skew-offset}) 100%,
       0 100%
     );
 
@@ -298,7 +290,7 @@ $cart-list-panel-inline-end-inset: calc(
   :global([data-shell-layout='mobile']) & {
     background-color: $color-preview-indicator-error;
     clip-path: polygon(
-      #{$cart-list-header-skew-offset-mobile} 0,
+      #{$cart-list-header-skew-offset} 0,
       100% 0,
       100% 100%,
       0 100%

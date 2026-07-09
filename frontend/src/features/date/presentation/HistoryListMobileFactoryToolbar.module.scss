@@ -1,7 +1,9 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as *;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
 .upperRow {
+  position: relative;
   flex: 1 1 auto;
   align-self: stretch;
   width: 100%;
@@ -9,36 +11,59 @@
   min-height: 0;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
 }
 
 .upperIndicator {
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   min-width: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   pointer-events: none;
 
+  > * {
+    pointer-events: auto;
+  }
+}
+
+// Как `.upperTitle` в списке шаблонов cardtext (mobile factory).
+.upperIndicatorChrome {
+  @include list-panel-header-chip-band;
+  flex: 0 0 auto;
+  width: var(--mobile-pie-size);
+  max-width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  overflow: hidden;
+  padding: 0;
+  background-color: $color-app-inner;
+
   :global([data-postcard-indicator]) {
-    width: auto;
+    width: 100%;
+    height: 100%;
     max-width: 100%;
-    justify-content: center;
-    margin-inline: auto;
+    margin-inline: 0;
     pointer-events: auto;
   }
 }
 
 .upperToolbar {
-  flex: 0 0 auto;
-  margin-left: auto;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   min-width: 0;
   min-height: 0;
+  pointer-events: none;
 
   > * {
+    pointer-events: auto;
     flex: 0 0 auto;
     width: auto;
     min-width: 0;

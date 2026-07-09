@@ -10,6 +10,36 @@
   // border: solid 1px red;
 }
 
+.postcardIndicatorContainerInteractive {
+  height: 100%;
+  align-items: stretch;
+  justify-content: stretch;
+  gap: 0.3rem;
+  padding: 0;
+}
+
+.postcardIndicatorHit {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: 1px solid blue;
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+
+  .postcardIndicator {
+    margin: 0;
+  }
+}
+
 .postcardIndicator {
   flex-shrink: 0;
   width: 0.55rem;
