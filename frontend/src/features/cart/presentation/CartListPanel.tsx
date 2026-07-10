@@ -31,6 +31,11 @@ import type { PostcardHydrated } from '@entities/postcard'
 import type { DispatchDate } from '@entities/date/domain/types'
 import { getCurrentDate } from '@shared/utils/date'
 import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
+import { formatPostcardListRecipientDetailLine } from '@date/application/helpers/formatRecipientPlanDetailLine'
+import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
+import type { RecipientState } from '@envelope/recipient/domain/types'
+import { selectRecipientEntriesState } from '@envelope/recipient/infrastructure/selectors'
+import { selectRecipientsList } from '@envelope/infrastructure/selectors'
 import type { IconKey } from '@shared/config/constants'
 import styles from './CartListPanel.module.scss'
 
@@ -98,27 +103,11 @@ function compareCartListPanelItemsByDispatchDate(
   return a.id.localeCompare(b.id)
 }
 
-function formatRecipientLine(
-  postcard: PostcardHydrated | undefined,
-): string | undefined {
-  const recipient = postcard?.card?.envelope?.recipient
-  if (!recipient) return undefined
-  const source =
-    recipient.appliedData ??
-    recipient.viewDraft ??
-    recipient.formDraft ??
-    null
-  const name = String(source?.name ?? '').trim()
-  const country = String(source?.country ?? '').trim()
-  const city = String(source?.city ?? '').trim()
-  const region = country || city
-  if (name && region) return `${name}, ${region}`
-  return name || region || undefined
-}
-
 function cartPostcardsToEntries(
   postcards: PostcardHydrated[],
   segment: CartListStatusSegment,
+  recipientEntries: AddressBookEntry[],
+  envelopeRecipients: RecipientState[],
 ): CartListPanelItem[] {
   const currentDate = getCurrentDate()
   return postcards
@@ -134,7 +123,11 @@ function cartPostcardsToEntries(
         postcard: p,
         dateLabel: formatDispatchDateLabel(p.date),
         previewUrl: cardListPreviewUrlFromCard(p.card),
-        detailLine: formatRecipientLine(p),
+        detailLine: formatPostcardListRecipientDetailLine(
+          p,
+          recipientEntries,
+          envelopeRecipients,
+        ),
         priceLine: listEntryPriceLine(p),
         variant,
         previewStatus: p.status,
@@ -222,6 +215,8 @@ export const CartListPanel: React.FC<Props> = ({
   const { isMobileLayout } = useSizeFacade()
   const useFactoryChrome = factoryChrome && isMobileLayout
   const cartItems = useAppSelector(selectCartItems)
+  const recipientEntries = useAppSelector(selectRecipientEntriesState)
+  const envelopeRecipients = useAppSelector(selectRecipientsList)
   const listSegment = useAppSelector(selectCartListStatusSegment)
   const checkedLocalIds = useAppSelector(selectCartListCheckedLocalIds)
   const checkedLocalIdSet = useMemo(
@@ -278,8 +273,13 @@ export const CartListPanel: React.FC<Props> = ({
 
   const entriesFromStore = useMemo(() => {
     if (entriesProp != null) return []
-    return cartPostcardsToEntries(cartItems, listSegment)
-  }, [entriesProp, cartItems, listSegment])
+    return cartPostcardsToEntries(
+      cartItems,
+      listSegment,
+      recipientEntries,
+      envelopeRecipients,
+    )
+  }, [entriesProp, cartItems, listSegment, recipientEntries, envelopeRecipients])
 
   const entries = useMemo(() => {
     const raw = entriesProp ?? entriesFromStore

@@ -244,6 +244,7 @@ export function* createPostcardsFromEditor(): SagaIterator<boolean> {
       ? appliedRecipientIds.map((recipientId) => {
           const matchedAddress =
             recipientEntries.find((entry) => entry.id === recipientId)?.address ??
+            envelope.recipient?.appliedData ??
             null
           return {
             ...envelope,
@@ -565,6 +566,7 @@ export function* handleToggleCartForDispatchBranch(
           applied: [recipientSlotKey],
           appliedData:
             recipientEntries.find((e) => e.id === recipientSlotKey)?.address ??
+            envelope.recipient?.appliedData ??
             null,
         },
       }

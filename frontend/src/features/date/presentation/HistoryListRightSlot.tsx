@@ -17,10 +17,12 @@ import { computeHistoryLegendStatusCounts } from '@date/application/helpers/lege
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
 import { selectRecipientsList } from '@envelope/infrastructure/selectors'
 import {
+  formatPostcardListRecipientDetailLine,
   formatRecipientDetailFromLayers,
   formatRecipientLine,
   hasCommittedSessionRecipient,
 } from '@date/application/helpers/formatRecipientPlanDetailLine'
+import { selectRecipientEntriesState } from '@envelope/recipient/infrastructure/selectors'
 import { HistoryListPanel, type HistoryListPanelItem } from './HistoryListPanel'
 import { useCalendarFacade } from '@date/calendar/application/facades/useCalendarFacade'
 import {
@@ -60,9 +62,7 @@ export const HistoryListRightSlot: React.FC<HistoryListRightSlotProps> = ({
   const cartItems = useAppSelector(selectCartItems)
   const recipientState = useAppSelector(selectRecipientState)
   const envelopeRecipients = useAppSelector(selectRecipientsList)
-  const recipientEntries = useAppSelector(
-    (s) => s.addressBook?.recipientEntries ?? [],
-  )
+  const recipientEntries = useAppSelector(selectRecipientEntriesState)
   const postcardStatuses = useAppSelector(selectPostcardStatuses)
   const historyListSelectedLocalId = useAppSelector(
     selectHistoryListSelectedLocalId,
@@ -97,7 +97,7 @@ export const HistoryListRightSlot: React.FC<HistoryListRightSlotProps> = ({
           ? sessionRecipientDetail
           : undefined
       }
-      return formatRecipientLine(
+      return formatPostcardListRecipientDetailLine(
         postcardByCardId.get(cardId),
         recipientEntries,
         envelopeRecipients,

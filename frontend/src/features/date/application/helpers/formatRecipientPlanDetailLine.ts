@@ -126,3 +126,23 @@ export function formatPostcardRecipientDetail(
   }
   return formatRecipientLine(postcard, recipientEntries, envelopeRecipients)
 }
+
+/** Строка «имя, регион» для списков корзины / истории по снимку открытки. */
+export function formatPostcardListRecipientDetailLine(
+  postcard: PostcardHydrated | undefined,
+  recipientEntries: AddressBookEntry[],
+  envelopeRecipients: RecipientState[],
+): string | undefined {
+  const fromLayers = formatPostcardRecipientDetail(
+    postcard,
+    recipientEntries,
+    envelopeRecipients,
+  )
+  if (fromLayers) return fromLayers
+
+  const recipient = postcard?.card?.envelope?.recipient
+  if (!recipient) return undefined
+  const source =
+    recipient.appliedData ?? recipient.viewDraft ?? recipient.formDraft ?? null
+  return formatDetailLineFromAddressFields(source)
+}
