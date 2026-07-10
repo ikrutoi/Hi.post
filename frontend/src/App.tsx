@@ -1286,9 +1286,28 @@ const App = () => {
   const handlePostcardPieCartToolbarAction = useCallback(
     (key: string) => {
       if (key === 'cardPieEdit') {
-        if (cardPieCopyStripExpanded) {
-          cardPieCopyClosedByEditRef.current = true
-          dispatch(setCardPieCopyStripExpanded(false))
+        const resolveCardPieEditTargetSection = (): CardSection => {
+          if (rightPieEnvelopePeekNoToolbar) return 'envelope'
+          if (rightPieCardtextPeekNoToolbar) return 'cardtext'
+          if (rightPieCardphotoPeekNoToolbar) return 'cardphoto'
+          if (rightPieAromaPeekNoToolbar) return 'aroma'
+          if (rightPieDatePeekNoToolbar) return 'date'
+          if (
+            activeSection != null &&
+            (SECTION_EDITOR_MENU_ICON_KEYS as readonly string[]).includes(
+              activeSection,
+            )
+          ) {
+            return activeSection as CardSection
+          }
+          return 'cardphoto'
+        }
+
+        const enterCardPieEditFactoryMode = () => {
+          const targetSection = resolveCardPieEditTargetSection()
+          dispatch(setCartListPanelOpen(false))
+          dispatch(setCartCalendarDatePickMode(false))
+          dispatch(setActiveSection(targetSection))
           setSuppressCardPieEditActiveAfterCopy(false)
           setCardPieEditEngaged(true)
           setActivePieSide('right')
@@ -1297,7 +1316,13 @@ const App = () => {
           setRightPieEnvelopePeekNoToolbar(false)
           setRightPieAromaPeekNoToolbar(false)
           setRightPieDatePeekNoToolbar(false)
-          return
+        }
+
+        if (cardPieCopyStripExpanded) {
+          cardPieCopyClosedByEditRef.current = true
+          dispatch(setCardPieCopyStripExpanded(false))
+          enterCardPieEditFactoryMode()
+          return false
         }
         if (activePieSide === 'right') {
           if (cardPieEditEngaged) {
@@ -1315,32 +1340,19 @@ const App = () => {
             ) {
               syncPeekChromeForOpenedSection(activeSection)
             }
-            return
+            return false
           }
-          setSuppressCardPieEditActiveAfterCopy(false)
-          setCardPieEditEngaged(true)
-          setRightPieCardphotoPeekNoToolbar(false)
-          setRightPieCardtextPeekNoToolbar(false)
-          setRightPieEnvelopePeekNoToolbar(false)
-          setRightPieAromaPeekNoToolbar(false)
-          setRightPieDatePeekNoToolbar(false)
-          return
+          enterCardPieEditFactoryMode()
+          return false
         }
-        setSuppressCardPieEditActiveAfterCopy(false)
-        setActivePieSide('right')
-        setCardPieEditEngaged(true)
-        setRightPieCardphotoPeekNoToolbar(false)
-        setRightPieCardtextPeekNoToolbar(false)
-        setRightPieEnvelopePeekNoToolbar(false)
-        setRightPieAromaPeekNoToolbar(false)
-        setRightPieDatePeekNoToolbar(false)
-        return
+        enterCardPieEditFactoryMode()
+        return false
       }
       if (key === 'cardPieCopy') {
         dispatch(setCardPieCopyStripExpanded(!cardPieCopyStripExpanded))
       }
     },
-    [dispatch, cardPieCopyStripExpanded, activePieSide, cardPieEditEngaged, activeSection, rightListArchiveLocalId, syncPeekChromeForOpenedSection],
+    [dispatch, cardPieCopyStripExpanded, activePieSide, cardPieEditEngaged, activeSection, rightListArchiveLocalId, rightPieCardphotoPeekNoToolbar, rightPieCardtextPeekNoToolbar, rightPieEnvelopePeekNoToolbar, rightPieAromaPeekNoToolbar, rightPieDatePeekNoToolbar, syncPeekChromeForOpenedSection],
   )
   const handleEditorPieToolbarAction = useCallback((key: string) => {
     if (key !== 'cardPieEdit' && key !== 'cardPie') return
