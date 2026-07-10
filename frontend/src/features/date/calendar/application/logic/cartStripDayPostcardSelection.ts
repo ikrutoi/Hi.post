@@ -82,13 +82,17 @@ export function resolveCartStripDayPostcardSelection(input: {
     input.dayData,
     input.cartItems,
     statusFilter,
+    input.dateKey,
   )
   const sameCartDay =
     input.notebookStripTabIsCart &&
     input.openDayPanelDateKey === input.dateKey &&
     lids.length > 1
+  const currentInDayList =
+    input.listSelectedLocalId == null ||
+    lids.includes(input.listSelectedLocalId)
 
-  if (sameCartDay) {
+  if (sameCartDay && currentInDayList) {
     const next = nextCyclicLocalId(lids, input.listSelectedLocalId)
     if (next != null) return { kind: 'cycle', localId: next }
     return { kind: 'openDay', localId: lids[0] ?? null }
@@ -153,7 +157,7 @@ export function resolveCartCenterPostcardCycle(input: {
   return resolveCartStripSegmentPostcardCycle(input)
 }
 
-/** Список корзины открыт: сначала цикл по дню, затем по всему сегменту. */
+/** Список корзины открыт: цикл по всем открыткам текущего сегмента списка. */
 export function resolveCartListCenterPostcardCycle(input: {
   dateKey: string
   dayData: CardCalendarIndex
@@ -162,17 +166,10 @@ export function resolveCartListCenterPostcardCycle(input: {
   listSelectedLocalId: number | null
   listStatusSegment: CartListStatusSegment
 }): number | null {
-  const dayResult = resolveCartStripDayPostcardSelection({
-    ...input,
-    notebookStripTabIsCart: true,
-  })
-  if (dayResult.kind === 'cycle') return dayResult.localId
+  void input.dateKey
+  void input.dayData
+  void input.openDayPanelDateKey
   return resolveCartStripSegmentPostcardCycle(input)
 }
 
-export function dispatchDateKeyFromPostcard(
-  postcard: Pick<PostcardHydrated, 'date'>,
-): string {
-  const { year, month, day } = postcard.date
-  return `${year}-${month}-${day}`
-}
+export { dispatchDateKeyFromPostcard } from '../../infrastructure/calendarDayPostcardCycle'

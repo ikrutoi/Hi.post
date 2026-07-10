@@ -113,13 +113,73 @@
   }
 }
 
-.thumb {
+.thumbRow {
   position: relative;
   flex: 0 0 auto;
   order: 1;
   width: 58%;
   aspect-ratio: 1;
   min-width: 0;
+}
+
+.debugStatusSquare {
+  position: absolute;
+  top: 0;
+  left: calc(100% + 0.12rem);
+  width: 1.75rem;
+  height: 1.75rem;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 1px solid $color-app-strip;
+  border-radius: 0.22rem;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+  background-color: $color-preview-indicator-delivered;
+
+  &[data-status='cart'] {
+    background-color: $color-preview-indicator-cart;
+  }
+
+  &[data-status='cartBlocked'] {
+    background-color: $color-preview-indicator-cart;
+    @include preview-indicator-cart-blocked-ring;
+  }
+
+  &[data-status='ready'] {
+    background-color: $color-preview-indicator-ready;
+  }
+
+  &[data-status='sent'] {
+    background-color: $color-preview-indicator-sent;
+  }
+
+  &[data-status='delivered'] {
+    background-color: $color-preview-indicator-delivered;
+  }
+
+  &[data-status='error'] {
+    background-color: $color-preview-indicator-error;
+  }
+
+  &:hover {
+    filter: brightness(0.94);
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: $list-entry-focus-outline-width solid
+      mix(#fff, $color-app-sidebar-icon-active, 55%);
+    outline-offset: $list-entry-focus-outline-offset;
+  }
+}
+
+.thumb {
+  position: relative;
+  width: 100%;
+  height: 100%;
   border-radius: 0.25rem;
   overflow: hidden;
   display: flex;
@@ -261,8 +321,13 @@
 .root[data-density-level='2'] {
   padding: 0.2rem 0.18rem 0.16rem;
 
-  .thumb {
+  .thumbRow {
     width: 68%;
+  }
+
+  .debugStatusSquare {
+    width: 1.5rem;
+    height: 1.5rem;
   }
 
   .dateLine,

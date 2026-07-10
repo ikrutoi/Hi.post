@@ -64,6 +64,8 @@ type Props = {
   hideListHeaderChrome?: boolean
   /** Mobile factory: toolbars live in shell, not in panel header. */
   factoryChrome?: boolean
+  /** Dev-only: цикл статуса открытки по localId. */
+  onDebugStatusCycle?: (localId: number) => void
   // section: 'date' | 'history'
 }
 
@@ -71,9 +73,17 @@ const HistoryListPanelRow: React.FC<{
   item: HistoryListPanelItem
   listSelectedLocalId?: number | null
   onSelectEntry?: (item: HistoryListPanelItem) => void
+  onDebugStatusCycle?: (localId: number) => void
   densityLevel: PanelDensity2Size
   sortEmphasis?: HistoryListSortEmphasis
-}> = ({ item, listSelectedLocalId, onSelectEntry, densityLevel, sortEmphasis }) => {
+}> = ({
+  item,
+  listSelectedLocalId,
+  onSelectEntry,
+  onDebugStatusCycle,
+  densityLevel,
+  sortEmphasis,
+}) => {
   const { displayUrl, onPreviewImgError } = useListCardPreviewUrl(
     item.cardId,
     item.previewUrl,
@@ -102,6 +112,11 @@ const HistoryListPanelRow: React.FC<{
       }
       densityLevel={densityLevel}
       sortEmphasis={sortEmphasis}
+      onDebugStatusCycle={
+        item.postcardLocalId != null && onDebugStatusCycle
+          ? () => onDebugStatusCycle(item.postcardLocalId!)
+          : undefined
+      }
     />
   )
 }
@@ -119,6 +134,7 @@ export const HistoryListPanel: React.FC<Props> = ({
   leadIconKeyOverride,
   hideListHeaderChrome = false,
   factoryChrome = false,
+  onDebugStatusCycle,
   // section,
 }) => {
   const dispatch = useAppDispatch()
@@ -193,6 +209,7 @@ export const HistoryListPanel: React.FC<Props> = ({
                   item={item}
                   listSelectedLocalId={listSelectedLocalId}
                   onSelectEntry={onSelectEntry}
+                  onDebugStatusCycle={onDebugStatusCycle}
                   densityLevel={historyListPanelDensity}
                   sortEmphasis={sortEmphasis}
                 />

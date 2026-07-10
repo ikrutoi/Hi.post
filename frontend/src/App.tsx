@@ -732,12 +732,14 @@ const App = () => {
       dispatch(setCartListSelectedLocalId(localId))
     }
 
-    const activeLocalId = resolveCartStripContextLocalId({
-      listStatusSegment: cartListStatusSegment,
-      bySegment: cartListSelectedBySegment,
-      fallbackLocalId: rightListArchiveLocalId ?? listSelectedLocalId,
-      cartItems,
-    })
+    const activeLocalId = listPanelOpen
+      ? (listSelectedLocalId ?? rightListArchiveLocalId)
+      : resolveCartStripContextLocalId({
+          listStatusSegment: cartListStatusSegment,
+          bySegment: cartListSelectedBySegment,
+          fallbackLocalId: rightListArchiveLocalId ?? listSelectedLocalId,
+          cartItems,
+        })
     const postcard =
       activeLocalId != null
         ? cartItems.find((item) => item.localId === activeLocalId)
@@ -868,11 +870,7 @@ const App = () => {
   ])
 
   const rightPieOnCenterClick =
-    (notebookStripTab === 'history' &&
-      rightListArchiveSource === 'history') ||
-    (notebookStripTab === 'cart' && rightListArchiveSource === 'cart')
-      ? handleArchivePieCenterClick
-      : undefined
+    rightListArchiveSource != null ? handleArchivePieCenterClick : undefined
 
   const exitRightPreviewForLeftMode = useCallback(() => {
     dispatch(setCartListSelectedLocalId(null))

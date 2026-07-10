@@ -2,6 +2,7 @@ import React from 'react'
 import type { PostcardStatus } from '@entities/postcard'
 import type { PanelDensity2Size } from '@shared/ui/icons'
 import type { HistoryListSortEmphasis } from '@date/application/helpers/historyListSort'
+import { isDebugPostcardStatusCycleEnabled } from '@date/application/helpers/debugPostcardStatusCycle'
 import { parseListEntryRecipientDetail } from '@shared/utils/listEntryRecipientDetail'
 import styles from './HistoryListEntry.module.scss'
 
@@ -23,6 +24,8 @@ export type HistoryListEntryProps = {
   densityLevel?: PanelDensity2Size
   /** sortDown/sortUp → date; sortAZDown/sortAZUp → title (порядок и цвета в scss). */
   sortEmphasis?: HistoryListSortEmphasis
+  /** Dev-only: клик по квадрату статуса справа от превью. */
+  onDebugStatusCycle?: () => void
 }
 
 export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({
@@ -39,8 +42,14 @@ export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({
   isFocused = false,
   densityLevel = 1,
   sortEmphasis,
+  onDebugStatusCycle,
 }) => {
   const interactive = Boolean(onSelect)
+  const showDebugStatusSquare =
+    isDebugPostcardStatusCycleEnabled &&
+    Boolean(onDebugStatusCycle) &&
+    Boolean(previewStatus) &&
+    !previewIsProcessed
   const labelForAria =
     sortEmphasis === 'title' && detailLine
       ? `${detailLine}, ${dateLabel}`
@@ -78,20 +87,35 @@ export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({
           : undefined
       }
     >
-      <div className={styles.thumb} aria-hidden>
-        {previewUrl ? (
-          <img
-            src={previewUrl}
-            alt=""
-            className={styles.thumbImg}
-            onError={onPreviewImgError}
-          />
-        ) : null}
-        {showStatusIndicator && previewStatus && !previewIsProcessed ? (
-          <span
-            className={styles.statusIndicator}
+      <div className={styles.thumbRow}>
+        <div className={styles.thumb} aria-hidden>
+          {previewUrl ? (
+            <img
+              src={previewUrl}
+              alt=""
+              className={styles.thumbImg}
+              onError={onPreviewImgError}
+            />
+          ) : null}
+          {showStatusIndicator && previewStatus && !previewIsProcessed ? (
+            <span
+              className={styles.statusIndicator}
+              data-status={previewStatus}
+              aria-hidden
+            />
+          ) : null}
+        </div>
+        {showDebugStatusSquare ? (
+          <button
+            type="button"
+            className={styles.debugStatusSquare}
             data-status={previewStatus}
-            aria-hidden
+            aria-label={`Debug cycle status (current: ${previewStatus})`}
+            title={`Debug: ${previewStatus} → click for next`}
+            onClick={(event) => {
+              event.stopPropagation()
+              onDebugStatusCycle?.()
+            }}
           />
         ) : null}
       </div>

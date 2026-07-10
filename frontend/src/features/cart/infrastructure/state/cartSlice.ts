@@ -141,6 +141,8 @@ const cartSlice = createSlice({
     },
     /** Saga-only: удалить открытку из IDB, затем `removeItem` в Redux. */
     removeCartPostcard(_state, _action: PayloadAction<number>) {},
+    /** Dev-only: цикл статуса открытки из списка истории. */
+    cyclePostcardDebugStatus(_state, _action: PayloadAction<number>) {},
   },
 })
 
@@ -158,5 +160,6 @@ export const {
   setCartItemCardAroma,
   clearCart,
   removeCartPostcard,
+  cyclePostcardDebugStatus,
 } = cartSlice.actions
 export default cartSlice.reducer

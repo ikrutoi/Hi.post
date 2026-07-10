@@ -27,6 +27,7 @@ import {
   watchNotebookStripTabSync,
   watchStripDefaultSelection,
   watchCartCalendarDatePick,
+  watchCartDebugStatus,
   aromaToolbarSaga,
 } from '../middleware'
 import { watchPostcardSyncRehydrate } from '@features/sync/application/sagas/postcardSyncSaga'
@@ -65,6 +66,7 @@ export function* rootSaga() {
     fork(watchNotebookStripTabSync),
     fork(watchStripDefaultSelection),
     fork(watchCartCalendarDatePick),
+    fork(watchCartDebugStatus),
     fork(aromaToolbarSaga),
     fork(watchPostcardSyncRehydrate),
   ])

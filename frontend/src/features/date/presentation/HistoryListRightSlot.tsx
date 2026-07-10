@@ -9,6 +9,8 @@ import {
 } from '@date/calendar/infrastructure/state'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state/sectionEditorMenuSlice'
 import { selectCartItems } from '@cart/infrastructure/selectors'
+import { cyclePostcardDebugStatus } from '@cart/infrastructure/state'
+import { isDebugPostcardStatusCycleEnabled } from '@date/application/helpers/debugPostcardStatusCycle'
 import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
 import type { DispatchDate } from '@entities/date/domain/types'
 import type { CalendarCardItem } from '@entities/card/domain/types'
@@ -150,6 +152,14 @@ export const HistoryListRightSlot: React.FC<HistoryListRightSlotProps> = ({
       }
     }, [cardsByDateMap, cartItems, postcardStatuses, resolveRecipientDetailLine])
 
+  const handleDebugStatusCycle = useCallback(
+    (localId: number) => {
+      if (!isDebugPostcardStatusCycleEnabled) return
+      dispatch(cyclePostcardDebugStatus(localId))
+    },
+    [dispatch],
+  )
+
   const handleCloseList = useCallback(() => {
     dispatch(setHistoryListPanelOpen(false))
     dispatch(
@@ -204,6 +214,9 @@ export const HistoryListRightSlot: React.FC<HistoryListRightSlotProps> = ({
       leadIconKeyOverride={leadIconKeyOverride}
       hideListHeaderChrome={hideListHeaderChrome}
       factoryChrome={factoryChrome}
+      onDebugStatusCycle={
+        isDebugPostcardStatusCycleEnabled ? handleDebugStatusCycle : undefined
+      }
     />
   )
 }

@@ -61,13 +61,17 @@ export function resolveHistoryStripDayPostcardSelection(input: {
     input.dayData,
     input.cartItems,
     input.postcardStatuses,
+    input.dateKey,
   )
   const sameHistoryDay =
     input.notebookStripTabIsHistory &&
     input.openDayPanelDateKey === input.dateKey &&
     lids.length > 1
+  const currentInDayList =
+    input.listSelectedLocalId == null ||
+    lids.includes(input.listSelectedLocalId)
 
-  if (sameHistoryDay) {
+  if (sameHistoryDay && currentInDayList) {
     const next = nextCyclicLocalId(lids, input.listSelectedLocalId)
     if (next != null) return { kind: 'cycle', localId: next }
     return { kind: 'openDay', localId: lids[0] ?? null }
@@ -119,7 +123,7 @@ export function resolveHistoryCenterPostcardCycle(input: {
   return resolveHistoryStripPostcardCycle(input)
 }
 
-/** Список истории открыт: сначала цикл по дню, затем по всей полосе. */
+/** Список истории открыт: цикл по всем открыткам списка (как strip «История»). */
 export function resolveHistoryListCenterPostcardCycle(input: {
   dateKey: string
   dayData: CardCalendarIndex
@@ -128,10 +132,8 @@ export function resolveHistoryListCenterPostcardCycle(input: {
   openDayPanelDateKey: string | null | undefined
   listSelectedLocalId: number | null
 }): number | null {
-  const dayResult = resolveHistoryStripDayPostcardSelection({
-    ...input,
-    notebookStripTabIsHistory: true,
-  })
-  if (dayResult.kind === 'cycle') return dayResult.localId
+  void input.dateKey
+  void input.dayData
+  void input.openDayPanelDateKey
   return resolveHistoryStripPostcardCycle(input)
 }
