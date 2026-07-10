@@ -1,4 +1,3 @@
-@use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
@@ -39,7 +38,6 @@
   justify-content: stretch;
   overflow: hidden;
   padding: 0;
-  background-color: $color-app-inner;
 
   :global([data-postcard-indicator]) {
     width: 100%;

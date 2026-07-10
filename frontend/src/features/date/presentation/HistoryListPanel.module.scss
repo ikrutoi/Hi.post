@@ -177,7 +177,6 @@ $list-panel-footer-band: calc(
   justify-content: stretch;
   box-sizing: border-box;
   padding: 0;
-  background-color: $color-app-inner;
 
   :global([data-postcard-indicator]) {
     width: 100%;
