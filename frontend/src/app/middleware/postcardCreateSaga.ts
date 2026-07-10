@@ -211,7 +211,7 @@ function hasRequiredPostcardRefs(
   )
 }
 
-export function* createPostcardsFromEditor(): SagaIterator {
+export function* createPostcardsFromEditor(): SagaIterator<boolean> {
   const cardphoto: CardphotoState = yield select(selectCardphotoState)
   const cardtext: CardtextState = yield select(selectCardtextState)
   const envelope: EnvelopeSessionRecord = yield select(
@@ -223,7 +223,7 @@ export function* createPostcardsFromEditor(): SagaIterator {
   const aromaForRefs: AromaItem = normalizeAromaItem(selectedAromaRaw)
 
   const appliedPhoto = cardphoto.appliedData
-  if (!appliedPhoto) return
+  if (!appliedPhoto) return false
   const appliedCardphotoId: string = yield* resolveAppliedCardphotoId(appliedPhoto.id)
   const thumbnailUrl: string = yield* resolveCartCardThumbnailUrl(
     appliedCardphotoId,
@@ -232,7 +232,7 @@ export function* createPostcardsFromEditor(): SagaIterator {
 
   const dates: Array<DispatchDate | null> =
     isMultiDateMode && mergedDates.length > 1 ? mergedDates : mergedDates.slice(0, 1)
-  if (dates.length === 0) return
+  if (dates.length === 0) return false
 
   const recipientEntries: AddressBookEntry[] = yield select(
     (s: { addressBook?: { recipientEntries?: AddressBookEntry[] } }) =>
@@ -338,6 +338,7 @@ export function* createPostcardsFromEditor(): SagaIterator {
   }
 
   yield call(refreshRightSidebarBadgesFromPostcards)
+  return didAddToCart
 }
 
 function sameDispatchDate(a: DispatchDate, b: DispatchDate): boolean {
@@ -509,13 +510,13 @@ export function* handleToggleCartForDispatchBranch(
     branchKey: string
     clearEditorAfterAdd?: boolean
   }>,
-): SagaIterator {
+): SagaIterator<boolean> {
   const { branchKey, clearEditorAfterAdd } = action.payload
   const parsed = parseDispatchBranchKey(branchKey)
-  if (!parsed) return
+  if (!parsed) return false
 
   const isReadyForCart: boolean = yield select(selectIsCardReady)
-  if (!isReadyForCart) return
+  if (!isReadyForCart) return false
 
   const allRows: PostcardHydrated[] = yield call([postcardsAdapter, 'getAll'])
   /**
@@ -533,7 +534,7 @@ export function* handleToggleCartForDispatchBranch(
   const aromaForRefs: AromaItem = normalizeAromaItem(selectedAromaRaw)
 
   const appliedPhoto = cardphoto.appliedData
-  if (!appliedPhoto) return
+  if (!appliedPhoto) return false
   const appliedCardphotoId: string = yield* resolveAppliedCardphotoId(appliedPhoto.id)
   const thumbnailUrl: string = yield* resolveCartCardThumbnailUrl(
     appliedCardphotoId,
@@ -543,7 +544,7 @@ export function* handleToggleCartForDispatchBranch(
   const excludedDispatchBranches: Set<string> = yield select(
     selectExcludedDispatchBranchSet,
   )
-  if (excludedDispatchBranches.has(branchKey)) return
+  if (excludedDispatchBranches.has(branchKey)) return false
 
   const recipientEntries: AddressBookEntry[] = yield select(
     (s: { addressBook?: { recipientEntries?: AddressBookEntry[] } }) =>
@@ -590,7 +591,7 @@ export function* handleToggleCartForDispatchBranch(
     yield* maybeClearCardPieWorkspaceAfterSingleAdd(clearEditorAfterAdd)
     yield* focusCartNotebookOnDateSection(date)
     yield call(refreshRightSidebarBadgesFromPostcards)
-    return
+    return false
   }
 
   let maxLocalId: number = yield call([postcardsAdapter, 'getMaxLocalId'])
@@ -608,7 +609,7 @@ export function* handleToggleCartForDispatchBranch(
   }
   if (!hasRequiredPostcardRefs(refs, envelopeVariant)) {
     yield call(refreshRightSidebarBadgesFromPostcards)
-    return
+    return false
   }
   const postcard: PostcardHydrated = {
     id: `${appliedCardphotoId}__${postcardLocalId}`,
@@ -636,6 +637,7 @@ export function* handleToggleCartForDispatchBranch(
   yield* focusCartNotebookOnDateSection(date)
   yield call(refreshRightSidebarBadgesFromPostcards)
   yield put(postcardLocalDataChanged())
+  return true
 }
 
 export function* handleAddEditorPiePlanToCart(
@@ -653,13 +655,16 @@ export function* handleAddEditorPiePlanToCart(
   const clearEditorAfterAdd = action.payload.clearEditorAfterAdd === true
 
   if (branchKeys.length === 0) {
-    yield call(createPostcardsFromEditor)
-    yield* clearCardPieWorkspaceAfterCartAdd()
+    const didAdd: boolean = yield call(createPostcardsFromEditor)
+    if (didAdd && clearEditorAfterAdd) {
+      yield* clearCardPieWorkspaceAfterCartAdd()
+    }
     return
   }
 
+  let didAddAny = false
   for (let i = 0; i < branchKeys.length; i++) {
-    yield call(handleToggleCartForDispatchBranch, {
+    const added: boolean = yield call(handleToggleCartForDispatchBranch, {
       type: toggleCartForDispatchBranch.type,
       payload: {
         branchKey: branchKeys[i]!,
@@ -667,9 +672,12 @@ export function* handleAddEditorPiePlanToCart(
           branchKeys.length === 1 ? clearEditorAfterAdd : false,
       },
     })
+    if (added) didAddAny = true
   }
 
-  if (branchKeys.length > 1) {
+  const shouldClearWorkspace =
+    didAddAny && (branchKeys.length > 1 || clearEditorAfterAdd)
+  if (shouldClearWorkspace) {
     yield* clearCardPieWorkspaceAfterCartAdd()
   }
 }

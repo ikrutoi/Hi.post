@@ -32,6 +32,7 @@ import {
 } from './features/cart/presentation/CartListPanel'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { CardPieLeftSlot } from '@features/cardPie/presentation/CardPieLeftSlot'
+import { useEditorPieAddCartHandler } from '@features/cardPie/application/hooks/useEditorPieAddCartHandler'
 import { EditorPieListCardPieBadgeSync } from '@features/cardPie/presentation/EditorPieListCardPieBadgeSync'
 import { DateToolbarListDateBadgeSync } from '@date/presentation/DateToolbarListDateBadgeSync'
 import { RightSidebarHistoryBadgeSync } from '@toolbar/presentation/RightSidebarHistoryBadgeSync'
@@ -1354,9 +1355,12 @@ const App = () => {
     },
     [dispatch, cardPieCopyStripExpanded, activePieSide, cardPieEditEngaged, activeSection, rightListArchiveLocalId, rightPieCardphotoPeekNoToolbar, rightPieCardtextPeekNoToolbar, rightPieEnvelopePeekNoToolbar, rightPieAromaPeekNoToolbar, rightPieDatePeekNoToolbar, syncPeekChromeForOpenedSection],
   )
-  const handleEditorPieToolbarAction = useCallback((key: string) => {
+  const handleEditorPieToolbarPassthrough = useCallback((key: string) => {
     if (key !== 'cardPieEdit' && key !== 'cardPie') return
   }, [])
+  const handleEditorPieToolbarAction = useEditorPieAddCartHandler({
+    onEditorPieToolbarAction: handleEditorPieToolbarPassthrough,
+  })
   const handlePanelMiniSectionsToolbarAction = useCallback((key: string) => {
     if (key !== 'cardPieEdit') return
     setSuppressCardPieEditActiveAfterCopy(false)

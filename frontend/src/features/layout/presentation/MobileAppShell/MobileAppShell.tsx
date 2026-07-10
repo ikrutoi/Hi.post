@@ -77,6 +77,7 @@ import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDev
 import { IconCardPie, IconLogo, IconSectionMenuCardtext, IconSectionMenuEnvelopeV2 } from '@shared/ui/icons'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
+import { useEditorPieAddCartHandler } from '@features/cardPie/application/hooks/useEditorPieAddCartHandler'
 import { MobileCardPieGutterMinis } from './MobileCardPieGutterMinis'
 import { MobileDateListSlotActionsProvider } from './MobileDateListSlotActionsContext'
 import { useMobilePlanCardPies } from './useMobilePlanCardPies'
@@ -681,28 +682,11 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     [dispatch, onBeforeLeftPieInteraction],
   )
 
-  const handleEditorPieToolbarAction = useCallback(
-    (key: IconKey) => {
-      if (key === 'addCart') {
-        const branchKeys = selectedPlanPie?.dispatchBranchKey
-          ? [selectedPlanPie.dispatchBranchKey]
-          : planPies
-              .map((pie) => pie.dispatchBranchKey)
-              .filter((branchKey): branchKey is string => Boolean(branchKey))
-
-        dispatch(
-          addEditorPiePlanToCart({
-            branchKeys,
-            clearEditorAfterAdd: planPies.length === 1,
-          }),
-        )
-        return false
-      }
-
-      return onEditorPieToolbarAction?.(key)
-    },
-    [dispatch, onEditorPieToolbarAction, planPies, selectedPlanPie],
-  )
+  const handleEditorPieToolbarAction = useEditorPieAddCartHandler({
+    planPies,
+    selectedPlanPie,
+    onEditorPieToolbarAction,
+  })
 
   const handleCartSlotClick = useCallback(
     (event: React.MouseEvent) => {
