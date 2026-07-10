@@ -1,5 +1,5 @@
 import type { RootState } from '@app/state'
-import type { CartAmount, CartListStatusSegment } from '@cart/domain/types'
+import type { Cart, CartAmount, CartListStatusSegment } from '@cart/domain/types'
 import type { PostcardHydrated } from '@entities/postcard'
 import { createSelector } from '@reduxjs/toolkit'
 import { getCurrentDate } from '@shared/utils/date'
@@ -13,13 +13,20 @@ import {
 export const selectCartListPanelOpen = (state: RootState): boolean =>
   state.cart.isActive
 
-export const selectCartListSelectedLocalId = (state: RootState): number | null =>
-  state.cart.listSelectedLocalId
+export const selectCartListSelectedLocalIdsBySegment = (
+  state: RootState,
+): Cart['listSelectedLocalIdsBySegment'] =>
+  state.cart.listSelectedLocalIdsBySegment ?? { cart: null, cartBlocked: null }
 
 export const selectCartListStatusSegment = (
   state: RootState,
 ): CartListStatusSegment =>
   state.cart.listStatusSegment ?? 'cart'
+
+export const selectCartListSelectedLocalId = createSelector(
+  [selectCartListStatusSegment, selectCartListSelectedLocalIdsBySegment],
+  (segment, bySegment) => bySegment[segment] ?? null,
+)
 
 export const selectCartItems = (state: RootState): PostcardHydrated[] =>
   state.cart.items

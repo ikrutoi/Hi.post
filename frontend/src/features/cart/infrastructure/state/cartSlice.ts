@@ -1,9 +1,28 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { Cart } from '@cart/domain/types'
+import type { Cart, CartListStatusSegment } from '@cart/domain/types'
 import type { PostcardHydrated } from '@entities/postcard'
 import type { AromaItem } from '@entities/aroma/domain/types'
 import { getCurrentDate } from '@shared/utils/date'
 import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
+
+const emptyListSelectedLocalIdsBySegment = (): Cart['listSelectedLocalIdsBySegment'] => ({
+  cart: null,
+  cartBlocked: null,
+})
+
+function pruneListSelectedLocalIdsBySegment(
+  state: Cart,
+): void {
+  const bySegment = state.listSelectedLocalIdsBySegment
+  for (const segment of ['cart', 'cartBlocked'] as const satisfies readonly CartListStatusSegment[]) {
+    const localId = bySegment[segment]
+    if (localId == null) continue
+    const postcard = state.items.find((item) => item.localId === localId)
+    if (postcard == null || postcard.status !== segment) {
+      bySegment[segment] = null
+    }
+  }
+}
 
 function normalizeCartLikeStatus(item: PostcardHydrated): PostcardHydrated {
   if (item.status !== 'cart' && item.status !== 'cartBlocked') return item
@@ -21,7 +40,7 @@ const initialState: Cart = {
     currency: 'BYN',
   },
   isActive: false,
-  listSelectedLocalId: null,
+  listSelectedLocalIdsBySegment: emptyListSelectedLocalIdsBySegment(),
   cardPieCopyStripExpanded: false,
   listStatusSegment: 'cart',
   listCheckedLocalIds: [],
@@ -38,24 +57,13 @@ const cartSlice = createSlice({
         state.cardPieCopyStripExpanded = false
         return
       }
-      /** Закрыть → открыть: сохраняем выбранную в календаре открытку и сегмент списка по её статусу. */
-      if (!wasOpen) {
-        const localId = state.listSelectedLocalId
-        if (localId != null) {
-          const postcard = state.items.find((p) => p.localId === localId)
-          if (postcard?.status === 'cartBlocked') {
-            state.listStatusSegment = 'cartBlocked'
-          } else if (postcard?.status === 'cart') {
-            state.listStatusSegment = 'cart'
-          }
-        }
-      }
     },
     setCardPieCopyStripExpanded(state, action: PayloadAction<boolean>) {
       state.cardPieCopyStripExpanded = action.payload
     },
     setCartListSelectedLocalId(state, action: PayloadAction<number | null>) {
-      state.listSelectedLocalId = action.payload
+      state.listSelectedLocalIdsBySegment[state.listStatusSegment] =
+        action.payload
     },
     setCartListStatusSegment(
       state,
@@ -77,6 +85,7 @@ const cartSlice = createSlice({
     },
     setItems(state, action: PayloadAction<PostcardHydrated[]>) {
       state.items = action.payload.map(normalizeCartLikeStatus)
+      pruneListSelectedLocalIdsBySegment(state)
     },
     addItem(state, action: PayloadAction<PostcardHydrated>) {
       const item = normalizeCartLikeStatus(action.payload)
@@ -93,8 +102,10 @@ const cartSlice = createSlice({
     removeItem(state, action: PayloadAction<number>) {
       const removed = action.payload
       state.items = state.items.filter((item) => item.localId !== removed)
-      if (state.listSelectedLocalId === removed) {
-        state.listSelectedLocalId = null
+      for (const segment of ['cart', 'cartBlocked'] as const satisfies readonly CartListStatusSegment[]) {
+        if (state.listSelectedLocalIdsBySegment[segment] === removed) {
+          state.listSelectedLocalIdsBySegment[segment] = null
+        }
       }
       state.listCheckedLocalIds = state.listCheckedLocalIds.filter(
         (lid) => lid !== removed,
@@ -106,6 +117,7 @@ const cartSlice = createSlice({
       )
       if (index !== -1) {
         state.items[index] = normalizeCartLikeStatus(action.payload)
+        pruneListSelectedLocalIdsBySegment(state)
       }
     },
     setCartItemCardAroma(
@@ -122,7 +134,7 @@ const cartSlice = createSlice({
     clearCart(state) {
       state.items = []
       state.amount = { value: 0, currency: state.amount.currency }
-      state.listSelectedLocalId = null
+      state.listSelectedLocalIdsBySegment = emptyListSelectedLocalIdsBySegment()
       state.cardPieCopyStripExpanded = false
       state.listStatusSegment = 'cart'
       state.listCheckedLocalIds = []

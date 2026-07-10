@@ -8,12 +8,17 @@ export type CartAmount = {
 /** Сегмент списка корзины: обычная корзина / заблокированные даты. */
 export type CartListStatusSegment = 'cart' | 'cartBlocked'
 
+export type CartListSelectedLocalIdsBySegment = Record<
+  CartListStatusSegment,
+  number | null
+>
+
 export type Cart = {
   items: PostcardHydrated[]
   amount: CartAmount
   isActive: boolean
-  /** Выбранная строка списка корзины (превью пирога справа). */
-  listSelectedLocalId: number | null
+  /** Выбранная строка списка корзины по сегменту (превью пирога справа). */
+  listSelectedLocalIdsBySegment: CartListSelectedLocalIdsBySegment
   /**
    * Пользователь включил верхний ряд cardPieCopy (копирование секций из строки списка в сессию).
    * Фактический «активный» UI ещё зависит от выбранной строки и размера карты (см. `showTopCardStripFullSpan` в App).

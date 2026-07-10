@@ -231,7 +231,6 @@ export const CartListPanel: React.FC<Props> = ({
   const {
     setCartListPanelOpen,
     listSelectedLocalId,
-    setCartListSelectedLocalId,
   } = useCartFacade()
 
   const handleToggleEntryChecked = useCallback(
@@ -287,26 +286,6 @@ export const CartListPanel: React.FC<Props> = ({
     return [...raw].sort(compareCartListPanelItemsByDispatchDate)
   }, [entriesProp, entriesFromStore])
 
-  /** Смена сегмента: снять выбор, если открытка не в текущем списке. */
-  useEffect(() => {
-    if (entriesProp != null) return
-    const lids = new Set(
-      entriesFromStore
-        .map((e) => e.postcard?.localId)
-        .filter((id): id is number => id != null),
-    )
-    if (
-      listSelectedLocalId != null &&
-      !lids.has(listSelectedLocalId)
-    ) {
-      setCartListSelectedLocalId(null)
-    }
-  }, [
-    entriesProp,
-    entriesFromStore,
-    listSelectedLocalId,
-    setCartListSelectedLocalId,
-  ])
   const hasRows = entries.length > 0
   /**
    * У футера «неактивные» только в режиме `cart` из стора. В `cartBlocked` — все строки сверху,

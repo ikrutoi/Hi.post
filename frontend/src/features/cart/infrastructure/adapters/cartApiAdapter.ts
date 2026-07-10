@@ -20,6 +20,11 @@ export const cartApiAdapter = {
     return {
       items: [],
       amount: { value: 0, currency: 'BYN' },
+      isActive: false,
+      listSelectedLocalIdsBySegment: { cart: null, cartBlocked: null },
+      cardPieCopyStripExpanded: false,
+      listStatusSegment: 'cart',
+      listCheckedLocalIds: [],
     }
   },
 }
