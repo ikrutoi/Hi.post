@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { store } from '@app/state/store'
-import { setCartListSelectedLocalId } from '@cart/infrastructure/state'
+import { setCartListSelectedLocalId, setCartListStatusSegment } from '@cart/infrastructure/state'
 import {
   setHistoryListSelectedLocalId,
   stepStripMonthCycle,
@@ -192,6 +192,11 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
       setCalendarViewDate(nextMonth)
 
       if (archiveSource === 'cart') {
+        dispatch(
+          setCartListStatusSegment(
+            item.status === 'cartBlocked' ? 'cartBlocked' : 'cart',
+          ),
+        )
         dispatch(setCartListSelectedLocalId(item.localId))
         applyRightListArchiveToolbarVisuals(dispatch, store.getState(), 'cart')
       } else if (archiveSource === 'history') {

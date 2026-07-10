@@ -6,6 +6,7 @@ $pie-center-indicator-size: 1.75rem;
 $pie-center-logo-size: 2rem;
 $pie-center-logo-size-pressed: 2.4rem;
 $pie-center-logo-hit-size: 3rem;
+$pie-center-right-hit-size: 3rem;
 $pie-center-logo-press-duration: 0.28s;
 /** Жёлтое кольцо вокруг красной заливки (`cartBlocked`), доля от размера индикатора. */
 $pie-center-cart-blocked-ring: $pie-center-indicator-size * 0.225;
@@ -56,6 +57,13 @@ $pie-center-disc-size-ratio: 20%;
 .hubContainerRight {
   .pieCenterButton {
     background-color: $color-app-inner;
+  }
+
+  .pieCenterButtonPointer {
+    width: $pie-center-right-hit-size;
+    height: $pie-center-right-hit-size;
+    background-color: transparent;
+    overflow: visible;
   }
 
   .pieCenterIndicator.cartBlocked {
@@ -284,6 +292,22 @@ $pie-center-disc-size-ratio: 20%;
 
 .hubContainer:not(.hubContainerRight) .pieCenterIconPress {
   animation: pieCenterLogoPress $pie-center-logo-press-duration ease-in-out;
+}
+
+@keyframes pieCenterIndicatorPress {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.25);
+  }
+}
+
+.hubContainerRight .pieCenterIconPress {
+  animation: pieCenterIndicatorPress $pie-center-logo-press-duration ease-in-out;
+  transform-origin: center center;
 }
 
 .pieCenterDisc {

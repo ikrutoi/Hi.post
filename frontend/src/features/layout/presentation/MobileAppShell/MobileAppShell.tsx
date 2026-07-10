@@ -125,6 +125,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   onCartListDateEditEntry,
   onHistoryListSelectEntry,
   onRightListPieSectorClick,
+  onArchivePieCenterClick,
 }) => {
   const dispatch = useAppDispatch()
   const shellRef = useRef<HTMLDivElement>(null)
@@ -816,10 +817,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                           onListArchiveSectorClick={
                             handleRightListArchivePieSectorClick
                           }
-                          onRightPieCenterClick={handleLeftPieCenterPress}
-                          leftPieCenterClickable={
-                            !showTopCardStripFullSpan
-                          }
+                          onRightPieCenterClick={onArchivePieCenterClick}
                         />
                       ) : mobileCentralPieDisplay === 'cardphotoTemplate' &&
                         mobileCardphotoListTemplatePreview != null ? (

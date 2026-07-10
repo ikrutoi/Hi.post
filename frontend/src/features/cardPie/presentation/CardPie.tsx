@@ -77,7 +77,7 @@ export const CardPie: React.FC<CardPieProps> = ({
   rightPieCenterEmpty = false,
 }) => {
   const pieDefsUid = React.useId().replace(/:/g, '')
-  const [leftLogoPressSeq, setLeftLogoPressSeq] = React.useState(0)
+  const [centerPressSeq, setCenterPressSeq] = React.useState(0)
   const photoFillId = `${pieDefsUid}-photo-apply`
   const photoEmptyFillId = `${pieDefsUid}-photo-empty`
   const cardtextFillId = `${pieDefsUid}-cardtext-fill`
@@ -204,9 +204,10 @@ export const CardPie: React.FC<CardPieProps> = ({
     leftPieCenterOverviewBack ||
     leftPieCenterPlanCycle
 
-  const triggerLeftLogoPress = React.useCallback(() => {
-    setLeftLogoPressSeq((seq) => seq + 1)
+  const triggerCenterPress = React.useCallback(() => {
+    setCenterPressSeq((seq) => seq + 1)
   }, [])
+  const rightCenterActionEnabled = onRightPieCenterClick != null
 
   return (
     <div
@@ -836,7 +837,11 @@ export const CardPie: React.FC<CardPieProps> = ({
           onPointerDown={(e) => {
             e.stopPropagation()
             if (station === 'left') {
-              triggerLeftLogoPress()
+              triggerCenterPress()
+              return
+            }
+            if (station === 'right' && rightCenterActionEnabled) {
+              triggerCenterPress()
             }
           }}
           onMouseDown={(e) => {
@@ -856,15 +861,17 @@ export const CardPie: React.FC<CardPieProps> = ({
         >
           <span
             key={
-              station === 'left' && leftLogoPressSeq > 0
-                ? `left-logo-press-${leftLogoPressSeq}`
-                : undefined
+              centerPressSeq > 0 ? `center-press-${centerPressSeq}` : undefined
             }
             className={clsx(
               styles.pieCenterIcon,
               allSectionsFilled && styles.pieCenterIconBrand,
-              station === 'left' &&
-                leftLogoPressSeq > 0 &&
+              centerPressSeq > 0 &&
+                station === 'left' &&
+                styles.pieCenterIconPress,
+              centerPressSeq > 0 &&
+                station === 'right' &&
+                rightCenterActionEnabled &&
                 styles.pieCenterIconPress,
             )}
           >

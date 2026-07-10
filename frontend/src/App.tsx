@@ -19,6 +19,7 @@ import {
   selectNotebookDateTabPeekClearTick,
   selectComputedNotebookStripTab,
   selectNotebookStripTab,
+  selectOpenDayPanel,
 } from '@date/calendar/infrastructure/selectors'
 import { MiniSectionsSlot } from './features/cardPanel/presentation/MiniSectionsSlot'
 import { CardSectionEditor } from '@features/cardSectionEditor/presentation/CardSectionEditor'
@@ -54,6 +55,8 @@ import { useCartFacade } from './features/cart/application/facades/useCartFacade
 import {
   selectCartItems,
   selectCardPieCopyStripExpanded,
+  selectCartListSelectedLocalIdsBySegment,
+  selectCartListStatusSegment,
 } from '@cart/infrastructure/selectors'
 import {
   setCardPieCopyStripExpanded,
@@ -89,6 +92,14 @@ import { applyRightListArchiveToolbarVisuals } from '@toolbar/application/syncRi
 import { notebookSessionRestored } from '@date/calendar/application/orchestration/notebookOrchestration.events'
 import { SECTION_EDITOR_MENU_ICON_KEYS } from '@features/toolbar/domain/types/sectionEditorMenu.types'
 import { primaryDispatchDateFromPieInner } from '@features/cardPie/domain/primaryDispatchDateFromPieInner'
+import {
+  cartListStatusSegmentForLocalId,
+  dispatchDateKeyFromPostcard,
+  resolveCartCenterPostcardCycle,
+  resolveCartListCenterPostcardCycle,
+  resolveCartStripContextLocalId,
+  resolveCartStripDayPostcardSelection,
+} from '@date/calendar/application/logic/cartStripDayPostcardSelection'
 import { MarkStampYearDevProvider, useMarkStampYearDev } from '@envelope/application/MarkStampYearDevContext'
 import { MobileAppShell } from '@layout/presentation/MobileAppShell'
 import styles from './App.module.scss'
@@ -306,6 +317,11 @@ const App = () => {
     selectHistoryOpenDayPanelArchiveLocalId,
   )
   const cartItems = useAppSelector(selectCartItems)
+  const cartListStatusSegment = useAppSelector(selectCartListStatusSegment)
+  const cartListSelectedBySegment = useAppSelector(
+    selectCartListSelectedLocalIdsBySegment,
+  )
+  const openDayPanelState = useAppSelector(selectOpenDayPanel)
 
   useEffect(() => {
     if (
@@ -587,28 +603,166 @@ const App = () => {
     }
   }, [dispatch, listRowInner])
 
-  const handleRightPieCenterCartCalendarJump = useCallback(() => {
-    const d = primaryDispatchDateFromPieInner(listRowInner)
+  const handleRightPieCenterCartClick = useCallback(() => {
     setRightPieCardphotoPeekNoToolbar(false)
     setRightPieCardtextPeekNoToolbar(false)
     setRightPieEnvelopePeekNoToolbar(false)
     setRightPieAromaPeekNoToolbar(false)
     setRightPieDatePeekNoToolbar(false)
     dispatch(setCartCalendarDatePickMode(false))
-    dispatch(setCartListStatusSegment('cart'))
     dispatch(setNotebookStripTab('cart'))
     dispatch(setActiveSection('date'))
+
+    const applyCartStripSelection = (localId: number) => {
+      dispatch(
+        setCartListStatusSegment(
+          cartListStatusSegmentForLocalId(cartItems, localId),
+        ),
+      )
+      dispatch(setCartListSelectedLocalId(localId))
+    }
+
+    const activeLocalId = resolveCartStripContextLocalId({
+      listStatusSegment: cartListStatusSegment,
+      bySegment: cartListSelectedBySegment,
+      fallbackLocalId: rightListArchiveLocalId ?? listSelectedLocalId,
+      cartItems,
+    })
+    const postcard =
+      activeLocalId != null
+        ? cartItems.find((item) => item.localId === activeLocalId)
+        : undefined
+
+    if (postcard != null) {
+      const statusSegment = cartListStatusSegmentForLocalId(
+        cartItems,
+        activeLocalId,
+      )
+      dispatch(
+        updateLastViewedCalendarDate({
+          year: postcard.date.year,
+          month: postcard.date.month,
+        }),
+      )
+
+      const dateKey = dispatchDateKeyFromPostcard(postcard)
+      const dayData = cardsByDateMap[dateKey]
+      if (dayData != null) {
+        const cycleInput = {
+          dayData,
+          cartItems,
+          listSelectedLocalId: activeLocalId,
+          listStatusSegment: statusSegment,
+        }
+
+        /** Календарь корзины (список закрыт): цикл по дню или по всему сегменту. */
+        if (!listPanelOpen) {
+          const nextLocalId = resolveCartCenterPostcardCycle(cycleInput)
+          if (nextLocalId != null) {
+            applyCartStripSelection(nextLocalId)
+            const nextPostcard = cartItems.find(
+              (item) => item.localId === nextLocalId,
+            )
+            if (nextPostcard != null) {
+              dispatch(
+                updateLastViewedCalendarDate({
+                  year: nextPostcard.date.year,
+                  month: nextPostcard.date.month,
+                }),
+              )
+            }
+          }
+          return
+        }
+
+        const nextLocalId = resolveCartListCenterPostcardCycle({
+          ...cycleInput,
+          dateKey,
+          openDayPanelDateKey: openDayPanelState?.dateKey,
+        })
+
+        if (nextLocalId != null) {
+          applyCartStripSelection(nextLocalId)
+          const nextPostcard = cartItems.find(
+            (item) => item.localId === nextLocalId,
+          )
+          if (nextPostcard != null) {
+            dispatch(
+              updateLastViewedCalendarDate({
+                year: nextPostcard.date.year,
+                month: nextPostcard.date.month,
+              }),
+            )
+            const nextDateKey = dispatchDateKeyFromPostcard(nextPostcard)
+            const nextDayData = cardsByDateMap[nextDateKey]
+            if (
+              nextDayData != null &&
+              calendarDayHasCards(nextDayData)
+            ) {
+              dispatch(openDayPanel({ dateKey: nextDateKey, dayData: nextDayData }))
+            }
+          }
+          return
+        }
+
+        dispatch(openDayPanel({ dateKey, dayData }))
+        const openDayResult = resolveCartStripDayPostcardSelection({
+          dateKey,
+          dayData,
+          cartItems,
+          openDayPanelDateKey: openDayPanelState?.dateKey,
+          listSelectedLocalId: activeLocalId,
+          listStatusSegment: statusSegment,
+          notebookStripTabIsCart: true,
+        })
+        if (openDayResult.localId != null) {
+          applyCartStripSelection(openDayResult.localId)
+        }
+        return
+      }
+    }
+
+    const d = primaryDispatchDateFromPieInner(listRowInner)
     if (d != null) {
       dispatch(updateLastViewedCalendarDate({ year: d.year, month: d.month }))
     }
-  }, [dispatch, listRowInner])
+  }, [
+    dispatch,
+    listPanelOpen,
+    listSelectedLocalId,
+    cartListStatusSegment,
+    cartListSelectedBySegment,
+    rightListArchiveLocalId,
+    cartItems,
+    cardsByDateMap,
+    openDayPanelState?.dateKey,
+    listRowInner,
+  ])
+
+  const handleArchivePieCenterClick = useCallback(() => {
+    if (notebookStripTab === 'cart' || rightListArchiveSource === 'cart') {
+      handleRightPieCenterCartClick()
+      return
+    }
+    if (
+      notebookStripTab === 'history' ||
+      rightListArchiveSource === 'history'
+    ) {
+      handleRightPieCenterHistoryCalendarJump()
+    }
+  }, [
+    notebookStripTab,
+    rightListArchiveSource,
+    handleRightPieCenterCartClick,
+    handleRightPieCenterHistoryCalendarJump,
+  ])
 
   const rightPieOnCenterClick =
-    notebookStripTab === 'history' && rightListArchiveSource === 'history'
-      ? handleRightPieCenterHistoryCalendarJump
-      : notebookStripTab === 'cart' && rightListArchiveSource === 'cart'
-        ? handleRightPieCenterCartCalendarJump
-        : undefined
+    (notebookStripTab === 'history' &&
+      rightListArchiveSource === 'history') ||
+    (notebookStripTab === 'cart' && rightListArchiveSource === 'cart')
+      ? handleArchivePieCenterClick
+      : undefined
 
   const exitRightPreviewForLeftMode = useCallback(() => {
     dispatch(setCartListSelectedLocalId(null))
@@ -934,6 +1088,13 @@ const App = () => {
       ) {
         dispatch(setCartCalendarDatePickMode(false))
       }
+      if (nextLid != null) {
+        dispatch(
+          setCartListStatusSegment(
+            cartListStatusSegmentForLocalId(cartItems, nextLid),
+          ),
+        )
+      }
       dispatch(setCartListSelectedLocalId(nextLid))
       if (nextLid == null) {
         setCardPieEditEngaged(false)
@@ -953,7 +1114,7 @@ const App = () => {
         }
       }
     },
-    [dispatch, cartCalendarDatePickLocalId, listSelectedLocalId, cardsByDateMap],
+    [dispatch, cartCalendarDatePickLocalId, listSelectedLocalId, cartItems, cardsByDateMap],
   )
 
   const handleHistoryListSelectEntry = useCallback(
@@ -991,6 +1152,7 @@ const App = () => {
       dispatch(setActiveSection('date'))
       const lid = item.postcard?.localId
       if (lid == null) return
+      dispatch(setCartListStatusSegment('cartBlocked'))
       dispatch(setCartListSelectedLocalId(lid))
       setCardPieEditEngaged(false)
       setSuppressCardPieEditActiveAfterCopy(true)
@@ -1144,6 +1306,7 @@ const App = () => {
           onCartListDateEditEntry={handleCartListDateEditEntry}
           onHistoryListSelectEntry={handleHistoryListSelectEntry}
           onRightListPieSectorClick={handleRightListPieSectorClick}
+          onArchivePieCenterClick={handleArchivePieCenterClick}
         />
       </RightListArchiveMiniProvider>
     )

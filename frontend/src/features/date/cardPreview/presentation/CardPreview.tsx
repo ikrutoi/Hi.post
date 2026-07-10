@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { store } from '@app/state/store'
-import { setCartListSelectedLocalId } from '@cart/infrastructure/state'
+import { setCartListSelectedLocalId, setCartListStatusSegment } from '@cart/infrastructure/state'
 import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { selectRecipientsPendingIds } from '@envelope/infrastructure/selectors'
@@ -16,6 +16,7 @@ import {
 import { openDayPanel, setHistoryListSelectedLocalId } from '@date/calendar/infrastructure/state'
 import { selectCartListSelectedLocalId } from '@cart/infrastructure/selectors/cartSelectors'
 import { postcardLocalIdFromCalendarCardItem } from '@date/calendar/infrastructure/postcardLocalIdFromCalendarCardItem'
+import { cartListStatusSegmentForLocalId } from '@date/calendar/application/logic/cartStripDayPostcardSelection'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { calendarDayHasCards } from '@date/cell/domain/calendarDayContent'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
@@ -288,6 +289,11 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
       if (localId == null) return
 
       if (isCartCalendar) {
+        dispatch(
+          setCartListStatusSegment(
+            cartListStatusSegmentForLocalId(cartItems, localId),
+          ),
+        )
         dispatch(setCartListSelectedLocalId(localId))
         applyRightListArchiveToolbarVisuals(dispatch, store.getState(), 'cart')
       } else {

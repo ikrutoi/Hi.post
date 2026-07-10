@@ -24,4 +24,5 @@ export type MobileAppShellProps = {
   onCartListDateEditEntry: (item: CartListPanelItem) => void
   onHistoryListSelectEntry: (item: HistoryListPanelItem) => void
   onRightListPieSectorClick: (section: CardSection) => void
+  onArchivePieCenterClick?: () => void
 }

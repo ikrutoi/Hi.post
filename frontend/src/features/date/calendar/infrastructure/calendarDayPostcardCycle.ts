@@ -1,6 +1,7 @@
 import type { CardCalendarIndex } from '@entities/card/domain/types'
 import type { PostcardHydrated } from '@entities/postcard'
 import type { PostcardStatuses } from '@entities/postcard/domain/types'
+import type { CartListStatusSegment } from '@cart/domain/types'
 import { flattenOpenDayPanelItems } from '@date/infrastructure/selectors/dateSelectors'
 import { postcardLocalIdFromCalendarCardItem } from './postcardLocalIdFromCalendarCardItem'
 
@@ -8,10 +9,12 @@ import { postcardLocalIdFromCalendarCardItem } from './postcardLocalIdFromCalend
 export function orderedCartStripLocalIdsForDay(
   dayData: CardCalendarIndex,
   cartItems: readonly PostcardHydrated[],
+  statusFilter?: CartListStatusSegment,
 ): number[] {
   const lids: number[] = []
   const seen = new Set<number>()
   for (const item of dayData.cart) {
+    if (statusFilter != null && item.status !== statusFilter) continue
     const lid = postcardLocalIdFromCalendarCardItem(item, cartItems)
     if (lid == null || seen.has(lid)) continue
     seen.add(lid)

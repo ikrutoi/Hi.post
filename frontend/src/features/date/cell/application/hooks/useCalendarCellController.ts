@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { setCartListSelectedLocalId } from '@cart/infrastructure/state'
+import { setCartListSelectedLocalId, setCartListStatusSegment } from '@cart/infrastructure/state'
 import { useDateFacade } from '../../../application/facades'
 import { useCalendarFacade } from '../../../calendar/application/facades'
 import { isHistoryCalendarStrip } from '../../../calendar/application/logic/calendarStripSection'
@@ -22,14 +22,17 @@ import {
   selectOpenDayPanel,
   selectPostcardStatuses,
 } from '../../../calendar/infrastructure/selectors/calendar.selector'
-import { selectCartListSelectedLocalId } from '@cart/infrastructure/selectors/cartSelectors'
+import {
+  selectCartListSelectedLocalId,
+  selectCartListStatusSegment,
+} from '@cart/infrastructure/selectors/cartSelectors'
 import { cartCalendarDatePickApplied } from '../../../calendar/application/orchestration/notebookOrchestration.events'
 import { getHistoryOpenDayPanelPrimaryPostcardLocalId } from '../../../calendar/infrastructure/historyOpenDayPanelPrimaryPostcard'
 import {
   nextCyclicLocalId,
-  orderedCartStripLocalIdsForDay,
   orderedHistoryDayLocalIds,
 } from '../../../calendar/infrastructure/calendarDayPostcardCycle'
+import { resolveCartStripDayPostcardSelection, cartListStatusSegmentForLocalId } from '../../../calendar/application/logic/cartStripDayPostcardSelection'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { dispatchCardPieToolbarIconState } from '@toolbar/application/syncCardPieToolbarIcons'
@@ -74,6 +77,7 @@ export const useCalendarCellController = ({
     selectCartCalendarDatePickLocalId,
   )
   const listSelectedLocalId = useAppSelector(selectCartListSelectedLocalId)
+  const cartListStatusSegment = useAppSelector(selectCartListStatusSegment)
   const historyListSelectedLocalId = useAppSelector(
     selectHistoryListSelectedLocalId,
   )
@@ -152,21 +156,34 @@ export const useCalendarCellController = ({
     dateKey: string,
     dayData: CardCalendarIndex,
   ) => {
-    const lids = orderedCartStripLocalIdsForDay(dayData, cartItems)
-    const sameCartDay =
-      notebookStripTab === 'cart' &&
-      openDayPanelState?.dateKey === dateKey &&
-      lids.length > 1
+    const result = resolveCartStripDayPostcardSelection({
+      dateKey,
+      dayData,
+      cartItems,
+      openDayPanelDateKey: openDayPanelState?.dateKey,
+      listSelectedLocalId,
+      listStatusSegment: cartListStatusSegment,
+      notebookStripTabIsCart: notebookStripTab === 'cart',
+    })
 
-    if (sameCartDay) {
-      const next = nextCyclicLocalId(lids, listSelectedLocalId)
-      if (next != null) dispatch(setCartListSelectedLocalId(next))
+    if (result.kind === 'cycle') {
+      dispatch(
+        setCartListStatusSegment(
+          cartListStatusSegmentForLocalId(cartItems, result.localId),
+        ),
+      )
+      dispatch(setCartListSelectedLocalId(result.localId))
       return
     }
 
     dispatch(openDayPanel({ dateKey, dayData }))
-    if (lids.length === 0) return
-    dispatch(setCartListSelectedLocalId(lids[0]))
+    if (result.localId == null) return
+    dispatch(
+      setCartListStatusSegment(
+        cartListStatusSegmentForLocalId(cartItems, result.localId),
+      ),
+    )
+    dispatch(setCartListSelectedLocalId(result.localId))
   }
 
   const handleCellClickLogic = ({
