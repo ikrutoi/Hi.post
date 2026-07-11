@@ -23,8 +23,8 @@ export const HISTORY_LIST_SORT_MODE_TO_ICON: Record<
   HistoryListSortMode,
   IconKey
 > = {
-  dateDesc: 'sort131Down',
-  dateAsc: 'sort131Up',
+  dateDesc: 'sort131Up',
+  dateAsc: 'sort131Down',
   titleAsc: 'sortAZDown',
   titleDesc: 'sortAZUp',
 }

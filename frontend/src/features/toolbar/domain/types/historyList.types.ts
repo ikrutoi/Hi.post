@@ -32,7 +32,7 @@ export const HISTORY_LIST_TOOLBAR: ToolbarConfig = [
     group: 'historyList',
     icons: [
       { key: 'panelDensity2', state: 'enabled' },
-      { key: 'sort131Up', state: 'enabled' },
+      { key: 'sort131Down', state: 'enabled' },
     ],
     status: 'enabled',
   },
