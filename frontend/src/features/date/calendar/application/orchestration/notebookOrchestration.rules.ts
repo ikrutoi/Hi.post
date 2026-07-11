@@ -2,7 +2,6 @@ import type { UnknownAction } from '@reduxjs/toolkit'
 import {
   setCartListPanelOpen,
   setCartListSelectedLocalId,
-  setCartListStatusSegment,
 } from '@cart/infrastructure/state'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state/sectionEditorMenuSlice'
 import {
@@ -93,7 +92,6 @@ export const buildCartCalendarCommands = (): UnknownAction[] => [
     value: 'active',
   }),
   setCartCalendarDatePickMode(false),
-  setCartListStatusSegment('cart'),
   setNotebookStripTab('cart'),
   setActiveSection('date'),
 ]
@@ -124,7 +122,6 @@ export const buildNotebookCartTabCommandsMobile = (): UnknownAction[] => [
   setHistoryListPanelOpen(false),
   closeDayPanel(),
   setCartCalendarDatePickMode(false),
-  setCartListStatusSegment('cart'),
   setNotebookStripTab('cart'),
   setActiveSection('date'),
 ]
