@@ -352,9 +352,11 @@ export const Toolbar = ({
               ? cardphotoViewTemplateInList
               : templateInQuickList)
         ? 'removeFromList'
-        : key === 'sortDown' && section === 'cardphotoList'
+        : (key === 'sortDown' || key === 'sortUp') &&
+            section === 'cardphotoList'
           ? getCardphotoListSortIconForMode(cardphotoListSortMode)
-          : key === 'sortDown' && section === 'historyList'
+          : (key === 'sortDown' || key === 'sortUp') &&
+              section === 'historyList'
             ? getHistoryListSortIconForMode(historyListSortMode)
             : key === 'sortAZDown' &&
               (section === 'cardtextList' ||
