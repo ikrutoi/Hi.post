@@ -73,7 +73,7 @@ type CalendarState = {
   openDayPanel: DayPanelPayload | null
   dateListSortDirection: 'asc' | 'desc'
   cardPieListSortDirection: 'asc' | 'desc'
-  /** Список истории: цикл sortDown → sortUp → sortAZDown → sortAZUp. */
+  /** Список истории: цикл sort131Up → sort131Down → sortAZDown → sortAZUp. */
   historyListSortMode: HistoryListSortMode
   /**
    * Плотность сетки списка истории (`panelDensity2`): 1 — 4 ячейки, 2 — 5 ячеек.

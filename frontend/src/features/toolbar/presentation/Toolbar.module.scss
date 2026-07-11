@@ -118,6 +118,8 @@
     &[data-icon-key='addCartList'].toolbarKeyEnabled,
     &[data-icon-key='sortDown'].toolbarKeyEnabled,
     &[data-icon-key='sortUp'].toolbarKeyEnabled,
+    &[data-icon-key='sort131Down'].toolbarKeyEnabled,
+    &[data-icon-key='sort131Up'].toolbarKeyEnabled,
     &[data-icon-key='sortAZDown'].toolbarKeyEnabled,
     &[data-icon-key='sortAZUp'].toolbarKeyEnabled,
     &[data-icon-key='historyPanel'].toolbarKeyEnabled,
@@ -1044,6 +1046,8 @@
 
   .toolbarKey[data-icon-key='sortDown'].toolbarKeyEnabled,
   .toolbarKey[data-icon-key='sortUp'].toolbarKeyEnabled,
+  .toolbarKey[data-icon-key='sort131Down'].toolbarKeyEnabled,
+  .toolbarKey[data-icon-key='sort131Up'].toolbarKeyEnabled,
   .toolbarKey[data-icon-key='sortAZDown'].toolbarKeyEnabled,
   .toolbarKey[data-icon-key='sortAZUp'].toolbarKeyEnabled {
     color: $color-font-enabled-light;
@@ -1190,6 +1194,8 @@
   .toolbarKey[data-icon-key='checkBox'].toolbarKeyEnabled,
   .toolbarKey[data-icon-key='sortDown'].toolbarKeyEnabled,
   .toolbarKey[data-icon-key='sortUp'].toolbarKeyEnabled,
+  .toolbarKey[data-icon-key='sort131Down'].toolbarKeyEnabled,
+  .toolbarKey[data-icon-key='sort131Up'].toolbarKeyEnabled,
   .toolbarKey[data-icon-key='sortAZDown'].toolbarKeyEnabled,
   .toolbarKey[data-icon-key='sortAZUp'].toolbarKeyEnabled {
     color: $color-font-enabled-light;

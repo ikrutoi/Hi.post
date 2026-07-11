@@ -30,7 +30,10 @@ import {
   selectCardphotoListPanelDensity,
 } from '@/features/cardphoto/infrastructure/selectors'
 import { getCardphotoListSortIconForMode } from '@cardphoto/application/helpers/cardphotoListSort'
-import { getHistoryListSortIconForMode } from '@date/application/helpers/historyListSort'
+import {
+  getHistoryListSortIconForMode,
+  isHistoryListSortIconKey,
+} from '@date/application/helpers/historyListSort'
 import {
   selectCardtextAssetMatchesApplied,
   selectCardtextIsComplete,
@@ -355,8 +358,7 @@ export const Toolbar = ({
         : (key === 'sortDown' || key === 'sortUp') &&
             section === 'cardphotoList'
           ? getCardphotoListSortIconForMode(cardphotoListSortMode)
-          : (key === 'sortDown' || key === 'sortUp') &&
-              section === 'historyList'
+          : section === 'historyList' && isHistoryListSortIconKey(key)
             ? getHistoryListSortIconForMode(historyListSortMode)
             : key === 'sortAZDown' &&
               (section === 'cardtextList' ||

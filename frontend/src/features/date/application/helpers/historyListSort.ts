@@ -23,15 +23,15 @@ export const HISTORY_LIST_SORT_MODE_TO_ICON: Record<
   HistoryListSortMode,
   IconKey
 > = {
-  dateDesc: 'sortDown',
-  dateAsc: 'sortUp',
+  dateDesc: 'sort131Down',
+  dateAsc: 'sort131Up',
   titleAsc: 'sortAZDown',
   titleDesc: 'sortAZUp',
 }
 
 export const HISTORY_LIST_SORT_ICON_KEYS = [
-  'sortDown',
-  'sortUp',
+  'sort131Up',
+  'sort131Down',
   'sortAZDown',
   'sortAZUp',
 ] as const satisfies readonly IconKey[]
@@ -50,7 +50,7 @@ export function getHistoryListSortIconForMode(
   return HISTORY_LIST_SORT_MODE_TO_ICON[mode]
 }
 
-/** `sortDown` / `sortUp` — сортировка по дате; имя в ячейке приглушаем. */
+/** `sort131Up` / `sort131Down` — сортировка по дате; имя в ячейке приглушаем. */
 export function isHistoryListSortByDate(mode: HistoryListSortMode): boolean {
   return mode === 'dateDesc' || mode === 'dateAsc'
 }
