@@ -220,18 +220,25 @@
     color: $color-font-disabled;
   }
 
-  .item.itemIconEnabled:active .icon,
-  .item.itemIconDisabled:active .icon {
+  .item.itemIconEnabled:active .icon {
     color: $color-font-enabled;
+  }
+
+  .item.itemIconDisabled,
+  .item.itemIconDisabled:disabled {
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .item.itemIconDisabled .icon,
+  .item.itemIconDisabled:active .icon,
+  .item.itemIconDisabled:disabled .icon {
+    color: $color-font-disabled;
   }
 
   @include iconButton.toolbar-key-hover-fine-pointer {
     .item.itemIconEnabled:hover .icon {
       color: $color-font-enabled-light;
-    }
-
-    .item.itemIconDisabled:hover .icon {
-      color: $color-font-disabled;
     }
   }
 }
@@ -242,9 +249,27 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.14);
   }
 
+  .item:disabled {
+    cursor: default;
+    pointer-events: none;
+  }
+
   .item {
     cursor: pointer;
 
+    &:disabled {
+      cursor: default;
+    }
+
+    svg,
+    .icon,
+    .count,
+    .dot {
+      cursor: inherit;
+    }
+  }
+
+  .item:not(:disabled) {
     svg,
     .icon,
     .count,

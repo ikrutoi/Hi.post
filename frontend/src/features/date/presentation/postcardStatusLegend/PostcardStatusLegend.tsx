@@ -211,7 +211,18 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
     [dispatch, setCalendarViewDate],
   )
 
+  const isStatusLegendInteractive = (status: PostcardStatus): boolean => {
+    if (calendarFooterAlwaysEnabled) {
+      return stripCycleItemCount(status) > 0
+    }
+    if (spot === 'historyList' && statusCounts != null) {
+      return statusCountValue(status) > 0
+    }
+    return true
+  }
+
   const handlePostcardStatusClick = (status: PostcardStatus) => {
+    if (!isStatusLegendInteractive(status)) return
     if (
       calendarFooterAlwaysEnabled &&
       calendarCartStripBlockedLegend &&
@@ -303,6 +314,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
               itemVisualStateClass('cart'),
             )}
             aria-pressed={postcardStatuses.cart}
+            disabled={!isStatusLegendInteractive('cart')}
             onClick={() => handlePostcardStatusClick('cart')}
           >
             <span className={clsx(styles.dot, styles.dotCart)} />
@@ -321,6 +333,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
                   itemVisualStateClass('cartBlocked'),
                 )}
                 aria-pressed={postcardStatuses.cartBlocked}
+                disabled={!isStatusLegendInteractive('cartBlocked')}
                 onClick={() => handlePostcardStatusClick('cartBlocked')}
               >
                 <span className={clsx(styles.dot, styles.dotCartBlocked)} />
@@ -356,6 +369,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
                 itemVisualStateClass('ready'),
               )}
               aria-pressed={postcardStatuses.ready}
+              disabled={!isStatusLegendInteractive('ready')}
               onClick={() => handlePostcardStatusClick('ready')}
             >
               <span className={clsx(styles.dot, styles.dotReady)} />
@@ -370,6 +384,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
                 itemVisualStateClass('sent'),
               )}
               aria-pressed={postcardStatuses.sent}
+              disabled={!isStatusLegendInteractive('sent')}
               onClick={() => handlePostcardStatusClick('sent')}
             >
               <span className={clsx(styles.dot, styles.dotSent)} />
@@ -386,6 +401,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
                 itemVisualStateClass('delivered'),
               )}
               aria-pressed={postcardStatuses.delivered}
+              disabled={!isStatusLegendInteractive('delivered')}
               onClick={() => handlePostcardStatusClick('delivered')}
             >
               <span className={clsx(styles.dot, styles.dotDelivered)} />
@@ -400,6 +416,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
                 itemVisualStateClass('error'),
               )}
               aria-pressed={postcardStatuses.error}
+              disabled={!isStatusLegendInteractive('error')}
               onClick={() => handlePostcardStatusClick('error')}
             >
               <span className={clsx(styles.dot, styles.dotError)} />
