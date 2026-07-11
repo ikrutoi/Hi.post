@@ -323,6 +323,30 @@ $pie-center-disc-size-ratio: 20%;
   background-color: var(--pie-center-logo-color-incomplete);
   pointer-events: none;
   z-index: 1;
+
+  &.cart {
+    background-color: $color-preview-indicator-cart;
+  }
+
+  &.cartBlocked {
+    @include preview-indicator-cart-blocked-ring($pie-center-cart-blocked-ring);
+  }
+
+  &.ready {
+    background-color: $color-preview-indicator-ready;
+  }
+
+  &.sent {
+    background-color: $color-preview-indicator-sent;
+  }
+
+  &.delivered {
+    background-color: $color-preview-indicator-delivered;
+  }
+
+  &.error {
+    background-color: $color-preview-indicator-error;
+  }
 }
 
 .hubContainer:not(.hubContainerRight) .pieCenterDiscBrand {

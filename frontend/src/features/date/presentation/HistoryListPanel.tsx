@@ -11,6 +11,7 @@ import type { DispatchDate } from '@entities/date/domain/types'
 import styles from './HistoryListPanel.module.scss'
 import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegend'
 import { HistoryListEntry } from './historyList/HistoryListEntry'
+import { HistoryListPieEntry } from './historyList/HistoryListPieEntry'
 import clsx from 'clsx'
 import type { IconKey } from '@shared/config/constants'
 import type { PanelDensity2Size } from '@shared/ui/icons'
@@ -27,6 +28,7 @@ import {
   type HistoryListSortEmphasis,
 } from '@date/application/helpers/historyListSort'
 import { notebookTabHistoryClicked } from '@date/calendar/application/orchestration/notebookOrchestration.events'
+import type { HistoryListCellView } from '@date/calendar/infrastructure/state/calendar.slice'
 
 export type HistoryListPanelItem = {
   id: string
@@ -77,6 +79,7 @@ const HistoryListPanelRow: React.FC<{
   onDebugStatusCycle?: (localId: number) => void
   densityLevel: PanelDensity2Size
   sortEmphasis?: HistoryListSortEmphasis
+  cellView: HistoryListCellView
 }> = ({
   item,
   listSelectedLocalId,
@@ -84,6 +87,7 @@ const HistoryListPanelRow: React.FC<{
   onDebugStatusCycle,
   densityLevel,
   sortEmphasis,
+  cellView,
 }) => {
   const { displayUrl, onPreviewImgError } = useListCardPreviewUrl(
     item.cardId,
@@ -93,31 +97,47 @@ const HistoryListPanelRow: React.FC<{
     },
   )
 
+  const sharedProps = {
+    dateLabel: item.dateLabel,
+    detailLine: item.detailLine,
+    variant: item.variant,
+    previewStatus: item.previewStatus,
+    previewIsProcessed: item.previewIsProcessed,
+    onSelect:
+      onSelectEntry && item.variant !== 'inactive'
+        ? () => onSelectEntry(item)
+        : undefined,
+    isSelected:
+      item.postcardLocalId != null &&
+      item.postcardLocalId === listSelectedLocalId,
+    densityLevel,
+    sortEmphasis,
+    onDebugStatusCycle:
+      item.postcardLocalId != null && onDebugStatusCycle
+        ? () => onDebugStatusCycle(item.postcardLocalId!)
+        : undefined,
+  }
+
+  if (cellView === 'pie') {
+    return (
+      <HistoryListPieEntry
+        postcardLocalId={item.postcardLocalId}
+        dateLabel={item.dateLabel}
+        detailLine={item.detailLine}
+        variant={item.variant}
+        previewStatus={item.previewStatus}
+        previewIsProcessed={item.previewIsProcessed}
+        onSelect={sharedProps.onSelect}
+        isSelected={sharedProps.isSelected}
+      />
+    )
+  }
+
   return (
     <HistoryListEntry
-      dateLabel={item.dateLabel}
+      {...sharedProps}
       previewUrl={displayUrl}
       onPreviewImgError={onPreviewImgError}
-      detailLine={item.detailLine}
-      variant={item.variant}
-      previewStatus={item.previewStatus}
-      previewIsProcessed={item.previewIsProcessed}
-      onSelect={
-        onSelectEntry && item.variant !== 'inactive'
-          ? () => onSelectEntry(item)
-          : undefined
-      }
-      isSelected={
-        item.postcardLocalId != null &&
-        item.postcardLocalId === listSelectedLocalId
-      }
-      densityLevel={densityLevel}
-      sortEmphasis={sortEmphasis}
-      onDebugStatusCycle={
-        item.postcardLocalId != null && onDebugStatusCycle
-          ? () => onDebugStatusCycle(item.postcardLocalId!)
-          : undefined
-      }
     />
   )
 }
@@ -215,6 +235,7 @@ export const HistoryListPanel: React.FC<Props> = ({
                   onDebugStatusCycle={onDebugStatusCycle}
                   densityLevel={historyListPanelDensity}
                   sortEmphasis={sortEmphasis}
+                  cellView={historyListCellView}
                 />
               </div>
             ))

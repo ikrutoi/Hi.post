@@ -199,6 +199,8 @@ export const CardPie: React.FC<CardPieProps> = ({
   ) : null
 
   const allSectionsFilled = isReady
+  const leftDiscShowsStatus =
+    station === 'left' && leftPieCenterDisc && status != null && !isProcessed
   const leftCenterActionEnabled =
     leftPieCenterClickable ||
     leftPieCenterOverviewBack ||
@@ -802,7 +804,10 @@ export const CardPie: React.FC<CardPieProps> = ({
         <div
           className={clsx(
             styles.pieCenterDisc,
-            allSectionsFilled && styles.pieCenterDiscBrand,
+            leftDiscShowsStatus && styles[status!],
+            !leftDiscShowsStatus &&
+              allSectionsFilled &&
+              styles.pieCenterDiscBrand,
           )}
           aria-hidden
         />
