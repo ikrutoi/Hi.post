@@ -148,6 +148,8 @@ import {
   IconListAddV2,
   IconListApply,
   IconSortUp,
+  IconSort131Up,
+  IconSort131Down,
   IconSortDown,
   IconListCardtext,
   IconFontSizeLessV3,
@@ -373,6 +375,10 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconEdit />
     case 'sortUp':
       return <IconSortUp />
+    case 'sort131Up':
+      return <IconSort131Up />
+    case 'sort131Down':
+      return <IconSort131Down />
     case 'sortDown':
       return <IconSortDown />
     case 'colorPicker':

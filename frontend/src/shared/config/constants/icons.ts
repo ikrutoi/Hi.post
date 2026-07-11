@@ -88,6 +88,8 @@ export const ICON_KEYS = [
   'empty',
   'edit',
   'sortUp',
+  'sort131Up',
+  'sort131Down',
   'sortDown',
   'colorPicker',
   'density',
