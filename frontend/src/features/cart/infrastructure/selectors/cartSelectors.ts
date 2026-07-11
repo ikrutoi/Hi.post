@@ -105,3 +105,22 @@ export const selectCartBillableTotalDisplay = createSelector(
   [selectCartBillablePostcards],
   (postcards) => cartListTotalDisplayFromPostcards(postcards),
 )
+
+/** Активные открытки корзины, отмеченные чекбоксом (сумма футера / хедера). */
+export const selectCartCheckedPostcards = createSelector(
+  [selectCartBillablePostcards, selectCartListCheckedLocalIds],
+  (postcards, checkedIds) => {
+    const checkedSet = new Set(checkedIds)
+    return postcards.filter((p) => checkedSet.has(p.localId))
+  },
+)
+
+export const selectCartCheckedTotalNumeric = createSelector(
+  [selectCartCheckedPostcards],
+  (postcards) => cartListTotalNumeric(postcards),
+)
+
+export const selectCartCheckedTotalDisplay = createSelector(
+  [selectCartCheckedPostcards],
+  (postcards) => cartListTotalDisplayFromPostcards(postcards),
+)

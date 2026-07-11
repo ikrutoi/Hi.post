@@ -80,15 +80,10 @@ $list-entry-bg-hover: #fafafa;
   }
 }
 
+/** Как `checkBox` в toolbar списка корзины (шапка / нижний ряд factory). */
 .shellCheckboxBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  width: 1.05rem;
-  height: 1.05rem;
+  @include iconButton.toolbar-icon-button-size-card-pie-list-header(true);
   margin: 0;
-  padding: 0;
   border: none;
   border-radius: $list-entry-radius-md;
   background-color: transparent;
@@ -118,13 +113,11 @@ $list-entry-bg-hover: #fafafa;
       mix($list-entry-surface, $color-app-sidebar-icon-active, 55%);
     outline-offset: $list-entry-focus-outline-offset;
   }
+}
 
-  :global(svg) {
-    width: 0.95rem;
-    height: 0.95rem;
-    flex-shrink: 0;
-    display: block;
-    color: currentColor;
+:global([data-shell-layout='mobile']) {
+  .shellCheckboxBtn {
+    @include iconButton.toolbar-icon-button-size-mobile-toolbar(true);
   }
 }
 

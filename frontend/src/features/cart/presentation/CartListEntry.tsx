@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react'
 import type { PostcardStatus } from '@entities/postcard'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { isCalendarGridThirdCellFromEndDisabled } from '@date/calendar/application/logic/calendarGridThirdFromEndDisabled'
+import { resolveCartDatePickCalendarViewDate } from '@date/calendar/application/logic/cartDatePickCalendarView'
 import {
   selectCartCalendarDatePickLocalId,
   selectCartCalendarDatePickMode,
@@ -102,19 +102,20 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
           dispatch(setNotebookStripTab('cart'))
         }
         dispatch(setNotebookStripDateOverCart(false))
+        const pickView = resolveCartDatePickCalendarViewDate({
+          calendarViewDate: lastViewedCalendarDate,
+          firstDayOfWeek,
+          currentDate: now,
+        })
         if (
-          isCalendarGridThirdCellFromEndDisabled({
-            calendarViewDate: lastViewedCalendarDate,
-            firstDayOfWeek,
-            currentDate: now,
-          })
+          lastViewedCalendarDate == null ||
+          pickView.year !== lastViewedCalendarDate.year ||
+          pickView.month !== lastViewedCalendarDate.month
         ) {
-          dispatch(
-            updateLastViewedCalendarDate({ year: now.year, month: now.month }),
-          )
+          dispatch(updateLastViewedCalendarDate(pickView))
         }
-        dispatch(setCartCalendarDatePickMode(true))
         dispatch(setCartCalendarDatePickLocalId(postcardLocalId ?? null))
+        dispatch(setCartCalendarDatePickMode(true))
         onDateEditActivate?.()
       } else {
         dispatch(setCartCalendarDatePickMode(false))

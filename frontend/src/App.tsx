@@ -16,6 +16,7 @@ import {
   selectHistoryOpenDayPanelArchiveLocalId,
   selectIsCardPieListPanelOpen,
   selectIsHistoryListPanelOpen,
+  selectLastCalendarViewDate,
   selectNotebookDateTabPeekClearTick,
   selectComputedNotebookStripTab,
   selectNotebookStripTab,
@@ -87,6 +88,7 @@ import {
   setNotebookStripTab,
   updateLastViewedCalendarDate,
 } from '@date/calendar/infrastructure/state'
+import { resolveCartDatePickCalendarViewDate } from '@date/calendar/application/logic/cartDatePickCalendarView'
 import { calendarDayHasCards } from '@date/cell/domain/calendarDayContent'
 import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
@@ -111,6 +113,8 @@ import { MarkStampYearDevProvider, useMarkStampYearDev } from '@envelope/applica
 import { MobileAppShell } from '@layout/presentation/MobileAppShell'
 import styles from './App.module.scss'
 import { store } from '@app/state/store'
+import { selectFirstDayOfWeek } from '@date/infrastructure/selectors'
+import { getCurrentDate } from '@shared/utils/date'
 
 function MarkStampYearDevButtons() {
   const { bump } = useMarkStampYearDev()
@@ -148,6 +152,8 @@ const App = () => {
   const cardPieCopyClosedByEditRef = useRef(false)
   /** date pick включён через cardPieEdit (не dateEdit строки cartBlocked). */
   const cartDatePickOwnedByCardPieEditRef = useRef(false)
+  /** date pick включён через dateEdit строки «Заблокированные» — не сбрасывать в cardPieEdit effect. */
+  const cartDatePickOwnedByListEntryRef = useRef(false)
   const [colorToolbar, setColorToolbar] = useState<boolean | null>(null)
   const [activePieSide, setActivePieSide] = useState<'left' | 'right'>('left')
   /** After turning off cardPieCopy: switch to left pie and keep `cardPieEdit` enabled until clicked again. */
@@ -1042,12 +1048,14 @@ const App = () => {
   useEffect(() => {
     if (!cartCalendarDatePickMode) {
       cartDatePickOwnedByCardPieEditRef.current = false
+      cartDatePickOwnedByListEntryRef.current = false
     }
   }, [cartCalendarDatePickMode])
 
   useEffect(() => {
     const shouldPickFromCardPieEdit =
       cardPieEditEngaged &&
+      !cartDatePickOwnedByListEntryRef.current &&
       activePieSide === 'right' &&
       rightListArchiveLocalId != null &&
       activeSection === 'date' &&
@@ -1061,7 +1069,10 @@ const App = () => {
       return
     }
 
-    if (cartDatePickOwnedByCardPieEditRef.current) {
+    if (
+      cartDatePickOwnedByCardPieEditRef.current &&
+      !cartDatePickOwnedByListEntryRef.current
+    ) {
       cartDatePickOwnedByCardPieEditRef.current = false
       dispatch(setCartCalendarDatePickMode(false))
     }
@@ -1256,30 +1267,30 @@ const App = () => {
 
   const handleCartListDateEditEntry = useCallback(
     (item: CartListPanelItem) => {
-      dispatch(setNotebookStripTab('cart'))
-      dispatch(setActiveSection('date'))
       const lid = item.postcard?.localId
       if (lid == null) return
+      /** Режим pick из строки «Заблокированные» — не перехватывать/сбрасывать в cardPieEdit effect. */
+      cartDatePickOwnedByCardPieEditRef.current = false
+      cartDatePickOwnedByListEntryRef.current = true
+      setCardPieEditEngaged(false)
+      dispatch(setNotebookStripTab('cart'))
+      dispatch(setActiveSection('date'))
       dispatch(setCartListStatusSegment('cartBlocked'))
       dispatch(setCartListSelectedLocalId(lid))
-      setCardPieEditEngaged(false)
       setSuppressCardPieEditActiveAfterCopy(true)
       setActivePieSide('right')
-      if (item.sourceDate) {
-        dispatch(
-          updateLastViewedCalendarDate({
-            year: item.sourceDate.year,
-            month: item.sourceDate.month,
-          }),
-        )
-        const dateKey = `${item.sourceDate.year}-${item.sourceDate.month}-${item.sourceDate.day}`
-        const dayData = cardsByDateMap[dateKey]
-        if (dayData != null && calendarDayHasCards(dayData)) {
-          dispatch(openDayPanel({ dateKey, dayData }))
-        }
-      }
+      dispatch(closeDayPanel())
+      const now = getCurrentDate()
+      const pickView = resolveCartDatePickCalendarViewDate({
+        calendarViewDate: selectLastCalendarViewDate(store.getState()),
+        firstDayOfWeek: selectFirstDayOfWeek(store.getState()),
+        currentDate: now,
+      })
+      dispatch(updateLastViewedCalendarDate(pickView))
+      dispatch(setCartCalendarDatePickMode(true))
+      dispatch(setCartCalendarDatePickLocalId(lid))
     },
-    [dispatch, activePieSide, cardsByDateMap],
+    [dispatch],
   )
 
   const handlePostcardPieCartToolbarAction = useCallback(

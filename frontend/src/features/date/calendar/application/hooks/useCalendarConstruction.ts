@@ -226,7 +226,7 @@ export const useCalendarConstruction = ({
       cartDatePickWaveScheduleTokenRef.current += 1
       if (timeoutId !== undefined) window.clearTimeout(timeoutId)
     }
-  }, [cartCalendarDatePickMode, activeSection, notebookStripTab])
+  }, [cartCalendarDatePickMode, activeSection, notebookStripTab, year, month])
 
   const cartWaveStrongSet = useMemo(
     () => new Set(waveStrongKeys),

@@ -13,6 +13,7 @@ import { cartListBillableLocalIds } from '@cart/application/logic/cartListBillab
 import { useCartFacade } from '../application/facades'
 import {
   selectCartItems,
+  selectCartCheckedTotalDisplay,
   selectCartListCheckedLocalIds,
   selectCartListStatusSegment,
 } from '@cart/infrastructure/selectors'
@@ -223,6 +224,7 @@ export const CartListPanel: React.FC<Props> = ({
     () => new Set(checkedLocalIds),
     [checkedLocalIds],
   )
+  const checkedTotalDisplay = useAppSelector(selectCartCheckedTotalDisplay)
   const {
     setCartListPanelOpen,
     listSelectedLocalId,
@@ -308,13 +310,18 @@ export const CartListPanel: React.FC<Props> = ({
       ? entries.map((e) => e.id).join('|')
       : `${listSegment}|${entries.map((e) => e.id).join('|')}`
 
+  const sumCheckedOnly = entriesProp == null && listSegment === 'cart'
+
   const cartTotalDisplay = useMemo(() => {
+    if (sumCheckedOnly) {
+      return checkedTotalDisplay
+    }
     const postcards = entries
       .filter((e) => e.variant !== 'inactive')
       .map((e) => e.postcard)
       .filter((p): p is PostcardHydrated => p != null)
     return cartListTotalDisplayFromPostcards(postcards)
-  }, [entries])
+  }, [checkedTotalDisplay, entries, sumCheckedOnly])
 
   const handleCloseList = useCallback(() => {
     setCartListPanelOpen(false)
@@ -452,7 +459,11 @@ export const CartListPanel: React.FC<Props> = ({
       {showCartFooter ? (
         <footer
           className={styles.footer}
-          aria-label={`Cart total ${cartTotalDisplay}`}
+          aria-label={
+            sumCheckedOnly
+              ? `Cart total for selected postcards ${cartTotalDisplay}`
+              : `Cart total ${cartTotalDisplay}`
+          }
         >
           <span className={styles.footerAmount}>{cartTotalDisplay}</span>
         </footer>

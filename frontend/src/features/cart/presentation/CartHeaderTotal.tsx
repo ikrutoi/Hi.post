@@ -1,14 +1,14 @@
 import React from 'react'
 import { useAppSelector } from '@app/hooks'
 import {
-  selectCartBillableTotalDisplay,
-  selectCartBillableTotalNumeric,
+  selectCartCheckedTotalDisplay,
+  selectCartCheckedTotalNumeric,
 } from '@cart/infrastructure/selectors'
 import styles from './CartHeaderTotal.module.scss'
 
 export const CartHeaderTotal: React.FC = () => {
-  const totalNumeric = useAppSelector(selectCartBillableTotalNumeric)
-  const totalDisplay = useAppSelector(selectCartBillableTotalDisplay)
+  const totalNumeric = useAppSelector(selectCartCheckedTotalNumeric)
+  const totalDisplay = useAppSelector(selectCartCheckedTotalDisplay)
 
   if (totalNumeric <= 0) return null
 

@@ -6,9 +6,12 @@ import {
   selectRecipientListPanelOpen,
   selectSenderListPanelOpen,
 } from '@envelope/infrastructure/selectors'
-import { selectIsCardPieListPanelOpen } from '@date/calendar/infrastructure/selectors'
+import {
+  selectCartCalendarDatePickMode,
+  selectIsCardPieListPanelOpen,
+  selectIsHistoryListPanelOpen,
+} from '@date/calendar/infrastructure/selectors'
 import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
-import { selectIsHistoryListPanelOpen } from '@date/calendar/infrastructure/selectors'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
@@ -28,6 +31,7 @@ export function useMobileFactoryListChrome() {
   const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
   const addressListPanelOpen = senderListPanelOpen || recipientListPanelOpen
   const cardPieListPanelOpen = useAppSelector(selectIsCardPieListPanelOpen)
+  const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
   const {
     rightPieCardphotoPeekNoToolbar,
     rightPieCardtextPeekNoToolbar,
@@ -49,8 +53,11 @@ export function useMobileFactoryListChrome() {
     rightPieCardtextPeekNoToolbar ||
     rightPieEnvelopePeekNoToolbar
 
-  /** Suppress cart/history list chrome while any archive section peek is active. */
-  const mobileDateListChromePeek = mobileArchiveSectionPeek
+  /**
+   * Скрыть список корзины/истории: peek секции редактора или выбор новой даты (cartBlocked → dateEdit).
+   */
+  const mobileDateListChromePeek =
+    mobileArchiveSectionPeek || cartCalendarDatePickMode
 
   const showMobileSectionTemplateList = useMemo(() => {
     if (!isMobileLayout) return false
