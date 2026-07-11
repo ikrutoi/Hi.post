@@ -21,7 +21,7 @@ export const CardPreviewItem: React.FC<
   isCartDateDisabledPreview = false,
   isAdjacentMonthEdge = false,
   hasCartPostcardsOnDay = false,
-  historyIndicatorStatuses,
+  calendarStatusIndicators,
   isActiveCardPiePostcard = false,
   onArchivePostcardClick,
 }) => {
@@ -98,13 +98,13 @@ export const CardPreviewItem: React.FC<
       ) : (
         mediaBlock
       )}
-      {historyIndicatorStatuses != null &&
-      historyIndicatorStatuses.length > 0 ? (
+      {calendarStatusIndicators != null &&
+      calendarStatusIndicators.length > 0 ? (
         <div className={styles.historyIndicatorStack} aria-hidden>
-          {historyIndicatorStatuses.map((s) => (
+          {calendarStatusIndicators.map(({ status }) => (
             <span
-              key={s}
-              className={clsx(styles.previewIndicator, styles[s])}
+              key={status}
+              className={clsx(styles.previewIndicator, styles[status])}
             />
           ))}
         </div>

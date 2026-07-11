@@ -10,9 +10,10 @@ import {
   selectCartCalendarDatePickMode,
   selectHistoryListSelectedLocalId,
 } from '@date/calendar/infrastructure/selectors'
+import { isHistoryListSelectedLocalIdInSortedList } from '@date/application/helpers/historyListPanelEntries'
 import { orderedStripPostcardsByDispatchDate } from './calendarStripMonthCycle'
 
-/** Приоритет выбора открытки в strip «История». */
+/** Приоритет выбора открытки в strip «История» (цикл по статусу в календаре). */
 export const HISTORY_STRIP_STATUS_PRIORITY = [
   'cart',
   'ready',
@@ -40,35 +41,12 @@ export function resolveDefaultCartStripPostcard(
   return null
 }
 
-/** Первая открытка по приоритету статусов для strip «История». */
-export function resolveDefaultHistoryStripPostcard(
-  cartItems: readonly PostcardHydrated[],
-): PostcardHydrated | null {
-  for (const status of HISTORY_STRIP_STATUS_PRIORITY) {
-    const items = orderedStripPostcardsByDispatchDate(cartItems, status)
-    if (items.length > 0) return items[0]!
-  }
-  return null
-}
-
 export function isCartListSelectedLocalIdSaved(
   localId: number | null,
   cartItems: readonly PostcardHydrated[],
 ): boolean {
   if (localId == null) return false
   return cartItems.some((item) => item.localId === localId)
-}
-
-export function isHistoryListSelectedLocalIdSaved(
-  localId: number | null,
-  cartItems: readonly PostcardHydrated[],
-): boolean {
-  if (localId == null) return false
-  const postcard = cartItems.find((item) => item.localId === localId)
-  if (postcard == null) return false
-  return (HISTORY_STRIP_STATUS_PRIORITY as readonly PostcardStatus[]).includes(
-    postcard.status,
-  )
 }
 
 /** Первый вход в strip «Корзина» или выбор указывает на несуществующую открытку. */
@@ -80,13 +58,12 @@ export function shouldApplyCartStripDefaultSelection(state: RootState): boolean 
   return !isCartListSelectedLocalIdSaved(localId, cartItems)
 }
 
-/** Первый вход в strip «История» или выбор не из допустимых статусов. */
+/** Первый вход в strip «История» или выбор не в текущем отсортированном списке. */
 export function shouldApplyHistoryStripDefaultSelection(
   state: RootState,
 ): boolean {
   const localId = selectHistoryListSelectedLocalId(state)
-  const cartItems = selectCartItems(state)
-  return !isHistoryListSelectedLocalIdSaved(localId, cartItems)
+  return !isHistoryListSelectedLocalIdInSortedList(localId, state)
 }
 
 export function calendarViewDateForPostcard(

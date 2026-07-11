@@ -13,8 +13,8 @@ export type HistoryListSortMode =
   | 'titleDesc'
 
 export const HISTORY_LIST_SORT_MODE_SEQUENCE: readonly HistoryListSortMode[] = [
-  'dateDesc',
   'dateAsc',
+  'dateDesc',
   'titleAsc',
   'titleDesc',
 ]

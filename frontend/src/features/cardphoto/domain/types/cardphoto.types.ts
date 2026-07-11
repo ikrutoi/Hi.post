@@ -95,6 +95,11 @@ export interface CardphotoState {
   assetConfig: WorkingConfig | null
 }
 
+export type CalendarDayStatusIndicator = {
+  status: PostcardStatus
+  count: number
+}
+
 export interface PreviewItemForCalendar {
   item: { previewUrl: string; cardId: string }
   status: PostcardStatus
@@ -110,10 +115,9 @@ export interface PreviewItemForCalendar {
   /** Секция «Дата»: на этот день есть открытки в корзине (реальные записи в `cart`). */
   hasCartPostcardsOnDay?: boolean
   /**
-   * Календарь «История»: вертикальный стек индикаторов по статусам дня (сверху вниз:
-   * cart, ready, sent, delivered, error; `cartBlocked` — в слоте cart, если нет обычной корзины).
+   * Календарь «Корзина» / «История»: стек круглых индикаторов по статусам дня.
    */
-  historyIndicatorStatuses?: readonly PostcardStatus[]
+  calendarStatusIndicators?: readonly CalendarDayStatusIndicator[]
   /** Превью совпадает с открыткой в центральном CardPie — усиленная тень. */
   isActiveCardPiePostcard?: boolean
 }

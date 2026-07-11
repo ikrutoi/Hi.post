@@ -19,11 +19,11 @@ import type { DateStripSection } from '@date/presentation/dateStripSection.types
 import {
   calendarViewDateForPostcard,
   resolveDefaultCartStripPostcard,
-  resolveDefaultHistoryStripPostcard,
   shouldApplyCartStripDefaultSelection,
   shouldApplyHistoryStripDefaultSelection,
   HISTORY_STRIP_STATUS_PRIORITY,
 } from '@date/application/helpers/stripDefaultSelection'
+import { resolveDefaultHistoryStripPostcard } from '@date/application/helpers/historyListPanelEntries'
 import { cartListStatusSegmentForLocalId } from '@date/calendar/application/logic/cartStripDayPostcardSelection'
 import { applyRightListArchiveToolbarVisuals } from '@toolbar/application/syncRightListArchiveToolbarVisuals'
 import type { PostcardHydrated } from '@entities/postcard'
@@ -53,8 +53,7 @@ export function* applyHistoryStripDefaultSelectionIfNeededSaga(): SagaIterator {
   const state: RootState = yield select()
   if (!shouldApplyHistoryStripDefaultSelection(state)) return
 
-  const cartItems: PostcardHydrated[] = yield select(selectCartItems)
-  const postcard = resolveDefaultHistoryStripPostcard(cartItems)
+  const postcard = resolveDefaultHistoryStripPostcard(state)
 
   yield put(setHistoryListSelectedLocalId(postcard?.localId ?? null))
 

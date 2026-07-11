@@ -123,7 +123,7 @@ const initialState: CalendarState = {
   openDayPanel: null,
   dateListSortDirection: 'asc',
   cardPieListSortDirection: 'asc',
-  historyListSortMode: 'dateDesc',
+  historyListSortMode: 'dateAsc',
   historyListPanelDensity: 1,
   postcardStatusesCount: {
     cart: null,

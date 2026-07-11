@@ -28,38 +28,15 @@ import { CardPreviewItem } from './CardPreviewItem'
 import styles from './CardPreview.module.scss'
 import { CalendarCardItem } from '@entities/card/domain/types'
 import {
-  POSTCARD_STATUSES_HIDDEN_ON_DATE_CALENDAR_THUMBNAIL,
-  type PostcardStatus,
-} from '@entities/postcard'
+  cartCalendarDayStatusIndicators,
+  historyCalendarDayStatusIndicators,
+} from '../application/calendarDayStatusIndicators'
+import { POSTCARD_STATUSES_HIDDEN_ON_DATE_CALENDAR_THUMBNAIL } from '@entities/postcard'
 import type { DispatchDate } from '@entities/date/domain/types'
 import { CardSection } from '@/shared/config/constants'
 
 function dispatchDateKey(d: DispatchDate): string {
   return `${d.year}-${d.month}-${d.day}`
-}
-
-/** Индикаторы дня в календаре «История» (сверху вниз: cart, ready, sent, delivered, error). */
-function historyStatusIndicatorsForCalendarDay(data: {
-  cart: CalendarCardItem[]
-  ready: CalendarCardItem[]
-  sent: CalendarCardItem[]
-  delivered: CalendarCardItem[]
-  error: CalendarCardItem[]
-}): PostcardStatus[] {
-  const indicators: PostcardStatus[] = []
-  const hasPlainCart = data.cart.some((i) => i.status === 'cart')
-  const hasCartBlockedOnly =
-    !hasPlainCart && data.cart.some((i) => i.status === 'cartBlocked')
-  if (hasPlainCart) {
-    indicators.push('cart')
-  } else if (hasCartBlockedOnly) {
-    indicators.push('cartBlocked')
-  }
-  if (data.ready.length > 0) indicators.push('ready')
-  if (data.sent.length > 0) indicators.push('sent')
-  if (data.delivered.length > 0) indicators.push('delivered')
-  if (data.error.length > 0) indicators.push('error')
-  return indicators
 }
 
 /** `cart` = Date strip while right cart list is open (calendar shows cart on days). */
@@ -278,9 +255,11 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
     !primaryItemForDisplay &&
     !showEmptySessionPlaceholder
 
-  const historyStatusIndicatorStack = isHistory
-    ? historyStatusIndicatorsForCalendarDay(data)
-    : []
+  const calendarStatusIndicators = isHistory
+    ? historyCalendarDayStatusIndicators(data)
+    : isCartCalendar
+      ? cartCalendarDayStatusIndicators(cart)
+      : []
 
   const handleMobileArchivePostcardClick = useCallback(
     (item: CalendarCardItem) => {
@@ -330,9 +309,9 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
             isCartDateDisabledPreview={isCartCalendar && isDisabledDate}
             isAdjacentMonthEdge={isAdjacentMonthEdge}
             isActiveCardPiePostcard={isActiveCardPiePostcard}
-            historyIndicatorStatuses={
-              isHistory && historyStatusIndicatorStack.length > 0
-                ? historyStatusIndicatorStack
+            calendarStatusIndicators={
+              calendarStatusIndicators.length > 0
+                ? calendarStatusIndicators
                 : undefined
             }
             onArchivePostcardClick={

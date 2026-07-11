@@ -94,7 +94,7 @@ export const selectDateListSortDirection = (state: RootState): 'asc' | 'desc' =>
 
 export const selectHistoryListSortMode = (
   state: RootState,
-) => state.calendar.historyListSortMode ?? 'dateDesc'
+) => state.calendar.historyListSortMode ?? 'dateAsc'
 
 export const selectHistoryListPanelDensity = (
   state: RootState,

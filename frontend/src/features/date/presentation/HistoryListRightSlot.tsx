@@ -12,18 +12,10 @@ import { selectCartItems } from '@cart/infrastructure/selectors'
 import { cyclePostcardDebugStatus } from '@cart/infrastructure/state'
 import { isDebugPostcardStatusCycleEnabled } from '@date/application/helpers/debugPostcardStatusCycle'
 import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
-import type { DispatchDate } from '@entities/date/domain/types'
-import type { CalendarCardItem } from '@entities/card/domain/types'
-import type { PostcardHydrated } from '@entities/postcard'
 import { computeHistoryLegendStatusCounts } from '@date/application/helpers/legendStatusCounts'
+import { buildHistoryListPanelEntries } from '@date/application/helpers/historyListPanelEntries'
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
 import { selectRecipientsList } from '@envelope/infrastructure/selectors'
-import {
-  formatPostcardListRecipientDetailLine,
-  formatRecipientDetailFromLayers,
-  formatRecipientLine,
-  hasCommittedSessionRecipient,
-} from '@date/application/helpers/formatRecipientPlanDetailLine'
 import { selectRecipientEntriesState } from '@envelope/recipient/infrastructure/selectors'
 import { HistoryListPanel, type HistoryListPanelItem } from './HistoryListPanel'
 import { useCalendarFacade } from '@date/calendar/application/facades/useCalendarFacade'
@@ -31,17 +23,7 @@ import {
   selectHistoryListSelectedLocalId,
   selectPostcardStatuses,
 } from '@date/calendar/infrastructure/selectors'
-import { postcardLocalIdFromCalendarCardItem } from '@date/calendar/infrastructure/postcardLocalIdFromCalendarCardItem'
 import type { IconKey } from '@shared/config/constants'
-
-function formatDispatchDateLabel(d: DispatchDate): string {
-  const date = new Date(d.year, d.month, d.day)
-  return date.toLocaleDateString('en-US', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  })
-}
 
 /** Список истории открыток в правой колонке (рядом с корзиной), не в левом слоте даты. */
 export type HistoryListRightSlotProps = {
@@ -69,88 +51,39 @@ export const HistoryListRightSlot: React.FC<HistoryListRightSlotProps> = ({
   const historyListSelectedLocalId = useAppSelector(
     selectHistoryListSelectedLocalId,
   )
-  const postcardByCardId = useMemo(
-    () => new Map(cartItems.map((p) => [p.card.id, p] as const)),
-    [cartItems],
-  )
-
-  const sessionRecipientDetail = useMemo(() => {
-    if (!hasCommittedSessionRecipient(recipientState)) return undefined
-    const cartDraft = cartItems.find(
-      (p) => p.status === 'cart' || p.status === 'cartBlocked',
-    )
-    const fromPostcard = formatRecipientLine(
-      cartDraft,
-      recipientEntries,
-      envelopeRecipients,
-    )
-    if (fromPostcard) return fromPostcard
-    return formatRecipientDetailFromLayers(
-      recipientState,
-      recipientEntries,
-      envelopeRecipients,
-    )
-  }, [cartItems, recipientState, recipientEntries, envelopeRecipients])
-
-  const resolveRecipientDetailLine = useCallback(
-    (cardId: string): string | undefined => {
-      if (cardId === 'current_session') {
-        return hasCommittedSessionRecipient(recipientState)
-          ? sessionRecipientDetail
-          : undefined
-      }
-      return formatPostcardListRecipientDetailLine(
-        postcardByCardId.get(cardId),
-        recipientEntries,
-        envelopeRecipients,
-      )
-    },
-    [
-      sessionRecipientDetail,
-      postcardByCardId,
-      recipientEntries,
-      envelopeRecipients,
-      recipientState,
-    ],
-  )
-
   const { historyListEntries, historyUnderlyingPostcardCount, legendStatusCounts } =
     useMemo(() => {
-      const postcardItems: CalendarCardItem[] = []
+      const { legendStatusCounts } = computeHistoryLegendStatusCounts(cartItems)
+      let historyUnderlyingPostcardCount = 0
       Object.values(cardsByDateMap).forEach((day) => {
-        postcardItems.push(
-          ...day.cart,
-          ...day.ready,
-          ...day.sent,
-          ...day.delivered,
-          ...day.error,
-        )
+        historyUnderlyingPostcardCount +=
+          day.cart.length +
+          day.ready.length +
+          day.sent.length +
+          day.delivered.length +
+          day.error.length
       })
-      const { legendStatusCounts, historyUnderlyingPostcardCount } =
-        computeHistoryLegendStatusCounts(cartItems)
-      const entries: HistoryListPanelItem[] = []
-      postcardItems.forEach((item, i) => {
-        if (item.status === 'cartBlocked') return
-        if (!postcardStatuses[item.status]) return
-        entries.push({
-          id: `history-postcard-${item.rowKey}-${i}`,
-          cardId: item.cardId,
-          postcardLocalId: postcardLocalIdFromCalendarCardItem(item, cartItems),
-          sourceDate: item.date,
-          dateLabel: formatDispatchDateLabel(item.date),
-          previewUrl: item.previewUrl,
-          detailLine: resolveRecipientDetailLine(item.cardId),
-          previewStatus: item.status,
-          previewIsProcessed: item.isProcessed,
-          previewAllowBlob: item.previewAllowBlob,
-        })
+      const historyListEntries = buildHistoryListPanelEntries({
+        cardsByDateMap,
+        cartItems,
+        postcardStatuses,
+        recipientEntries,
+        envelopeRecipients,
+        recipientState,
       })
       return {
-        historyListEntries: entries,
-        historyUnderlyingPostcardCount: postcardItems.length,
+        historyListEntries,
+        historyUnderlyingPostcardCount,
         legendStatusCounts,
       }
-    }, [cardsByDateMap, cartItems, postcardStatuses, resolveRecipientDetailLine])
+    }, [
+      cardsByDateMap,
+      cartItems,
+      postcardStatuses,
+      recipientEntries,
+      envelopeRecipients,
+      recipientState,
+    ])
 
   const handleDebugStatusCycle = useCallback(
     (localId: number) => {
