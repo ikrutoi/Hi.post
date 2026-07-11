@@ -12,6 +12,8 @@ import {
 import type { DateStripSection } from '@date/presentation/dateStripSection.types'
 import type { PanelDensity2Size } from '@shared/ui/icons'
 import type { HistoryListSortMode } from '@date/application/helpers/historyListSort'
+
+export type HistoryListCellView = 'card' | 'pie'
 import {
   nextStripMonthCycleIndex,
   type CalendarStripKind,
@@ -79,6 +81,8 @@ type CalendarState = {
    * Плотность сетки списка истории (`panelDensity2`): 1 — 4 ячейки, 2 — 5 ячеек.
    */
   historyListPanelDensity: PanelDensity2Size
+  /** Вид ячейки списка истории: карточка или мини CardPie. */
+  historyListCellView: HistoryListCellView
   postcardStatusesCount: PostcardStatusesCount
   postcardStatuses: PostcardStatuses
   /**
@@ -125,6 +129,7 @@ const initialState: CalendarState = {
   cardPieListSortDirection: 'asc',
   historyListSortMode: 'dateAsc',
   historyListPanelDensity: 1,
+  historyListCellView: 'card',
   postcardStatusesCount: {
     cart: null,
     cartBlocked: null,
@@ -221,6 +226,18 @@ const calendarSlice = createSlice({
       action: PayloadAction<PanelDensity2Size>,
     ) {
       state.historyListPanelDensity = action.payload
+    },
+
+    toggleHistoryListCellView(state) {
+      state.historyListCellView =
+        state.historyListCellView === 'card' ? 'pie' : 'card'
+    },
+
+    setHistoryListCellView(
+      state,
+      action: PayloadAction<HistoryListCellView>,
+    ) {
+      state.historyListCellView = action.payload
     },
 
     setPostcardStatusesCount(
@@ -380,6 +397,8 @@ export const {
   setHistoryListSortMode,
   cycleHistoryListPanelDensity,
   setHistoryListPanelDensity,
+  toggleHistoryListCellView,
+  setHistoryListCellView,
   setPostcardStatusesCount,
   setPostcardStatuses,
   togglePostcardStatus,

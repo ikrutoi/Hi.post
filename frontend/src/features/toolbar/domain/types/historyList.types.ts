@@ -1,7 +1,6 @@
 import { flattenIcons } from '../helpers'
 import type { IconKey } from '@shared/config/constants'
 import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
-import { DATE_LIST_TOOLBAR, DateListKey } from './dateList.types'
 import { DateListToolbarState } from './dateList.types'
 
 export const HISTORY_LIST_KEYS = [
@@ -10,6 +9,7 @@ export const HISTORY_LIST_KEYS = [
   'sort131Down',
   'sortAZDown',
   'sortAZUp',
+  'historyView',
   'historyPanel',
   'historyPanelDensity',
   'cart',
@@ -27,7 +27,34 @@ export interface HistoryListToolbarState extends Record<string, any> {
   config: ToolbarConfig
 }
 
+/** Mobile factory: верхний ряд слева — переключатель вида ячейки. */
+export const HISTORY_LIST_FACTORY_UPPER_VIEW_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'historyListView',
+    icons: [{ key: 'historyView', state: 'enabled' }],
+    status: 'enabled',
+  },
+]
+
 export const HISTORY_LIST_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'historyList',
+    icons: [
+      { key: 'historyView', state: 'enabled' },
+      { key: 'panelDensity2', state: 'enabled' },
+      { key: 'sort131Down', state: 'enabled' },
+    ],
+    status: 'enabled',
+  },
+  {
+    group: 'listDelete',
+    icons: [{ key: 'listDelete', state: 'enabled' }],
+    status: 'enabled',
+  },
+]
+
+/** Mobile factory: нижний ряд — без `historyView` (он в верхнем ряду слева). */
+export const HISTORY_LIST_FACTORY_LOWER_TOOLBAR: ToolbarConfig = [
   {
     group: 'historyList',
     icons: [
@@ -36,11 +63,6 @@ export const HISTORY_LIST_TOOLBAR: ToolbarConfig = [
     ],
     status: 'enabled',
   },
-  // {
-  //   group: 'panel',
-  //   icons: [{ key: 'historyPanelDensity', state: 'enabled' }],
-  //   status: 'enabled',
-  // },
   {
     group: 'listDelete',
     icons: [{ key: 'listDelete', state: 'enabled' }],

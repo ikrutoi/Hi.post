@@ -179,6 +179,7 @@ import {
   IconPostcardReady,
   IconHistory,
   IconHistoryPanel,
+  IconHistoryView,
   IconListHistory,
   IconCalendarReturn,
   IconListCardPie,
@@ -427,6 +428,8 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconAddCartList />
     case 'historyPanel':
       return <IconHistoryPanel />
+    case 'historyView':
+      return <IconHistoryView />
     case 'historyPanelDensity':
       return <IconHistoryPanelDensity />
     case 'addList':

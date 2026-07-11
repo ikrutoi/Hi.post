@@ -11,7 +11,7 @@ import { selectIsMobileLayout } from '@layout/infrastructure/selectors'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { selectCartListSelectedLocalId, selectCartListPanelOpen } from '@cart/infrastructure/selectors/cartSelectors'
 import { getHistoryOpenDayPanelPrimaryPostcardLocalId } from '../historyOpenDayPanelPrimaryPostcard'
-import type { DayPanelPayload } from '../state/calendar.slice'
+import type { DayPanelPayload, HistoryListCellView } from '../state/calendar.slice'
 import type { PanelDensity2Size } from '@shared/ui/icons'
 
 export const selectLastCalendarViewDate = (
@@ -99,6 +99,10 @@ export const selectHistoryListSortMode = (
 export const selectHistoryListPanelDensity = (
   state: RootState,
 ): PanelDensity2Size => state.calendar.historyListPanelDensity ?? 1
+
+export const selectHistoryListCellView = (
+  state: RootState,
+): HistoryListCellView => state.calendar.historyListCellView ?? 'card'
 
 export const selectCardPieListSortDirection = (
   state: RootState,

@@ -13,6 +13,40 @@
   justify-content: center;
 }
 
+.upperViewToolbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: 0;
+  min-height: 0;
+  pointer-events: none;
+
+  > * {
+    pointer-events: auto;
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  :global([class*='toolbarHistoryList']) {
+    width: auto;
+    margin-right: 0;
+    justify-content: flex-start;
+
+    :global([class*='toolbarGroup']) {
+      justify-content: flex-start;
+    }
+  }
+}
+
 .upperIndicator {
   flex: 0 0 auto;
   min-width: 0;

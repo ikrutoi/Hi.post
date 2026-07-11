@@ -137,6 +137,84 @@ $toolbar-css-var-icon-mobile-section: --mobile-section-toolbar-icon-size;
   }
 }
 
+/** Wide glyph: fixed height, intrinsic width (no width cap). */
+@mixin toolbar-icon-button-height-only(
+  $hit-size,
+  $icon-size,
+  $aspect-ratio: null,
+  $nested-svg: false
+) {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  height: $hit-size;
+  padding: 0;
+
+  @if $aspect-ratio {
+    @if $nested-svg {
+      svg {
+        display: block;
+        flex-shrink: 0;
+        width: calc(#{$icon-size} * #{$aspect-ratio});
+        height: $icon-size;
+        max-width: none;
+      }
+    } @else {
+      > svg {
+        display: block;
+        flex-shrink: 0;
+        width: calc(#{$icon-size} * #{$aspect-ratio});
+        height: $icon-size;
+        max-width: none;
+      }
+    }
+  } @else if $nested-svg {
+    svg {
+      display: block;
+      flex-shrink: 0;
+      width: auto;
+      height: $icon-size;
+      max-width: none;
+    }
+  } @else {
+    > svg {
+      display: block;
+      flex-shrink: 0;
+      width: auto;
+      height: $icon-size;
+      max-width: none;
+    }
+  }
+}
+
+@mixin toolbar-icon-button-height-only-at-desktop-scale(
+  $hit-size,
+  $icon-size,
+  $aspect-ratio: null,
+  $nested-svg: false
+) {
+  @include toolbar-icon-button-height-only(
+    $hit-size,
+    $icon-size,
+    $aspect-ratio,
+    $nested-svg
+  );
+
+  :global([data-shell-layout='desktop']) & {
+    @include toolbar-icon-button-height-only(
+      $hit-size * $toolbar-desktop-scale,
+      $icon-size * $toolbar-desktop-scale,
+      $aspect-ratio,
+      $nested-svg
+    );
+  }
+}
+
 @mixin toolbar-icon-button-at-desktop-scale(
   $hit-size,
   $icon-size,

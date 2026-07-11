@@ -6,8 +6,13 @@ import { useMobileScenarioToolbar } from '@features/cardSectionEditor/presentati
 import { setHistoryListPanelOpen } from '@date/calendar/infrastructure/state'
 import { selectIsHistoryListPanelOpen } from '@date/calendar/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import {
+  HISTORY_LIST_FACTORY_LOWER_TOOLBAR,
+  HISTORY_LIST_FACTORY_UPPER_VIEW_TOOLBAR,
+} from '@toolbar/domain/types/historyList.types'
 import { PostcardIndicator } from '@toolbar/presentation/PostcardIndictor'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
+import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
 import type { IconKey } from '@shared/config/constants'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import styles from './HistoryListMobileFactoryToolbar.module.scss'
@@ -32,7 +37,13 @@ export const HistoryListMobileFactoryLowerToolbar: React.FC = () => {
     showMobileHistoryListFactoryChrome
 
   const content = useMemo(
-    () => (enabled ? <Toolbar section="historyList" /> : null),
+    () =>
+      enabled ? (
+        <Toolbar
+          section="historyList"
+          groupsOverride={HISTORY_LIST_FACTORY_LOWER_TOOLBAR}
+        />
+      ) : null,
     [enabled],
   )
 
@@ -41,7 +52,7 @@ export const HistoryListMobileFactoryLowerToolbar: React.FC = () => {
   return null
 }
 
-/** Mobile factory: верхний ряд — индикаторы по центру, return справа. */
+/** Mobile factory: верхний ряд — historyView слева, индикаторы по центру, return справа. */
 export const HistoryListMobileFactoryUpperToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
 
@@ -67,6 +78,13 @@ export const HistoryListMobileFactoryUpperToolbar: React.FC = () => {
 
   return (
     <div className={styles.upperRow}>
+      <div className={styles.upperViewToolbar}>
+        <Toolbar
+          section="historyList"
+          groupsOverride={HISTORY_LIST_FACTORY_UPPER_VIEW_TOOLBAR}
+          className={toolbarStyles.toolbarAromaUpperApply}
+        />
+      </div>
       <div className={styles.upperIndicator}>
         <div className={styles.upperIndicatorChrome}>
           <PostcardIndicator interactive />

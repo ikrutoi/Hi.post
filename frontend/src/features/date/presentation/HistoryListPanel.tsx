@@ -18,6 +18,7 @@ import { PostcardIndicator } from '@toolbar/presentation/PostcardIndictor'
 import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import {
   selectHistoryListPanelDensity,
+  selectHistoryListCellView,
   selectHistoryListSortMode,
 } from '@date/calendar/infrastructure/selectors'
 import {
@@ -140,8 +141,9 @@ export const HistoryListPanel: React.FC<Props> = ({
   const dispatch = useAppDispatch()
   const { isMobileLayout } = useSizeFacade()
   const useFactoryChrome = factoryChrome && isMobileLayout
-  const historyListSortMode = useAppSelector(selectHistoryListSortMode)
   const historyListPanelDensity = useAppSelector(selectHistoryListPanelDensity)
+  const historyListCellView = useAppSelector(selectHistoryListCellView)
+  const historyListSortMode = useAppSelector(selectHistoryListSortMode)
   const sortEmphasis = getHistoryListSortEmphasis(historyListSortMode)
   const sortedEntries = useMemo(
     () => sortHistoryListEntries(entries, historyListSortMode),
@@ -199,6 +201,7 @@ export const HistoryListPanel: React.FC<Props> = ({
           key={listContentKey}
           className={clsx(styles.list, hasRows && styles.listGrid)}
           data-density-level={historyListPanelDensity}
+          data-cell-view={historyListCellView}
           tabIndex={0}
           aria-label="Dispatch date list"
         >

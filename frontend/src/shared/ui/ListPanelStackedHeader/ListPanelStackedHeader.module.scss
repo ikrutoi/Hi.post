@@ -258,8 +258,20 @@
 
     :global([class*='toolbarKey']):not(:global([class*='toolbarKeyFontSizeIndicator'])):not(
         :global([class*='toolbarKeyCropQualityIndicator'])
-      ):not(:global([class*='toolbarKeyPostcardIndicator'])) {
+      ):not(:global([class*='toolbarKeyPostcardIndicator'])):not(
+        [data-icon-key='historyView']
+      ) {
       @include iconButton.toolbar-icon-button-size-card-pie-list-header(true);
+    }
+
+    :global([class*='toolbarKey'][data-icon-key='historyView']) {
+      @include iconButton.toolbar-icon-button-height-only(
+        iconButton.$toolbar-hit-size-card-pie-list-header,
+        iconButton.$toolbar-icon-size-card-pie-list-header,
+        2090 / 1283,
+        true
+      );
+      margin-left: 0.3rem;
     }
   }
 
