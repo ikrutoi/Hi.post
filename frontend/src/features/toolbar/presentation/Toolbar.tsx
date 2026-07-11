@@ -46,7 +46,6 @@ import {
 import {
   selectDateListSortDirection,
   selectHistoryListPanelDensity,
-  selectHistoryListCellView,
   selectHistoryListSortMode,
 } from '@date/calendar/infrastructure/selectors'
 import {
@@ -164,7 +163,6 @@ export const Toolbar = ({
   const dateListSortDirection = useAppSelector(selectDateListSortDirection)
   const historyListSortMode = useAppSelector(selectHistoryListSortMode)
   const historyListPanelDensity = useAppSelector(selectHistoryListPanelDensity)
-  const historyListCellView = useAppSelector(selectHistoryListCellView)
   const senderAddressListPanelDensity = useAppSelector(
     selectSenderAddressListPanelDensity,
   )
@@ -447,9 +445,6 @@ export const Toolbar = ({
     }
     if (key === 'edit' && section === 'recipientView' && recipientViewEditMode) {
       buttonStatus = 'active'
-    }
-    if (key === 'historyView' && section === 'historyList') {
-      buttonStatus = historyListCellView === 'pie' ? 'active' : 'enabled'
     }
     if (key === 'applyMedium' && section === 'senderCreate') {
       buttonStatus = senderCreateDraftInList

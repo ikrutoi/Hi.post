@@ -163,6 +163,10 @@
         }
       }
     }
+
+    &[data-icon-key='historyView'].toolbarKeyEnabled:active {
+      color: $color-font-enabled;
+    }
   }
 
   &:not(.toolbarRightSidebar):not(.toolbarCart) .toolbarKey {

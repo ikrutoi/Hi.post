@@ -142,8 +142,15 @@ $toolbar-css-var-icon-mobile-section: --mobile-section-toolbar-icon-size;
   $hit-size,
   $icon-size,
   $aspect-ratio: null,
-  $nested-svg: false
+  $nested-svg: false,
+  $padding-inline: null
 ) {
+  $history-view-pad-inline: if(
+    $padding-inline != null,
+    $padding-inline,
+    if($aspect-ratio, ($hit-size - $icon-size) * 0.5, 0)
+  );
+
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
@@ -153,7 +160,8 @@ $toolbar-css-var-icon-mobile-section: --mobile-section-toolbar-icon-size;
   min-width: 0;
   max-width: none;
   height: $hit-size;
-  padding: 0;
+  padding-inline: $history-view-pad-inline;
+  padding-block: 0;
 
   @if $aspect-ratio {
     @if $nested-svg {
@@ -196,13 +204,15 @@ $toolbar-css-var-icon-mobile-section: --mobile-section-toolbar-icon-size;
   $hit-size,
   $icon-size,
   $aspect-ratio: null,
-  $nested-svg: false
+  $nested-svg: false,
+  $padding-inline: null
 ) {
   @include toolbar-icon-button-height-only(
     $hit-size,
     $icon-size,
     $aspect-ratio,
-    $nested-svg
+    $nested-svg,
+    $padding-inline
   );
 
   :global([data-shell-layout='desktop']) & {
@@ -210,7 +220,12 @@ $toolbar-css-var-icon-mobile-section: --mobile-section-toolbar-icon-size;
       $hit-size * $toolbar-desktop-scale,
       $icon-size * $toolbar-desktop-scale,
       $aspect-ratio,
-      $nested-svg
+      $nested-svg,
+      if(
+        $padding-inline != null,
+        $padding-inline * $toolbar-desktop-scale,
+        null
+      )
     );
   }
 }
