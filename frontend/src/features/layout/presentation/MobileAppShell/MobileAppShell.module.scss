@@ -15,6 +15,63 @@ $mobile-pie-right-slot-active-width-scale: 1.25;
 $mobile-pie-right-slot-narrow-diagonal-center-x: 1 -
   1 / (2 * $mobile-pie-right-slot-active-width-scale);
 $mobile-pie-right-slot-motion-duration: 0.2s;
+$mobile-pie-right-slot-active-indicator-r: 1rem;
+/** Как бордер пустого центрального CardPie (`mobilePieWrap` empty). */
+$mobile-pie-right-slot-empty-cardpie-border: darken($color-app-inner, 8%);
+$mobile-pie-right-slot-active-indicator-bg: $color-font-enabled-light-hover;
+$mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
+
+@mixin mobile-pie-right-slot-active-left-circle {
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    z-index: 3;
+    width: calc(2 * #{$mobile-pie-right-slot-active-indicator-r});
+    height: calc(2 * #{$mobile-pie-right-slot-active-indicator-r});
+    box-sizing: border-box;
+    border-radius: 50%;
+    background-color: $color-app-inner;
+    border: 1px solid $mobile-pie-right-slot-empty-cardpie-border;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.mobilePieRightSlotActiveIndicatorIcon {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  z-index: 4;
+  width: calc(2 * #{$mobile-pie-right-slot-active-indicator-r});
+  height: calc(2 * #{$mobile-pie-right-slot-active-indicator-r});
+  box-sizing: border-box;
+  border-radius: 50%;
+  background-color: $mobile-pie-right-slot-active-indicator-bg;
+  border: 1px solid $mobile-pie-right-slot-empty-cardpie-border;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $mobile-pie-right-slot-active-indicator-fg;
+
+  svg {
+    display: block;
+    width: 48%;
+    height: 48%;
+    color: inherit;
+
+    path {
+      stroke: currentColor;
+    }
+
+    [fill='currentColor'] {
+      fill: currentColor;
+    }
+  }
+}
 
 .mobileShell {
   position: fixed;
@@ -707,6 +764,14 @@ $mobile-central-pie-envelope-empty-icon-width: 40%;
   &:has(.mobilePieRightSlotItemCart[aria-pressed='true']) {
     width: calc(100% * #{$mobile-pie-right-slot-active-width-scale});
     z-index: 1;
+    overflow: visible;
+    @include mobile-pie-right-slot-active-left-circle;
+  }
+
+  &:has(.mobilePieRightSlotActiveIndicatorIcon) {
+    &::before {
+      display: none;
+    }
   }
 }
 
@@ -862,6 +927,7 @@ $mobile-central-pie-envelope-empty-icon-width: 40%;
 }
 
 .mobilePieRightSlotItemHistory {
+  position: relative;
   margin: calc(var(--mobile-pie-gutter-mini-side) + var(--mobile-section-inset)) 0 0;
   padding: 0;
   font: inherit;
@@ -883,6 +949,16 @@ $mobile-central-pie-envelope-empty-icon-width: 40%;
     0 1px 0 rgba(0, 0, 0, 0.06),
     0 2px 3px rgba(0, 0, 0, 0.1),
     inset 0 -1px 0 rgba(255, 255, 255, 0.32);
+
+  &[aria-pressed='true'] {
+    @include mobile-pie-right-slot-active-left-circle;
+  }
+
+  &:has(.mobilePieRightSlotActiveIndicatorIcon) {
+    &::before {
+      display: none;
+    }
+  }
 }
 
 .mobilePieToolbar {

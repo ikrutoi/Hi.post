@@ -2026,7 +2026,7 @@
 
   .toolbar .toolbarKey:not(.toolbarKeyFontSizeIndicator):not(
       .toolbarKeyCropQualityIndicator
-    ):not([data-icon-key='historyView']) {
+    ):not([data-icon-key='historyView']):not([data-icon-key='userLogin']) {
     @include iconButton.toolbar-icon-button-size-mobile-toolbar(true);
   }
 
@@ -2055,6 +2055,31 @@
       --mobile-right-sidebar-logo-size,
       #{iconButton.$toolbar-logo-size-mobile-right-sidebar}
     );
+
+    .toolbarUserChromeGlyph {
+      display: block;
+      flex-shrink: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+
+      svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    > svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    img.toolbarUserChromeGlyph {
+      border-radius: 50%;
+      object-fit: cover;
+    }
   }
 
   .toolbarRightSidebar.toolbarRightSidebarHeaderStack

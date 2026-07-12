@@ -22,6 +22,8 @@ import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/
 import {
   buildCartArchiveToggleCommands,
   buildHistoryArchiveToggleCommands,
+  resolveCartArchiveViewMode,
+  resolveHistoryArchiveViewMode,
 } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 import {
   setCardPieListPanelOpen,
@@ -36,6 +38,7 @@ import {
   selectIsHistoryListPanelOpen,
   selectHistoryListSelectedLocalId,
   selectNotebookStripTab,
+  selectCartCalendarDatePickMode,
 } from '@date/calendar/infrastructure/selectors'
 import { setCardtextListPanelOpen, deleteCardtextFromViewRequested } from '@cardtext/infrastructure/state'
 import { selectIsCardtextListPanelOpen } from '@cardtext/infrastructure/selectors'
@@ -74,7 +77,7 @@ import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { CardSection, IconKey } from '@shared/config/constants'
 import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
 import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDevContext'
-import { IconCardPie, IconLogo, IconSectionMenuCardtext, IconSectionMenuEnvelopeV2 } from '@shared/ui/icons'
+import { IconCardPie, IconCart, IconHistory, IconLogo, IconSectionMenuCardtext, IconSectionMenuDate, IconSectionMenuEnvelopeV2 } from '@shared/ui/icons'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { useEditorPieAddCartHandler } from '@features/cardPie/application/hooks/useEditorPieAddCartHandler'
@@ -156,6 +159,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const viewAroma = useAppSelector(selectViewAroma)
   const activeCartPostcardCount = useAppSelector(selectActiveCartPostcardCount)
   const blockedCartPostcardCount = useAppSelector(selectBlockedCartPostcardCount)
+  const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
   const cartSlotVisualMode = useMemo(() => {
     if (activeCartPostcardCount > 0 && blockedCartPostcardCount > 0) {
       return 'mixed' as const
@@ -732,6 +736,35 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const historyStripActive =
     historyListPanelOpen || notebookStripSection === 'history'
 
+  const cartStripActive =
+    cartListPanelOpen || notebookStripSection === 'cart'
+
+  const cartArchiveViewMode = resolveCartArchiveViewMode({
+    cartListPanelOpen,
+    notebookStripTab: notebookStripSection,
+  })
+
+  const showCartSlotDateIcon =
+    cartStripActive &&
+    (cartArchiveViewMode === 'calendar' || cartCalendarDatePickMode)
+
+  const showCartSlotCartIcon =
+    cartStripActive &&
+    cartArchiveViewMode === 'list' &&
+    !cartCalendarDatePickMode
+
+  const historyArchiveViewMode = resolveHistoryArchiveViewMode({
+    historyListPanelOpen,
+    notebookStripTab: notebookStripSection,
+    activeSection,
+  })
+
+  const showHistorySlotDateIcon =
+    historyStripActive && historyArchiveViewMode === 'calendar'
+
+  const showHistorySlotHistoryIcon =
+    historyStripActive && historyArchiveViewMode === 'list'
+
   const cardWidthStyle =
     sizeCard?.width != null && sizeCard.width > 0
       ? ({
@@ -950,6 +983,18 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                     <div className={styles.mobilePieRightSlot}>
                       <div className={styles.mobilePieRightSlotCartShell}>
                         <div className={styles.mobilePieRightSlotCartButtonFrame}>
+                          {showCartSlotDateIcon || showCartSlotCartIcon ? (
+                            <span
+                              className={styles.mobilePieRightSlotActiveIndicatorIcon}
+                              aria-hidden
+                            >
+                              {showCartSlotDateIcon ? (
+                                <IconSectionMenuDate />
+                              ) : (
+                                <IconCart />
+                              )}
+                            </span>
+                          ) : null}
                           <button
                             type="button"
                             className={clsx(
@@ -1013,7 +1058,20 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                         aria-label="History postcards"
                         aria-pressed={historyStripActive}
                         onClick={handleHistorySlotClick}
-                      />
+                      >
+                        {showHistorySlotDateIcon || showHistorySlotHistoryIcon ? (
+                          <span
+                            className={styles.mobilePieRightSlotActiveIndicatorIcon}
+                            aria-hidden
+                          >
+                            {showHistorySlotDateIcon ? (
+                              <IconSectionMenuDate />
+                            ) : (
+                              <IconHistory />
+                            )}
+                          </span>
+                        ) : null}
+                      </button>
                     </div>
                 </div>
               </section>
