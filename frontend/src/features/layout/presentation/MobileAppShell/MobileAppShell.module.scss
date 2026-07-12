@@ -18,7 +18,7 @@ $mobile-pie-right-slot-motion-duration: 0.2s;
 $mobile-pie-right-slot-active-indicator-r: 1rem;
 /** Как бордер пустого центрального CardPie (`mobilePieWrap` empty). */
 $mobile-pie-right-slot-empty-cardpie-border: darken($color-app-inner, 8%);
-$mobile-pie-right-slot-active-indicator-bg: $color-font-enabled-light-hover;
+$mobile-pie-right-slot-active-indicator-bg: $color-font-enabled-light;
 $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
 
 @mixin mobile-pie-right-slot-active-left-circle {
