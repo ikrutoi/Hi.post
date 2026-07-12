@@ -10,6 +10,8 @@ import img308_11 from '../../assets/308_11.png'
 import img310_11 from '../../assets/310_11.png'
 import img311_11 from '../../assets/311_11.png'
 import img312_11 from '../../assets/312_11.png'
+import img313_11 from '../../assets/313_11.png'
+import img314_11 from '../../assets/314_11.png'
 
 export const AROMA_CELL_COUNT = 9 as const
 
@@ -19,8 +21,8 @@ export type AromaSlot = (typeof aromaSlotOrder)[number]
 
 export const AROMA_IMAGES: Record<AromaSlot, string> = {
   0: img100_11,
-  1: img303_11,
-  2: img312_11,
+  1: img314_11,
+  2: img303_11,
   3: img302_11,
   4: img307_11,
   5: img306_11,
