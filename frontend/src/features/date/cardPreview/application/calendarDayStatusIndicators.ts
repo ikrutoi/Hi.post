@@ -50,3 +50,22 @@ export function cartCalendarDayStatusIndicators(
 ): CalendarDayStatusIndicator[] {
   return cartSlotIndicators(cart)
 }
+
+/** Статус индикатора, соответствующий открытке в центральном CardPie. */
+export function resolveActiveCalendarIndicatorStatus(
+  itemStatus: PostcardStatus,
+  indicators: readonly CalendarDayStatusIndicator[],
+): PostcardStatus | null {
+  const keys = new Set(indicators.map((indicator) => indicator.status))
+  if (keys.has(itemStatus)) return itemStatus
+  if (
+    (itemStatus === 'cart' || itemStatus === 'cartBlocked') &&
+    keys.has('cart')
+  ) {
+    return 'cart'
+  }
+  if (itemStatus === 'cartBlocked' && keys.has('cartBlocked')) {
+    return 'cartBlocked'
+  }
+  return null
+}

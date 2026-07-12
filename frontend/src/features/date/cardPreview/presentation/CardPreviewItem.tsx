@@ -22,6 +22,7 @@ export const CardPreviewItem: React.FC<
   isAdjacentMonthEdge = false,
   hasCartPostcardsOnDay = false,
   calendarStatusIndicators,
+  activeCalendarIndicatorStatus,
   isActiveCardPiePostcard = false,
   onArchivePostcardClick,
 }) => {
@@ -100,11 +101,24 @@ export const CardPreviewItem: React.FC<
       )}
       {calendarStatusIndicators != null &&
       calendarStatusIndicators.length > 0 ? (
-        <div className={styles.historyIndicatorStack} aria-hidden>
+        <div
+          className={styles.historyIndicatorStack}
+          aria-hidden
+          style={
+            {
+              '--indicator-count': calendarStatusIndicators.length,
+            } as React.CSSProperties
+          }
+        >
           {calendarStatusIndicators.map(({ status }) => (
             <span
               key={status}
-              className={clsx(styles.previewIndicator, styles[status])}
+              className={clsx(
+                styles.previewIndicator,
+                styles[status],
+                activeCalendarIndicatorStatus === status &&
+                  styles.previewIndicatorActiveCardPie,
+              )}
             />
           ))}
         </div>

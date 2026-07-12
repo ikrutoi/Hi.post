@@ -118,6 +118,8 @@ export interface PreviewItemForCalendar {
    * Календарь «Корзина» / «История»: стек круглых индикаторов по статусам дня.
    */
   calendarStatusIndicators?: readonly CalendarDayStatusIndicator[]
+  /** Индикатор открытки в центральном CardPie — полностью виден на своём месте в стеке. */
+  activeCalendarIndicatorStatus?: PostcardStatus
   /** Превью совпадает с открыткой в центральном CardPie — усиленная тень. */
   isActiveCardPiePostcard?: boolean
 }

@@ -30,6 +30,7 @@ import { CalendarCardItem } from '@entities/card/domain/types'
 import {
   cartCalendarDayStatusIndicators,
   historyCalendarDayStatusIndicators,
+  resolveActiveCalendarIndicatorStatus,
 } from '../application/calendarDayStatusIndicators'
 import { POSTCARD_STATUSES_HIDDEN_ON_DATE_CALENDAR_THUMBNAIL } from '@entities/postcard'
 import type { DispatchDate } from '@entities/date/domain/types'
@@ -261,6 +262,16 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
       ? cartCalendarDayStatusIndicators(cart)
       : []
 
+  const activeCalendarIndicatorStatus =
+    isActiveCardPiePostcard &&
+    primaryItemForDisplay != null &&
+    calendarStatusIndicators.length > 0
+      ? resolveActiveCalendarIndicatorStatus(
+          primaryItemForDisplay.status,
+          calendarStatusIndicators,
+        )
+      : null
+
   const handleMobileArchivePostcardClick = useCallback(
     (item: CalendarCardItem) => {
       if (!isMobileLayout || (!isCartCalendar && !isHistory)) return
@@ -314,6 +325,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
                 ? calendarStatusIndicators
                 : undefined
             }
+            activeCalendarIndicatorStatus={activeCalendarIndicatorStatus ?? undefined}
             onArchivePostcardClick={
               isMobileLayout && isHistoryLike && primaryItemForDisplay != null
                 ? () => handleMobileArchivePostcardClick(primaryItemForDisplay)

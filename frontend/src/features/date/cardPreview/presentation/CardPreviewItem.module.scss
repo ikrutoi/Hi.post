@@ -86,25 +86,44 @@
 }
 
 .historyIndicatorStack {
+  --history-indicator-size: 0.55rem;
+  --history-indicator-step: calc(var(--history-indicator-size) * 0.75);
+  --history-indicator-count: var(--indicator-count, 1);
   position: absolute;
   top: 0.15rem;
   left: 0.15rem;
   z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.1rem;
+  width: var(--history-indicator-size);
+  height: calc(
+    var(--history-indicator-size) + max(0, var(--history-indicator-count) - 1) *
+      var(--history-indicator-step)
+  );
   pointer-events: none;
 
   :global([data-shell-layout='mobile']) & {
     top: 0.2rem;
     left: 0.2rem;
-    gap: 0.15rem;
+    --history-indicator-size: #{$mobile-calendar-preview-indicator-dot-size};
   }
 }
 
 .historyIndicatorStack .previewIndicator {
-  position: static;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--history-indicator-size);
+  height: var(--history-indicator-size);
+
+  @for $i from 1 through 5 {
+    &:nth-child(#{$i}) {
+      top: calc(#{($i - 1)} * var(--history-indicator-step));
+      z-index: #{6 - $i};
+
+      &.previewIndicatorActiveCardPie {
+        z-index: 10;
+      }
+    }
+  }
 }
 
 .previewIndicator {
