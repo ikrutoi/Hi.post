@@ -36,7 +36,11 @@ function cartSlotIndicators(
 export function historyCalendarDayStatusIndicators(
   data: CalendarDayStatusBuckets,
 ): CalendarDayStatusIndicator[] {
-  const indicators = cartSlotIndicators(data.cart)
+  const indicators: CalendarDayStatusIndicator[] = []
+  const plainCartCount = data.cart.filter((item) => item.status === 'cart').length
+  if (plainCartCount > 0) {
+    pushIndicator(indicators, 'cart', plainCartCount)
+  }
   pushIndicator(indicators, 'ready', data.ready.length)
   pushIndicator(indicators, 'sent', data.sent.length)
   pushIndicator(indicators, 'delivered', data.delivered.length)

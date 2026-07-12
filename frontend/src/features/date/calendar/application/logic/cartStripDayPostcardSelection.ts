@@ -4,7 +4,10 @@ import type { CartListStatusSegment } from '@cart/domain/types'
 import { orderedStripPostcardsByDispatchDate } from '@date/application/helpers/calendarStripMonthCycle'
 import {
   nextCyclicLocalId,
+  nextSequentialLocalId,
+  orderedCartCenterCycleLocalIds,
   orderedCartStripLocalIdsForDay,
+  resolveDayThenGlobalPostcardCycle,
 } from '../../infrastructure/calendarDayPostcardCycle'
 
 export type CartListSelectedLocalIdsBySegment = Record<
@@ -121,7 +124,7 @@ export function resolveCartStripSegmentPostcardCycle(input: {
   )
   if (items.length <= 1) return null
   const lids = items.map((item) => item.localId)
-  return nextCyclicLocalId(lids, input.listSelectedLocalId)
+  return nextSequentialLocalId(lids, input.listSelectedLocalId)
 }
 
 /** Центр CardPie в режиме календаря корзины: только цикл по дню, без списка и day panel. */
@@ -130,6 +133,7 @@ export function resolveCartCalendarCenterPostcardCycle(input: {
   cartItems: readonly PostcardHydrated[]
   listSelectedLocalId: number | null
   listStatusSegment: CartListStatusSegment
+  dateKey: string
 }): number | null {
   const statusFilter = cartStripCycleStatusFilter(
     input.cartItems,
@@ -140,21 +144,43 @@ export function resolveCartCalendarCenterPostcardCycle(input: {
     input.dayData,
     input.cartItems,
     statusFilter,
+    input.dateKey,
   )
   if (lids.length <= 1) return null
-  return nextCyclicLocalId(lids, input.listSelectedLocalId)
+  return nextSequentialLocalId(lids, input.listSelectedLocalId)
 }
 
 /** Центр CardPie: сначала цикл по дню, затем по всему сегменту списка. */
 export function resolveCartCenterPostcardCycle(input: {
+  cardsByDateMap: Record<string, CardCalendarIndex>
   dayData: CardCalendarIndex
   cartItems: readonly PostcardHydrated[]
   listSelectedLocalId: number | null
   listStatusSegment: CartListStatusSegment
+  dateKey: string
 }): number | null {
-  const dayNext = resolveCartCalendarCenterPostcardCycle(input)
-  if (dayNext != null) return dayNext
-  return resolveCartStripSegmentPostcardCycle(input)
+  const statusFilter = cartStripCycleStatusFilter(
+    input.cartItems,
+    input.listSelectedLocalId,
+    input.listStatusSegment,
+  )
+  const dayLids = orderedCartStripLocalIdsForDay(
+    input.dayData,
+    input.cartItems,
+    statusFilter,
+    input.dateKey,
+  )
+  const allLids = orderedCartCenterCycleLocalIds(
+    input.cardsByDateMap,
+    input.cartItems,
+    statusFilter,
+  )
+
+  return resolveDayThenGlobalPostcardCycle({
+    current: input.listSelectedLocalId,
+    dayLocalIds: dayLids,
+    globalLocalIds: allLids,
+  })
 }
 
 /** Список корзины открыт: цикл по всем открыткам текущего сегмента списка. */

@@ -99,14 +99,13 @@ import { primaryDispatchDateFromPieInner } from '@features/cardPie/domain/primar
 import {
   cartListStatusSegmentForLocalId,
   dispatchDateKeyFromPostcard,
-  resolveCartCenterPostcardCycle,
   resolveCartListCenterPostcardCycle,
   resolveCartStripContextLocalId,
   resolveCartStripDayPostcardSelection,
 } from '@date/calendar/application/logic/cartStripDayPostcardSelection'
+import { resolveArchiveCenterPostcardCycle } from '@date/calendar/application/logic/archiveCenterPostcardCycle'
+import { syncArchiveCenterPostcardCalendarView } from '@date/calendar/application/logic/archiveCenterCalendarSync'
 import {
-  resolveHistoryCenterPostcardCycle,
-  resolveHistoryListCenterPostcardCycle,
   resolveHistoryStripDayPostcardSelection,
 } from '@date/calendar/application/logic/historyStripDayPostcardSelection'
 import { MarkStampYearDevProvider, useMarkStampYearDev } from '@envelope/application/MarkStampYearDevContext'
@@ -613,84 +612,60 @@ const App = () => {
     /** `date` + strip «История» — календарь; `history` открывает список через saga. */
     dispatch(setActiveSection('date'))
 
-    const activeLocalId = rightListArchiveLocalId ?? historyListSelectedLocalId
+    const freshState = store.getState()
+    const freshCardsByDateMap = selectCardsByDateMap(freshState)
+    const freshCartItems = selectCartItems(freshState)
+
+    const activeLocalId = historyListSelectedLocalId ?? rightListArchiveLocalId
     const postcard =
       activeLocalId != null
-        ? cartItems.find((item) => item.localId === activeLocalId)
+        ? freshCartItems.find((item) => item.localId === activeLocalId)
         : undefined
 
-    if (postcard != null) {
-      dispatch(
-        updateLastViewedCalendarDate({
-          year: postcard.date.year,
-          month: postcard.date.month,
-        }),
+    const applyArchiveCenterCycle = (): boolean => {
+      if (activeLocalId == null) return false
+
+      const nextLocalId = resolveArchiveCenterPostcardCycle({
+        archiveSource: 'history',
+        cardsByDateMap: freshCardsByDateMap,
+        cartItems: freshCartItems,
+        currentLocalId: activeLocalId,
+      })
+      if (nextLocalId == null) return false
+
+      dispatch(setHistoryListSelectedLocalId(nextLocalId))
+      applyRightListArchiveToolbarVisuals(
+        dispatch,
+        store.getState,
+        'history',
       )
+      syncArchiveCenterPostcardCalendarView(
+        dispatch,
+        store.getState,
+        nextLocalId,
+      )
+      return true
+    }
 
+    if (postcard != null) {
       const dateKey = dispatchDateKeyFromPostcard(postcard)
-      const dayData = cardsByDateMap[dateKey]
+      const dayData = freshCardsByDateMap[dateKey]
+
+      if (!historyListPanelOpen) {
+        applyArchiveCenterCycle()
+        return
+      }
+
+      if (applyArchiveCenterCycle()) {
+        return
+      }
+
       if (dayData != null) {
-        const cycleInput = {
-          dayData,
-          cartItems,
-          postcardStatuses,
-          listSelectedLocalId: activeLocalId,
-        }
-
-        if (!historyListPanelOpen) {
-          const nextLocalId = resolveHistoryCenterPostcardCycle(cycleInput)
-          if (nextLocalId != null) {
-            dispatch(setHistoryListSelectedLocalId(nextLocalId))
-            const nextPostcard = cartItems.find(
-              (item) => item.localId === nextLocalId,
-            )
-            if (nextPostcard != null) {
-              dispatch(
-                updateLastViewedCalendarDate({
-                  year: nextPostcard.date.year,
-                  month: nextPostcard.date.month,
-                }),
-              )
-            }
-          }
-          return
-        }
-
-        const nextLocalId = resolveHistoryListCenterPostcardCycle({
-          ...cycleInput,
-          dateKey,
-          openDayPanelDateKey: openDayPanelState?.dateKey,
-        })
-
-        if (nextLocalId != null) {
-          dispatch(setHistoryListSelectedLocalId(nextLocalId))
-          const nextPostcard = cartItems.find(
-            (item) => item.localId === nextLocalId,
-          )
-          if (nextPostcard != null) {
-            dispatch(
-              updateLastViewedCalendarDate({
-                year: nextPostcard.date.year,
-                month: nextPostcard.date.month,
-              }),
-            )
-            const nextDateKey = dispatchDateKeyFromPostcard(nextPostcard)
-            const nextDayData = cardsByDateMap[nextDateKey]
-            if (
-              nextDayData != null &&
-              calendarDayHasCards(nextDayData)
-            ) {
-              dispatch(openDayPanel({ dateKey: nextDateKey, dayData: nextDayData }))
-            }
-          }
-          return
-        }
-
         dispatch(openDayPanel({ dateKey, dayData }))
         const openDayResult = resolveHistoryStripDayPostcardSelection({
           dateKey,
           dayData,
-          cartItems,
+          cartItems: freshCartItems,
           postcardStatuses,
           openDayPanelDateKey: openDayPanelState?.dateKey,
           listSelectedLocalId: activeLocalId,
@@ -698,6 +673,11 @@ const App = () => {
         })
         if (openDayResult.localId != null) {
           dispatch(setHistoryListSelectedLocalId(openDayResult.localId))
+          syncArchiveCenterPostcardCalendarView(
+            dispatch,
+            store.getState,
+            openDayResult.localId,
+          )
         }
         return
       }
@@ -712,8 +692,6 @@ const App = () => {
     historyListPanelOpen,
     historyListSelectedLocalId,
     rightListArchiveLocalId,
-    cartItems,
-    cardsByDateMap,
     postcardStatuses,
     openDayPanelState?.dateKey,
     listRowInner,
@@ -729,10 +707,14 @@ const App = () => {
     dispatch(setNotebookStripTab('cart'))
     dispatch(setActiveSection('date'))
 
+    const freshState = store.getState()
+    const freshCardsByDateMap = selectCardsByDateMap(freshState)
+    const freshCartItems = selectCartItems(freshState)
+
     const applyCartStripSelection = (localId: number) => {
       dispatch(
         setCartListStatusSegment(
-          cartListStatusSegmentForLocalId(cartItems, localId),
+          cartListStatusSegmentForLocalId(freshCartItems, localId),
         ),
       )
       dispatch(setCartListSelectedLocalId(localId))
@@ -740,57 +722,60 @@ const App = () => {
 
     const activeLocalId = listPanelOpen
       ? (listSelectedLocalId ?? rightListArchiveLocalId)
-      : resolveCartStripContextLocalId({
+      : (listSelectedLocalId ??
+        resolveCartStripContextLocalId({
           listStatusSegment: cartListStatusSegment,
           bySegment: cartListSelectedBySegment,
           fallbackLocalId: rightListArchiveLocalId ?? listSelectedLocalId,
-          cartItems,
-        })
+          cartItems: freshCartItems,
+        }))
     const postcard =
       activeLocalId != null
-        ? cartItems.find((item) => item.localId === activeLocalId)
+        ? freshCartItems.find((item) => item.localId === activeLocalId)
         : undefined
 
-    if (postcard != null) {
-      const statusSegment = cartListStatusSegmentForLocalId(
-        cartItems,
-        activeLocalId,
-      )
-      dispatch(
-        updateLastViewedCalendarDate({
-          year: postcard.date.year,
-          month: postcard.date.month,
-        }),
-      )
+    const applyArchiveCenterCycle = (): boolean => {
+      if (activeLocalId == null) return false
 
+      const nextLocalId = resolveArchiveCenterPostcardCycle({
+        archiveSource: 'cart',
+        cardsByDateMap: freshCardsByDateMap,
+        cartItems: freshCartItems,
+        currentLocalId: activeLocalId,
+      })
+      if (nextLocalId == null) return false
+
+      applyCartStripSelection(nextLocalId)
+      applyRightListArchiveToolbarVisuals(dispatch, store.getState, 'cart')
+      syncArchiveCenterPostcardCalendarView(
+        dispatch,
+        store.getState,
+        nextLocalId,
+      )
+      return true
+    }
+
+    if (postcard != null) {
       const dateKey = dispatchDateKeyFromPostcard(postcard)
-      const dayData = cardsByDateMap[dateKey]
+      const dayData = freshCardsByDateMap[dateKey]
+
+      if (!listPanelOpen) {
+        applyArchiveCenterCycle()
+        return
+      }
+
       if (dayData != null) {
+        const statusSegment = cartListStatusSegmentForLocalId(
+          freshCartItems,
+          activeLocalId,
+        )
         const cycleInput = {
+          cardsByDateMap: freshCardsByDateMap,
           dayData,
-          cartItems,
+          cartItems: freshCartItems,
           listSelectedLocalId: activeLocalId,
           listStatusSegment: statusSegment,
-        }
-
-        /** Календарь корзины (список закрыт): цикл по дню или по всему сегменту. */
-        if (!listPanelOpen) {
-          const nextLocalId = resolveCartCenterPostcardCycle(cycleInput)
-          if (nextLocalId != null) {
-            applyCartStripSelection(nextLocalId)
-            const nextPostcard = cartItems.find(
-              (item) => item.localId === nextLocalId,
-            )
-            if (nextPostcard != null) {
-              dispatch(
-                updateLastViewedCalendarDate({
-                  year: nextPostcard.date.year,
-                  month: nextPostcard.date.month,
-                }),
-              )
-            }
-          }
-          return
+          dateKey,
         }
 
         const nextLocalId = resolveCartListCenterPostcardCycle({
@@ -801,25 +786,15 @@ const App = () => {
 
         if (nextLocalId != null) {
           applyCartStripSelection(nextLocalId)
-          const nextPostcard = cartItems.find(
-            (item) => item.localId === nextLocalId,
+          syncArchiveCenterPostcardCalendarView(
+            dispatch,
+            store.getState,
+            nextLocalId,
           )
-          if (nextPostcard != null) {
-            dispatch(
-              updateLastViewedCalendarDate({
-                year: nextPostcard.date.year,
-                month: nextPostcard.date.month,
-              }),
-            )
-            const nextDateKey = dispatchDateKeyFromPostcard(nextPostcard)
-            const nextDayData = cardsByDateMap[nextDateKey]
-            if (
-              nextDayData != null &&
-              calendarDayHasCards(nextDayData)
-            ) {
-              dispatch(openDayPanel({ dateKey: nextDateKey, dayData: nextDayData }))
-            }
-          }
+          return
+        }
+
+        if (applyArchiveCenterCycle()) {
           return
         }
 
@@ -827,7 +802,7 @@ const App = () => {
         const openDayResult = resolveCartStripDayPostcardSelection({
           dateKey,
           dayData,
-          cartItems,
+          cartItems: freshCartItems,
           openDayPanelDateKey: openDayPanelState?.dateKey,
           listSelectedLocalId: activeLocalId,
           listStatusSegment: statusSegment,
@@ -835,6 +810,11 @@ const App = () => {
         })
         if (openDayResult.localId != null) {
           applyCartStripSelection(openDayResult.localId)
+          syncArchiveCenterPostcardCalendarView(
+            dispatch,
+            store.getState,
+            openDayResult.localId,
+          )
         }
         return
       }
@@ -851,8 +831,6 @@ const App = () => {
     cartListStatusSegment,
     cartListSelectedBySegment,
     rightListArchiveLocalId,
-    cartItems,
-    cardsByDateMap,
     openDayPanelState?.dateKey,
     listRowInner,
   ])

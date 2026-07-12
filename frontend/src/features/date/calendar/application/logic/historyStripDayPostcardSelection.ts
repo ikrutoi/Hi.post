@@ -2,50 +2,16 @@ import type { CardCalendarIndex } from '@entities/card/domain/types'
 import type { PostcardHydrated } from '@entities/postcard'
 import type { PostcardStatuses } from '@entities/postcard/domain/types'
 import {
-  orderedStripPostcardsByDispatchDate,
-  type StripMonthCycleStatus,
-} from '@date/application/helpers/calendarStripMonthCycle'
-import { HISTORY_STRIP_STATUS_PRIORITY } from '@date/application/helpers/stripDefaultSelection'
-import {
   nextCyclicLocalId,
+  nextSequentialLocalId,
+  orderedHistoryCenterCycleLocalIds,
   orderedHistoryDayLocalIds,
+  resolveDayThenGlobalPostcardCycle,
 } from '../../infrastructure/calendarDayPostcardCycle'
 
 export type HistoryStripDayPostcardSelectionResult =
   | { kind: 'cycle'; localId: number }
   | { kind: 'openDay'; localId: number | null }
-
-function orderedHistoryStripLocalIdsByDispatchDate(
-  cartItems: readonly PostcardHydrated[],
-  postcardStatuses: PostcardStatuses,
-): number[] {
-  const collected: PostcardHydrated[] = []
-  for (const status of HISTORY_STRIP_STATUS_PRIORITY) {
-    if (!postcardStatuses[status]) continue
-    collected.push(
-      ...orderedStripPostcardsByDispatchDate(
-        cartItems,
-        status as StripMonthCycleStatus,
-      ),
-    )
-  }
-  collected.sort((a, b) => {
-    const timeDelta =
-      new Date(a.date.year, a.date.month, a.date.day).getTime() -
-      new Date(b.date.year, b.date.month, b.date.day).getTime()
-    if (timeDelta !== 0) return timeDelta
-    return a.localId - b.localId
-  })
-
-  const lids: number[] = []
-  const seen = new Set<number>()
-  for (const item of collected) {
-    if (seen.has(item.localId)) continue
-    seen.add(item.localId)
-    lids.push(item.localId)
-  }
-  return lids
-}
 
 /** Та же логика, что у клика по дню календаря в strip «История». */
 export function resolveHistoryStripDayPostcardSelection(input: {
@@ -88,45 +54,66 @@ export function resolveHistoryCalendarCenterPostcardCycle(input: {
   cartItems: readonly PostcardHydrated[]
   postcardStatuses: PostcardStatuses
   listSelectedLocalId: number | null
+  dateKey: string
 }): number | null {
   const lids = orderedHistoryDayLocalIds(
     input.dayData,
     input.cartItems,
     input.postcardStatuses,
+    input.dateKey,
   )
   if (lids.length <= 1) return null
-  return nextCyclicLocalId(lids, input.listSelectedLocalId)
+  return nextSequentialLocalId(lids, input.listSelectedLocalId)
 }
 
 export function resolveHistoryStripPostcardCycle(input: {
+  cardsByDateMap: Record<string, CardCalendarIndex>
   cartItems: readonly PostcardHydrated[]
   postcardStatuses: PostcardStatuses
   listSelectedLocalId: number | null
 }): number | null {
-  const lids = orderedHistoryStripLocalIdsByDispatchDate(
+  const lids = orderedHistoryCenterCycleLocalIds(
+    input.cardsByDateMap,
     input.cartItems,
     input.postcardStatuses,
   )
   if (lids.length <= 1) return null
-  return nextCyclicLocalId(lids, input.listSelectedLocalId)
+  return nextSequentialLocalId(lids, input.listSelectedLocalId)
 }
 
 /** Центр CardPie: сначала цикл по дню, затем по всей полосе «История». */
 export function resolveHistoryCenterPostcardCycle(input: {
+  cardsByDateMap: Record<string, CardCalendarIndex>
   dayData: CardCalendarIndex
   cartItems: readonly PostcardHydrated[]
   postcardStatuses: PostcardStatuses
   listSelectedLocalId: number | null
+  dateKey: string
 }): number | null {
-  const dayNext = resolveHistoryCalendarCenterPostcardCycle(input)
-  if (dayNext != null) return dayNext
-  return resolveHistoryStripPostcardCycle(input)
+  const dayLids = orderedHistoryDayLocalIds(
+    input.dayData,
+    input.cartItems,
+    input.postcardStatuses,
+    input.dateKey,
+  )
+  const allLids = orderedHistoryCenterCycleLocalIds(
+    input.cardsByDateMap,
+    input.cartItems,
+    input.postcardStatuses,
+  )
+
+  return resolveDayThenGlobalPostcardCycle({
+    current: input.listSelectedLocalId,
+    dayLocalIds: dayLids,
+    globalLocalIds: allLids,
+  })
 }
 
 /** Список истории открыт: цикл по всем открыткам списка (как strip «История»). */
 export function resolveHistoryListCenterPostcardCycle(input: {
   dateKey: string
   dayData: CardCalendarIndex
+  cardsByDateMap: Record<string, CardCalendarIndex>
   cartItems: readonly PostcardHydrated[]
   postcardStatuses: PostcardStatuses
   openDayPanelDateKey: string | null | undefined
