@@ -279,10 +279,9 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
   const statusCount = (status: PostcardStatus) => {
     if (!showStatusCounts || statusCounts == null) return null
     const n = statusCountValue(status)
-    if (n <= 0) return null
     return (
-      <span className={styles.count} aria-hidden>
-        {n}
+      <span className={styles.count} aria-hidden={n <= 0}>
+        {n > 0 ? n : null}
       </span>
     )
   }

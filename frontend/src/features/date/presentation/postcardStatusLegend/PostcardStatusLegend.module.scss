@@ -298,11 +298,14 @@
 
   .count {
     flex-shrink: 0;
+    display: inline-block;
+    min-width: 2.25ch;
     margin-left: 0.05rem;
     font-size: 0.9rem;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
     line-height: 1;
+    text-align: start;
     user-select: none;
   }
 }
