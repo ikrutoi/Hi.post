@@ -14,6 +14,10 @@ import {
 
 import { createSelector } from '@reduxjs/toolkit'
 import {
+  resolveCardtextToolbarSection,
+  shouldHideEmptyCreateToolbar,
+} from '../../application/helpers/resolveCardtextToolbarSection'
+import {
   deriveCardtextInteractionMode,
   type CardtextInteractionMode,
 } from '../../domain/cardtextInteractionMode'
@@ -185,6 +189,47 @@ export const selectCardtextInteractionMode = createSelector(
       currentTemplateId,
       isCardtextViewEditMode,
     }),
+)
+
+/** Форма редактирования cardtext: нижний composer-toolbar (cardtextEditor). */
+export const selectIsCardtextEditorComposerVisible = createSelector(
+  [
+    selectCardtextAssetStatus,
+    selectCardtextSource,
+    selectCardtextId,
+    (state: RootState) => state.cardtext.isCardtextViewEditMode === true,
+    (state: RootState) => state.cardtext.assetData,
+    (state: RootState) => state.cardtext.isDraftEngaged === true,
+    selectCardtextValue,
+    (state: RootState) => state.cardtext.isAddTemplateOpen === true,
+  ],
+  (
+    cardtextAssetStatus,
+    currentView,
+    currentTemplateId,
+    isCardtextViewEditMode,
+    assetData,
+    isDraftEngaged,
+    value,
+    isAddTemplateOpen,
+  ): boolean => {
+    const toolbarSection = resolveCardtextToolbarSection({
+      cardtextAssetStatus,
+      currentView,
+      currentTemplateId,
+      isCardtextViewEditMode,
+    })
+    if (toolbarSection !== 'cardtextEditor') return false
+    const factorySessionActive = assetData != null || isDraftEngaged === true
+    if (!factorySessionActive) return false
+    return !shouldHideEmptyCreateToolbar({
+      currentView,
+      currentTemplateId,
+      value,
+      isAddTemplateOpen,
+      cardtext: { assetData, isDraftEngaged },
+    })
+  },
 )
 
 /**

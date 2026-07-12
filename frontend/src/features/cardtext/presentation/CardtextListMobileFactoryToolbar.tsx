@@ -5,9 +5,10 @@ import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { useMobileScenarioToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import { setCardtextListPanelOpen } from '@cardtext/infrastructure/state'
-import { selectIsCardtextListPanelOpen, selectCardtextId, selectCardtextSessionData } from '@cardtext/infrastructure/selectors'
-import { getCardtextTemplateDisplayTitle } from '@cardtext/application/helpers'
-import { cardtextHasRenderableContent } from '@cardtext/domain/editor/editor.types'
+import {
+  selectCardtextListCentralTemplateTitle,
+  selectIsCardtextListPanelOpen,
+} from '@cardtext/infrastructure/selectors'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
 import type { IconKey } from '@shared/config/constants'
@@ -56,12 +57,7 @@ export const CardtextListMobileFactoryLowerToolbar: React.FC = () => {
 /** Mobile factory: верхний ряд — apply слева, заголовок, return справа. */
 export const CardtextListMobileFactoryUpperToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
-  const templateId = useAppSelector(selectCardtextId)
-  const session = useAppSelector(selectCardtextSessionData)
-  const centralTemplateTitle = useMemo(() => {
-    if (!templateId || !cardtextHasRenderableContent(session)) return null
-    return getCardtextTemplateDisplayTitle(session)
-  }, [session, templateId])
+  const centralTemplateTitle = useAppSelector(selectCardtextListCentralTemplateTitle)
 
   const closeList = useCallback(() => {
     dispatch(setCardtextListPanelOpen(false))

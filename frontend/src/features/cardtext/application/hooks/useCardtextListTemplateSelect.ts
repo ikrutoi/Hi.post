@@ -39,11 +39,12 @@ export function useCardtextListTemplateSelect() {
         dispatch(setDraftData(draft))
       }
 
-      dispatch(setCardtextId(entry.id))
+      const entryId = entry.id != null ? String(entry.id) : null
+      dispatch(setCardtextId(entryId))
       dispatch(setCardtextPresetData(entry))
       dispatch(
         restoreCardtextSession({
-          id: entry.id,
+          id: entryId,
           value: entry.value,
           style: entry.style,
           title: entry.title,

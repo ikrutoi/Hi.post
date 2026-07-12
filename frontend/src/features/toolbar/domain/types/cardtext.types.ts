@@ -63,14 +63,16 @@ export const CARDTEXT_COMPOSER_TOOLBAR: ToolbarConfig = [
       { key: 'fontFamily', state: 'enabled' },
       { key: 'colorPicker', state: 'enabled' },
       { key: 'left', state: 'enabled' },
-      // { key: 'empty', state: 'disabled' },
-      // { key: 'close', state: 'disabled' },
     ],
     status: 'enabled',
   },
+]
+
+/** Mobile/desktop factory: return справа в верхнем toolbar формы редактирования. */
+export const CARDTEXT_EDITOR_UPPER_RETURN_TOOLBAR: ToolbarConfig = [
   {
     group: 'close',
-    icons: [{ key: 'close', state: 'enabled' }],
+    icons: [{ key: 'return', state: 'enabled' }],
     status: 'enabled',
   },
 ]
