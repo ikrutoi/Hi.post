@@ -44,6 +44,8 @@ $list-panel-footer-band: calc(
 
     &.panelFactoryChrome {
       padding-top: 0;
+      width: 100%;
+      flex: 1 1 auto;
 
       &.panelEmptyNoToolbar {
         padding-top: 0;

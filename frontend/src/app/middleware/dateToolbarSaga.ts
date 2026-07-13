@@ -12,7 +12,6 @@ import {
   setHistoryListSortMode,
   cycleHistoryListPanelDensity,
   setHistoryListPanelDensity,
-  toggleHistoryListCellView,
   setPostcardStatuses,
 } from '@date/calendar/infrastructure/state'
 import {
@@ -89,11 +88,6 @@ function* handleDateListToolbarAction(
   ) {
     yield put(cycleHistoryListPanelDensity())
     yield call(persistHistoryListPanelDensityToDbSaga)
-    return
-  }
-
-  if (section === 'historyList' && key === 'historyView') {
-    yield put(toggleHistoryListCellView())
     return
   }
 

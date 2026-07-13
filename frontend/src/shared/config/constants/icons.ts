@@ -117,7 +117,6 @@ export const ICON_KEYS = [
   'dateEdit',
   'addCartList',
   'historyPanel',
-  'historyView',
   'historyPanelDensity',
   'addList',
   'removeFromList',

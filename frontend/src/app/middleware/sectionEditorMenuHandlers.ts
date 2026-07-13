@@ -120,7 +120,9 @@ export function* syncRightSidebarHistoryHighlight(
   )
 
   const state: RootState = yield select()
-  const historyActive = computeNotebookStripTabFromState(state) === 'history'
+  const historyActive =
+    state.calendar.notebookStripTab === 'history' ||
+    computeNotebookStripTabFromState(state) === 'history'
 
   const updatedFlatKeys = Object.fromEntries(
     RIGHT_SIDEBAR_KEYS.map((iconKey) => {

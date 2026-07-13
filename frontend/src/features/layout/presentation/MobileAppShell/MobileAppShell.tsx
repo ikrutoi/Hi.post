@@ -757,6 +757,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     historyListPanelOpen,
     notebookStripTab: notebookStripSection,
     activeSection,
+    archiveSectionPeekActive:
+      mobileFactoryChromePeek && mirrorListArchiveSource === 'history',
   })
 
   const showHistorySlotDateIcon =

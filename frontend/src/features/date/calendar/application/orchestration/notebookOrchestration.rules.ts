@@ -34,11 +34,15 @@ export function resolveHistoryArchiveViewMode(input: {
   historyListPanelOpen: boolean
   notebookStripTab: DateStripSection
   activeSection: CardMenuSection | null
+  /** Упрощённый peek секции архива истории (CardPie → фабрика без toolbar). */
+  archiveSectionPeekActive?: boolean
 }): HistoryArchiveViewMode {
   if (input.historyListPanelOpen) return 'list'
+  if (input.notebookStripTab !== 'history') return 'inactive'
   if (
-    input.notebookStripTab === 'history' &&
-    (input.activeSection === 'history' || input.activeSection === 'date')
+    input.activeSection === 'history' ||
+    input.activeSection === 'date' ||
+    input.archiveSectionPeekActive
   ) {
     return 'calendar'
   }

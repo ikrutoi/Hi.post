@@ -57,6 +57,9 @@ function* syncListPanelToolbarIcons(): SagaIterator {
 
   const cartListOpen: boolean = yield select(selectCartListPanelOpen)
   const notebookStripTab = yield select(selectNotebookStripTab)
+  const notebookStripDateOverHistory: boolean = yield select(
+    (s: RootState) => s.calendar.notebookStripDateOverHistory,
+  )
   /** Календарь или список корзины: иконка active; режим «Дата» — без подсветки. */
   const cartSidebarHighlightActive = notebookStripTab === 'cart'
   yield put(
@@ -67,7 +70,9 @@ function* syncListPanelToolbarIcons(): SagaIterator {
     }),
   )
 
-  const historySidebarHighlightActive = notebookStripTab === 'history'
+  const historySidebarHighlightActive =
+    notebookStripTab === 'history' ||
+    (historyOpen && !notebookStripDateOverHistory)
   yield put(
     updateToolbarIcon({
       section: 'rightSidebar',

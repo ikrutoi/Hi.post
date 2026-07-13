@@ -9,7 +9,6 @@ export const HISTORY_LIST_KEYS = [
   'sort131Down',
   'sortAZDown',
   'sortAZUp',
-  'historyView',
   'historyPanel',
   'historyPanelDensity',
   'cart',
@@ -27,20 +26,10 @@ export interface HistoryListToolbarState extends Record<string, any> {
   config: ToolbarConfig
 }
 
-/** Mobile factory: верхний ряд слева — переключатель вида ячейки. */
-export const HISTORY_LIST_FACTORY_UPPER_VIEW_TOOLBAR: ToolbarConfig = [
-  {
-    group: 'historyListView',
-    icons: [{ key: 'historyView', state: 'enabled' }],
-    status: 'enabled',
-  },
-]
-
 export const HISTORY_LIST_TOOLBAR: ToolbarConfig = [
   {
     group: 'historyList',
     icons: [
-      { key: 'historyView', state: 'enabled' },
       { key: 'panelDensity2', state: 'enabled' },
       { key: 'sort131Down', state: 'enabled' },
     ],
@@ -53,7 +42,7 @@ export const HISTORY_LIST_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-/** Mobile factory: нижний ряд — без `historyView` (он в верхнем ряду слева). */
+/** Mobile factory: нижний ряд списка истории. */
 export const HISTORY_LIST_FACTORY_LOWER_TOOLBAR: ToolbarConfig = [
   {
     group: 'historyList',

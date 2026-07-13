@@ -1516,6 +1516,21 @@
     margin-top: 0.75rem;
   }
 
+  .toolbarKey[data-icon-key='history'] {
+    &.toolbarKeyEnabled,
+    &.toolbarKeyActive {
+      background-color: $color-app-strip;
+    }
+
+    &.toolbarKeyEnabled {
+      color: $color-font-enabled-light;
+    }
+
+    &.toolbarKeyActive {
+      color: $color-app-sidebar-icon-active;
+    }
+  }
+
   .toolbarBadge {
     top: -0.0625rem;
     right: -0.0625rem;

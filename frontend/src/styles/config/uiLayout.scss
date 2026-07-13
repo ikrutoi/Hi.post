@@ -62,12 +62,6 @@ $list-panel-header-chip-radius: calc(#{$list-entry-radius-lg} - 1px);
 $cart-list-amount-font-size: 0.75rem;
 $cart-list-amount-font-size-mobile: 0.9rem;
 
-/** HistoryListEntry grid: date / detail / country lines. */
-$history-grid-meta-font-size: 0.62rem;
-$history-grid-meta-font-weight: 600;
-$history-grid-detail-line-height: 1.18;
-$history-grid-country-line-height: 1.16;
-
 $ui-accent-glow-spread: 0.5rem; // 8px
 
 @mixin list-panel-scroll-padding($inline-end-extra: 0rem) {

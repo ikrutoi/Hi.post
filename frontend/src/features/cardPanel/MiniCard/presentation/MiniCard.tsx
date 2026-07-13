@@ -16,6 +16,7 @@ import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
 import {
   setCardPieListPanelOpen,
   setNotebookStripDateOverCart,
+  setNotebookStripDateOverHistory,
   setNotebookStripTab,
 } from '@date/calendar/infrastructure/state'
 import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
@@ -165,6 +166,13 @@ export const MiniCard: React.FC<MiniCardProps> = ({
         ) {
           dispatch(setNotebookStripDateOverCart(true))
           dispatch(setNotebookStripTab('date'))
+        }
+        if (
+          notebookStripTab === 'history' &&
+          !cardPieEditEngaged &&
+          peekToolbarOnMiniOpen
+        ) {
+          dispatch(setNotebookStripDateOverHistory(true))
         }
         changeSection(section)
         if (peekToolbarOnMiniOpen && onActivateSectionPeekNoToolbar != null) {

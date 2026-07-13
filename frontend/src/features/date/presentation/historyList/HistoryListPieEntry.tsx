@@ -1,13 +1,38 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { useAppSelector } from '@app/hooks'
+import { useListCardPreviewUrl } from '@entities/card/application/hooks/useListCardPreviewUrl'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { selectListArchiveCardPieBundle } from '@features/cardPie/infrastructure/selectors/cardPieSelectors'
+import { emptyCardPieInnerData } from '@features/cardPie/infrastructure/planEntryCardPieViewModel'
+import {
+  buildPieSectionFlagsFromInner,
+  type CardPieInnerData,
+} from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import type { PostcardStatus } from '@entities/postcard'
-import type { HistoryListEntryVariant } from './HistoryListEntry'
 import styles from './HistoryListPieEntry.module.scss'
 
+function applyListPreviewToPieInner(
+  inner: CardPieInnerData,
+  displayUrl: string | null,
+): CardPieInnerData {
+  if (!displayUrl?.trim()) return inner
+  return {
+    ...inner,
+    cardphoto: {
+      ...inner.cardphoto,
+      previewUrl: displayUrl,
+      factoryDisplayUrl: displayUrl,
+    },
+  }
+}
+
+export type HistoryListEntryVariant = 'default' | 'inactive'
+
 export type HistoryListPieEntryProps = {
+  cardId?: string
   postcardLocalId?: number
+  previewUrl?: string | null
+  previewAllowBlob?: boolean
   dateLabel: string
   detailLine?: string
   variant?: HistoryListEntryVariant
@@ -18,7 +43,10 @@ export type HistoryListPieEntryProps = {
 }
 
 export const HistoryListPieEntry: React.FC<HistoryListPieEntryProps> = ({
+  cardId,
   postcardLocalId,
+  previewUrl,
+  previewAllowBlob,
   dateLabel,
   detailLine,
   variant = 'default',
@@ -36,11 +64,35 @@ export const HistoryListPieEntry: React.FC<HistoryListPieEntryProps> = ({
         )
       : null,
   )
+  const { displayUrl } = useListCardPreviewUrl(cardId, previewUrl, {
+    previewIsProcessed: previewAllowBlob ?? previewIsProcessed,
+  })
 
   const interactive = Boolean(onSelect)
   const labelForAria = detailLine ? `${dateLabel}, ${detailLine}` : dateLabel
-  const pieInner = pieBundle?.currentData.data
-  const pieSections = pieBundle?.sections
+  const pieInner = useMemo(() => {
+    const base = pieBundle?.currentData.data
+    if (base) {
+      return applyListPreviewToPieInner(base, displayUrl)
+    }
+    if (!displayUrl?.trim()) return null
+    return {
+      ...emptyCardPieInnerData(),
+      cardphoto: {
+        previewUrl: displayUrl,
+        factoryDisplayUrl: displayUrl,
+        isComplete: true,
+        id: cardId ?? 'history-list',
+      },
+    }
+  }, [pieBundle, displayUrl, cardId])
+  const pieSections = useMemo(() => {
+    if (pieInner == null) return null
+    return buildPieSectionFlagsFromInner(
+      pieInner,
+      pieBundle?.sections?.envelope ?? false,
+    )
+  }, [pieInner, pieBundle])
   const pieStatus =
     previewStatus && !previewIsProcessed ? previewStatus : undefined
 
