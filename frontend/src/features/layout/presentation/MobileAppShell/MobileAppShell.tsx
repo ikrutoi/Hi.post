@@ -51,6 +51,7 @@ import {
   cardtextValueForReadOnlyPreview,
   clampCardtextFontSizeStep,
 } from '@cardtext/domain/editor/editor.types'
+import { openCardtextEditorFromView } from '@cardtext/application/helpers'
 import { CardtextView } from '@cardtext/presentation/CardtextView/CardtextView'
 import {
   closeAddressList,
@@ -115,8 +116,8 @@ const MOBILE_TEMPLATE_PREVIEW_PIE_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-/** Address list: edit сверху, delete снизу — рядом с центральным превью. */
-const MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_TOOLBAR: ToolbarConfig = [
+/** Cardtext / address list: edit сверху, delete снизу рядом с центральным превью. */
+const MOBILE_LIST_TEMPLATE_PREVIEW_PIE_TOOLBAR: ToolbarConfig = [
   {
     group: 'main',
     icons: [
@@ -127,6 +128,12 @@ const MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_TOOLBAR: ToolbarConfig = [
     status: 'enabled',
   },
 ]
+
+const MOBILE_LIST_TEMPLATE_PREVIEW_PIE_STATE = {
+  edit: { state: 'enabled' as const },
+  empty: { state: 'disabled' as const },
+  delete: { state: 'enabled' as const },
+}
 
 export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   formRef,
@@ -501,17 +508,30 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         return false
       }
 
+      if (mobileCentralPieDisplay === 'cardtextTemplate') {
+        if (key === 'edit') {
+          dispatch(setCardtextListPanelOpen(false))
+          openCardtextEditorFromView(
+            dispatch,
+            cardtextSession.status ?? 'inLine',
+          )
+          return false
+        }
+        if (key === 'delete') {
+          dispatch(deleteCardtextFromViewRequested())
+          return false
+        }
+        return
+      }
+
       if (key !== 'delete') return
       if (mobileCentralPieDisplay === 'cardphotoTemplate') {
         dispatch(deleteCardphotoFromViewRequested())
         return false
       }
-      if (mobileCentralPieDisplay === 'cardtextTemplate') {
-        dispatch(deleteCardtextFromViewRequested())
-        return false
-      }
     },
     [
+      cardtextSession.status,
       dispatch,
       mobileAddressListTemplatePreview,
       mobileCentralPieDisplay,
@@ -1006,9 +1026,16 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                         <Toolbar
                           section="editorPie"
                           groupsOverride={
-                            mobileCentralPieDisplay === 'addressTemplate'
-                              ? MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_TOOLBAR
+                            mobileCentralPieDisplay === 'addressTemplate' ||
+                            mobileCentralPieDisplay === 'cardtextTemplate'
+                              ? MOBILE_LIST_TEMPLATE_PREVIEW_PIE_TOOLBAR
                               : MOBILE_TEMPLATE_PREVIEW_PIE_TOOLBAR
+                          }
+                          stateOverride={
+                            mobileCentralPieDisplay === 'addressTemplate' ||
+                            mobileCentralPieDisplay === 'cardtextTemplate'
+                              ? MOBILE_LIST_TEMPLATE_PREVIEW_PIE_STATE
+                              : undefined
                           }
                           mergedWithCenter
                           onActionClick={handleTemplatePreviewPieToolbarAction}

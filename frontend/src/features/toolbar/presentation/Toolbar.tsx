@@ -312,12 +312,15 @@ export const Toolbar = ({
   ) => {
     const elementKey = iconIndex != null ? `${key}-${iconIndex}` : key
     const rawData = sectionState[key]
-    // editorPie: первая иконка-дырка — addCart (disabled, если открытка некомплектна).
+    // editorPie assembly: первая дырка — addCart; третья — delete.
+    // Не применять при groupsOverride (template preview: edit/delete и т.п.).
     const editorPieCartAdd =
+      groupsOverride == null &&
       section === 'editorPie' &&
       key === 'empty' &&
       iconIndex === 0
     const editorPieDelete =
+      groupsOverride == null &&
       section === 'editorPie' &&
       key === 'empty' &&
       iconIndex === 2
