@@ -153,6 +153,18 @@
     padding: 0.16rem 0.26rem 0.14rem;
   }
 
+  .templateTitleText,
+  .templatePreviewText,
+  .nameLine,
+  .cityLine {
+    font-weight: 400;
+  }
+
+  .templateTitleText,
+  .nameLine.templateTitleText {
+    font-weight: 600;
+  }
+
   .templateTitleText {
     flex-shrink: 0;
     margin: 0;
@@ -164,8 +176,17 @@
   &[data-density-level='2'] {
     padding: 1px;
 
+    .templateTitleText,
+    .templatePreviewText,
+    .nameLine,
+    .cityLine {
+      font-size: 0.62rem;
+      line-height: 1.18;
+    }
+
     .templateTitleText {
       padding: 0.22rem 0.24rem 0.18rem;
+      min-height: calc(0.62rem * 1.18 * 2);
     }
 
     .templatePreviewText {
@@ -311,8 +332,8 @@
   }
 }
 
-/* 5 ячеек в ряд — компактнее типографика */
-.root[data-density-level='2']:not(.rootCardtext) {
+/* 5 ячеек в ряд — компактнее типографика (адреса и cardtext). */
+.root[data-density-level='2'] {
   .nameLine,
   .cityLine,
   .countryLine {

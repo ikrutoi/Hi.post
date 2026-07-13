@@ -363,7 +363,10 @@ export const Toolbar = ({
         : (key === 'sortDown' || key === 'sortUp') &&
             section === 'cardphotoList'
           ? getCardphotoListSortIconForMode(cardphotoListSortMode)
-          : section === 'historyList' && isHistoryListSortIconKey(key)
+          : section === 'historyList' &&
+              (isHistoryListSortIconKey(key) ||
+                key === 'sortDown' ||
+                key === 'sortUp')
             ? getHistoryListSortIconForMode(historyListSortMode)
             : key === 'sortAZDown' &&
               (section === 'cardtextList' ||

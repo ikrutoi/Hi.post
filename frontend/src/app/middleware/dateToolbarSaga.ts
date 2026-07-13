@@ -74,7 +74,10 @@ function* handleDateListToolbarAction(
     return
   }
 
-  if (section === 'historyList' && isHistoryListSortIconKey(key)) {
+  if (
+    section === 'historyList' &&
+    (isHistoryListSortIconKey(key) || key === 'sortDown' || key === 'sortUp')
+  ) {
     const current: ReturnType<typeof selectHistoryListSortMode> = yield select(
       selectHistoryListSortMode,
     )

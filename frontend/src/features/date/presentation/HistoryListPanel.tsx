@@ -18,11 +18,9 @@ import {
   selectHistoryListPanelDensity,
   selectHistoryListSortMode,
 } from '@date/calendar/infrastructure/selectors'
-import {
-  getHistoryListSortEmphasis,
-  sortHistoryListEntries,
-} from '@date/application/helpers/historyListSort'
+import { sortHistoryListEntries } from '@date/application/helpers/historyListSort'
 import { notebookTabHistoryClicked } from '@date/calendar/application/orchestration/notebookOrchestration.events'
+import { HISTORY_LIST_TOOLBAR } from '@toolbar/domain/types/historyList.types'
 
 export type HistoryListPanelItem = {
   id: string
@@ -153,7 +151,16 @@ export const HistoryListPanel: React.FC<Props> = ({
               </div>
             </div>
           }
-          toolbar={hasRows ? <Toolbar section="historyList" /> : false}
+          toolbar={
+            hasRows ? (
+              <Toolbar
+                section="historyList"
+                groupsOverride={HISTORY_LIST_TOOLBAR}
+              />
+            ) : (
+              false
+            )
+          }
           showDividerWithoutToolbar={!hasRows}
           onClose={hideListHeaderChrome ? undefined : onClose}
           closeAriaLabel="Close date list"
