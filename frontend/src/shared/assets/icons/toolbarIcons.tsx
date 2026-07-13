@@ -178,8 +178,8 @@ import {
   IconPostcardSend,
   IconPostcardReady,
   IconHistory,
+  IconHistoryV2,
   IconHistoryPanel,
-  IconListHistory,
   IconCalendarReturn,
   IconListCardPie,
   IconStarFilled,
@@ -401,8 +401,10 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconPostcardNotDelivered />
     case 'history':
       return <IconHistory />
+    case 'historyV2':
+      return <IconHistoryV2 />
     case 'listHistory':
-      return <IconListHistory />
+      return <IconHistoryV2 />
     case 'calendarReturn':
       return <IconCalendarReturn />
     case 'cardPieFavorite':

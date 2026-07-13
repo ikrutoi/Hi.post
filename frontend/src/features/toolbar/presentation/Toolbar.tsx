@@ -47,6 +47,7 @@ import {
   selectDateListSortDirection,
   selectHistoryListPanelDensity,
   selectHistoryListSortMode,
+  selectIsHistoryListPanelOpen,
 } from '@date/calendar/infrastructure/selectors'
 import {
   selectAuthUser,
@@ -163,6 +164,7 @@ export const Toolbar = ({
   const dateListSortDirection = useAppSelector(selectDateListSortDirection)
   const historyListSortMode = useAppSelector(selectHistoryListSortMode)
   const historyListPanelDensity = useAppSelector(selectHistoryListPanelDensity)
+  const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
   const senderAddressListPanelDensity = useAppSelector(
     selectSenderAddressListPanelDensity,
   )
@@ -618,7 +620,12 @@ export const Toolbar = ({
           <IconApplyBold style={{ color: applyIconColor }} />
         ) : (
           getToolbarIcon({
-            key: effectiveIconKey as IconKey,
+            key:
+              historyListPanelOpen &&
+              (section === 'rightSidebar' || section === 'history') &&
+              effectiveIconKey === 'history'
+                ? 'historyV2'
+                : (effectiveIconKey as IconKey),
             checkBoxChecked:
               section === 'cartList' &&
               effectiveIconKey === 'checkBox' &&

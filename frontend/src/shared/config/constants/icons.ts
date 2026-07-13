@@ -104,6 +104,7 @@ export const ICON_KEYS = [
   'postcardNotDelivered',
   'postcardIndicator',
   'history',
+  'historyV2',
   'listHistory',
   'calendarReturn',
   'cardPieFavorite',
