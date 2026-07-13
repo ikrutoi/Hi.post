@@ -11,7 +11,9 @@ import {
 import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
 import { selectSenderView } from '@envelope/sender/infrastructure/selectors'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
+import { ENVELOPE_MOBILE_ADDRESS_VIEW_UPPER_RETURN_TOOLBAR } from '@toolbar/domain/types/addressView.types'
 import type { IconKey } from '@shared/config/constants'
+import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
 import { useEnvelopeMobileAddressFocus } from './EnvelopeMobileAddressFocusContext'
 import styles from './Envelope.module.scss'
 
@@ -169,6 +171,27 @@ export const EnvelopeInnerToolbar: React.FC = () => {
 
   const showSenderSlot = focusRole !== 'recipient'
   const showRecipientsSlot = focusRole !== 'sender'
+  const showFocusReturn =
+    isMobile && focusRole != null && mobileFocus != null
+
+  const handleFocusReturn = useCallback(
+    (key: IconKey): void | false => {
+      if (key !== 'return' || mobileFocus == null || focusRole == null) return
+
+      const isEditMode =
+        focusRole === 'sender' ? senderViewEditMode : recipientViewEditMode
+      if (isEditMode) return false
+
+      mobileFocus.clearFocus()
+      return false
+    },
+    [
+      mobileFocus,
+      focusRole,
+      senderViewEditMode,
+      recipientViewEditMode,
+    ],
+  )
 
   const senderToolbarState = useMemo(
     () =>
@@ -213,38 +236,78 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   )
 
   return (
-    <div className={styles.envelopeToolbarRow}>
-      {showSenderSlot ? (
-        <div
-          className={clsx(
-            styles.envelopeToolbarSlotSender,
-            focusRole === 'sender' && styles.envelopeToolbarSlotFocusedOnly,
-            senderView === 'senderCreate' && styles.envelopeToolbarSlotDisabled,
-          )}
-        >
-          <Toolbar
-            section="sender"
-            stateOverride={senderToolbarState}
-            onActionClick={(key) => handleAddressAddClick('sender', key)}
-          />
-        </div>
-      ) : null}
-      {showRecipientsSlot ? (
-        <div
-          className={clsx(
-            styles.envelopeToolbarSlotRecipients,
-            focusRole === 'recipient' && styles.envelopeToolbarSlotFocusedOnly,
-            recipientView === 'recipientCreate' &&
-              styles.envelopeToolbarSlotDisabled,
-          )}
-        >
-          <Toolbar
-            section="recipients"
-            stateOverride={recipientsToolbarState}
-            onActionClick={(key) => handleAddressAddClick('recipients', key)}
-          />
-        </div>
-      ) : null}
+    <div
+      className={clsx(
+        styles.envelopeToolbarRow,
+        showFocusReturn && styles.envelopeToolbarRowAddressFocus,
+      )}
+    >
+      {showFocusReturn ? (
+        <>
+          <div className={styles.envelopeToolbarFocusLeft}>
+            {focusRole === 'sender' ? (
+              <Toolbar
+                section="sender"
+                stateOverride={senderToolbarState}
+                onActionClick={(key) => handleAddressAddClick('sender', key)}
+              />
+            ) : (
+              <Toolbar
+                section="recipients"
+                stateOverride={recipientsToolbarState}
+                onActionClick={(key) =>
+                  handleAddressAddClick('recipients', key)
+                }
+              />
+            )}
+          </div>
+          <div className={styles.envelopeToolbarFocusReturn}>
+            <Toolbar
+              section={
+                focusRole === 'sender' ? 'senderView' : 'recipientView'
+              }
+              groupsOverride={ENVELOPE_MOBILE_ADDRESS_VIEW_UPPER_RETURN_TOOLBAR}
+              className={toolbarStyles.toolbarAromaUpperReturn}
+              onActionClick={handleFocusReturn}
+            />
+          </div>
+        </>
+      ) : (
+        <>
+          {showSenderSlot ? (
+            <div
+              className={clsx(
+                styles.envelopeToolbarSlotSender,
+                senderView === 'senderCreate' &&
+                  styles.envelopeToolbarSlotDisabled,
+              )}
+            >
+              <Toolbar
+                section="sender"
+                stateOverride={senderToolbarState}
+                onActionClick={(key) => handleAddressAddClick('sender', key)}
+              />
+            </div>
+          ) : null}
+          {showRecipientsSlot ? (
+            <div
+              className={clsx(
+                styles.envelopeToolbarSlotRecipients,
+                recipientView === 'recipientCreate' &&
+                  styles.envelopeToolbarSlotDisabled,
+              )}
+            >
+              <Toolbar
+                section="recipients"
+                stateOverride={recipientsToolbarState}
+                onActionClick={(key) =>
+                  handleAddressAddClick('recipients', key)
+                }
+              />
+            </div>
+          ) : null}
+        </>
+      )}
     </div>
   )
 }

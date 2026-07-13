@@ -174,6 +174,67 @@
     margin-left: auto;
   }
 
+  /* Focused address view: pin left icons / return like address list factory upper row. */
+  .envelopeToolbarRowAddressFocus {
+    position: relative;
+    justify-content: center;
+  }
+
+  .envelopeToolbarFocusLeft {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    min-height: 0;
+    pointer-events: none;
+
+    > * {
+      pointer-events: auto;
+      flex: 0 0 auto;
+      width: auto;
+      min-width: 0;
+      margin-inline: 0;
+      justify-content: flex-start;
+    }
+
+    :global([class*='toolbarSender']),
+    :global([class*='toolbarRecipients']) {
+      width: auto;
+      margin-inline: 0;
+      justify-content: flex-start;
+
+      :global([class*='toolbarGroup']) {
+        justify-content: flex-start;
+      }
+    }
+  }
+
+  .envelopeToolbarFocusReturn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 0;
+    min-height: 0;
+    pointer-events: none;
+
+    > * {
+      pointer-events: auto;
+      flex: 0 0 auto;
+      width: auto;
+      min-width: 0;
+      /* Override .toolbarAromaUpperReturn margins so return stays inside the band. */
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+  }
+
   .envelopeLogo {
     grid-row: 1 / 6;
     min-height: 3rem;
@@ -268,16 +329,6 @@
   [data-envelope-mobile-focus-sender] {
     opacity: 0;
     pointer-events: none;
-  }
-}
-
-.envelopeToolbarSlotFocusedOnly {
-  flex: 1 1 100%;
-  width: 100%;
-
-  > * {
-    width: 100%;
-    max-width: 100%;
   }
 }
 

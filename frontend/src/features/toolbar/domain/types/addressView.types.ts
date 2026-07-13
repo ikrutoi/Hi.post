@@ -8,6 +8,7 @@ export const VIEW_KEYS = [
   'listClose',
   'listAdd',
   'close',
+  'return',
   'sortUp',
   'sortDown',
   'apply',
@@ -77,6 +78,32 @@ export const SENDER_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'close',
     icons: [{ key: 'close', state: 'enabled' }],
+    status: 'enabled',
+  },
+]
+
+/** Mobile focused address view (lower scenario bar): close → delete. */
+export const ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'senderView',
+    icons: [
+      { key: 'addList', state: 'enabled' },
+      { key: 'edit', state: 'enabled' },
+    ],
+    status: 'enabled',
+  },
+  {
+    group: 'actions',
+    icons: [{ key: 'delete', state: 'enabled' }],
+    status: 'enabled',
+  },
+]
+
+/** Mobile focused address view (upper factory row): return = leave focus. */
+export const ENVELOPE_MOBILE_ADDRESS_VIEW_UPPER_RETURN_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'close',
+    icons: [{ key: 'return', state: 'enabled' }],
     status: 'enabled',
   },
 ]

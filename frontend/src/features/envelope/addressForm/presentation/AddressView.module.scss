@@ -584,22 +584,6 @@ $envelope-address-view-row-height: 1.625rem;
   .savedAddressCloseButtonRecipient {
     display: none;
   }
-
-  .savedAddressViewContainerEnvelopeSender.savedAddressViewContainerEnvelopeNoToolbar,
-  .savedAddressViewContainerEnvelopeRecipient.savedAddressViewContainerEnvelopeNoToolbar {
-    .savedAddressView,
-    .savedAddressViewSender,
-    .savedAddressViewRecipient {
-      overflow: visible;
-    }
-
-    .recipientAddress {
-      overflow: visible;
-      padding-bottom: calc(
-        #{$saved-address-action-hit-mobile} + #{$saved-address-action-inset-mobile} + 0.1rem
-      );
-    }
-  }
 }
 
 .savedAddressViewWithCloseAction {

@@ -1,20 +1,16 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { useAppSelector } from '@app/hooks'
 import { useEnvelopeFacade } from '@envelope/application/facades'
 import { useSenderFacade } from '@envelope/sender/application/facades'
 import { useRecipientFacade } from '@envelope/recipient/application/facades'
-import {
-  selectActiveAddressEdit,
-  selectRecipientViewEditMode,
-  selectSenderViewEditMode,
-} from '@envelope/infrastructure/selectors'
+import { selectActiveAddressEdit } from '@envelope/infrastructure/selectors'
 import { selectSenderApplied, selectSenderView } from '@envelope/sender/infrastructure/selectors'
 import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { useMobileScenarioToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
-import type { IconKey } from '@shared/config/constants'
+import { ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR } from '@toolbar/domain/types/addressView.types'
 import { useEnvelopeMobileAddressFocus } from './EnvelopeMobileAddressFocusContext'
 import styles from './Envelope.module.scss'
 
@@ -29,8 +25,6 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
   const mobileFocus = useEnvelopeMobileAddressFocus()
   const senderView = useAppSelector(selectSenderView)
   const recipientView = useAppSelector(selectRecipientView)
-  const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
-  const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const envelopeFacade = useEnvelopeFacade()
   const senderFacade = useSenderFacade()
   const recipientFacade = useRecipientFacade()
@@ -119,38 +113,16 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
       ? 'recipientView'
       : null
 
-  const handleAction = useCallback(
-    (key: IconKey) => {
-      if (key !== 'close' || !isMobile || mobileFocus == null || section == null) {
-        return
-      }
-
-      const targetRole = section === 'senderView' ? 'sender' : 'recipient'
-      if (!mobileFocus.isFocused(targetRole)) return
-
-      const isEditMode =
-        targetRole === 'sender' ? senderViewEditMode : recipientViewEditMode
-      if (isEditMode) return
-
-      mobileFocus.clearFocus()
-      return false
-    },
-    [
-      isMobile,
-      mobileFocus,
-      section,
-      senderViewEditMode,
-      recipientViewEditMode,
-    ],
-  )
-
   const mobileContent =
     section != null ? (
       <div
         className={styles.envelopeAddressViewToolbarRow}
         data-envelope-address-view-toolbar
       >
-        <Toolbar section={section} onActionClick={handleAction} />
+        <Toolbar
+          section={section}
+          groupsOverride={ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR}
+        />
       </div>
     ) : null
 
