@@ -89,11 +89,13 @@ export const AddressListMobileFactoryUpperToolbar: React.FC = () => {
 
   return (
     <div className={styles.upperRow}>
-      <Toolbar
-        section={applySection}
-        groupsOverride={applyToolbar}
-        className={toolbarStyles.toolbarAromaUpperApply}
-      />
+      <div className={styles.upperApply}>
+        <Toolbar
+          section={applySection}
+          groupsOverride={applyToolbar}
+          className={toolbarStyles.toolbarAromaUpperApply}
+        />
+      </div>
       <div className={styles.upperToolbar}>
         <Toolbar
           section={upperSection}

@@ -55,6 +55,7 @@ import { CardtextView } from '@cardtext/presentation/CardtextView/CardtextView'
 import {
   closeAddressList,
   setActiveAddressList,
+  setRecipientsPendingIds,
 } from '@envelope/infrastructure/state'
 import {
   selectRecipientListPanelOpen,
@@ -65,13 +66,16 @@ import {
 import {
   selectRecipientEntriesState,
 } from '@envelope/recipient/infrastructure/selectors'
+import { setRecipientViewId } from '@envelope/recipient/infrastructure/state'
 import {
   selectSenderEntriesState,
 } from '@envelope/sender/infrastructure/selectors'
+import { setSenderViewId } from '@envelope/sender/infrastructure/state'
 import { formatAddressPreviewLines } from '@envelope/addressBook/presentation/addressSummaryLines'
 import { clearViewAroma } from '@aroma/infrastructure/state'
 import { selectViewAroma } from '@aroma/infrastructure/selectors'
 import { getAromaImage } from '@entities/aroma/mappers/aromaImageMap'
+import { toolbarAction } from '@toolbar/application/helpers'
 import { dispatchCardPieToolbarIconState } from '@toolbar/application/syncCardPieToolbarIcons'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { CardSection, IconKey } from '@shared/config/constants'
@@ -104,6 +108,19 @@ const MOBILE_TEMPLATE_PREVIEW_PIE_TOOLBAR: ToolbarConfig = [
     group: 'main',
     icons: [
       { key: 'empty', state: 'disabled' },
+      { key: 'empty', state: 'disabled' },
+      { key: 'delete', state: 'enabled' },
+    ],
+    status: 'enabled',
+  },
+]
+
+/** Address list: edit сверху, delete снизу — рядом с центральным превью. */
+const MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'main',
+    icons: [
+      { key: 'edit', state: 'enabled' },
       { key: 'empty', state: 'disabled' },
       { key: 'delete', state: 'enabled' },
     ],
@@ -449,10 +466,41 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     (mobileCentralPieDisplay === 'cardphotoTemplate' &&
       canDeleteCardphotoTemplatePreview) ||
     (mobileCentralPieDisplay === 'cardtextTemplate' &&
-      mobileCardtextListTemplatePreview != null)
+      mobileCardtextListTemplatePreview != null) ||
+    (mobileCentralPieDisplay === 'addressTemplate' &&
+      mobileAddressListTemplatePreview != null)
 
   const handleTemplatePreviewPieToolbarAction = useCallback(
     (key: IconKey) => {
+      if (mobileCentralPieDisplay === 'addressTemplate') {
+        const preview = mobileAddressListTemplatePreview
+        if (!preview) return
+        if (key !== 'edit' && key !== 'delete') return
+
+        const section =
+          preview.role === 'sender' ? 'senderView' : 'recipientView'
+
+        if (preview.role === 'sender') {
+          dispatch(setSenderViewId(preview.id))
+        } else {
+          dispatch(setRecipientViewId(preview.id))
+          if (key === 'delete') {
+            dispatch(
+              setRecipientsPendingIds(
+                recipientListPendingIds.filter((id) => id !== preview.id),
+              ),
+            )
+          }
+        }
+
+        if (key === 'edit') {
+          dispatch(closeAddressList())
+        }
+
+        dispatch(toolbarAction({ section, key }))
+        return false
+      }
+
       if (key !== 'delete') return
       if (mobileCentralPieDisplay === 'cardphotoTemplate') {
         dispatch(deleteCardphotoFromViewRequested())
@@ -463,7 +511,12 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         return false
       }
     },
-    [dispatch, mobileCentralPieDisplay],
+    [
+      dispatch,
+      mobileAddressListTemplatePreview,
+      mobileCentralPieDisplay,
+      recipientListPendingIds,
+    ],
   )
 
   const handleLeftPieCenterPress = useCallback(() => {
@@ -952,7 +1005,11 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                       <div className={styles.mobilePieToolbar}>
                         <Toolbar
                           section="editorPie"
-                          groupsOverride={MOBILE_TEMPLATE_PREVIEW_PIE_TOOLBAR}
+                          groupsOverride={
+                            mobileCentralPieDisplay === 'addressTemplate'
+                              ? MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_TOOLBAR
+                              : MOBILE_TEMPLATE_PREVIEW_PIE_TOOLBAR
+                          }
                           mergedWithCenter
                           onActionClick={handleTemplatePreviewPieToolbarAction}
                         />
