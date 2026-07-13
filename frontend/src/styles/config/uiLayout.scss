@@ -49,6 +49,7 @@ $list-panel-header-chip-radius: calc(#{$list-entry-radius-lg} - 1px);
 $history-list-toolbar-indicator-size: 0.8rem;
 $history-list-toolbar-indicator-on-scale: 1.25;
 $history-list-toolbar-indicator-off-scale: 0.9;
+$history-list-toolbar-indicator-transition-duration: 0.18s;
 
 @mixin history-list-toolbar-postcard-indicator-dot-size($size) {
   flex: 0 0 $size;
@@ -70,25 +71,25 @@ $history-list-toolbar-indicator-off-scale: 0.9;
       margin: 0;
       align-self: center;
       border-radius: 50%;
+      transform: scale(1);
+      transform-origin: center center;
+      transition: transform $history-list-toolbar-indicator-transition-duration ease;
       @include history-list-toolbar-postcard-indicator-dot-size(
         $history-list-toolbar-indicator-size
       );
 
       &:global([class*='postcardIndicatorOn']) {
-        @include history-list-toolbar-postcard-indicator-dot-size(
-          calc(
-            #{$history-list-toolbar-indicator-size} *
-              #{$history-list-toolbar-indicator-on-scale}
-          )
-        );
+        transform: scale($history-list-toolbar-indicator-on-scale);
       }
 
       &:global([class*='postcardIndicatorOff']) {
+        transform: scale($history-list-toolbar-indicator-off-scale);
+      }
+
+      &:global([class*='postcardIndicatorOn']),
+      &:global([class*='postcardIndicatorOff']) {
         @include history-list-toolbar-postcard-indicator-dot-size(
-          calc(
-            #{$history-list-toolbar-indicator-size} *
-              #{$history-list-toolbar-indicator-off-scale}
-          )
+          $history-list-toolbar-indicator-size
         );
       }
     }
