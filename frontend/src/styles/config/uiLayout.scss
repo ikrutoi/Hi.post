@@ -45,6 +45,56 @@ $list-panel-header-chip-height: $list-panel-header-chip-font-size *
   $list-panel-header-chip-line-height + 2 * $list-panel-header-chip-padding-block;
 $list-panel-header-chip-radius: calc(#{$list-entry-radius-lg} - 1px);
 
+/** PostcardIndicator в верхнем тулбаре списка истории (desktop + mobile). */
+$history-list-toolbar-indicator-size: 0.8rem;
+$history-list-toolbar-indicator-on-scale: 1.25;
+$history-list-toolbar-indicator-off-scale: 0.9;
+
+@mixin history-list-toolbar-postcard-indicator-dot-size($size) {
+  flex: 0 0 $size;
+  width: $size;
+  height: $size;
+  min-width: $size;
+  min-height: $size;
+  max-width: $size;
+  max-height: $size;
+}
+
+@mixin history-list-toolbar-postcard-indicator-dots {
+  :global([class*='postcardIndicatorHit']) {
+    > :global([class*='postcardIndicator']) {
+      display: block;
+      aspect-ratio: 1;
+      box-sizing: border-box;
+      line-height: 0;
+      margin: 0;
+      align-self: center;
+      border-radius: 50%;
+      @include history-list-toolbar-postcard-indicator-dot-size(
+        $history-list-toolbar-indicator-size
+      );
+
+      &:global([class*='postcardIndicatorOn']) {
+        @include history-list-toolbar-postcard-indicator-dot-size(
+          calc(
+            #{$history-list-toolbar-indicator-size} *
+              #{$history-list-toolbar-indicator-on-scale}
+          )
+        );
+      }
+
+      &:global([class*='postcardIndicatorOff']) {
+        @include history-list-toolbar-postcard-indicator-dot-size(
+          calc(
+            #{$history-list-toolbar-indicator-size} *
+              #{$history-list-toolbar-indicator-off-scale}
+          )
+        );
+      }
+    }
+  }
+}
+
 @mixin list-panel-header-chip-band {
   box-sizing: border-box;
   height: $list-panel-header-chip-height;

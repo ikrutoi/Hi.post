@@ -45,6 +45,8 @@
     max-width: 100%;
     margin-inline: 0;
     pointer-events: auto;
+
+    @include history-list-toolbar-postcard-indicator-dots;
   }
 }
 

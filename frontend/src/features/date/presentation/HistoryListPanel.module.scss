@@ -158,12 +158,16 @@ $list-panel-footer-band: calc(
 /** Точки статусов (`PostcardIndicator`) в верхней строке хедера — без дубля в тулбаре. */
 .headerPostcardDots {
   width: 100%;
+  max-width: 33%;
   min-width: 0;
-  max-width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   pointer-events: none;
+
+  :global([data-shell-layout='mobile']) & {
+    max-width: 100%;
+  }
 
   > * {
     pointer-events: auto;
@@ -186,6 +190,15 @@ $list-panel-footer-band: calc(
     max-width: 100%;
     margin-inline: 0;
     pointer-events: auto;
+    align-items: center;
+
+    @include history-list-toolbar-postcard-indicator-dots;
+
+    :global([class*='postcardIndicatorHit']) {
+      > :global([class*='postcardIndicator']) {
+        box-shadow: 0 0 3px rgba(0, 0, 0, 0.28);
+      }
+    }
   }
 }
 
