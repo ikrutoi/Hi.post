@@ -82,7 +82,7 @@ import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { CardSection, IconKey } from '@shared/config/constants'
 import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
 import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDevContext'
-import { IconCardPie, IconCart, IconHistoryV2, IconLogo, IconSectionMenuCardtext, IconSectionMenuDate, IconSectionMenuEnvelopeV2 } from '@shared/ui/icons'
+import { IconCalendarReturn, IconCardPie, IconCart, IconHistoryV2, IconLogo, IconSectionMenuCardtext, IconSectionMenuEnvelopeV2 } from '@shared/ui/icons'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { useEditorPieAddCartHandler } from '@features/cardPie/application/hooks/useEditorPieAddCartHandler'
@@ -817,11 +817,15 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     notebookStripTab: notebookStripSection,
   })
 
-  const showCartSlotDateIcon =
+  /**
+   * Иконка на слоте = следующее состояние после клика (как left icon в тулбаре календаря/списка):
+   * календарь → cart/history (откроет список); список → date (откроет календарь).
+   */
+  const showCartSlotCartIcon =
     cartStripActive &&
     (cartArchiveViewMode === 'calendar' || cartCalendarDatePickMode)
 
-  const showCartSlotCartIcon =
+  const showCartSlotDateIcon =
     cartStripActive &&
     cartArchiveViewMode === 'list' &&
     !cartCalendarDatePickMode
@@ -834,10 +838,10 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       mobileFactoryChromePeek && mirrorListArchiveSource === 'history',
   })
 
-  const showHistorySlotDateIcon =
+  const showHistorySlotHistoryIcon =
     historyStripActive && historyArchiveViewMode === 'calendar'
 
-  const showHistorySlotHistoryIcon =
+  const showHistorySlotDateIcon =
     historyStripActive && historyArchiveViewMode === 'list'
 
   const cardWidthStyle =
@@ -1075,7 +1079,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                               aria-hidden
                             >
                               {showCartSlotDateIcon ? (
-                                <IconSectionMenuDate />
+                                <IconCalendarReturn />
                               ) : (
                                 <IconCart />
                               )}
@@ -1151,7 +1155,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                             aria-hidden
                           >
                             {showHistorySlotDateIcon ? (
-                              <IconSectionMenuDate />
+                              <IconCalendarReturn />
                             ) : (
                               <IconHistoryV2 />
                             )}
