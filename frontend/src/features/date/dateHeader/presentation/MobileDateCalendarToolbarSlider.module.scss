@@ -1,3 +1,6 @@
+@use '@styles/config/colors' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
+
 .root {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
@@ -7,6 +10,32 @@
   height: 100%;
   min-width: 0;
   box-sizing: border-box;
+}
+
+.navArrow {
+  @include iconButton.toolbar-icon-button-size-mobile-toolbar;
+  /** Как первая/крайняя иконка в верхнем и нижнем тулбарах списков. */
+  margin-inline: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
+  border-radius: 50%;
+  background-color: #fff;
+  border: 1px solid $color-section-light;
+  color: $color-font-enabled-light;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+
+  &:hover {
+    border-color: $color-section-dark;
+    color: $color-font-enabled-light-hover;
+  }
+}
+
+.navArrowIcon {
+  display: block;
+  flex-shrink: 0;
+  width: iconButton.$toolbar-icon-size-mobile-toolbar;
+  height: iconButton.$toolbar-icon-size-mobile-toolbar;
 }
 
 .sliderWrap {

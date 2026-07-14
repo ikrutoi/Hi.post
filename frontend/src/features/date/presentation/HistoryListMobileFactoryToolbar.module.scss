@@ -1,3 +1,4 @@
+@use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
@@ -11,6 +12,37 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.sideLeft {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: 0;
+  pointer-events: none;
+
+  > * {
+    pointer-events: auto;
+  }
+}
+
+.calendarIcon {
+  /** Как первая кнопка нижнего тулбара: hit/glyph + margin-inline. */
+  @include iconButton.toolbar-icon-button-size-mobile-toolbar;
+  margin-inline: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
+  color: $color-font-enabled-light;
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  &:hover {
+    color: $color-font-enabled;
+  }
 }
 
 .upperIndicator {
@@ -47,39 +79,5 @@
     pointer-events: auto;
 
     @include history-list-toolbar-postcard-indicator-dots;
-  }
-}
-
-.upperToolbar {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  min-width: 0;
-  min-height: 0;
-  pointer-events: none;
-
-  > * {
-    pointer-events: auto;
-    flex: 0 0 auto;
-    width: auto;
-    min-width: 0;
-    min-height: 0;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-  }
-
-  :global([class*='toolbarHistory']) {
-    width: auto;
-    margin-left: 0;
-    justify-content: flex-end;
-
-    :global([class*='toolbarGroup']) {
-      justify-content: flex-end;
-    }
   }
 }

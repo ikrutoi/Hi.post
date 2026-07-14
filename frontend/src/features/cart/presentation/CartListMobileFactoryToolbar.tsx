@@ -4,12 +4,10 @@ import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { useMobileScenarioToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
-import { setCartListPanelOpen } from '@cart/infrastructure/state'
-import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import { buildNotebookCartTabCommandsMobile } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { CART_LIST_TOOLBAR } from '@toolbar/domain/types/cartList.types'
-import type { IconKey } from '@shared/config/constants'
-import type { ToolbarConfig } from '@toolbar/domain/types'
+import { getToolbarIcon } from '@shared/utils/icons'
 import { CartHeaderSegments } from './CartHeaderSegments'
 import {
   selectCartItems,
@@ -18,14 +16,6 @@ import {
 import type { PostcardHydrated } from '@entities/postcard'
 import type { CartListStatusSegment } from '@cart/domain/types'
 import styles from './CartListMobileFactoryToolbar.module.scss'
-
-const CART_LIST_FACTORY_UPPER_TOOLBAR: ToolbarConfig = [
-  {
-    group: 'close',
-    icons: [{ key: 'return', state: 'enabled' }],
-    status: 'enabled',
-  },
-]
 
 function cartHasVisibleRows(
   cartItems: PostcardHydrated[],
@@ -71,41 +61,30 @@ export const CartListMobileFactoryLowerToolbar: React.FC = () => {
   return null
 }
 
-/** Mobile factory: верхний ряд — сегменты по центру, return справа. */
+/** Mobile factory: верхний ряд — calendar слева, сегменты по центру. */
 export const CartListMobileFactoryUpperToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
 
-  const closeList = useCallback(() => {
-    dispatch(setCartListPanelOpen(false))
-    dispatch(
-      updateToolbarIcon({
-        section: 'cart',
-        key: 'cart',
-        value: 'enabled',
-      }),
-    )
+  const openCartCalendar = useCallback(() => {
+    for (const command of buildNotebookCartTabCommandsMobile()) {
+      dispatch(command)
+    }
   }, [dispatch])
-
-  const handleAction = useCallback(
-    (key: IconKey) => {
-      if (key !== 'return') return
-      closeList()
-      return false
-    },
-    [closeList],
-  )
 
   return (
     <div className={styles.upperRow}>
+      <div className={styles.sideLeft}>
+        <button
+          type="button"
+          className={styles.calendarIcon}
+          aria-label="Open cart calendar"
+          onClick={openCartCalendar}
+        >
+          {getToolbarIcon({ key: 'calendarReturn' })}
+        </button>
+      </div>
       <div className={styles.upperSegments}>
         <CartHeaderSegments factoryToolbar />
-      </div>
-      <div className={styles.upperToolbar}>
-        <Toolbar
-          section="cart"
-          groupsOverride={CART_LIST_FACTORY_UPPER_TOOLBAR}
-          onActionClick={handleAction}
-        />
       </div>
     </div>
   )

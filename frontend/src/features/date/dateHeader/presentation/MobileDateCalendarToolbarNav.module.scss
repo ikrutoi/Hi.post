@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
 
 .root {
   position: relative;
@@ -36,23 +37,13 @@
 }
 
 .modeIcon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 2.1rem;
-  height: 2.1rem;
-  padding: 0;
-  margin: 0;
+  /** Как calendar в списках корзина/история и ключи нижнего тулбара. */
+  @include iconButton.toolbar-icon-button-size-mobile-toolbar;
+  margin-inline: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
   color: $color-font-enabled-light;
   background: none;
   border: none;
   cursor: pointer;
-
-  svg {
-    width: 1.2rem;
-    height: 1.2rem;
-  }
 
   &:hover {
     color: $color-font-enabled;
