@@ -24,19 +24,52 @@ export const SwitcherSlider: React.FC<SwitcherSliderProps> = ({
   const isMonth = position === 'month'
   const isToolbar = variant === 'toolbar'
 
+  if (isToolbar) {
+    return (
+      <div
+        className={styles.segmentedCart}
+        role="tablist"
+        aria-label="Scroll mode: month or year"
+      >
+        <button
+          type="button"
+          role="tab"
+          aria-selected={isMonth}
+          aria-pressed={isMonth}
+          aria-label="Browse by month"
+          className={clsx(styles.cartSegment, styles.cartSegmentMonth)}
+          onClick={() => changePosition('month')}
+        >
+          <span className={styles.cartSegmentValue}>
+            {MONTH_NAMES_UPPER[calendarViewDate.month]}
+          </span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={!isMonth}
+          aria-pressed={!isMonth}
+          aria-label="Browse by year"
+          className={clsx(styles.cartSegment, styles.cartSegmentYear)}
+          onClick={() => changePosition('year')}
+        >
+          <span className={styles.cartSegmentValue}>
+            {calendarViewDate.year}
+          </span>
+        </button>
+      </div>
+    )
+  }
+
   return (
     <div
-      className={clsx(
-        styles.segmented,
-        isToolbar && styles.segmentedToolbar,
-      )}
+      className={styles.segmented}
       role="tablist"
       aria-label="Scroll mode: month or year"
     >
       <div
         className={clsx(
           styles.thumb,
-          isToolbar && styles.thumbToolbar,
           isMonth ? styles.thumbMonth : styles.thumbYear,
         )}
         aria-hidden

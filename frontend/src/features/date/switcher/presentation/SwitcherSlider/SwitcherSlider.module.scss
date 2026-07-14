@@ -1,8 +1,18 @@
+@use 'sass:math';
 @use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as *;
 
 $switcher-track-height: 1.8rem;
 $switcher-thumb-height: 2.08rem;
 $switcher-thumb-move-duration: 0.25s;
+
+/** Как сегменты корзина / заблокированные в CartHeaderSegments. */
+$switcher-cart-skew-deg: 30deg;
+$switcher-cart-skew-offset: $list-panel-header-chip-height *
+  math.tan($switcher-cart-skew-deg);
+$switcher-cart-corner-radius: $list-panel-header-chip-radius;
+$switcher-cart-inactive-w: 50%;
+$switcher-cart-active-w: 70%;
 
 .segmented {
   position: relative;
@@ -22,11 +32,6 @@ $switcher-thumb-move-duration: 0.25s;
   }
 }
 
-.segmentedToolbar {
-  background-color: #fff;
-  border-color: $color-section-light;
-}
-
 .thumb {
   position: absolute;
   top: calc(50% + 0.18rem);
@@ -36,7 +41,6 @@ $switcher-thumb-move-duration: 0.25s;
   border-radius: ($switcher-thumb-height * 0.5);
   background-color: $color-disabled-light;
   border: 1px solid $color-hover;
-  // box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
   pointer-events: none;
   z-index: 1;
 
@@ -44,12 +48,6 @@ $switcher-thumb-move-duration: 0.25s;
   transition:
     left $switcher-thumb-move-duration cubic-bezier(0.33, 1, 0.68, 1),
     transform $switcher-thumb-move-duration ease;
-}
-
-.thumbToolbar {
-  background-color: #fff;
-  border-color: $color-section-dark;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 .thumbMonth {
@@ -102,4 +100,100 @@ $switcher-thumb-move-duration: 0.25s;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
+}
+
+/** Mobile / toolbar: стиль кнопок корзина / заблокированные. */
+.segmentedCart {
+  position: relative;
+  width: var(--mobile-pie-size, 12.5rem);
+  min-width: 0;
+  max-width: 100%;
+  height: $list-panel-header-chip-height;
+  border-radius: $switcher-cart-corner-radius;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.cartSegment {
+  position: absolute;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: $list-panel-header-chip-height;
+  width: $switcher-cart-inactive-w;
+  box-sizing: border-box;
+  padding: 0 0.75rem;
+  margin: 0;
+  border: none;
+  font: inherit;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    width 0.15s ease,
+    background-color 0.15s ease;
+  touch-action: manipulation;
+  color: $color-font-enabled;
+  background-color: $color-app-substrate-border;
+
+  &[aria-pressed='true'] {
+    z-index: 1;
+    width: $switcher-cart-active-w;
+    background-color: $color-preview-indicator-cart;
+  }
+
+  &:not([aria-pressed='true']) .cartSegmentValue {
+    font-size: 0.85rem;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.cartSegmentMonth {
+  left: 0;
+  border-top-left-radius: $switcher-cart-corner-radius;
+  border-bottom-left-radius: $switcher-cart-corner-radius;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    calc(100% - #{$switcher-cart-skew-offset}) 100%,
+    0 100%
+  );
+}
+
+.cartSegmentYear {
+  right: 0;
+  left: auto;
+  border-top-right-radius: $switcher-cart-corner-radius;
+  border-bottom-right-radius: $switcher-cart-corner-radius;
+  clip-path: polygon(
+    #{$switcher-cart-skew-offset} 0,
+    100% 0,
+    100% 100%,
+    0 100%
+  );
+
+  /** Неактивный год — текст ближе к правому краю. */
+  &:not([aria-pressed='true']) {
+    justify-content: flex-end;
+    padding-right: 1rem;
+    padding-left: 0.75rem;
+  }
+}
+
+.cartSegmentValue {
+  @include list-panel-header-chip-text;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  pointer-events: none;
+  position: relative;
+  z-index: 1;
+  transition: font-size 0.15s ease;
 }

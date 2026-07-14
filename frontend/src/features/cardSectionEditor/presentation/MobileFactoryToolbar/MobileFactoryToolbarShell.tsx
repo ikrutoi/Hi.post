@@ -1,6 +1,7 @@
 import React from 'react'
 import clsx from 'clsx'
 import { useAppSelector } from '@app/hooks'
+import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
 import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
 import { selectSenderView } from '@envelope/sender/infrastructure/selectors'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
@@ -22,6 +23,7 @@ export const MobileFactoryToolbarShell: React.FC = () => {
   const scenarioToolbar = useMobileScenarioToolbarSnapshot()
   const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const activeSection = useAppSelector(selectActiveSection)
+  const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const senderView = useAppSelector(selectSenderView)
   const recipientView = useAppSelector(selectRecipientView)
   const {
@@ -68,8 +70,12 @@ export const MobileFactoryToolbarShell: React.FC = () => {
     showMobileListFactoryUpper ||
     showLowerRow ||
     showMobileDateCalendarNavRow
-  const hideToolbarDivider =
-    !showPeekEmptyToolbarShell && isMobileLayout && activeSection === 'date'
+  /** Жёлтая полоска: список корзины/истории или календарь в том же режиме. */
+  const showCartYellowDivider =
+    showMobileCartListFactoryChrome ||
+    showMobileHistoryListFactoryChrome ||
+    (showMobileDateCalendarNavRow &&
+      (notebookStripTab === 'cart' || notebookStripTab === 'history'))
 
   if (envelopeAddressCreateMode) return null
   if (!showShell) return null
@@ -102,10 +108,7 @@ export const MobileFactoryToolbarShell: React.FC = () => {
       <div
         className={clsx(
           styles.rowDivider,
-          hideToolbarDivider && styles.rowDividerHidden,
-          (showMobileHistoryListFactoryChrome ||
-            showMobileCartListFactoryChrome) &&
-            styles.rowDividerCart,
+          showCartYellowDivider && styles.rowDividerCart,
         )}
         aria-hidden
       />
