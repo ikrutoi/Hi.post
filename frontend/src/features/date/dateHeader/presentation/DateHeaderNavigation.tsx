@@ -10,6 +10,8 @@ type DateHeaderNavigationProps = {
   onIncrement: () => void
   className?: string
   switcherVariant?: 'default' | 'toolbar'
+  /** Mobile upper toolbar: month/year only; arrows live in the lower slider row. */
+  showArrows?: boolean
 }
 
 export const DateHeaderNavigation: React.FC<DateHeaderNavigationProps> = ({
@@ -18,11 +20,19 @@ export const DateHeaderNavigation: React.FC<DateHeaderNavigationProps> = ({
   onIncrement,
   className,
   switcherVariant = 'default',
+  showArrows = true,
 }) => (
   <div className={className ?? styles.headerCenter}>
-    <div className={styles.arrowButton} onClick={onDecrement} role="button" tabIndex={0}>
-      <FaChevronLeft className={styles.iconArrow} />
-    </div>
+    {showArrows ? (
+      <div
+        className={styles.arrowButton}
+        onClick={onDecrement}
+        role="button"
+        tabIndex={0}
+      >
+        <FaChevronLeft className={styles.iconArrow} />
+      </div>
+    ) : null}
 
     <div className={styles.switcher}>
       <Switcher
@@ -32,8 +42,15 @@ export const DateHeaderNavigation: React.FC<DateHeaderNavigationProps> = ({
       />
     </div>
 
-    <div className={styles.arrowButton} onClick={onIncrement} role="button" tabIndex={0}>
-      <FaChevronRight className={styles.iconArrow} />
-    </div>
+    {showArrows ? (
+      <div
+        className={styles.arrowButton}
+        onClick={onIncrement}
+        role="button"
+        tabIndex={0}
+      >
+        <FaChevronRight className={styles.iconArrow} />
+      </div>
+    ) : null}
   </div>
 )

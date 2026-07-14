@@ -186,6 +186,21 @@ $date-header-date-pie-alpha: 0.34;
   }
 }
 
+/** Mobile upper: только Switcher месяца/года по центру. */
+.headerCenterToolbarSwitcherOnly {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+
+  .switcher {
+    justify-self: center;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
 .arrowButton {
   display: flex;
   justify-content: center;
