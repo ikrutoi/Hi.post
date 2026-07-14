@@ -198,8 +198,9 @@ export const useCalendarCellController = ({
     triggerMonthNav,
   }: HandleCellClickParams) => {
     /**
-     * Полоса «Корзина» + dateEdit: клик по доступному дню применяет новую дату к открытке `localId`,
-     * выключает режим pick и переводит сегмент списка на `cart` (см. `cartCalendarDatePickSaga`).
+     * Полоса «Корзина» + dateEdit / cardPieEdit: клик по доступному дню применяет новую дату
+     * к открытке `localId` и переводит сегмент списка на `cart` (см. `cartCalendarDatePickSaga`).
+     * Режим pick не сбрасывается — можно сразу выбрать другую дату.
      */
     if (
       notebookStripTab === 'cart' &&

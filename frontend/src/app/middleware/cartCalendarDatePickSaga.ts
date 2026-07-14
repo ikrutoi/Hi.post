@@ -6,7 +6,6 @@ import {
 } from '@cart/infrastructure/state'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { cartCalendarDatePickApplied } from '@date/calendar/application/orchestration/notebookOrchestration.events'
-import { setCartCalendarDatePickMode } from '@date/calendar/infrastructure/state'
 import { postcardsAdapter } from '@db/adapters/storeAdapters'
 import type { PostcardHydrated } from '@entities/postcard'
 import { refreshRightSidebarBadgesFromPostcards } from './postcardCreateSaga'
@@ -43,7 +42,10 @@ function* handleCartCalendarDatePickApplied(
     yield put(postcardLocalDataChanged())
   }
 
-  yield put(setCartCalendarDatePickMode(false))
+  /**
+   * Режим pick не выключаем: при cardPieEdit / dateEdit пользователь может сразу
+   * выбрать другую дату (ошибка первого клика). Сброс — при выходе из edit.
+   */
   yield put(setCartListStatusSegment('cart'))
 }
 

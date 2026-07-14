@@ -32,7 +32,8 @@ export const notebookSessionRestored = createAction<{
 
 /**
  * Пользователь выбрал день в календаре в режиме `cartCalendarDatePickMode`:
- * сага обновляет дату открытки `localId`, выключает режим и переводит сегмент списка на `cart`.
+ * сага обновляет дату открытки `localId` и переводит сегмент списка на `cart`.
+ * Режим pick остаётся включённым (повторный выбор), пока пользователь не выйдет из edit.
  */
 export const cartCalendarDatePickApplied = createAction<{
   localId: number
