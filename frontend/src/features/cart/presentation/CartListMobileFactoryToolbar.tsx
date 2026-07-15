@@ -80,7 +80,7 @@ export const CartListMobileFactoryUpperToolbar: React.FC = () => {
           aria-label="Open cart calendar"
           onClick={openCartCalendar}
         >
-          {getToolbarIcon({ key: 'calendarReturn' })}
+          {getToolbarIcon({ key: 'date' })}
         </button>
       </div>
       <div className={styles.upperSegments}>

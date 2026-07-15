@@ -183,3 +183,58 @@ input[type='range'] {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
   }
 }
+
+/** Тулбар даты: трек и thumb в цвет стрелок prev/next. */
+.dateSliderLine.dateSliderLineToolbar {
+  background-color: $color-font-enabled-light;
+
+  &:focus::-webkit-slider-thumb,
+  &:focus::-moz-range-thumb,
+  &:focus::-ms-thumb {
+    background-color: $color-font-enabled-light-hover;
+    border-color: $color-font-enabled-light-hover;
+  }
+
+  &::-webkit-slider-runnable-track {
+    background-color: $color-font-enabled-light;
+  }
+
+  &::-webkit-slider-thumb {
+    background-color: $color-font-enabled-light;
+    border-color: $color-font-enabled-light;
+  }
+
+  &:hover::-webkit-slider-thumb {
+    background-color: $color-font-enabled-light-hover;
+    border-color: $color-font-enabled-light-hover;
+  }
+
+  &::-moz-range-track {
+    background-color: $color-font-enabled-light;
+  }
+
+  &::-moz-range-thumb {
+    background-color: $color-font-enabled-light;
+    border-color: $color-font-enabled-light;
+  }
+
+  &:hover::-moz-range-thumb {
+    background-color: $color-font-enabled-light-hover;
+    border-color: $color-font-enabled-light-hover;
+  }
+
+  &::-ms-fill-lower,
+  &::-ms-fill-upper {
+    background-color: $color-font-enabled-light;
+  }
+
+  &::-ms-thumb {
+    background-color: $color-font-enabled-light;
+    border-color: $color-font-enabled-light;
+  }
+
+  &:hover::-ms-thumb {
+    background-color: $color-font-enabled-light-hover;
+    border-color: $color-font-enabled-light-hover;
+  }
+}

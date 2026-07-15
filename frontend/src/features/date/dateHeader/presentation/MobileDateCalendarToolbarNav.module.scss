@@ -11,21 +11,30 @@
   min-width: 0;
 }
 
-.sideLeft {
+.sideLeft,
+.sideRight {
   position: absolute;
-  left: 0;
   top: 0;
   bottom: 0;
   z-index: 1;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
   min-width: 0;
   pointer-events: none;
 
   > * {
     pointer-events: auto;
   }
+}
+
+.sideLeft {
+  left: 0;
+  justify-content: flex-start;
+}
+
+.sideRight {
+  right: 0;
+  justify-content: flex-end;
 }
 
 .center {
@@ -45,7 +54,12 @@
   border: none;
   cursor: pointer;
 
-  &:hover {
+  &:hover:not(:disabled) {
     color: $color-font-enabled;
+  }
+
+  &:disabled {
+    color: $color-font-disabled;
+    cursor: default;
   }
 }

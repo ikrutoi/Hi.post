@@ -82,7 +82,7 @@ import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { CardSection, IconKey } from '@shared/config/constants'
 import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
 import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDevContext'
-import { IconCalendarReturn, IconCardPie, IconCart, IconHistoryV2, IconLogo, IconSectionMenuCardtext, IconSectionMenuEnvelopeV2 } from '@shared/ui/icons'
+import { IconCardPie, IconCart, IconHistoryV2, IconLogo, IconSectionMenuCardtext, IconSectionMenuDate, IconSectionMenuEnvelopeV2 } from '@shared/ui/icons'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { useEditorPieAddCartHandler } from '@features/cardPie/application/hooks/useEditorPieAddCartHandler'
@@ -1079,7 +1079,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                               aria-hidden
                             >
                               {showCartSlotDateIcon ? (
-                                <IconCalendarReturn />
+                                <IconSectionMenuDate />
                               ) : (
                                 <IconCart />
                               )}
@@ -1155,7 +1155,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                             aria-hidden
                           >
                             {showHistorySlotDateIcon ? (
-                              <IconCalendarReturn />
+                              <IconSectionMenuDate />
                             ) : (
                               <IconHistoryV2 />
                             )}

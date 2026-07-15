@@ -16,17 +16,15 @@
   @include iconButton.toolbar-icon-button-size-mobile-toolbar;
   /** Как первая/крайняя иконка в верхнем и нижнем тулбарах списков. */
   margin-inline: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
-  border-radius: 50%;
+  /** Как `.toolbarKey` в секции cardphoto — квадрат с лёгким скруглением, без бордера. */
+  border-radius: 0.6rem;
   background-color: #fff;
-  border: 1px solid $color-section-light;
+  border: none;
   color: $color-font-enabled-light;
   cursor: pointer;
-  transition:
-    border-color 0.2s ease,
-    color 0.2s ease;
+  transition: color 0.2s ease;
 
   &:hover {
-    border-color: $color-section-dark;
     color: $color-font-enabled-light-hover;
   }
 }

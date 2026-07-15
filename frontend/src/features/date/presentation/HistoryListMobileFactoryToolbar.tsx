@@ -57,7 +57,7 @@ export const HistoryListMobileFactoryUpperToolbar: React.FC = () => {
           aria-label="Open history calendar"
           onClick={openHistoryCalendar}
         >
-          {getToolbarIcon({ key: 'calendarReturn' })}
+          {getToolbarIcon({ key: 'date' })}
         </button>
       </div>
       <div className={styles.upperIndicator}>

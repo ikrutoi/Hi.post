@@ -29,7 +29,8 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
   )
   const calendarViewDate = lastViewedCalendarDate ?? fallbackCalendarViewDate
   const {
-    actions: { handleDecrementArrow, handleIncrementArrow },
+    actions: { handleDecrementArrow, handleIncrementArrow, goToTodayDate },
+    derived: { isCurrentMonth },
   } = useDateSwitcherController({ triggerFlash })
 
   useInitializeCalendarViewDate()
@@ -46,6 +47,8 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
       dispatch(command)
     }
   }, [dispatch, notebookStripTab])
+
+  const onCurrentMonth = isCurrentMonth()
 
   const modeIcon =
     notebookStripTab === 'cart' ? (
@@ -80,6 +83,17 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
           onIncrement={handleIncrementArrow}
           showArrows={false}
         />
+      </div>
+      <div className={styles.sideRight}>
+        <button
+          type="button"
+          className={styles.modeIcon}
+          aria-label="Go to current month"
+          disabled={onCurrentMonth}
+          onClick={goToTodayDate}
+        >
+          {getToolbarIcon({ key: 'calendarReturn' })}
+        </button>
       </div>
     </div>
   )
