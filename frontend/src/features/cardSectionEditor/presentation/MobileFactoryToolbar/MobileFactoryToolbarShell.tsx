@@ -76,12 +76,18 @@ export const MobileFactoryToolbarShell: React.FC = () => {
     showMobileHistoryListFactoryChrome ||
     (showMobileDateCalendarNavRow &&
       (notebookStripTab === 'cart' || notebookStripTab === 'history'))
+  /** Секции левого CardPie (сборка): разделитель цвета фона секции (не жёлтый). */
+  const useAssemblySectionDivider =
+    !showMobileListFactoryUpper &&
+    !showPeekEmptyToolbarShell &&
+    (showSectionUpperToolbar || showMobileDateCalendarNavRow)
 
   if (envelopeAddressCreateMode) return null
   if (!showShell) return null
 
   return (
     <div className={styles.shell} aria-label="Section toolbars">
+
       <div className={styles.rowUpper}>
         {showPeekEmptyToolbarShell ? (
           <ArchivePeekUpperToolbar />
@@ -108,6 +114,7 @@ export const MobileFactoryToolbarShell: React.FC = () => {
       <div
         className={clsx(
           styles.rowDivider,
+          useAssemblySectionDivider && styles.rowDividerEnabled,
           showCartYellowDivider && styles.rowDividerCart,
         )}
         aria-hidden

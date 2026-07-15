@@ -60,6 +60,11 @@
   background-color: transparent;
 }
 
+/** Между рядами в секции сборки — цвет фона текущей секции. */
+.rowDividerEnabled {
+  background-color: var(--mobile-section-surface-bg, $color-section-light);
+}
+
 .rowDividerCart {
   background-color: $color-preview-indicator-cart;
 }
