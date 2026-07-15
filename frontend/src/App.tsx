@@ -77,7 +77,10 @@ import { CardtextRightSlot } from '@cardtext/presentation/CardtextRightSlot'
 import { CardphotoRightSlot } from '@cardphoto/presentation/CardphotoRightSlot'
 import { selectListArchiveCardPieBundle } from '@features/cardPie/infrastructure/selectors/cardPieSelectors'
 import { RightListArchiveMiniProvider } from '@cardPanel/presentation/RightListArchiveMiniContext'
-import { applyArchiveSectionToEditorRequested } from '@cardPanel/infrastructure/state'
+import {
+  applyArchiveSectionToEditorRequested,
+  applyAllMirrorSectionsCopyRequested,
+} from '@cardPanel/infrastructure/state'
 import {
   closeDayPanel,
   openDayPanel,
@@ -561,11 +564,7 @@ const App = () => {
           setActivePieSide('right')
         })
       }
-      if (
-        fullFactoryFromRightPie &&
-        (section === 'envelope' || section === 'cardtext') &&
-        rightListArchiveLocalId != null
-      ) {
+      if (fullFactoryFromRightPie && rightListArchiveLocalId != null) {
         dispatch(
           applyArchiveSectionToEditorRequested({
             section,
@@ -1304,6 +1303,14 @@ const App = () => {
           setRightPieEnvelopePeekNoToolbar(false)
           setRightPieAromaPeekNoToolbar(false)
           setRightPieDatePeekNoToolbar(false)
+          /** Peek зеркалит CardPie; factory-редактор читает session slices — гидратим из открытки. */
+          if (rightListArchiveLocalId != null) {
+            dispatch(
+              applyAllMirrorSectionsCopyRequested({
+                sourceLocalId: rightListArchiveLocalId,
+              }),
+            )
+          }
         }
 
         if (cardPieCopyStripExpanded) {
@@ -1348,17 +1355,27 @@ const App = () => {
   const handleEditorPieToolbarAction = useEditorPieAddCartHandler({
     onEditorPieToolbarAction: handleEditorPieToolbarPassthrough,
   })
-  const handlePanelMiniSectionsToolbarAction = useCallback((key: string) => {
-    if (key !== 'cardPieEdit') return
-    setSuppressCardPieEditActiveAfterCopy(false)
-    setCardPieEditEngaged(true)
-    setActivePieSide('right')
-    setRightPieCardphotoPeekNoToolbar(false)
-    setRightPieCardtextPeekNoToolbar(false)
-    setRightPieEnvelopePeekNoToolbar(false)
-    setRightPieAromaPeekNoToolbar(false)
-    setRightPieDatePeekNoToolbar(false)
-  }, [])
+  const handlePanelMiniSectionsToolbarAction = useCallback(
+    (key: string) => {
+      if (key !== 'cardPieEdit') return
+      setSuppressCardPieEditActiveAfterCopy(false)
+      setCardPieEditEngaged(true)
+      setActivePieSide('right')
+      setRightPieCardphotoPeekNoToolbar(false)
+      setRightPieCardtextPeekNoToolbar(false)
+      setRightPieEnvelopePeekNoToolbar(false)
+      setRightPieAromaPeekNoToolbar(false)
+      setRightPieDatePeekNoToolbar(false)
+      if (rightListArchiveLocalId != null) {
+        dispatch(
+          applyAllMirrorSectionsCopyRequested({
+            sourceLocalId: rightListArchiveLocalId,
+          }),
+        )
+      }
+    },
+    [dispatch, rightListArchiveLocalId],
+  )
   const postcardPieCartToolbarStateOverride = useMemo(
     () =>
       ({
