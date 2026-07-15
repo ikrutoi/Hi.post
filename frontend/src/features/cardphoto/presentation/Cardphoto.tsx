@@ -19,6 +19,7 @@ import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
+import { useArchiveEditPeekGate } from '@cardPanel/application/hooks/useArchiveEditPeekGate'
 import { MobileInlineToolbarRow } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import { IconSectionMenuCardphoto } from '@shared/ui/icons'
 import { getToolbarIcon } from '@shared/utils/icons'
@@ -281,11 +282,11 @@ export const Cardphoto: React.FC = () => {
     listRowLocalId,
   } = useRightListArchiveMini()
   const notebookTabsOuter = useSectionEditorNotebookTabsOuter()
+  const archiveEditPeekGate = useArchiveEditPeekGate('cardphoto')
 
   if (
-    rightPieCardphotoPeekNoToolbar &&
-    listRowInner != null &&
-    !cardPieEditEngaged
+    (rightPieCardphotoPeekNoToolbar || archiveEditPeekGate) &&
+    listRowInner != null
   ) {
     const peek = (
       <CardphotoInnerPreviewOnly

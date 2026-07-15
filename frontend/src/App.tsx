@@ -1022,6 +1022,16 @@ const App = () => {
     }
   }, [rightListArchiveLocalId])
 
+  /** Смена строки корзины/истории в cardPieEdit — перегидратить session из новой открытки. */
+  useEffect(() => {
+    if (!cardPieEditEngaged || rightListArchiveLocalId == null) return
+    dispatch(
+      applyAllMirrorSectionsCopyRequested({
+        sourceLocalId: rightListArchiveLocalId,
+      }),
+    )
+  }, [cardPieEditEngaged, rightListArchiveLocalId, dispatch])
+
   useEffect(() => {
     if (!cartCalendarDatePickMode) {
       cartDatePickOwnedByCardPieEditRef.current = false

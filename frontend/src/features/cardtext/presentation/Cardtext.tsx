@@ -45,6 +45,7 @@ import { getToolbarIcon } from '@/shared/utils/icons'
 import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
+import { useArchiveEditPeekGate } from '@cardPanel/application/hooks/useArchiveEditPeekGate'
 import { MobileInlineToolbarRow } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 
 interface CardtextProps {
@@ -367,9 +368,14 @@ export const Cardtext: React.FC<CardtextProps> = (props) => {
 
   const archiveInner = listRowInner ?? mirrorInner
   const archiveRowLocalId = listRowLocalId ?? mirrorTargetLocalId
+  const archiveEditPeekGate = useArchiveEditPeekGate('cardtext')
 
-  /** Правый режим без cardPieEdit: упрощённый текст архива, не слайс сессии левой открытки. */
-  if (!cardPieEditEngaged && activePieSide === 'right' && archiveInner != null) {
+  /** Правый режим: упрощённый текст архива, пока не гидратирован session editor. */
+  if (
+    activePieSide === 'right' &&
+    archiveInner != null &&
+    (!cardPieEditEngaged || archiveEditPeekGate)
+  ) {
     const preview = (
       <CardtextListRowPeekPreview
         key={

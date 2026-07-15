@@ -15,6 +15,7 @@ import { EnvelopeMobileAddressForm } from './EnvelopeMobileAddressForm'
 import { EnvelopeInnerToolbar } from './EnvelopeInnerToolbar'
 import { EnvelopeMobileAddressViewToolbar } from './EnvelopeMobileAddressViewToolbar'
 import { useEnvelopeMobileAddressFocus } from './EnvelopeMobileAddressFocusContext'
+import { useArchiveEditPeekGate } from '@cardPanel/application/hooks/useArchiveEditPeekGate'
 import { useAppSelector } from '@app/hooks'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { selectSenderView } from '../sender/infrastructure/selectors'
@@ -43,6 +44,9 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
     listRowLocalId,
     listRowPostcardStatus,
   } = useRightListArchiveMini()
+  const archiveEditPeekGate = useArchiveEditPeekGate('envelope')
+  const envelopePeekMode =
+    rightPieEnvelopePeekNoToolbar || archiveEditPeekGate
 
   const mobileFormRole =
     senderView === 'senderCreate'
@@ -54,22 +58,22 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
   const showMobileAddressForm =
     isMobile &&
     mobileFormRole != null &&
-    !rightPieEnvelopePeekNoToolbar
+    !envelopePeekMode
 
   const showMobileAddressFocus =
     isMobile &&
     mobileFocusRole != null &&
     !showMobileAddressForm &&
-    !rightPieEnvelopePeekNoToolbar
+    !envelopePeekMode
 
   useEffect(() => {
-    if (!isMobile || showMobileAddressForm || rightPieEnvelopePeekNoToolbar) {
+    if (!isMobile || showMobileAddressForm || envelopePeekMode) {
       mobileFocus?.clearFocus()
     }
   }, [
     isMobile,
     showMobileAddressForm,
-    rightPieEnvelopePeekNoToolbar,
+    envelopePeekMode,
     mobileFocus,
   ])
 
@@ -119,7 +123,7 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
           data-envelope-mobile-focus-chrome
         >
           <Mark
-            simplifiedPeek={rightPieEnvelopePeekNoToolbar}
+            simplifiedPeek={envelopePeekMode}
             listArchivePostcardStatus={listRowPostcardStatus}
           />
         </div>
@@ -127,7 +131,7 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
           className={clsx(styles.envelopeSection, styles.envelopeSectionSender)}
           data-envelope-mobile-focus-sender
         >
-          {rightPieEnvelopePeekNoToolbar ? (
+          {envelopePeekMode ? (
             <EnvelopePeekAddressBlock
               key={
                 listRowLocalId != null
@@ -153,7 +157,7 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
             styles.envelopeSectionRecipient,
           )}
         >
-          {rightPieEnvelopePeekNoToolbar ? (
+          {envelopePeekMode ? (
             <EnvelopePeekAddressBlock
               key={
                 listRowLocalId != null
@@ -178,7 +182,7 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
         className={styles.envelopeSenderToggle}
         data-envelope-mobile-focus-chrome
       >
-        {rightPieEnvelopePeekNoToolbar ? (
+        {envelopePeekMode ? (
           <div className={styles.envelopeFooterSpacer} aria-hidden />
         ) : (
           <div
@@ -212,7 +216,7 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
   )
 
   const showEnvelopeToolbar =
-    !rightPieEnvelopePeekNoToolbar && !showMobileAddressForm
+    !envelopePeekMode && !showMobileAddressForm
 
   const body = (
     <div
@@ -222,7 +226,7 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
     >
       <div className={styles.envelopeViewWrap}>
         {!isMobile &&
-          (rightPieEnvelopePeekNoToolbar ? (
+          (envelopePeekMode ? (
             <div
               className={clsx(
                 styles.envelopeToolbarRow,
@@ -247,7 +251,7 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
     </div>
   )
 
-  return rightPieEnvelopePeekNoToolbar ? (
+  return envelopePeekMode ? (
     notebookTabsOuter ? (
       body
     ) : (
