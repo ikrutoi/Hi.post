@@ -18,7 +18,6 @@ import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
 import { useSizeFacade } from '@layout/application/facades'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import { CardSection } from '@shared/config/constants'
-import { CARDTEXT_APPLIED_DISPLAY_STATUSES } from '@cardtext/domain/editor/editor.types'
 import { CardPieProps } from '../domain/types'
 import { useCardPieFacade } from '../application/facade'
 import { isPostcardPieAllComplete } from '../infrastructure/postcardCardPieViewModel'
@@ -118,10 +117,11 @@ export const CardPie: React.FC<CardPieProps> = ({
   const cardData = pieInner ?? data?.data
   const isReady =
     pieSections != null ? isPostcardPieAllComplete(pieSections) : facadeReady
-  const cardtextStatus = cardData?.cardtext?.status
-  const hasAppliedCardtext =
-    cardtextStatus != null &&
-    CARDTEXT_APPLIED_DISPLAY_STATUSES.has(cardtextStatus)
+  /**
+   * Сектор «заполнен» по `sections.cardtext` (для archive = appliedData на открытке).
+   * Не смотрим status у assetData-fallback — иначе после снятия apply сектор остаётся визуально полным.
+   */
+  const hasAppliedCardtext = Boolean(sections.cardtext)
   const valueCardtext = hasAppliedCardtext
     ? (cardData?.cardtext?.value ?? [])
     : []

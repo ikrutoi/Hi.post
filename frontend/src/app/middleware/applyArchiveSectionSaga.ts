@@ -22,6 +22,8 @@ import {
 } from './mirrorSectionBackup.helpers'
 import { canApplyMirrorSection } from '@cardPanel/application/helpers/mirrorSectionEditorSync'
 import { selectCartItems } from '@cart/infrastructure/selectors'
+import { updateItem } from '@cart/infrastructure/state'
+import { postcardsAdapter } from '@db/adapters/storeAdapters'
 import {
   buildCardPieInnerDataFromPostcard,
   buildPieSectionFlagsFromPostcard,
@@ -69,6 +71,7 @@ function* stashMirrorSectionBackupIfNeeded(section: CardPanelSection): SagaItera
 function* applyArchiveSectionFromPostcard(
   section: CardPanelSection,
   postcard: PostcardHydrated,
+  options?: { clearCardtextApplied?: boolean },
 ): SagaIterator {
   const card = postcard.card
 
@@ -91,11 +94,37 @@ function* applyArchiveSectionFromPostcard(
     case 'cardtext': {
       const inner = buildCardPieInnerDataFromPostcard(postcard)
       const branch = inner.cardtext
-      yield put(setCardtextAppliedData(branch))
       yield put(restoreCardtextSession(branch))
       yield put(setCardtextViewEditMode(false))
+      yield put(
+        setCardtextAppliedData(
+          options?.clearCardtextApplied ? null : branch,
+        ),
+      )
       if (branch.status != null) {
         yield put(setCardtextStatus(branch.status))
+      }
+      /**
+       * editLight из archive peek: снять apply на открытке корзины/истории,
+       * чтобы центральный CardPie обновил сектор (мини-pie сборки остаётся из backup).
+       */
+      if (options?.clearCardtextApplied) {
+        const nextPostcard: PostcardHydrated = {
+          ...postcard,
+          card: {
+            ...postcard.card,
+            cardtext: {
+              ...postcard.card.cardtext,
+              appliedData: null,
+            },
+          },
+        }
+        try {
+          yield call([postcardsAdapter, 'put'], nextPostcard)
+        } catch (e) {
+          console.error('clearCardtextApplied: persist failed', e)
+        }
+        yield put(updateItem(nextPostcard))
       }
       {
         const complete: boolean = yield select(selectCardtextIsComplete)
@@ -139,28 +168,35 @@ function* handleApplyArchiveSection(
   action: PayloadAction<{
     section: CardPanelSection
     sourceLocalId: number
+    clearCardtextApplied?: boolean
   }>,
 ): SagaIterator {
-  const { section, sourceLocalId } = action.payload
+  const { section, sourceLocalId, clearCardtextApplied } = action.payload
   const items: PostcardHydrated[] = yield select(selectCartItems)
   const postcard = items.find((p) => p.localId === sourceLocalId)
   if (!postcard) return
 
   const mirrorInner = buildCardPieInnerDataFromPostcard(postcard)
   const mirrorSectionFlags = buildPieSectionFlagsFromPostcard(postcard)
-  if (
-    !canApplyMirrorSection(
-      section,
-      mirrorInner,
-      mirrorSectionFlags,
-      postcard.status,
-    )
-  ) {
+  const canApply = canApplyMirrorSection(
+    section,
+    mirrorInner,
+    mirrorSectionFlags,
+    postcard.status,
+  )
+  /** editLight: снять apply с открытки даже если сектор уже «пустой» по флагам. */
+  const allowClearCardtext =
+    Boolean(clearCardtextApplied) &&
+    section === 'cardtext' &&
+    postcard.card.cardtext.appliedData != null
+  if (!canApply && !allowClearCardtext) {
     return
   }
 
   yield call(stashMirrorSectionBackupIfNeeded, section)
-  yield call(applyArchiveSectionFromPostcard, section, postcard)
+  yield call(applyArchiveSectionFromPostcard, section, postcard, {
+    clearCardtextApplied,
+  })
 }
 
 function* handleRevertMirrorSectionCopy(

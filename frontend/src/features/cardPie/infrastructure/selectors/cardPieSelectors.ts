@@ -7,7 +7,7 @@ import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
 import {
   buildCardPieInnerDataFromPostcard,
   buildDatePreviewLines,
-  buildPieSectionFlagsFromInner,
+  buildPieSectionFlagsFromPostcard,
   buildRecipientPreviewLines,
   hasSenderAppliedSnapshot,
   isPostcardPieAllComplete,
@@ -118,14 +118,12 @@ export const selectListArchiveCardPieBundle = createSelector(
     if (Number.isNaN(postcardNumericId)) return null
     const postcard = items.find((p) => p.localId === postcardNumericId)
     if (!postcard) return null
-    const inner = buildCardPieInnerDataFromPostcard(postcard, {
+    const ctx = {
       envelopeRecipients,
       recipientEntries,
-    })
-    const sections = buildPieSectionFlagsFromInner(
-      inner,
-      Boolean(postcard.card.envelope?.isComplete),
-    )
+    }
+    const inner = buildCardPieInnerDataFromPostcard(postcard, ctx)
+    const sections = buildPieSectionFlagsFromPostcard(postcard, ctx)
     return {
       currentData: { data: inner },
       sections,

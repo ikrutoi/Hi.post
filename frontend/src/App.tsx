@@ -1118,6 +1118,7 @@ const App = () => {
           | 'aroma'
           | 'date',
         sourceLocalId: rightListArchiveLocalId,
+        clearCardtextApplied: activeSection === 'cardtext',
       }),
     )
   }, [

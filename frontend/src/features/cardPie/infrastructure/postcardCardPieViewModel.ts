@@ -379,12 +379,20 @@ export function buildPieSectionFlagsFromInner(
 
 export function buildPieSectionFlagsFromPostcard(
   postcard: PostcardHydrated,
+  ctx?: CardPieInnerBuildContext,
 ): CardPieSectionFlags {
-  const inner = buildCardPieInnerDataFromPostcard(postcard)
-  return buildPieSectionFlagsFromInner(
+  const inner = buildCardPieInnerDataFromPostcard(postcard, ctx)
+  const flags = buildPieSectionFlagsFromInner(
     inner,
     Boolean(postcard.card.envelope?.isComplete),
   )
+  /** Apply секции = `appliedData` на открытке (как session `isComplete`). */
+  const applied = postcard.card.cardtext.appliedData
+  return {
+    ...flags,
+    cardtext:
+      applied != null && cardtextHasRenderableContent(applied),
+  }
 }
 
 export function isPostcardPieAllComplete(flags: CardPieSectionFlags): boolean {

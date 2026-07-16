@@ -24,6 +24,12 @@ import {
   selectRecipientState,
 } from '@envelope/recipient/infrastructure/selectors'
 import { selectRecipientsList } from '@envelope/infrastructure/selectors'
+import { selectMirrorSectionBackup } from '@cardPanel/infrastructure/selectors/mirrorSectionBackupSelectors'
+import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
+import {
+  cardtextHasRenderableContent,
+  createInitialCardtextContent,
+} from '@cardtext/domain/editor/editor.types'
 
 export type MobilePlanCardPie = {
   id: string
@@ -62,14 +68,50 @@ export function useMobilePlanCardPies() {
   const recipientState = useAppSelector(selectRecipientState)
   const envelopeRecipients = useAppSelector(selectRecipientsList)
   const recipientEntries = useAppSelector(selectRecipientEntriesState)
+  const cardtextMirrorBackup = useAppSelector((s) =>
+    selectMirrorSectionBackup(s, 'cardtext'),
+  )
+  const { activePieSide } = useRightListArchiveMini()
   const [selectedPlanPieId, setSelectedPlanPieId] = useState<string | null>(
     null,
   )
 
   const planPies = useMemo((): MobilePlanCardPie[] => {
-    const baseInner =
+    let baseInner =
       cardPieInnerFromEditorActiveData(activeEditorData) ??
       emptyCardPieInnerData()
+    /**
+     * Правый archive-edit гидратит session из открытки корзины и может снять apply.
+     * Мини-pie сборки держим на backup assembly cardtext, пока смотрим/правим archive.
+     */
+    if (
+      activePieSide === 'right' &&
+      cardtextMirrorBackup?.section === 'cardtext'
+    ) {
+      const backupSession = cardtextMirrorBackup.session
+      const assemblyCardtext =
+        backupSession.appliedData != null &&
+        cardtextHasRenderableContent(backupSession.appliedData)
+          ? backupSession.appliedData
+          : backupSession.assetData != null &&
+              cardtextHasRenderableContent(backupSession.assetData)
+            ? backupSession.assetData
+            : null
+      if (assemblyCardtext != null) {
+        baseInner = {
+          ...baseInner,
+          cardtext: assemblyCardtext,
+        }
+      } else if (
+        backupSession.appliedData == null &&
+        backupSession.assetData == null
+      ) {
+        baseInner = {
+          ...baseInner,
+          cardtext: createInitialCardtextContent(),
+        }
+      }
+    }
     const ctx = { envelopeRecipients, recipientEntries }
     const envelopeComplete = Boolean(envelopeRecord?.isComplete)
 
@@ -91,6 +133,8 @@ export function useMobilePlanCardPies() {
     return [buildDefaultMobilePlanPie(baseInner, envelopeComplete)]
   }, [
     activeEditorData,
+    activePieSide,
+    cardtextMirrorBackup,
     entries,
     envelopeRecord?.isComplete,
     envelopeRecipients,
