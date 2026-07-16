@@ -35,8 +35,6 @@ import {
   isHistoryListSortIconKey,
 } from '@date/application/helpers/historyListSort'
 import {
-  selectCardtextAssetMatchesApplied,
-  selectCardtextIsComplete,
   selectCardtextPlainText,
   selectCardtextListSortDirection,
   selectCardtextListPanelDensity,
@@ -70,6 +68,7 @@ import { CardtextAlignButton } from './CardtextAlignButton'
 import { CardtextColorButton } from './CardtextColorButton'
 import { CardphotoPrintQualitySlot } from './CardphotoPrintQualitySlot'
 import { UserLoginToolbarIcon } from './UserLoginToolbarIcon'
+import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { getApplyToolbarIconColor, getCardPieEditToolbarIconColor } from './applyToolbarIconColor'
 import styles from './Toolbar.module.scss'
 
@@ -107,6 +106,8 @@ export const Toolbar = ({
       ? { ...storeState, ...stateOverride }
       : storeState
   const { onAction } = toolbarActions
+  const { cardPieEditEngaged, exitArchiveEditToSectionPeek } =
+    useRightListArchiveMini()
 
   const { fontSizeStep } = useCardtextFacade()
 
@@ -116,10 +117,6 @@ export const Toolbar = ({
     useSizeFacade()
 
   const cardphotoApplied = useAppSelector(selectIsCurrentCropApplied)
-  const cardtextApplied = useAppSelector(selectCardtextIsComplete)
-  const cardtextAssetMatchesApplied = useAppSelector(
-    selectCardtextAssetMatchesApplied,
-  )
   const cardtextPlainText = useAppSelector(selectCardtextPlainText)
   const senderAppliedIds = useAppSelector(selectSenderApplied)
   const senderViewIdForApply = useAppSelector(selectSenderViewId)
@@ -133,12 +130,6 @@ export const Toolbar = ({
       : (recipient.recipientsViewIdsFirstList ?? [])
   })
   const aromaApplyMatches = useAppSelector(selectAromaApplyMatches)
-  const isCardtextCurrentTemplateApplied = cardtextAssetMatchesApplied
-  const isAlreadyApplied =
-    section === 'cardtext' || section === 'cardtextView'
-      ? cardtextApplied
-      : cardphotoApplied
-  const appliedStatus = isAlreadyApplied ? 'disabled' : 'enabled'
   const cardtextEmpty =
     (section === 'cardtext' || section === 'cardtextView') &&
     !(cardtextPlainText?.trim?.() ?? '').length
@@ -416,28 +407,30 @@ export const Toolbar = ({
       buttonStatus = 'disabled'
     }
     if (key === 'apply' && buttonStatus !== 'disabled') {
-      const recipientsMultiApplyMatches =
-        recipientViewIds.length > 0 &&
-        recipientAppliedIds.length === recipientViewIds.length &&
-        recipientAppliedIds.length > 0 &&
-        recipientAppliedIds.every((id) => recipientViewIds.includes(id)) &&
-        recipientViewIds.every((id) => recipientAppliedIds.includes(id))
-      const recipientSingleApplyMatches =
-        recipientViewIds.length === 0 &&
-        recipientViewIdForApply != null &&
-        recipientAppliedIds.length === 1 &&
-        recipientAppliedIds[0] === recipientViewIdForApply
-      const senderApplyMatches =
-        senderViewIdForApply != null &&
-        senderAppliedIds.length === 1 &&
-        senderAppliedIds[0] === senderViewIdForApply
-      const applyMatchesPostcard =
-        section === 'cardphoto' ||
-        section === 'cardphotoView' ||
-        section === 'cardphotoProcessed'
-          ? cardphotoApplied
-          : section === 'cardtext' || section === 'cardtextView'
-            ? isCardtextCurrentTemplateApplied
+      /** cardtext: Apply не зелёный — подтверждение уходит в упрощённый peek. */
+      if (section === 'cardtext' || section === 'cardtextView') {
+        buttonStatus = 'enabled'
+      } else {
+        const recipientsMultiApplyMatches =
+          recipientViewIds.length > 0 &&
+          recipientAppliedIds.length === recipientViewIds.length &&
+          recipientAppliedIds.length > 0 &&
+          recipientAppliedIds.every((id) => recipientViewIds.includes(id)) &&
+          recipientViewIds.every((id) => recipientAppliedIds.includes(id))
+        const recipientSingleApplyMatches =
+          recipientViewIds.length === 0 &&
+          recipientViewIdForApply != null &&
+          recipientAppliedIds.length === 1 &&
+          recipientAppliedIds[0] === recipientViewIdForApply
+        const senderApplyMatches =
+          senderViewIdForApply != null &&
+          senderAppliedIds.length === 1 &&
+          senderAppliedIds[0] === senderViewIdForApply
+        const applyMatchesPostcard =
+          section === 'cardphoto' ||
+          section === 'cardphotoView' ||
+          section === 'cardphotoProcessed'
+            ? cardphotoApplied
             : section === 'aroma'
               ? aromaApplyMatches
               : section === 'sender'
@@ -446,7 +439,8 @@ export const Toolbar = ({
                   ? recipientsMultiApplyMatches || recipientSingleApplyMatches
                   : false
 
-      buttonStatus = applyMatchesPostcard ? 'selected' : 'enabled'
+        buttonStatus = applyMatchesPostcard ? 'selected' : 'enabled'
+      }
     }
     if (key === 'edit' && section === 'senderView' && senderViewEditMode) {
       buttonStatus = 'active'
@@ -607,6 +601,15 @@ export const Toolbar = ({
                   ? { draft: recipientCreateFormDraft ?? undefined }
                   : undefined
             onAction(effectiveIconKey as IconKey, actionPayload)
+            /** cardtext Apply в archive-edit → сразу упрощённый peek (saga допишет applied). */
+            if (
+              effectiveIconKey === 'apply' &&
+              (section === 'cardtext' || section === 'cardtextView') &&
+              cardPieEditEngaged &&
+              exitArchiveEditToSectionPeek != null
+            ) {
+              exitArchiveEditToSectionPeek('cardtext')
+            }
           }
           e.currentTarget.blur()
         }}

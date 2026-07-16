@@ -28,7 +28,7 @@ export const MobileFactoryToolbarShell: React.FC = () => {
   const recipientView = useAppSelector(selectRecipientView)
   const {
     hideUpperToolbar,
-    mobileArchiveSectionPeek,
+    mobileSectionSimplifiedPeek,
     showMobileCardphotoListFactoryChrome,
     showMobileCardtextListFactoryChrome,
     showMobileAddressListFactoryChrome,
@@ -47,7 +47,7 @@ export const MobileFactoryToolbarShell: React.FC = () => {
     (activeSection === 'date' || activeSection === 'history')
 
   const showPeekEmptyToolbarShell =
-    isMobileLayout && mobileArchiveSectionPeek && !envelopeAddressCreateMode
+    isMobileLayout && mobileSectionSimplifiedPeek && !envelopeAddressCreateMode
 
   const showUpperContent = !hideUpperToolbar
   const showMobileListFactoryUpper =

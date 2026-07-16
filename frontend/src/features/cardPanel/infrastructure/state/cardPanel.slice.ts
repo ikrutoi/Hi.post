@@ -15,6 +15,9 @@ const initialState: CardPanelState = {
   templateList: [],
   scrollIndex: 0,
   valueScroll: 0,
+  archiveFactoryEditActive: false,
+  archivePeekEnterSection: null,
+  archivePeekEnterTick: 0,
 }
 
 export const cardPanelSlice = createSlice({
@@ -42,6 +45,16 @@ export const cardPanelSlice = createSlice({
     setValueScroll(state, action: PayloadAction<number>) {
       state.valueScroll = action.payload
     },
+    setArchiveFactoryEditActive(state, action: PayloadAction<boolean>) {
+      state.archiveFactoryEditActive = action.payload
+    },
+    requestArchiveSectionPeek(
+      state,
+      action: PayloadAction<CardPanelSection>,
+    ) {
+      state.archivePeekEnterSection = action.payload
+      state.archivePeekEnterTick += 1
+    },
     resetToSections(state) {
       state.source = 'sections'
       state.activeTemplate = null
@@ -60,6 +73,8 @@ export const {
   setTemplateList,
   setScrollIndex,
   setValueScroll,
+  setArchiveFactoryEditActive,
+  requestArchiveSectionPeek,
   resetToSections,
 } = cardPanelSlice.actions
 

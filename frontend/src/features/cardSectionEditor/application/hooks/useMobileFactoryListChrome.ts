@@ -1,7 +1,10 @@
 import { useMemo } from 'react'
 import { useAppSelector } from '@app/hooks'
 import { selectIsListPanelOpen } from '@cardphoto/infrastructure/selectors'
-import { selectIsCardtextListPanelOpen } from '@cardtext/infrastructure/selectors'
+import {
+  selectIsCardtextListPanelOpen,
+  selectCardtextInteractionMode,
+} from '@cardtext/infrastructure/selectors'
 import {
   selectRecipientListPanelOpen,
   selectSenderListPanelOpen,
@@ -32,7 +35,12 @@ export function useMobileFactoryListChrome() {
   const addressListPanelOpen = senderListPanelOpen || recipientListPanelOpen
   const cardPieListPanelOpen = useAppSelector(selectIsCardPieListPanelOpen)
   const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
+  const cardtextInteractionMode = useAppSelector(selectCardtextInteractionMode)
+  const cardtextApplyPeekChrome = useAppSelector(
+    (s) => s.cardtext.isApplyPeekChrome === true,
+  )
   const {
+    activePieSide,
     rightPieCardphotoPeekNoToolbar,
     rightPieCardtextPeekNoToolbar,
     rightPieEnvelopePeekNoToolbar,
@@ -48,6 +56,23 @@ export function useMobileFactoryListChrome() {
     rightPieAromaPeekNoToolbar ||
     rightPieDatePeekNoToolbar
 
+  /**
+   * Сборная (левый pie): после Apply — упрощённый peek chrome.
+   * editLight снимает isApplyPeekChrome → обычный cardtextView.
+   */
+  const assemblyCardtextSimplifiedPeek =
+    isMobileLayout &&
+    activeSection === 'cardtext' &&
+    activePieSide === 'left' &&
+    !cardPieEditEngaged &&
+    !mobileArchiveSectionPeek &&
+    cardtextApplyPeekChrome &&
+    (cardtextInteractionMode === 'postcardTemplateView' ||
+      cardtextInteractionMode === 'processedSlot')
+
+  const mobileSectionSimplifiedPeek =
+    mobileArchiveSectionPeek || assemblyCardtextSimplifiedPeek
+
   const mobileFactoryChromePeek =
     rightPieCardphotoPeekNoToolbar ||
     rightPieCardtextPeekNoToolbar ||
@@ -57,11 +82,11 @@ export function useMobileFactoryListChrome() {
    * Скрыть список корзины/истории: peek секции редактора или выбор новой даты (cartBlocked → dateEdit).
    */
   const mobileDateListChromePeek =
-    mobileArchiveSectionPeek || cartCalendarDatePickMode
+    mobileSectionSimplifiedPeek || cartCalendarDatePickMode
 
   const showMobileSectionTemplateList = useMemo(() => {
     if (!isMobileLayout) return false
-    if (mobileArchiveSectionPeek) return false
+    if (mobileSectionSimplifiedPeek) return false
     if (
       activeSection === 'cardphoto' &&
       cardphotoListPanelOpen &&
@@ -86,7 +111,7 @@ export function useMobileFactoryListChrome() {
     return false
   }, [
     isMobileLayout,
-    mobileArchiveSectionPeek,
+    mobileSectionSimplifiedPeek,
     activeSection,
     cardphotoListPanelOpen,
     cardtextListPanelOpen,
@@ -102,7 +127,7 @@ export function useMobileFactoryListChrome() {
     if (cartListPanelOpen && !mobileDateListChromePeek) return true
     if (historyListPanelOpen && !mobileDateListChromePeek) return true
     if (cardPieEditEngaged) return false
-    if (mobileArchiveSectionPeek) return false
+    if (mobileSectionSimplifiedPeek) return false
     if (
       activeSection === 'cardphoto' &&
       cardphotoListPanelOpen &&
@@ -135,7 +160,7 @@ export function useMobileFactoryListChrome() {
     cardphotoListPanelOpen,
     cardtextListPanelOpen,
     addressListPanelOpen,
-    mobileArchiveSectionPeek,
+    mobileSectionSimplifiedPeek,
     rightPieCardphotoPeekNoToolbar,
     rightPieCardtextPeekNoToolbar,
     rightPieEnvelopePeekNoToolbar,
@@ -159,13 +184,7 @@ export function useMobileFactoryListChrome() {
 
   const hideUpperToolbar = useMemo(() => {
     if (!isMobileLayout) return false
-    if (
-      rightPieCardphotoPeekNoToolbar ||
-      rightPieCardtextPeekNoToolbar ||
-      rightPieEnvelopePeekNoToolbar ||
-      rightPieAromaPeekNoToolbar ||
-      rightPieDatePeekNoToolbar
-    ) {
+    if (mobileSectionSimplifiedPeek) {
       return true
     }
     if (
@@ -180,11 +199,7 @@ export function useMobileFactoryListChrome() {
     return false
   }, [
     isMobileLayout,
-    rightPieCardphotoPeekNoToolbar,
-    rightPieCardtextPeekNoToolbar,
-    rightPieEnvelopePeekNoToolbar,
-    rightPieAromaPeekNoToolbar,
-    rightPieDatePeekNoToolbar,
+    mobileSectionSimplifiedPeek,
     showMobileTemplateList,
     showMobileSectionTemplateList,
     showMobileHistoryListFactoryChrome,
@@ -260,6 +275,8 @@ export function useMobileFactoryListChrome() {
     mobileFactoryChromePeek,
     mobileDateListChromePeek,
     mobileArchiveSectionPeek,
+    mobileSectionSimplifiedPeek,
+    assemblyCardtextSimplifiedPeek,
     cardPieEditEngaged,
   }
 }

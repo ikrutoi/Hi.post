@@ -62,4 +62,9 @@ export interface CardPanelState {
   templateList: CardPanelTemplateItem[]
   scrollIndex: number
   valueScroll: number
+  /** App: cardPieEdit / section-edit из archive peek. */
+  archiveFactoryEditActive: boolean
+  /** Запрос вернуться в упрощённый peek после apply секции. */
+  archivePeekEnterSection: CardPanelSection | null
+  archivePeekEnterTick: number
 }

@@ -17,7 +17,6 @@ export const buildCardtextToolbarState = (
     .map((block) => block.children.map((ch) => ch.text).join(''))
     .join('')
   const hasContent = plainText.trim().length > 0
-  const applyMatchesPostcard = options?.assetProcessed === true
 
   // Keep this helper intentionally small: only derive states
   // that are strictly text-content based.
@@ -25,13 +24,12 @@ export const buildCardtextToolbarState = (
   state.center = firstBlock?.align === 'center' ? 'active' : 'enabled'
   state.right = firstBlock?.align === 'right' ? 'active' : 'enabled'
   state.justify = firstBlock?.align === 'justify' ? 'active' : 'enabled'
+  /** Apply не становится selected/зелёным — подтверждение уходит в упрощённый peek / view. */
   state.apply = options?.disableApply
     ? 'disabled'
-    : applyMatchesPostcard
-      ? 'selected'
-      : hasContent
-        ? 'enabled'
-        : 'disabled'
+    : hasContent
+      ? 'enabled'
+      : 'disabled'
   state.applyLight = hasContent ? 'enabled' : 'disabled'
 
   return state as CardtextToolbarState

@@ -3,12 +3,12 @@ import { call, put, select } from 'redux-saga/effects'
 import { toolbarAction } from '@toolbar/application/helpers'
 import {
   setCardtextAppliedData,
-  setStatus,
-  setTitle,
   setCardtextViewEditMode,
   loadCardtextTemplatesRequest,
   restoreCardtextSession,
   clearDraftData,
+  setDraftEngaged,
+  setCardtextApplyPeekChrome,
 } from '@cardtext/infrastructure/state'
 import type { RootState } from '@app/state'
 import {
@@ -20,11 +20,18 @@ import {
 } from '@cardtext/infrastructure/selectors'
 import { templateService } from '@entities/templates/domain/services/templateService'
 import { suggestCardtextTemplateTitle } from '@cardtext/application/helpers/suggestCardtextTemplateTitle'
+import { requestArchiveSectionPeek } from '@cardPanel/infrastructure/state'
+import { selectCartItems, selectCartListSelectedLocalId } from '@cart/infrastructure/selectors'
+import { selectHistoryListSelectedLocalId } from '@date/calendar/infrastructure/selectors'
+import { updateItem } from '@cart/infrastructure/state'
+import type { PostcardHydrated } from '@entities/postcard'
+import type { CardtextContent } from '@cardtext/domain/editor/editor.types'
 
 /**
  * Apply: положить текущий текст на открытку (`appliedData`) и выставить статусы.
  * Сохранённый «processed» в БД при этом переводим в `outLine`.
  * Шаблоны inLine/outLine с открытки не переводим в processed — статус сохраняем.
+ * После Apply — упрощённый view (CardtextView); для archive-edit ещё и peek chrome.
  */
 export function* applyCardtextFromToolbar(
   _action: ReturnType<typeof toolbarAction>,
@@ -32,8 +39,59 @@ export function* applyCardtextFromToolbar(
   const assetMatchesApplied: boolean = yield select(
     selectCardtextAssetMatchesApplied,
   )
+
+  /** Сборка: CardtextView; archive-edit: App/Toolbar включает peek chrome. */
+  const enterSimplifiedAfterApply = function* (
+    appliedContent: CardtextContent | null,
+  ): SagaIterator {
+    if (appliedContent != null) {
+      const cartSelected: number | null = yield select(
+        selectCartListSelectedLocalId,
+      )
+      const historySelected: number | null = yield select(
+        selectHistoryListSelectedLocalId,
+      )
+      const localId = cartSelected ?? historySelected
+      if (localId != null) {
+        const items: PostcardHydrated[] = yield select(selectCartItems)
+        const postcard = items.find((p) => p.localId === localId)
+        if (postcard != null) {
+          yield put(
+            updateItem({
+              ...postcard,
+              card: {
+                ...postcard.card,
+                cardtext: {
+                  ...postcard.card.cardtext,
+                  appliedData: appliedContent,
+                  assetData: appliedContent,
+                },
+              },
+            }),
+          )
+        }
+      }
+      yield put(setCardtextAppliedData(appliedContent))
+      yield put(restoreCardtextSession(appliedContent))
+    } else {
+      const { assetData, appliedData } = yield select(
+        (s: RootState) => s.cardtext,
+      )
+      const session = appliedData ?? assetData
+      if (session != null) {
+        yield put(restoreCardtextSession(session))
+      } else {
+        yield put(setDraftEngaged(false))
+        yield put(setCardtextViewEditMode(false))
+      }
+    }
+    yield put(setCardtextApplyPeekChrome(true))
+    yield put(requestArchiveSectionPeek('cardtext'))
+  }
+
   if (assetMatchesApplied) {
-    yield put(setCardtextAppliedData(null))
+    /** Уже на открытке — не toggle-off; выходим в упрощённый view / peek. */
+    yield call(enterSimplifiedAfterApply, null)
     return
   }
 
@@ -96,12 +154,10 @@ export function* applyCardtextFromToolbar(
       status: 'outLine' as const,
       id: templateId ?? assetData.id,
     }
-    yield put(setCardtextAppliedData(next))
-    yield put(restoreCardtextSession(next))
-    yield put(setCardtextViewEditMode(false))
     yield call([templateService, 'deleteSingleCardtextByStatus'], 'draft')
     yield put(clearDraftData())
     yield put(loadCardtextTemplatesRequest())
+    yield call(enterSimplifiedAfterApply, next)
     return
   }
 
@@ -146,8 +202,5 @@ export function* applyCardtextFromToolbar(
     title: resolvedTitle,
     status: nextStatus,
   }
-  yield put(setCardtextAppliedData(applied))
-  if (resolvedTitle) yield put(setTitle(resolvedTitle))
-  yield put(setStatus(nextStatus))
-  yield put(setCardtextViewEditMode(false))
+  yield call(enterSimplifiedAfterApply, applied)
 }

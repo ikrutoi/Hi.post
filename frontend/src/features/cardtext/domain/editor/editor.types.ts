@@ -184,6 +184,11 @@ export interface CardtextState {
   isDraftFocus: boolean
   isDraftEngaged: boolean
   isCardtextViewEditMode: boolean
+  /**
+   * Mobile: после Apply — упрощённый peek chrome (editLight/return).
+   * editLight снимает флаг и оставляет cardtextView без входа в редактор.
+   */
+  isApplyPeekChrome: boolean
 }
 
 export interface CardtextEditorSessionSnapshot {
@@ -220,4 +225,5 @@ export const initialCardtextEditorState: CardtextState = {
   isDraftFocus: false,
   isDraftEngaged: false,
   isCardtextViewEditMode: false,
+  isApplyPeekChrome: false,
 }

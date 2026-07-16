@@ -140,6 +140,7 @@ export const cardtextSlice = createSlice({
       state.appliedData = null
       state.isDraftEngaged = false
       state.isCardtextViewEditMode = false
+      state.isApplyPeekChrome = false
       state.resetToken += 1
     },
 
@@ -153,6 +154,7 @@ export const cardtextSlice = createSlice({
       state.assetData = null
       state.isDraftEngaged = false
       state.isCardtextViewEditMode = false
+      state.isApplyPeekChrome = false
       if (isCardtextDraftContentEmpty(state.draftData)) {
         state.draftData = null
       }
@@ -209,6 +211,7 @@ export const cardtextSlice = createSlice({
       state.resetToken += 1
       state.isDraftEngaged = false
       state.isCardtextViewEditMode = false
+      state.isApplyPeekChrome = false
     },
 
     restoreCardtextEditorSession(
@@ -234,6 +237,7 @@ export const cardtextSlice = createSlice({
           : cloneCardtextBranch(draftData)
       state.isDraftEngaged = false
       state.isCardtextViewEditMode = isCardtextViewEditMode ?? false
+      state.isApplyPeekChrome = false
       state.resetToken += 1
     },
 
@@ -321,6 +325,7 @@ export const cardtextSlice = createSlice({
       }
       state.isDraftEngaged = false
       state.isCardtextViewEditMode = false
+      state.isApplyPeekChrome = false
       clearTemplatesListSelectionWhenProcessed(state)
       if (
         ad.id != null &&
@@ -425,10 +430,20 @@ export const cardtextSlice = createSlice({
 
     setDraftEngaged(state, action: PayloadAction<boolean>) {
       state.isDraftEngaged = action.payload
+      if (action.payload === true) {
+        state.isApplyPeekChrome = false
+      }
     },
 
     setCardtextViewEditMode(state, action: PayloadAction<boolean>) {
       state.isCardtextViewEditMode = action.payload
+      if (action.payload === true) {
+        state.isApplyPeekChrome = false
+      }
+    },
+
+    setCardtextApplyPeekChrome(state, action: PayloadAction<boolean>) {
+      state.isApplyPeekChrome = action.payload
     },
 
     /** Удалить текст из View / Processed (кнопка delete на CardtextView или тулбар). */
@@ -473,6 +488,7 @@ export const {
   setDraftFocus,
   setDraftEngaged,
   setCardtextViewEditMode,
+  setCardtextApplyPeekChrome,
   deleteCardtextFromViewRequested,
   openCardtextFromMiniStripRequested,
 } = cardtextSlice.actions

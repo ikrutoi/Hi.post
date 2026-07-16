@@ -80,6 +80,7 @@ import { RightListArchiveMiniProvider } from '@cardPanel/presentation/RightListA
 import {
   applyArchiveSectionToEditorRequested,
   applyAllMirrorSectionsCopyRequested,
+  setArchiveFactoryEditActive,
 } from '@cardPanel/infrastructure/state'
 import {
   closeDayPanel,
@@ -165,6 +166,8 @@ const App = () => {
   ] = useState(false)
   /** cardPieEdit в правом режиме: редактирование левой открытки без смены activePieSide. */
   const [cardPieEditEngaged, setCardPieEditEngaged] = useState(false)
+  const cardPieEditEngagedRef = useRef(false)
+  cardPieEditEngagedRef.current = cardPieEditEngaged
   /** `all` — cardPieEdit; `section` — editLight только текущей peek-секции. */
   const [cardPieEditHydrateScope, setCardPieEditHydrateScope] = useState<
     'all' | 'section'
@@ -188,6 +191,12 @@ const App = () => {
   const computedNotebookStripTab = useAppSelector(selectComputedNotebookStripTab)
   const notebookDateTabPeekClearTick = useAppSelector(
     selectNotebookDateTabPeekClearTick,
+  )
+  const archivePeekEnterTick = useAppSelector(
+    (s) => s.cardPanel.archivePeekEnterTick,
+  )
+  const archivePeekEnterSection = useAppSelector(
+    (s) => s.cardPanel.archivePeekEnterSection,
   )
   const dispatch = useAppDispatch()
 
@@ -938,8 +947,12 @@ const App = () => {
     }
   }, [activeSection])
 
+  const prevCardPieEditEngagedRef = useRef(false)
   useEffect(() => {
-    if (activePieSide === 'right' && cardPieEditEngaged) {
+    const becameEngaged =
+      cardPieEditEngaged && !prevCardPieEditEngagedRef.current
+    prevCardPieEditEngagedRef.current = cardPieEditEngaged
+    if (becameEngaged && activePieSide === 'right') {
       setRightPieCardphotoPeekNoToolbar(false)
       setRightPieCardtextPeekNoToolbar(false)
       setRightPieEnvelopePeekNoToolbar(false)
@@ -1026,6 +1039,35 @@ const App = () => {
       setCardPieEditHydrateScope('all')
     }
   }, [rightListArchiveLocalId])
+
+  useEffect(() => {
+    dispatch(setArchiveFactoryEditActive(cardPieEditEngaged))
+  }, [cardPieEditEngaged, dispatch])
+
+  /**
+   * После Apply секции — упрощённый peek, только если сейчас archive factory-edit.
+   * useLayoutEffect + ref: до paint и без повторного срабатывания при входе в edit
+   * на старом tick.
+   */
+  useLayoutEffect(() => {
+    if (archivePeekEnterTick === 0) return
+    if (archivePeekEnterSection == null) return
+    if (!cardPieEditEngagedRef.current) return
+    setCardPieEditEngaged(false)
+    setCardPieEditHydrateScope('all')
+    setSuppressCardPieEditActiveAfterCopy(true)
+    syncPeekChromeForOpenedSection(archivePeekEnterSection)
+    dispatch(setArchiveFactoryEditActive(false))
+    if (cartDatePickOwnedByCardPieEditRef.current) {
+      cartDatePickOwnedByCardPieEditRef.current = false
+      dispatch(setCartCalendarDatePickMode(false))
+    }
+  }, [
+    archivePeekEnterTick,
+    archivePeekEnterSection,
+    dispatch,
+    syncPeekChromeForOpenedSection,
+  ])
 
   /** Открытие списка корзины/истории выходит из section/cardPie edit. */
   useEffect(() => {
@@ -1168,6 +1210,7 @@ const App = () => {
     setCardPieEditHydrateScope('all')
     setSuppressCardPieEditActiveAfterCopy(false)
     setCardPieEditEngaged(true)
+    dispatch(setArchiveFactoryEditActive(true))
     setActivePieSide('right')
     clearRightPiePeekChrome()
   }, [
@@ -1185,6 +1228,7 @@ const App = () => {
     setCardPieEditHydrateScope('section')
     setSuppressCardPieEditActiveAfterCopy(true)
     setCardPieEditEngaged(true)
+    dispatch(setArchiveFactoryEditActive(true))
     setActivePieSide('right')
     clearRightPiePeekChrome()
   }, [
@@ -1192,6 +1236,23 @@ const App = () => {
     dispatch,
     resolveCardPieEditTargetSection,
   ])
+
+  /** Apply в archive-edit → упрощённый peek секции. */
+  const exitArchiveEditToSectionPeek = useCallback(
+    (section: CardSection) => {
+      if (!cardPieEditEngagedRef.current) return
+      setCardPieEditEngaged(false)
+      setCardPieEditHydrateScope('all')
+      setSuppressCardPieEditActiveAfterCopy(true)
+      syncPeekChromeForOpenedSection(section)
+      dispatch(setArchiveFactoryEditActive(false))
+      if (cartDatePickOwnedByCardPieEditRef.current) {
+        cartDatePickOwnedByCardPieEditRef.current = false
+        dispatch(setCartCalendarDatePickMode(false))
+      }
+    },
+    [dispatch, syncPeekChromeForOpenedSection],
+  )
 
   const centerStripMirrorValue = useMemo(() => {
     const mobileListArchivePreviewActive =
@@ -1211,6 +1272,7 @@ const App = () => {
       cardPieEditEngaged,
       requestCardPieEdit: enterCardPieEditFactoryMode,
       requestSectionEditFromPeek: enterSectionEditFromPeek,
+      exitArchiveEditToSectionPeek,
       centerStripListMirrorEnabled: stripMirrorsRightListPostcard,
       mirrorInner: stripMirrorsRightListPostcard
         ? (rightListArchiveBundle?.currentData?.data ?? null)
@@ -1243,6 +1305,7 @@ const App = () => {
     cardPieEditEngaged,
     enterCardPieEditFactoryMode,
     enterSectionEditFromPeek,
+    exitArchiveEditToSectionPeek,
     showTopCardStripFullSpan,
     isMobileLayout,
     notebookStripTab,
