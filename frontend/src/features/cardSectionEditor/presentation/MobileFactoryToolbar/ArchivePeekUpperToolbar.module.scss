@@ -1,4 +1,7 @@
+@use '@styles/mixins/toolbarIconButton' as iconButton;
+
 .upperRow {
+  position: relative;
   flex: 1 1 auto;
   align-self: stretch;
   width: 100%;
@@ -7,6 +10,37 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.sideLeft {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: 0;
+  pointer-events: none;
+
+  > * {
+    pointer-events: auto;
+  }
+
+  :global([class*='toolbarDate']) {
+    width: auto;
+    margin-inline: 0;
+    justify-content: flex-start;
+
+    :global([class*='toolbarGroup']) {
+      justify-content: flex-start;
+    }
+
+    :global([class*='toolbarKey']) {
+      margin-inline: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
+    }
+  }
 }
 
 .upperSpacer {

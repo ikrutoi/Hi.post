@@ -165,6 +165,10 @@ const App = () => {
   ] = useState(false)
   /** cardPieEdit в правом режиме: редактирование левой открытки без смены activePieSide. */
   const [cardPieEditEngaged, setCardPieEditEngaged] = useState(false)
+  /** `all` — cardPieEdit; `section` — editLight только текущей peek-секции. */
+  const [cardPieEditHydrateScope, setCardPieEditHydrateScope] = useState<
+    'all' | 'section'
+  >('all')
   const [rightPieCardphotoPeekNoToolbar, setRightPieCardphotoPeekNoToolbar] =
     useState(false)
   const [rightPieCardtextPeekNoToolbar, setRightPieCardtextPeekNoToolbar] =
@@ -1019,18 +1023,68 @@ const App = () => {
   useEffect(() => {
     if (rightListArchiveLocalId == null) {
       setCardPieEditEngaged(false)
+      setCardPieEditHydrateScope('all')
     }
   }, [rightListArchiveLocalId])
 
-  /** Смена строки корзины/истории в cardPieEdit — перегидратить session из новой открытки. */
+  /** Открытие списка корзины/истории выходит из section/cardPie edit. */
+  useEffect(() => {
+    if (!cardPieEditEngaged) return
+    if (!listPanelOpen && !historyListPanelOpen) return
+    setCardPieEditEngaged(false)
+    setCardPieEditHydrateScope('all')
+    setSuppressCardPieEditActiveAfterCopy(true)
+    if (cartDatePickOwnedByCardPieEditRef.current) {
+      cartDatePickOwnedByCardPieEditRef.current = false
+    }
+  }, [cardPieEditEngaged, listPanelOpen, historyListPanelOpen])
+
+  /** Гидратация session из выбранной открытки при cardPieEdit / смене строки. */
   useEffect(() => {
     if (!cardPieEditEngaged || rightListArchiveLocalId == null) return
+    if (cardPieEditHydrateScope !== 'all') return
     dispatch(
       applyAllMirrorSectionsCopyRequested({
         sourceLocalId: rightListArchiveLocalId,
       }),
     )
-  }, [cardPieEditEngaged, rightListArchiveLocalId, dispatch])
+  }, [
+    cardPieEditEngaged,
+    cardPieEditHydrateScope,
+    rightListArchiveLocalId,
+    dispatch,
+  ])
+
+  /** editLight: только активная секция (и при смене сектора / строки). */
+  useEffect(() => {
+    if (!cardPieEditEngaged || rightListArchiveLocalId == null) return
+    if (cardPieEditHydrateScope !== 'section') return
+    if (
+      activeSection == null ||
+      !(SECTION_EDITOR_MENU_ICON_KEYS as readonly string[]).includes(
+        activeSection,
+      )
+    ) {
+      return
+    }
+    dispatch(
+      applyArchiveSectionToEditorRequested({
+        section: activeSection as
+          | 'cardphoto'
+          | 'cardtext'
+          | 'envelope'
+          | 'aroma'
+          | 'date',
+        sourceLocalId: rightListArchiveLocalId,
+      }),
+    )
+  }, [
+    cardPieEditEngaged,
+    cardPieEditHydrateScope,
+    rightListArchiveLocalId,
+    activeSection,
+    dispatch,
+  ])
 
   useEffect(() => {
     if (!cartCalendarDatePickMode) {
@@ -1073,6 +1127,72 @@ const App = () => {
     rightListArchiveSource,
   ])
 
+  const resolveCardPieEditTargetSection = useCallback((): CardSection => {
+    if (rightPieEnvelopePeekNoToolbar) return 'envelope'
+    if (rightPieCardtextPeekNoToolbar) return 'cardtext'
+    if (rightPieCardphotoPeekNoToolbar) return 'cardphoto'
+    if (rightPieAromaPeekNoToolbar) return 'aroma'
+    if (rightPieDatePeekNoToolbar) return 'date'
+    if (
+      activeSection != null &&
+      (SECTION_EDITOR_MENU_ICON_KEYS as readonly string[]).includes(
+        activeSection,
+      )
+    ) {
+      return activeSection as CardSection
+    }
+    return 'cardphoto'
+  }, [
+    activeSection,
+    rightPieAromaPeekNoToolbar,
+    rightPieCardphotoPeekNoToolbar,
+    rightPieCardtextPeekNoToolbar,
+    rightPieDatePeekNoToolbar,
+    rightPieEnvelopePeekNoToolbar,
+  ])
+
+  const clearRightPiePeekChrome = useCallback(() => {
+    setRightPieCardphotoPeekNoToolbar(false)
+    setRightPieCardtextPeekNoToolbar(false)
+    setRightPieEnvelopePeekNoToolbar(false)
+    setRightPieAromaPeekNoToolbar(false)
+    setRightPieDatePeekNoToolbar(false)
+  }, [])
+
+  /** Полный edit: все секции + active cardPieEdit. */
+  const enterCardPieEditFactoryMode = useCallback(() => {
+    const targetSection = resolveCardPieEditTargetSection()
+    dispatch(setCartListPanelOpen(false))
+    dispatch(setCartCalendarDatePickMode(false))
+    dispatch(setActiveSection(targetSection))
+    setCardPieEditHydrateScope('all')
+    setSuppressCardPieEditActiveAfterCopy(false)
+    setCardPieEditEngaged(true)
+    setActivePieSide('right')
+    clearRightPiePeekChrome()
+  }, [
+    clearRightPiePeekChrome,
+    dispatch,
+    resolveCardPieEditTargetSection,
+  ])
+
+  /** editLight из peek: только текущая секция, cardPieEdit не active. */
+  const enterSectionEditFromPeek = useCallback(() => {
+    const targetSection = resolveCardPieEditTargetSection()
+    dispatch(setCartListPanelOpen(false))
+    dispatch(setCartCalendarDatePickMode(false))
+    dispatch(setActiveSection(targetSection))
+    setCardPieEditHydrateScope('section')
+    setSuppressCardPieEditActiveAfterCopy(true)
+    setCardPieEditEngaged(true)
+    setActivePieSide('right')
+    clearRightPiePeekChrome()
+  }, [
+    clearRightPiePeekChrome,
+    dispatch,
+    resolveCardPieEditTargetSection,
+  ])
+
   const centerStripMirrorValue = useMemo(() => {
     const mobileListArchivePreviewActive =
       isMobileLayout &&
@@ -1089,6 +1209,8 @@ const App = () => {
     return {
       activePieSide,
       cardPieEditEngaged,
+      requestCardPieEdit: enterCardPieEditFactoryMode,
+      requestSectionEditFromPeek: enterSectionEditFromPeek,
       centerStripListMirrorEnabled: stripMirrorsRightListPostcard,
       mirrorInner: stripMirrorsRightListPostcard
         ? (rightListArchiveBundle?.currentData?.data ?? null)
@@ -1119,6 +1241,8 @@ const App = () => {
   }, [
     activePieSide,
     cardPieEditEngaged,
+    enterCardPieEditFactoryMode,
+    enterSectionEditFromPeek,
     showTopCardStripFullSpan,
     isMobileLayout,
     notebookStripTab,
@@ -1283,46 +1407,6 @@ const App = () => {
   const handlePostcardPieCartToolbarAction = useCallback(
     (key: string) => {
       if (key === 'cardPieEdit') {
-        const resolveCardPieEditTargetSection = (): CardSection => {
-          if (rightPieEnvelopePeekNoToolbar) return 'envelope'
-          if (rightPieCardtextPeekNoToolbar) return 'cardtext'
-          if (rightPieCardphotoPeekNoToolbar) return 'cardphoto'
-          if (rightPieAromaPeekNoToolbar) return 'aroma'
-          if (rightPieDatePeekNoToolbar) return 'date'
-          if (
-            activeSection != null &&
-            (SECTION_EDITOR_MENU_ICON_KEYS as readonly string[]).includes(
-              activeSection,
-            )
-          ) {
-            return activeSection as CardSection
-          }
-          return 'cardphoto'
-        }
-
-        const enterCardPieEditFactoryMode = () => {
-          const targetSection = resolveCardPieEditTargetSection()
-          dispatch(setCartListPanelOpen(false))
-          dispatch(setCartCalendarDatePickMode(false))
-          dispatch(setActiveSection(targetSection))
-          setSuppressCardPieEditActiveAfterCopy(false)
-          setCardPieEditEngaged(true)
-          setActivePieSide('right')
-          setRightPieCardphotoPeekNoToolbar(false)
-          setRightPieCardtextPeekNoToolbar(false)
-          setRightPieEnvelopePeekNoToolbar(false)
-          setRightPieAromaPeekNoToolbar(false)
-          setRightPieDatePeekNoToolbar(false)
-          /** Peek зеркалит CardPie; factory-редактор читает session slices — гидратим из открытки. */
-          if (rightListArchiveLocalId != null) {
-            dispatch(
-              applyAllMirrorSectionsCopyRequested({
-                sourceLocalId: rightListArchiveLocalId,
-              }),
-            )
-          }
-        }
-
         if (cardPieCopyStripExpanded) {
           cardPieCopyClosedByEditRef.current = true
           dispatch(setCardPieCopyStripExpanded(false))
@@ -1332,6 +1416,7 @@ const App = () => {
         if (activePieSide === 'right') {
           if (cardPieEditEngaged) {
             setCardPieEditEngaged(false)
+            setCardPieEditHydrateScope('all')
             if (cartDatePickOwnedByCardPieEditRef.current) {
               cartDatePickOwnedByCardPieEditRef.current = false
               dispatch(setCartCalendarDatePickMode(false))
@@ -1357,7 +1442,16 @@ const App = () => {
         dispatch(setCardPieCopyStripExpanded(!cardPieCopyStripExpanded))
       }
     },
-    [dispatch, cardPieCopyStripExpanded, activePieSide, cardPieEditEngaged, activeSection, rightListArchiveLocalId, rightPieCardphotoPeekNoToolbar, rightPieCardtextPeekNoToolbar, rightPieEnvelopePeekNoToolbar, rightPieAromaPeekNoToolbar, rightPieDatePeekNoToolbar, syncPeekChromeForOpenedSection],
+    [
+      dispatch,
+      cardPieCopyStripExpanded,
+      activePieSide,
+      cardPieEditEngaged,
+      activeSection,
+      rightListArchiveLocalId,
+      enterCardPieEditFactoryMode,
+      syncPeekChromeForOpenedSection,
+    ],
   )
   const handleEditorPieToolbarPassthrough = useCallback((key: string) => {
     if (key !== 'cardPieEdit' && key !== 'cardPie') return
@@ -1368,23 +1462,9 @@ const App = () => {
   const handlePanelMiniSectionsToolbarAction = useCallback(
     (key: string) => {
       if (key !== 'cardPieEdit') return
-      setSuppressCardPieEditActiveAfterCopy(false)
-      setCardPieEditEngaged(true)
-      setActivePieSide('right')
-      setRightPieCardphotoPeekNoToolbar(false)
-      setRightPieCardtextPeekNoToolbar(false)
-      setRightPieEnvelopePeekNoToolbar(false)
-      setRightPieAromaPeekNoToolbar(false)
-      setRightPieDatePeekNoToolbar(false)
-      if (rightListArchiveLocalId != null) {
-        dispatch(
-          applyAllMirrorSectionsCopyRequested({
-            sourceLocalId: rightListArchiveLocalId,
-          }),
-        )
-      }
+      enterCardPieEditFactoryMode()
     },
-    [dispatch, rightListArchiveLocalId],
+    [enterCardPieEditFactoryMode],
   )
   const postcardPieCartToolbarStateOverride = useMemo(
     () =>

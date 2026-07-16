@@ -39,14 +39,8 @@ export function resolveHistoryArchiveViewMode(input: {
 }): HistoryArchiveViewMode {
   if (input.historyListPanelOpen) return 'list'
   if (input.notebookStripTab !== 'history') return 'inactive'
-  if (
-    input.activeSection === 'history' ||
-    input.activeSection === 'date' ||
-    input.archiveSectionPeekActive
-  ) {
-    return 'calendar'
-  }
-  return 'inactive'
+  /** Закладка History без списка = календарный режим (в т.ч. после section edit). */
+  return 'calendar'
 }
 
 export function resolveNextArchiveViewOnClick(
@@ -211,6 +205,7 @@ export function buildHistoryArchiveToggleCommands(input: {
 /** Mobile Cart slot: только список корзины, режим календаря не меняется. */
 export const buildMobileCartSlotOpenCommands = (): UnknownAction[] => [
   setHistoryListPanelOpen(false),
+  setCartCalendarDatePickMode(false),
   setCartListPanelOpen(true),
 ]
 
@@ -221,6 +216,7 @@ export const buildMobileCartSlotCloseCommands = (): UnknownAction[] => [
 /** Mobile History slot: только список истории, режим календаря не меняется. */
 export const buildMobileHistorySlotOpenCommands = (): UnknownAction[] => [
   setCartListPanelOpen(false),
+  setCartCalendarDatePickMode(false),
   setHistoryListPanelOpen(true),
 ]
 

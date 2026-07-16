@@ -98,9 +98,10 @@ export function useMobileFactoryListChrome() {
 
   const showMobileTemplateList = useMemo(() => {
     if (!isMobileLayout) return false
-    if (cardPieEditEngaged) return false
+    /** Списки корзины/истории выше режима section-edit. */
     if (cartListPanelOpen && !mobileDateListChromePeek) return true
     if (historyListPanelOpen && !mobileDateListChromePeek) return true
+    if (cardPieEditEngaged) return false
     if (mobileArchiveSectionPeek) return false
     if (
       activeSection === 'cardphoto' &&
@@ -152,9 +153,8 @@ export function useMobileFactoryListChrome() {
     () =>
       isMobileLayout &&
       cartListPanelOpen &&
-      !mobileDateListChromePeek &&
-      !cardPieEditEngaged,
-    [isMobileLayout, cartListPanelOpen, mobileDateListChromePeek, cardPieEditEngaged],
+      !mobileDateListChromePeek,
+    [isMobileLayout, cartListPanelOpen, mobileDateListChromePeek],
   )
 
   const hideUpperToolbar = useMemo(() => {

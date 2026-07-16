@@ -12,6 +12,10 @@ export type RightListArchiveMiniContextValue = {
   activePieSide: CardPieStationSide
   /** Правый CardPie + cardPieEdit: редактируем левую открытку, превью справа не сбрасываем. */
   cardPieEditEngaged: boolean
+  /** Полный factory-edit (все секции) — кнопка cardPieEdit на CardPie. */
+  requestCardPieEdit: (() => void) | null
+  /** Edit только текущей peek-секции (editLight в верхнем тулбаре) — без active cardPieEdit. */
+  requestSectionEditFromPeek: (() => void) | null
   centerStripListMirrorEnabled: boolean
   mirrorInner: CardPieInnerData | null
   mirrorSectionFlags: CardPieSectionFlags | null
@@ -36,6 +40,8 @@ export type RightListArchiveMiniContextValue = {
 const defaultValue: RightListArchiveMiniContextValue = {
   activePieSide: 'left',
   cardPieEditEngaged: false,
+  requestCardPieEdit: null,
+  requestSectionEditFromPeek: null,
   centerStripListMirrorEnabled: false,
   mirrorInner: null,
   mirrorSectionFlags: null,
