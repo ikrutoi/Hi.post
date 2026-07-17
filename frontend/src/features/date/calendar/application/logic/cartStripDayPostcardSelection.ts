@@ -62,6 +62,29 @@ function cartStripCycleStatusFilter(
   return listStatusSegment
 }
 
+/**
+ * ID открыток дня для strip «Корзина».
+ * Если в текущем сегменте пусто (например выбран `cart`, а на дне только `cartBlocked`) —
+ * берём другой сегмент, иначе клик по превью не открывает CardPie.
+ */
+function orderedCartStripLocalIdsForDayPreferringSegment(
+  dayData: CardCalendarIndex,
+  cartItems: readonly PostcardHydrated[],
+  statusFilter: CartListStatusSegment,
+  dateKey: string,
+): number[] {
+  const primary = orderedCartStripLocalIdsForDay(
+    dayData,
+    cartItems,
+    statusFilter,
+    dateKey,
+  )
+  if (primary.length > 0) return primary
+  const other: CartListStatusSegment =
+    statusFilter === 'cart' ? 'cartBlocked' : 'cart'
+  return orderedCartStripLocalIdsForDay(dayData, cartItems, other, dateKey)
+}
+
 export type CartStripDayPostcardSelectionResult =
   | { kind: 'cycle'; localId: number }
   | { kind: 'openDay'; localId: number | null }
@@ -81,7 +104,7 @@ export function resolveCartStripDayPostcardSelection(input: {
     input.listSelectedLocalId,
     input.listStatusSegment,
   )
-  const lids = orderedCartStripLocalIdsForDay(
+  const lids = orderedCartStripLocalIdsForDayPreferringSegment(
     input.dayData,
     input.cartItems,
     statusFilter,
