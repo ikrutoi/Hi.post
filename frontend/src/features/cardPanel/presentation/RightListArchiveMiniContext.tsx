@@ -17,11 +17,11 @@ export type CardPieSectionPeek =
 
 export type RightListArchiveMiniContextValue = {
   activePieSide: CardPieStationSide
-  /** Правый CardPie + cardPieEdit: редактируем левую открытку, превью справа не сбрасываем. */
+  /** Правый CardPie + factory-edit: редактируем левую открытку, превью справа не сбрасываем. */
   cardPieEditEngaged: boolean
-  /** Полный factory-edit (все секции) — кнопка cardPieEdit на CardPie. */
+  /** Полный factory-edit (все секции) — кнопка editLight на CardPie. */
   requestCardPieEdit: (() => void) | null
-  /** Edit только текущей peek-секции (editLight в верхнем тулбаре) — без active cardPieEdit. */
+  /** Edit только текущей peek-секции (postcardEdit в верхнем тулбаре) — без active cardPieEdit. */
   requestSectionEditFromPeek: (() => void) | null
   /**
    * Apply в archive-edit → упрощённый peek этой секции (без тулбара редактора).

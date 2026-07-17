@@ -185,8 +185,8 @@ export interface CardtextState {
   isDraftEngaged: boolean
   isCardtextViewEditMode: boolean
   /**
-   * Mobile: после Apply — упрощённый peek chrome (editLight/return).
-   * editLight снимает флаг и оставляет cardtextView без входа в редактор.
+   * Mobile: после Apply — упрощённый peek chrome (postcardEdit/return).
+   * postcardEdit снимает флаг и оставляет cardtextView без входа в редактор.
    */
   isApplyPeekChrome: boolean
 }

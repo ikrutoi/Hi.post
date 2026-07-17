@@ -168,7 +168,7 @@ const App = () => {
   const [cardPieEditEngaged, setCardPieEditEngaged] = useState(false)
   const cardPieEditEngagedRef = useRef(false)
   cardPieEditEngagedRef.current = cardPieEditEngaged
-  /** `all` — cardPieEdit; `section` — editLight только текущей peek-секции. */
+  /** `all` — полный factory-edit (editLight на CardPie); `section` — postcardEdit только текущей peek-секции. */
   const [cardPieEditHydrateScope, setCardPieEditHydrateScope] = useState<
     'all' | 'section'
   >('all')
@@ -1097,7 +1097,7 @@ const App = () => {
     dispatch,
   ])
 
-  /** editLight: только активная секция (и при смене сектора / строки). */
+  /** postcardEdit из peek: только активная секция (и при смене сектора / строки). */
   useEffect(() => {
     if (!cardPieEditEngaged || rightListArchiveLocalId == null) return
     if (cardPieEditHydrateScope !== 'section') return
@@ -1202,7 +1202,7 @@ const App = () => {
     setRightPieDatePeekNoToolbar(false)
   }, [])
 
-  /** Полный edit: все секции + active cardPieEdit. */
+  /** Полный edit: все секции + active cardPieEdit (кнопка editLight на CardPie). */
   const enterCardPieEditFactoryMode = useCallback(() => {
     const targetSection = resolveCardPieEditTargetSection()
     dispatch(setCartListPanelOpen(false))
@@ -1220,7 +1220,7 @@ const App = () => {
     resolveCardPieEditTargetSection,
   ])
 
-  /** editLight из peek: только текущая секция, cardPieEdit не active. */
+  /** postcardEdit из peek: только текущая секция, cardPieEdit не active. */
   const enterSectionEditFromPeek = useCallback(() => {
     const targetSection = resolveCardPieEditTargetSection()
     dispatch(setCartListPanelOpen(false))
@@ -1470,7 +1470,7 @@ const App = () => {
 
   const handlePostcardPieCartToolbarAction = useCallback(
     (key: string) => {
-      if (key === 'cardPieEdit') {
+      if (key === 'editLight') {
         if (cardPieCopyStripExpanded) {
           cardPieCopyClosedByEditRef.current = true
           dispatch(setCardPieCopyStripExpanded(false))
@@ -1518,14 +1518,14 @@ const App = () => {
     ],
   )
   const handleEditorPieToolbarPassthrough = useCallback((key: string) => {
-    if (key !== 'cardPieEdit' && key !== 'cardPie') return
+    if (key !== 'editLight' && key !== 'cardPie') return
   }, [])
   const handleEditorPieToolbarAction = useEditorPieAddCartHandler({
     onEditorPieToolbarAction: handleEditorPieToolbarPassthrough,
   })
   const handlePanelMiniSectionsToolbarAction = useCallback(
     (key: string) => {
-      if (key !== 'cardPieEdit') return
+      if (key !== 'editLight') return
       enterCardPieEditFactoryMode()
     },
     [enterCardPieEditFactoryMode],
@@ -1533,7 +1533,7 @@ const App = () => {
   const postcardPieCartToolbarStateOverride = useMemo(
     () =>
       ({
-        cardPieEdit:
+        editLight:
           rightListArchiveLocalId != null &&
           !showTopCardStripFullSpan &&
           activePieSide === 'right' &&

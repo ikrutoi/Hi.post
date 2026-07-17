@@ -482,7 +482,7 @@ export const Toolbar = ({
         ? getApplyToolbarIconColor(buttonStatus)
         : undefined
     const cardPieEditIconColor =
-      section === 'postcardPieCart' && effectiveIconKey === 'cardPieEdit'
+      section === 'postcardPieCart' && effectiveIconKey === 'editLight'
         ? getCardPieEditToolbarIconColor(buttonStatus)
         : undefined
     const forcedIconColor = applyIconColor ?? cardPieEditIconColor

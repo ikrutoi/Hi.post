@@ -4,6 +4,7 @@ import { selectIsListPanelOpen } from '@cardphoto/infrastructure/selectors'
 import {
   selectIsCardtextListPanelOpen,
   selectCardtextInteractionMode,
+  selectCardtextIsComplete,
 } from '@cardtext/infrastructure/selectors'
 import {
   selectRecipientListPanelOpen,
@@ -36,9 +37,7 @@ export function useMobileFactoryListChrome() {
   const cardPieListPanelOpen = useAppSelector(selectIsCardPieListPanelOpen)
   const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
   const cardtextInteractionMode = useAppSelector(selectCardtextInteractionMode)
-  const cardtextApplyPeekChrome = useAppSelector(
-    (s) => s.cardtext.isApplyPeekChrome === true,
-  )
+  const cardtextIsComplete = useAppSelector(selectCardtextIsComplete)
   const {
     activePieSide,
     rightPieCardphotoPeekNoToolbar,
@@ -57,8 +56,9 @@ export function useMobileFactoryListChrome() {
     rightPieDatePeekNoToolbar
 
   /**
-   * Сборная (левый pie): после Apply — упрощённый peek chrome.
-   * editLight снимает isApplyPeekChrome → обычный cardtextView.
+   * Сборная (левый pie): applied cardtext на открытке → упрощённый peek chrome.
+   * Не только после Apply (`isApplyPeekChrome`): тот же вид при выборе мини-pie
+   * с уже применённым текстом. postcardEdit снимает applied → обычный cardtextView.
    */
   const assemblyCardtextSimplifiedPeek =
     isMobileLayout &&
@@ -66,7 +66,7 @@ export function useMobileFactoryListChrome() {
     activePieSide === 'left' &&
     !cardPieEditEngaged &&
     !mobileArchiveSectionPeek &&
-    cardtextApplyPeekChrome &&
+    cardtextIsComplete &&
     (cardtextInteractionMode === 'postcardTemplateView' ||
       cardtextInteractionMode === 'processedSlot')
 

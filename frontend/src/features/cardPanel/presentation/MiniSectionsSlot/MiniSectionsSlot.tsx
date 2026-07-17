@@ -212,7 +212,7 @@ export const MiniSectionsSlot = forwardRef<
         }
         return
       }
-      if (key === 'cardPieEdit') {
+      if (key === 'editLight') {
         dispatch(setCardPieCopyStripExpanded(false))
       }
       onPanelMiniSectionsToolbarAction?.(key)

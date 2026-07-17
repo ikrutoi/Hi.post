@@ -140,7 +140,7 @@
     &[data-icon-key='panelDensity2'].toolbarKeyEnabled,
     &[data-icon-key='addressList'].toolbarKeyEnabled,
     &[data-icon-key='addressAdd'].toolbarKeyEnabled,
-    &[data-icon-key='cardPieEdit'].toolbarKeyEnabled,
+    &[data-icon-key='editLight'].toolbarKeyEnabled,
     &[data-icon-key='cardPieCopy'].toolbarKeyEnabled {
       color: $color-font-enabled-light;
 
@@ -152,7 +152,7 @@
       }
     }
 
-    &[data-icon-key='cardPieEdit'].toolbarKeyActive,
+    &[data-icon-key='editLight'].toolbarKeyActive,
     &[data-icon-key='cardPieCopy'].toolbarKeyActive {
       color: $color-font-active;
 
@@ -1663,7 +1663,9 @@
   .toolbarKey.toolbarKeyEnabled,
   .toolbarKey[data-icon-key='applyLight'].toolbarKeyEnabled,
   .toolbarKey[data-icon-key='return'].toolbarKeyEnabled,
-  .toolbarKey[data-icon-key='editLight'].toolbarKeyEnabled {
+  .toolbarKey[data-icon-key='close'].toolbarKeyEnabled,
+  .toolbarKey[data-icon-key='closeBig'].toolbarKeyEnabled,
+  .toolbarKey[data-icon-key='postcardEdit'].toolbarKeyEnabled {
     color: $color-font-enabled-light;
 
     &:hover {

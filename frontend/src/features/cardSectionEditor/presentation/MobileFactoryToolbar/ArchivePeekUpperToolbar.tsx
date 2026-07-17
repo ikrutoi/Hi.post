@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react'
 import { useAppDispatch } from '@app/hooks'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
-import { toolbarAction } from '@toolbar/application/helpers'
 import type { IconKey } from '@shared/config/constants'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import { setCardtextApplyPeekChrome, setCardtextAppliedData } from '@cardtext/infrastructure/state'
@@ -13,23 +12,23 @@ import styles from './ArchivePeekUpperToolbar.module.scss'
 const ARCHIVE_PEEK_UPPER_EDIT_TOOLBAR: ToolbarConfig = [
   {
     group: 'edit',
-    icons: [{ key: 'editLight', state: 'enabled' }],
+    icons: [{ key: 'postcardEdit', state: 'enabled' }],
     status: 'enabled',
   },
 ]
 
-const ARCHIVE_PEEK_UPPER_RETURN_TOOLBAR: ToolbarConfig = [
+const ARCHIVE_PEEK_UPPER_CLOSE_TOOLBAR: ToolbarConfig = [
   {
     group: 'close',
-    icons: [{ key: 'return', state: 'enabled' }],
+    icons: [{ key: 'closeBig', state: 'enabled' }],
     status: 'enabled',
   },
 ]
 
 /**
  * Верхний ряд factory toolbar в упрощённом режиме:
- * archive peek и сборная cardtext после Apply — editLight слева, return справа.
- * Для сборной cardtext peek chrome = «apply»; editLight снимает apply.
+ * archive peek (корзина/история) — postcardEdit слева, closeBig справа;
+ * сборная cardtext — только postcardEdit (без close).
  */
 export const ArchivePeekUpperToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -40,29 +39,21 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
 
   const handleAction = useCallback(
     (key: IconKey) => {
-      if (key === 'editLight') {
+      if (key === 'postcardEdit') {
         if (isArchiveSectionPeekActive) {
           requestSectionEditFromPeek?.()
         } else if (assemblyCardtextSimplifiedPeek) {
           /**
-           * Peek chrome = применённый apply.
-           * editLight снимает apply и открывает обычные тулбары (cardtext / cardtextView).
+           * Peek = текст уже на открытке (applied).
+           * postcardEdit снимает apply → обычные тулбары cardtext / cardtextView.
            */
           dispatch(setCardtextAppliedData(null))
           dispatch(setCardtextApplyPeekChrome(false))
         }
         return false
       }
-      if (key === 'return') {
-        if (isArchiveSectionPeekActive) {
-          closeArchiveSectionPeek()
-        } else if (assemblyCardtextSimplifiedPeek) {
-          /** return — выйти, apply остаётся на открытке. */
-          dispatch(setCardtextApplyPeekChrome(false))
-          dispatch(
-            toolbarAction({ section: 'cardtextView', key: 'close' } as const),
-          )
-        }
+      if (key === 'closeBig' && isArchiveSectionPeekActive) {
+        closeArchiveSectionPeek()
         return false
       }
     },
@@ -85,13 +76,15 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
         />
       </div>
       <div className={styles.upperSpacer} aria-hidden />
-      <div className={styles.upperToolbar}>
-        <Toolbar
-          section="date"
-          groupsOverride={ARCHIVE_PEEK_UPPER_RETURN_TOOLBAR}
-          onActionClick={handleAction}
-        />
-      </div>
+      {!assemblyCardtextSimplifiedPeek ? (
+        <div className={styles.upperToolbar}>
+          <Toolbar
+            section="date"
+            groupsOverride={ARCHIVE_PEEK_UPPER_CLOSE_TOOLBAR}
+            onActionClick={handleAction}
+          />
+        </div>
+      ) : null}
     </div>
   )
 }

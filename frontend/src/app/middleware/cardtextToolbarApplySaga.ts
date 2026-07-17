@@ -24,8 +24,10 @@ import { requestArchiveSectionPeek } from '@cardPanel/infrastructure/state'
 import { selectCartItems, selectCartListSelectedLocalId } from '@cart/infrastructure/selectors'
 import { selectHistoryListSelectedLocalId } from '@date/calendar/infrastructure/selectors'
 import { updateItem } from '@cart/infrastructure/state'
+import { postcardsAdapter } from '@db/adapters/storeAdapters'
 import type { PostcardHydrated } from '@entities/postcard'
 import type { CardtextContent } from '@cardtext/domain/editor/editor.types'
+import { postcardLocalDataChanged } from '@features/sync/store/postcardSync.actions'
 
 /**
  * Apply: положить текущий текст на открытку (`appliedData`) и выставить статусы.
@@ -56,19 +58,25 @@ export function* applyCardtextFromToolbar(
         const items: PostcardHydrated[] = yield select(selectCartItems)
         const postcard = items.find((p) => p.localId === localId)
         if (postcard != null) {
-          yield put(
-            updateItem({
-              ...postcard,
-              card: {
-                ...postcard.card,
-                cardtext: {
-                  ...postcard.card.cardtext,
-                  appliedData: appliedContent,
-                  assetData: appliedContent,
-                },
+          const nextPostcard: PostcardHydrated = {
+            ...postcard,
+            updatedAt: Date.now(),
+            card: {
+              ...postcard.card,
+              cardtext: {
+                ...postcard.card.cardtext,
+                appliedData: appliedContent,
+                assetData: appliedContent,
               },
-            }),
-          )
+            },
+          }
+          try {
+            yield call(postcardsAdapter.put, nextPostcard)
+          } catch (e) {
+            console.error('applyCardtextFromToolbar: persist failed', e)
+          }
+          yield put(updateItem(nextPostcard))
+          yield put(postcardLocalDataChanged())
         }
       }
       yield put(setCardtextAppliedData(appliedContent))

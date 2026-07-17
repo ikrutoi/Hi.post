@@ -2,7 +2,7 @@ import { flattenIcons } from '../helpers'
 import type { ToolbarConfig, BaseSectionConfig } from './toolbar.types'
 
 export const POSTCARD_PIE_CART_KEYS = [
-  'cardPieEdit',
+  'editLight',
   'cardPieCopy',
   'delete',
 ] as const
@@ -17,7 +17,7 @@ export const POSTCARD_PIE_CART_TOOLBAR: ToolbarConfig = [
   {
     group: 'cardPieCart',
     icons: [
-      { key: 'cardPieEdit', state: 'enabled' },
+      { key: 'editLight', state: 'enabled' },
       { key: 'cardPieCopy', state: 'enabled' },
       { key: 'delete', state: 'enabled' },
     ],

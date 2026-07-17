@@ -1,7 +1,10 @@
 import { useMemo } from 'react'
 import { useAppSelector } from '@app/hooks'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
-import { isMirrorSectionAppliedToEditor } from '@cardPanel/application/helpers/mirrorSectionEditorSync'
+import {
+  isMirrorCardtextHydratedInEditor,
+  isMirrorSectionAppliedToEditor,
+} from '@cardPanel/application/helpers/mirrorSectionEditorSync'
 import type { CardPanelSection } from '@cardPanel/domain/types'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { selectCardphotoAppliedData } from '@cardphoto/infrastructure/selectors'
@@ -40,6 +43,16 @@ export function useArchiveEditPeekGate(section: CardPanelSection): boolean {
     const sourcePostcard =
       cartItems.find((p) => p.localId === listRowLocalId) ?? null
 
+    /**
+     * postcardEdit снимает appliedData, но assetData уже гидратирован.
+     * Gate должен отпустить peek, чтобы CardtextSessionEditor отдал cardtextView в нижний ряд.
+     */
+    if (section === 'cardtext') {
+      const session =
+        cardtextState?.appliedData ?? cardtextState?.assetData ?? null
+      return !isMirrorCardtextHydratedInEditor(listRowInner, session)
+    }
+
     return !isMirrorSectionAppliedToEditor(
       section,
       listRowInner,
@@ -62,6 +75,7 @@ export function useArchiveEditPeekGate(section: CardPanelSection): boolean {
     cartItems,
     cardphotoAppliedData,
     cardtextState?.appliedData,
+    cardtextState?.assetData,
     appliedRecipientAddress,
     appliedSenderAddress,
     selectedAroma,

@@ -22,8 +22,6 @@ import {
 } from './mirrorSectionBackup.helpers'
 import { canApplyMirrorSection } from '@cardPanel/application/helpers/mirrorSectionEditorSync'
 import { selectCartItems } from '@cart/infrastructure/selectors'
-import { updateItem } from '@cart/infrastructure/state'
-import { postcardsAdapter } from '@db/adapters/storeAdapters'
 import {
   buildCardPieInnerDataFromPostcard,
   buildPieSectionFlagsFromPostcard,
@@ -96,6 +94,11 @@ function* applyArchiveSectionFromPostcard(
       const branch = inner.cardtext
       yield put(restoreCardtextSession(branch))
       yield put(setCardtextViewEditMode(false))
+      /**
+       * postcardEdit: снять apply только в session (редактор).
+       * На открытке корзины/cartBlocked appliedData не трогаем —
+       * у cart не бывает пустых секций; центральный CardPie остаётся полным.
+       */
       yield put(
         setCardtextAppliedData(
           options?.clearCardtextApplied ? null : branch,
@@ -103,28 +106,6 @@ function* applyArchiveSectionFromPostcard(
       )
       if (branch.status != null) {
         yield put(setCardtextStatus(branch.status))
-      }
-      /**
-       * editLight из archive peek: снять apply на открытке корзины/истории,
-       * чтобы центральный CardPie обновил сектор (мини-pie сборки остаётся из backup).
-       */
-      if (options?.clearCardtextApplied) {
-        const nextPostcard: PostcardHydrated = {
-          ...postcard,
-          card: {
-            ...postcard.card,
-            cardtext: {
-              ...postcard.card.cardtext,
-              appliedData: null,
-            },
-          },
-        }
-        try {
-          yield call([postcardsAdapter, 'put'], nextPostcard)
-        } catch (e) {
-          console.error('clearCardtextApplied: persist failed', e)
-        }
-        yield put(updateItem(nextPostcard))
       }
       {
         const complete: boolean = yield select(selectCardtextIsComplete)
@@ -184,7 +165,7 @@ function* handleApplyArchiveSection(
     mirrorSectionFlags,
     postcard.status,
   )
-  /** editLight: снять apply с открытки даже если сектор уже «пустой» по флагам. */
+  /** postcardEdit: снять session-apply, даже если сектор на открытке уже «пустой» по флагам. */
   const allowClearCardtext =
     Boolean(clearCardtextApplied) &&
     section === 'cardtext' &&

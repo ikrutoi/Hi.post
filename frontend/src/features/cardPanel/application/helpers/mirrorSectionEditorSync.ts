@@ -146,13 +146,7 @@ export function isMirrorSectionAppliedToEditor(
       const src = mirrorInner.cardtext
       const applied = editor.cardtextApplied
       if (!src || !applied) return false
-      if (src.id != null && applied.id != null) {
-        return String(src.id) === String(applied.id)
-      }
-      return (
-        src.plainText === applied.plainText &&
-        src.cardtextLines === applied.cardtextLines
-      )
+      return isSameCardtextContent(src, applied)
     }
     case 'envelope':
       return (
@@ -168,4 +162,31 @@ export function isMirrorSectionAppliedToEditor(
     default:
       return false
   }
+}
+
+function isSameCardtextContent(
+  src: CardtextContent,
+  session: CardtextContent,
+): boolean {
+  if (src.id != null && session.id != null) {
+    return String(src.id) === String(session.id)
+  }
+  return (
+    src.plainText === session.plainText &&
+    src.cardtextLines === session.cardtextLines
+  )
+}
+
+/**
+ * Session уже подтянула текст открытки (для archive peek gate).
+ * После postcardEdit `appliedData` может быть null — смотрим assetData.
+ */
+export function isMirrorCardtextHydratedInEditor(
+  mirrorInner: CardPieInnerData | null,
+  session: CardtextContent | null | undefined,
+): boolean {
+  if (!mirrorInner) return false
+  const src = mirrorInner.cardtext
+  if (!src || session == null) return false
+  return isSameCardtextContent(src, session)
 }

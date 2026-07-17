@@ -101,6 +101,7 @@ import {
   IconDownload,
   IconApply,
   IconClose,
+  IconCloseBig,
   IconReturn,
   IconCrop,
   IconCropCheck,
@@ -247,6 +248,8 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconApplyCheck />
     case 'close':
       return <IconClose />
+    case 'closeBig':
+      return <IconCloseBig />
     case 'return':
       return <IconReturn />
     case 'listDelete':
@@ -409,7 +412,7 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconCalendarReturn />
     case 'cardPieFavorite':
       return <IconCardPieFavorite />
-    case 'cardPieEdit':
+    case 'postcardEdit':
       return <IconCardPieEdit />
     case 'postcardFavorite':
       return <IconPostcardFavorite />
