@@ -91,7 +91,8 @@ export const buildSenderToolbarState = ({
 
   if (!isEnabled) {
     for (const key of ENVELOPE_KEYS) {
-      if (key === 'addressAdd') continue
+      /** addressAdd и apply остаются доступны при выкл. тумблере. */
+      if (key === 'addressAdd' || key === 'apply') continue
       const value = state[key]
       state[key] =
         value != null && typeof value === 'object' && 'state' in value
@@ -105,6 +106,9 @@ export const buildSenderToolbarState = ({
               },
             }
           : ('disabled' as const)
+    }
+    if (!isAddressFormOpen) {
+      state.apply = { state: 'enabled', options: {} }
     }
   }
 

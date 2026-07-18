@@ -204,7 +204,7 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
         className={styles.envelopeSenderToggle}
         data-envelope-mobile-focus-chrome
       >
-        {envelopePeekMode ? (
+        {envelopePeekMode || showSenderApplyPeek ? (
           <div className={styles.envelopeFooterSpacer} aria-hidden />
         ) : (
           <div

@@ -20,7 +20,7 @@ import {
   selectRecipientView,
 } from '@envelope/recipient/infrastructure/selectors'
 import {
-  selectSenderApplied,
+  selectSenderAppliedLocked,
   selectSenderView,
 } from '@envelope/sender/infrastructure/selectors'
 import {
@@ -56,7 +56,7 @@ export function useMobileFactoryListChrome() {
   const cardphotoAppliedData = useAppSelector(selectCardphotoAppliedData)
   const recipientAppliedIds = useAppSelector(selectRecipientApplied)
   const recipientView = useAppSelector(selectRecipientView)
-  const senderAppliedIds = useAppSelector(selectSenderApplied)
+  const senderAppliedLocked = useAppSelector(selectSenderAppliedLocked)
   const senderView = useAppSelector(selectSenderView)
   const {
     activePieSide,
@@ -121,6 +121,7 @@ export function useMobileFactoryListChrome() {
 
   /**
    * Сборная: после Apply sender — упрощённый адрес + postcardEdit вместо sender-тулбара.
+   * В т.ч. пустой/выкл. отправитель (appliedLocked).
    */
   const assemblySenderSimplifiedPeek =
     isMobileLayout &&
@@ -129,7 +130,7 @@ export function useMobileFactoryListChrome() {
     !cardPieEditEngaged &&
     !mobileArchiveSectionPeek &&
     senderView !== 'senderCreate' &&
-    senderAppliedIds.length > 0
+    senderAppliedLocked
 
   const assemblySectionSimplifiedPeek =
     assemblyCardtextSimplifiedPeek || assemblyCardphotoSimplifiedPeek

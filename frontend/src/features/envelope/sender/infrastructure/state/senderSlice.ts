@@ -28,6 +28,7 @@ export const initialSender: SenderState = {
   senderViewId: null,
   applied: [],
   appliedData: null,
+  appliedLocked: false,
   enabled: true,
 }
 
@@ -68,6 +69,7 @@ const senderSlice = createSlice({
 
     setSenderAppliedIds: (state, action: PayloadAction<string[]>) => {
       state.applied = action.payload
+      state.appliedLocked = action.payload.length > 0
     },
 
     setSenderAppliedWithData: (
@@ -77,12 +79,17 @@ const senderSlice = createSlice({
       state.applied = action.payload.ids
       state.appliedData =
         action.payload.data.length === 1 ? action.payload.data[0] : null
+      state.appliedLocked = true
     },
 
     setSenderApplied: (state, action: PayloadAction<boolean>) => {
       if (!action.payload) {
         state.applied = []
         state.appliedData = null
+        state.appliedLocked = false
+      } else {
+        /** Подтвердить результат без адреса (тумблер выкл / пустое поле). */
+        state.appliedLocked = true
       }
     },
 

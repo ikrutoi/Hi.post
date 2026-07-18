@@ -61,6 +61,11 @@ export const selectSenderViewId = (state: RootState): string | null =>
 export const selectSenderApplied = (state: RootState): string[] =>
   state.sender.applied ?? EMPTY_STRINGS
 
+/** Apply зафиксировал отправителя (адрес или пустой/выкл). */
+export const selectSenderAppliedLocked = (state: RootState): boolean =>
+  Boolean(state.sender.appliedLocked) ||
+  (state.sender.applied?.length ?? 0) > 0
+
 export const selectAppliedSenderDisplayAddress = createSelector(
   [selectSenderState, selectSenderEntriesState],
   (sender, entries): Readonly<AddressFields> => {

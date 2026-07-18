@@ -34,5 +34,10 @@ export type SenderState = {
   senderViewId: string | null
   applied: string[]
   appliedData: AddressFields | null
+  /**
+   * Apply зафиксировал результат отправителя (в т.ч. пустой / тумблер выкл).
+   * Peek + скрытие тумблера; сброс через postcardEdit → setSenderApplied(false).
+   */
+  appliedLocked: boolean
   enabled: boolean
 }

@@ -1253,15 +1253,21 @@ function* handleEnvelopeToolbarAction(
         return
       }
 
-      if (senderViewId) {
-        const displayAddress: Readonly<Record<string, string>> =
-          yield select(selectSenderAddress)
-        const data: AddressFields[] = [{ ...displayAddress } as AddressFields]
-        yield put(setSenderAppliedWithData({ ids: [senderViewId], data }))
-        yield put(setSenderView('senderView'))
-      } else {
-        yield put(senderSaveRequested({ listStatus: 'outList' }))
+      /** Пустой / выкл. тумблер: Apply фиксирует результат без адреса. */
+      if (!sender.enabled || senderViewId == null) {
+        if (sender.appliedLocked && senderAppliedIds.length === 0) {
+          yield put(setSenderApplied(false))
+          return
+        }
+        yield put(setSenderApplied(true))
+        return
       }
+
+      const displayAddress: Readonly<Record<string, string>> =
+        yield select(selectSenderAddress)
+      const data: AddressFields[] = [{ ...displayAddress } as AddressFields]
+      yield put(setSenderAppliedWithData({ ids: [senderViewId], data }))
+      yield put(setSenderView('senderView'))
     }
     if (section === 'recipients') {
       const recipient: RecipientState = yield select(selectRecipientState)

@@ -216,11 +216,11 @@ export const selectSenderSelectedId = createSelector(
 export const selectEnvelopeSessionRecord = createSelector(
   [selectSenderState, selectRecipientState],
   (sender, recipient): EnvelopeSessionRecord => {
-    const senderApplied = (sender.applied?.length ?? 0) > 0
+    const senderApplied =
+      Boolean(sender.appliedLocked) || (sender.applied?.length ?? 0) > 0
     const recipientApplied = (recipient.applied?.length ?? 0) > 0
-    const isComplete = sender.enabled
-      ? senderApplied && recipientApplied
-      : recipientApplied
+    /** Apply нужен всегда, в т.ч. для выключенного/пустого отправителя. */
+    const isComplete = senderApplied && recipientApplied
 
     return {
       sender,

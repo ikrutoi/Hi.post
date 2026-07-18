@@ -397,16 +397,18 @@ export function* processEnvelopeVisuals() {
     senderAppliedIds.length === 1 &&
     senderAppliedIds[0] === sender.senderViewId
 
-  const senderApplyState = !sender.enabled
+  const senderApplyState = sender.currentView === 'senderCreate'
     ? 'disabled'
-    : sender.currentView === 'senderCreate'
-      ? 'disabled'
+    : !sender.enabled
+      ? sender.appliedLocked || senderAppliedIds.length > 0
+        ? 'selected'
+        : 'enabled'
       : senderViewMatchesApplied
         ? 'selected'
         : sender.currentView === 'senderView' && sender.senderViewId != null
           ? 'enabled'
           : isSenderEmptyForm
-            ? 'disabled'
+            ? 'enabled'
             : senderComplete
               ? 'enabled'
               : 'disabled'
