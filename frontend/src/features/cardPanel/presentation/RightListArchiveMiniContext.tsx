@@ -5,6 +5,8 @@ import type {
   CardPieSectionFlags,
 } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import type { CardPieRightListSource } from '@features/cardPie/domain/types'
+import type { CardPieDualModeSnapshot } from '@cardPanel/domain/types/cardPieDualMode.types'
+import { resolveCardPieDualMode } from '@cardPanel/application/helpers/resolveCardPieDualMode'
 
 export type CardPieStationSide = 'left' | 'right'
 
@@ -17,11 +19,21 @@ export type CardPieSectionPeek =
 
 export type RightListArchiveMiniContextValue = {
   activePieSide: CardPieStationSide
-  /** Правый CardPie + factory-edit: редактируем левую открытку, превью справа не сбрасываем. */
+  /**
+   * Dual-mode ownership for the active CardPie face.
+   * `dataBranch: 'archive'` must not write assembly session (legacy edit still does —
+   * see CARD_PIE_DUAL_MODE_WRITE_PATHS).
+   */
+  dualMode: CardPieDualModeSnapshot
+  /**
+   * Archive factory-edit engaged (editLight / postcardEdit).
+   * Legacy: hydrates shared assembly session while keeping activePieSide === 'right'.
+   * Target: edit archive sandbox only.
+   */
   cardPieEditEngaged: boolean
   /** Полный factory-edit (все секции) — кнопка editLight на CardPie. */
   requestCardPieEdit: (() => void) | null
-  /** Edit только текущей peek-секции (postcardEdit в верхнем тулбаре) — без active cardPieEdit. */
+  /** Edit только текущей peek-секции (postcardEdit в верхнем тулбаре). */
   requestSectionEditFromPeek: (() => void) | null
   /**
    * Apply в archive-edit → упрощённый peek этой секции (без тулбара редактора).
@@ -48,8 +60,17 @@ export type RightListArchiveMiniContextValue = {
   clearRightPieDatePeek: () => void
 }
 
+const defaultDualMode = resolveCardPieDualMode({
+  activePieSide: 'left',
+  archiveLocalId: null,
+  archiveSource: null,
+  archiveStatus: undefined,
+  archiveEditEngaged: false,
+})
+
 const defaultValue: RightListArchiveMiniContextValue = {
   activePieSide: 'left',
+  dualMode: defaultDualMode,
   cardPieEditEngaged: false,
   requestCardPieEdit: null,
   requestSectionEditFromPeek: null,

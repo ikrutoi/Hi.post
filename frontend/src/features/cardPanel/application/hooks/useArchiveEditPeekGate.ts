@@ -2,12 +2,16 @@ import { useMemo } from 'react'
 import { useAppSelector } from '@app/hooks'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import {
+  isMirrorCardphotoHydratedInEditor,
   isMirrorCardtextHydratedInEditor,
   isMirrorSectionAppliedToEditor,
 } from '@cardPanel/application/helpers/mirrorSectionEditorSync'
 import type { CardPanelSection } from '@cardPanel/domain/types'
 import { selectCartItems } from '@cart/infrastructure/selectors'
-import { selectCardphotoAppliedData } from '@cardphoto/infrastructure/selectors'
+import {
+  selectCardphotoAppliedData,
+  selectCardphotoAssetData,
+} from '@cardphoto/infrastructure/selectors'
 import { selectCardtextState } from '@cardtext/infrastructure/selectors'
 import { selectAppliedRecipientDisplayAddress } from '@envelope/recipient/infrastructure/selectors'
 import { selectAppliedSenderDisplayAddress } from '@envelope/sender/infrastructure/selectors'
@@ -28,6 +32,7 @@ export function useArchiveEditPeekGate(section: CardPanelSection): boolean {
 
   const cartItems = useAppSelector(selectCartItems)
   const cardphotoAppliedData = useAppSelector(selectCardphotoAppliedData)
+  const cardphotoAssetData = useAppSelector(selectCardphotoAssetData)
   const cardtextState = useAppSelector(selectCardtextState)
   const appliedRecipientAddress = useAppSelector(
     selectAppliedRecipientDisplayAddress,
@@ -44,13 +49,20 @@ export function useArchiveEditPeekGate(section: CardPanelSection): boolean {
       cartItems.find((p) => p.localId === listRowLocalId) ?? null
 
     /**
-     * postcardEdit снимает appliedData, но assetData уже гидратирован.
-     * Gate должен отпустить peek, чтобы CardtextSessionEditor отдал cardtextView в нижний ряд.
+     * postcardEdit / cardPieEdit снимают appliedData, но assetData уже гидратирован.
+     * Gate должен отпустить peek, чтобы session-редактор отдал обычные тулбары.
      */
     if (section === 'cardtext') {
       const session =
         cardtextState?.appliedData ?? cardtextState?.assetData ?? null
       return !isMirrorCardtextHydratedInEditor(listRowInner, session)
+    }
+
+    if (section === 'cardphoto') {
+      return !isMirrorCardphotoHydratedInEditor(
+        sourcePostcard,
+        cardphotoAssetData,
+      )
     }
 
     return !isMirrorSectionAppliedToEditor(
@@ -74,6 +86,7 @@ export function useArchiveEditPeekGate(section: CardPanelSection): boolean {
     listRowLocalId,
     cartItems,
     cardphotoAppliedData,
+    cardphotoAssetData,
     cardtextState?.appliedData,
     cardtextState?.assetData,
     appliedRecipientAddress,

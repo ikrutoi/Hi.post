@@ -27,7 +27,7 @@ import {
   buildPieSectionFlagsFromPostcard,
 } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import { prepareForRedux } from '@app/middleware/cardphotoHelpers'
-import { applyFinal, markLoaded } from '@cardphoto/infrastructure/state'
+import { applyFinal, clearApply, markLoaded } from '@cardphoto/infrastructure/state'
 import { rebuildConfigFromMeta } from '@app/middleware/cardphotoProcessSaga'
 import type { ImageMeta } from '@cardphoto/domain/types'
 import { selectCardphotoIsComplete } from '@cardphoto/infrastructure/selectors'
@@ -69,7 +69,7 @@ function* stashMirrorSectionBackupIfNeeded(section: CardPanelSection): SagaItera
 function* applyArchiveSectionFromPostcard(
   section: CardPanelSection,
   postcard: PostcardHydrated,
-  options?: { clearCardtextApplied?: boolean },
+  options?: { clearCardtextApplied?: boolean; clearCardphotoApplied?: boolean },
 ): SagaIterator {
   const card = postcard.card
 
@@ -81,6 +81,14 @@ function* applyArchiveSectionFromPostcard(
       yield put(applyFinal(serializable))
       yield call(rebuildConfigFromMeta, serializable, false)
       yield put(markLoaded())
+      /**
+       * Edit (cardPieEdit / postcardEdit): снять session-apply после гидратации —
+       * центральный CardPie в edit смотрит isComplete и сектор пустеет.
+       * На открытке корзины appliedData не трогаем.
+       */
+      if (options?.clearCardphotoApplied) {
+        yield put(clearApply())
+      }
       {
         const complete: boolean = yield select(selectCardphotoIsComplete)
         yield put(
@@ -150,9 +158,15 @@ function* handleApplyArchiveSection(
     section: CardPanelSection
     sourceLocalId: number
     clearCardtextApplied?: boolean
+    clearCardphotoApplied?: boolean
   }>,
 ): SagaIterator {
-  const { section, sourceLocalId, clearCardtextApplied } = action.payload
+  const {
+    section,
+    sourceLocalId,
+    clearCardtextApplied,
+    clearCardphotoApplied,
+  } = action.payload
   const items: PostcardHydrated[] = yield select(selectCartItems)
   const postcard = items.find((p) => p.localId === sourceLocalId)
   if (!postcard) return
@@ -170,13 +184,19 @@ function* handleApplyArchiveSection(
     Boolean(clearCardtextApplied) &&
     section === 'cardtext' &&
     postcard.card.cardtext.appliedData != null
-  if (!canApply && !allowClearCardtext) {
+  const allowClearCardphoto =
+    Boolean(clearCardphotoApplied) &&
+    section === 'cardphoto' &&
+    (postcard.card.cardphoto?.appliedData != null ||
+      postcard.card.cardphoto?.assetData != null)
+  if (!canApply && !allowClearCardtext && !allowClearCardphoto) {
     return
   }
 
   yield call(stashMirrorSectionBackupIfNeeded, section)
   yield call(applyArchiveSectionFromPostcard, section, postcard, {
     clearCardtextApplied,
+    clearCardphotoApplied,
   })
 }
 
@@ -193,9 +213,12 @@ function* handleRevertMirrorSectionCopy(
 }
 
 function* handleApplyAllMirrorSectionsCopy(
-  action: PayloadAction<{ sourceLocalId: number }>,
+  action: PayloadAction<{
+    sourceLocalId: number
+    clearCardphotoApplied?: boolean
+  }>,
 ): SagaIterator {
-  const { sourceLocalId } = action.payload
+  const { sourceLocalId, clearCardphotoApplied } = action.payload
   const items: PostcardHydrated[] = yield select(selectCartItems)
   const postcard = items.find((p) => p.localId === sourceLocalId)
   if (!postcard) return
@@ -215,7 +238,10 @@ function* handleApplyAllMirrorSectionsCopy(
       continue
     }
     yield call(stashMirrorSectionBackupIfNeeded, section)
-    yield call(applyArchiveSectionFromPostcard, section, postcard)
+    yield call(applyArchiveSectionFromPostcard, section, postcard, {
+      clearCardphotoApplied:
+        Boolean(clearCardphotoApplied) && section === 'cardphoto',
+    })
   }
 }
 

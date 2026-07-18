@@ -1,6 +1,11 @@
 import { useMemo } from 'react'
 import { useAppSelector } from '@app/hooks'
-import { selectIsListPanelOpen } from '@cardphoto/infrastructure/selectors'
+import {
+  selectIsListPanelOpen,
+  selectCardphotoIsComplete,
+  selectCardphotoAssetData,
+  selectCardphotoAppliedData,
+} from '@cardphoto/infrastructure/selectors'
 import {
   selectIsCardtextListPanelOpen,
   selectCardtextInteractionMode,
@@ -38,6 +43,9 @@ export function useMobileFactoryListChrome() {
   const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
   const cardtextInteractionMode = useAppSelector(selectCardtextInteractionMode)
   const cardtextIsComplete = useAppSelector(selectCardtextIsComplete)
+  const cardphotoIsComplete = useAppSelector(selectCardphotoIsComplete)
+  const cardphotoAssetData = useAppSelector(selectCardphotoAssetData)
+  const cardphotoAppliedData = useAppSelector(selectCardphotoAppliedData)
   const {
     activePieSide,
     rightPieCardphotoPeekNoToolbar,
@@ -57,8 +65,7 @@ export function useMobileFactoryListChrome() {
 
   /**
    * Сборная (левый pie): applied cardtext на открытке → упрощённый peek chrome.
-   * Не только после Apply (`isApplyPeekChrome`): тот же вид при выборе мини-pie
-   * с уже применённым текстом. postcardEdit снимает applied → обычный cardtextView.
+   * postcardEdit снимает applied → обычный cardtextView.
    */
   const assemblyCardtextSimplifiedPeek =
     isMobileLayout &&
@@ -70,8 +77,28 @@ export function useMobileFactoryListChrome() {
     (cardtextInteractionMode === 'postcardTemplateView' ||
       cardtextInteractionMode === 'processedSlot')
 
+  /**
+   * Сборная (левый pie): applied cardphoto в слоте → упрощённый peek (только postcardEdit).
+   */
+  const cardphotoAssetMatchesApplied =
+    !!cardphotoAssetData?.id &&
+    !!cardphotoAppliedData?.id &&
+    cardphotoAssetData.id === cardphotoAppliedData.id
+
+  const assemblyCardphotoSimplifiedPeek =
+    isMobileLayout &&
+    activeSection === 'cardphoto' &&
+    activePieSide === 'left' &&
+    !cardPieEditEngaged &&
+    !mobileArchiveSectionPeek &&
+    cardphotoIsComplete &&
+    cardphotoAssetMatchesApplied
+
+  const assemblySectionSimplifiedPeek =
+    assemblyCardtextSimplifiedPeek || assemblyCardphotoSimplifiedPeek
+
   const mobileSectionSimplifiedPeek =
-    mobileArchiveSectionPeek || assemblyCardtextSimplifiedPeek
+    mobileArchiveSectionPeek || assemblySectionSimplifiedPeek
 
   const mobileFactoryChromePeek =
     rightPieCardphotoPeekNoToolbar ||
@@ -277,6 +304,8 @@ export function useMobileFactoryListChrome() {
     mobileArchiveSectionPeek,
     mobileSectionSimplifiedPeek,
     assemblyCardtextSimplifiedPeek,
+    assemblyCardphotoSimplifiedPeek,
+    assemblySectionSimplifiedPeek,
     cardPieEditEngaged,
   }
 }

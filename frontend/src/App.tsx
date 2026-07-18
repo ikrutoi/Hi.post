@@ -76,11 +76,18 @@ import type { HistoryListPanelItem } from '@date/presentation/HistoryListPanel'
 import { CardtextRightSlot } from '@cardtext/presentation/CardtextRightSlot'
 import { CardphotoRightSlot } from '@cardphoto/presentation/CardphotoRightSlot'
 import { selectListArchiveCardPieBundle } from '@features/cardPie/infrastructure/selectors/cardPieSelectors'
+import { selectActiveCardFullData } from '@features/cardPie/infrastructure/selectors/cardPieSelectors'
+import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors'
 import { RightListArchiveMiniProvider } from '@cardPanel/presentation/RightListArchiveMiniContext'
+import { resolveCardPieDualMode } from '@cardPanel/application/helpers/resolveCardPieDualMode'
 import {
   applyArchiveSectionToEditorRequested,
   applyAllMirrorSectionsCopyRequested,
+  revertAllMirrorSectionsCopyRequested,
   setArchiveFactoryEditActive,
+  setAssemblyBranchFreeze,
+  clearAssemblyBranchFreeze,
+  clearAllMirrorSectionBackups,
 } from '@cardPanel/infrastructure/state'
 import {
   closeDayPanel,
@@ -164,10 +171,28 @@ const App = () => {
     suppressCardPieEditActiveAfterCopy,
     setSuppressCardPieEditActiveAfterCopy,
   ] = useState(false)
-  /** cardPieEdit в правом режиме: редактирование левой открытки без смены activePieSide. */
+  /** cardPieEdit: archive factory-edit (legacy still hydrates shared session). */
   const [cardPieEditEngaged, setCardPieEditEngaged] = useState(false)
   const cardPieEditEngagedRef = useRef(false)
   cardPieEditEngagedRef.current = cardPieEditEngaged
+
+  const dispatch = useAppDispatch()
+
+  /**
+   * Dual-mode: leave archive-edit and restore assembly session from backups.
+   */
+  const endCardPieEditEngaged = useCallback(() => {
+    if (cardPieEditEngagedRef.current) {
+      dispatch(revertAllMirrorSectionsCopyRequested())
+      dispatch(clearAssemblyBranchFreeze())
+      dispatch(setArchiveFactoryEditActive(false))
+      if (cartDatePickOwnedByCardPieEditRef.current) {
+        cartDatePickOwnedByCardPieEditRef.current = false
+        dispatch(setCartCalendarDatePickMode(false))
+      }
+    }
+    setCardPieEditEngaged(false)
+  }, [dispatch])
   /** `all` — полный factory-edit (editLight на CardPie); `section` — postcardEdit только текущей peek-секции. */
   const [cardPieEditHydrateScope, setCardPieEditHydrateScope] = useState<
     'all' | 'section'
@@ -198,7 +223,6 @@ const App = () => {
   const archivePeekEnterSection = useAppSelector(
     (s) => s.cardPanel.archivePeekEnterSection,
   )
-  const dispatch = useAppDispatch()
 
   /** Правый CardPie после выхода из copy через sectionEditorMenu (закладка cart/history снята). */
   const [rightListArchivePinnedForLeftFactory, setRightListArchivePinnedForLeftFactory] =
@@ -509,7 +533,7 @@ const App = () => {
   useEffect(() => {
     if (!canShowRightListArchiveCardPie && activePieSide === 'right') {
       setSuppressCardPieEditActiveAfterCopy(true)
-      setCardPieEditEngaged(false)
+      endCardPieEditEngaged()
       setActivePieSide('left')
     }
   }, [canShowRightListArchiveCardPie, activePieSide])
@@ -872,7 +896,7 @@ const App = () => {
     dispatch(setCartListSelectedLocalId(null))
     dispatch(setHistoryListSelectedLocalId(null))
     dispatch(closeDayPanel())
-    setCardPieEditEngaged(false)
+    endCardPieEditEngaged()
   }, [dispatch])
 
   const handleBeforeLeftPieInteraction = useCallback(() => {
@@ -884,7 +908,7 @@ const App = () => {
     setRightPieDatePeekNoToolbar(false)
     if (activePieSide === 'right') {
       setSuppressCardPieEditActiveAfterCopy(true)
-      setCardPieEditEngaged(false)
+      endCardPieEditEngaged()
       setActivePieSide('left')
     }
   }, [activePieSide, exitRightPreviewForLeftMode])
@@ -892,7 +916,7 @@ const App = () => {
   const handleLeftPieCenterClick = useCallback(() => {
     if (activePieSide === 'right') {
       setSuppressCardPieEditActiveAfterCopy(true)
-      setCardPieEditEngaged(false)
+      endCardPieEditEngaged()
       setActivePieSide('left')
     }
   }, [activePieSide])
@@ -1026,7 +1050,7 @@ const App = () => {
         setRightPieAromaPeekNoToolbar(false)
         setRightPieDatePeekNoToolbar(false)
         setSuppressCardPieEditActiveAfterCopy(true)
-        setCardPieEditEngaged(false)
+        endCardPieEditEngaged()
         setActivePieSide('left')
       }
     }
@@ -1035,7 +1059,7 @@ const App = () => {
 
   useEffect(() => {
     if (rightListArchiveLocalId == null) {
-      setCardPieEditEngaged(false)
+      endCardPieEditEngaged()
       setCardPieEditHydrateScope('all')
     }
   }, [rightListArchiveLocalId])
@@ -1053,19 +1077,14 @@ const App = () => {
     if (archivePeekEnterTick === 0) return
     if (archivePeekEnterSection == null) return
     if (!cardPieEditEngagedRef.current) return
-    setCardPieEditEngaged(false)
+    endCardPieEditEngaged()
     setCardPieEditHydrateScope('all')
     setSuppressCardPieEditActiveAfterCopy(true)
     syncPeekChromeForOpenedSection(archivePeekEnterSection)
-    dispatch(setArchiveFactoryEditActive(false))
-    if (cartDatePickOwnedByCardPieEditRef.current) {
-      cartDatePickOwnedByCardPieEditRef.current = false
-      dispatch(setCartCalendarDatePickMode(false))
-    }
   }, [
     archivePeekEnterTick,
     archivePeekEnterSection,
-    dispatch,
+    endCardPieEditEngaged,
     syncPeekChromeForOpenedSection,
   ])
 
@@ -1073,7 +1092,7 @@ const App = () => {
   useEffect(() => {
     if (!cardPieEditEngaged) return
     if (!listPanelOpen && !historyListPanelOpen) return
-    setCardPieEditEngaged(false)
+    endCardPieEditEngaged()
     setCardPieEditHydrateScope('all')
     setSuppressCardPieEditActiveAfterCopy(true)
     if (cartDatePickOwnedByCardPieEditRef.current) {
@@ -1088,6 +1107,7 @@ const App = () => {
     dispatch(
       applyAllMirrorSectionsCopyRequested({
         sourceLocalId: rightListArchiveLocalId,
+        clearCardphotoApplied: true,
       }),
     )
   }, [
@@ -1119,6 +1139,7 @@ const App = () => {
           | 'date',
         sourceLocalId: rightListArchiveLocalId,
         clearCardtextApplied: activeSection === 'cardtext',
+        clearCardphotoApplied: activeSection === 'cardphoto',
       }),
     )
   }, [
@@ -1202,9 +1223,25 @@ const App = () => {
     setRightPieDatePeekNoToolbar(false)
   }, [])
 
+  /**
+   * Dual-mode step 3: snapshot assembly CardPie before archive-edit hydrates
+   * the shared session. Left/plan pies read the freeze while edit is engaged.
+   */
+  const captureAssemblyBranchFreeze = useCallback(() => {
+    const state = store.getState()
+    dispatch(
+      setAssemblyBranchFreeze({
+        editorData: selectActiveCardFullData(state),
+        sections: selectPieProgress(state).sections,
+      }),
+    )
+  }, [dispatch])
+
   /** Полный edit: все секции + active cardPieEdit (кнопка editLight на CardPie). */
   const enterCardPieEditFactoryMode = useCallback(() => {
     const targetSection = resolveCardPieEditTargetSection()
+    captureAssemblyBranchFreeze()
+    dispatch(clearAllMirrorSectionBackups())
     dispatch(setCartListPanelOpen(false))
     dispatch(setCartCalendarDatePickMode(false))
     dispatch(setActiveSection(targetSection))
@@ -1215,6 +1252,7 @@ const App = () => {
     setActivePieSide('right')
     clearRightPiePeekChrome()
   }, [
+    captureAssemblyBranchFreeze,
     clearRightPiePeekChrome,
     dispatch,
     resolveCardPieEditTargetSection,
@@ -1223,6 +1261,8 @@ const App = () => {
   /** postcardEdit из peek: только текущая секция, cardPieEdit не active. */
   const enterSectionEditFromPeek = useCallback(() => {
     const targetSection = resolveCardPieEditTargetSection()
+    captureAssemblyBranchFreeze()
+    dispatch(clearAllMirrorSectionBackups())
     dispatch(setCartListPanelOpen(false))
     dispatch(setCartCalendarDatePickMode(false))
     dispatch(setActiveSection(targetSection))
@@ -1233,26 +1273,22 @@ const App = () => {
     setActivePieSide('right')
     clearRightPiePeekChrome()
   }, [
+    captureAssemblyBranchFreeze,
     clearRightPiePeekChrome,
     dispatch,
     resolveCardPieEditTargetSection,
   ])
 
-  /** Apply в archive-edit → упрощённый peek секции. */
+  /** Apply в archive-edit → упрощённый peek секции; assembly session восстанавливаем. */
   const exitArchiveEditToSectionPeek = useCallback(
     (section: CardSection) => {
       if (!cardPieEditEngagedRef.current) return
-      setCardPieEditEngaged(false)
+      endCardPieEditEngaged()
       setCardPieEditHydrateScope('all')
       setSuppressCardPieEditActiveAfterCopy(true)
       syncPeekChromeForOpenedSection(section)
-      dispatch(setArchiveFactoryEditActive(false))
-      if (cartDatePickOwnedByCardPieEditRef.current) {
-        cartDatePickOwnedByCardPieEditRef.current = false
-        dispatch(setCartCalendarDatePickMode(false))
-      }
     },
-    [dispatch, syncPeekChromeForOpenedSection],
+    [endCardPieEditEngaged, syncPeekChromeForOpenedSection],
   )
 
   const centerStripMirrorValue = useMemo(() => {
@@ -1268,8 +1304,17 @@ const App = () => {
       showTopCardStripFullSpan ||
       mobileListArchivePreviewActive
 
+    const dualMode = resolveCardPieDualMode({
+      activePieSide,
+      archiveLocalId: rightListArchiveLocalId,
+      archiveSource: rightListArchiveSource,
+      archiveStatus: rightArchivePiePostcardStatus,
+      archiveEditEngaged: cardPieEditEngaged,
+    })
+
     return {
       activePieSide,
+      dualMode,
       cardPieEditEngaged,
       requestCardPieEdit: enterCardPieEditFactoryMode,
       requestSectionEditFromPeek: enterSectionEditFromPeek,
@@ -1343,7 +1388,7 @@ const App = () => {
         (historyListPanelOpen || notebookStripTab === 'history'))
     if (archiveRowSelected && activePieSide !== 'right') {
       setActivePieSide('right')
-      setCardPieEditEngaged(false)
+      endCardPieEditEngaged()
       setSuppressCardPieEditActiveAfterCopy(true)
     }
   }, [
@@ -1391,12 +1436,12 @@ const App = () => {
       }
       dispatch(setCartListSelectedLocalId(nextLid))
       if (nextLid == null) {
-        setCardPieEditEngaged(false)
+        endCardPieEditEngaged()
         setActivePieSide('left')
         dispatch(closeDayPanel())
         return
       }
-      setCardPieEditEngaged(false)
+      endCardPieEditEngaged()
       setSuppressCardPieEditActiveAfterCopy(true)
       setActivePieSide('right')
       applyRightListArchiveToolbarVisuals(dispatch, store.getState, 'cart')
@@ -1428,11 +1473,11 @@ const App = () => {
       const nextLid = historyListSelectedLocalId === lid ? null : lid
       dispatch(setHistoryListSelectedLocalId(nextLid))
       if (nextLid == null) {
-        setCardPieEditEngaged(false)
+        endCardPieEditEngaged()
         setActivePieSide('left')
         return
       }
-      setCardPieEditEngaged(false)
+      endCardPieEditEngaged()
       setSuppressCardPieEditActiveAfterCopy(true)
       setActivePieSide('right')
       applyRightListArchiveToolbarVisuals(dispatch, store.getState, 'history')
@@ -1447,7 +1492,7 @@ const App = () => {
       /** Режим pick из строки «Заблокированные» — не перехватывать/сбрасывать в cardPieEdit effect. */
       cartDatePickOwnedByCardPieEditRef.current = false
       cartDatePickOwnedByListEntryRef.current = true
-      setCardPieEditEngaged(false)
+      endCardPieEditEngaged()
       dispatch(setNotebookStripTab('cart'))
       dispatch(setActiveSection('date'))
       dispatch(setCartListStatusSegment('cartBlocked'))
@@ -1479,12 +1524,8 @@ const App = () => {
         }
         if (activePieSide === 'right') {
           if (cardPieEditEngaged) {
-            setCardPieEditEngaged(false)
+            endCardPieEditEngaged()
             setCardPieEditHydrateScope('all')
-            if (cartDatePickOwnedByCardPieEditRef.current) {
-              cartDatePickOwnedByCardPieEditRef.current = false
-              dispatch(setCartCalendarDatePickMode(false))
-            }
             if (
               rightListArchiveLocalId != null &&
               activeSection != null &&

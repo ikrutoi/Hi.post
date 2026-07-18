@@ -30,6 +30,7 @@ import { switcherReducer } from '@date/switcher/infrastructure/state'
 import {
   CardPanelReducer,
   MirrorSectionBackupReducer,
+  AssemblyBranchFreezeReducer,
 } from '@cardPanel/infrastructure/state'
 
 import { cardEditorReducer } from '@entities/cardEditor/infrastructure/state'
@@ -73,6 +74,7 @@ export const rootReducer = combineReducers({
 
   cardPanel: CardPanelReducer,
   mirrorSectionBackup: MirrorSectionBackupReducer,
+  assemblyBranchFreeze: AssemblyBranchFreezeReducer,
 
   cardEditor: cardEditorReducer,
 

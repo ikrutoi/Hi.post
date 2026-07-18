@@ -24,7 +24,7 @@ import { selectCardtextMiniPreviewHasRenderableContent } from '@cardtext/infrast
 import { openCardtextFromMiniStripRequested } from '@cardtext/infrastructure/state'
 import { openCardphotoFromMiniStripRequested } from '@cardphoto/infrastructure/state'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
-import { applyArchiveSectionToEditorRequested } from '@cardPanel/infrastructure/state'
+import { mayWriteAssemblyFromMiniOpen } from '@cardPanel/application/helpers/resolveCardPieDualMode'
 
 interface MiniCardProps {
   section: CardSection
@@ -59,7 +59,7 @@ export const MiniCard: React.FC<MiniCardProps> = ({
   const remSize = useRemSize()
   const miniCardRef = useRef<HTMLDivElement>(null)
   const {
-    centerStripListMirrorEnabled,
+    dualMode,
     mirrorTargetLocalId,
     cardPieEditEngaged,
     clearRightPieCardphotoPeek,
@@ -68,6 +68,13 @@ export const MiniCard: React.FC<MiniCardProps> = ({
     clearRightPieAromaPeek,
     clearRightPieDatePeek,
   } = useRightListArchiveMini()
+
+  const writeAssemblyFromMini = mayWriteAssemblyFromMiniOpen({
+    dataBranch: dualMode.dataBranch,
+    archiveEditEngaged: cardPieEditEngaged,
+    peekToolbarOnMiniOpen,
+    mirrorTargetLocalId,
+  })
 
   const { changeSection } = useSectionMenuFacade()
   const { editorState, removeSection } = useCardEditorFacade()
@@ -82,7 +89,8 @@ export const MiniCard: React.FC<MiniCardProps> = ({
 
   const showClearButton =
     !hideClearButton &&
-    !centerStripListMirrorEnabled &&
+    dualMode.dataBranch === 'assembly' &&
+    mirrorTargetLocalId == null &&
     !!editorState
       ? section === 'envelope'
         ? hasEnvelopeApplied
@@ -119,31 +127,23 @@ export const MiniCard: React.FC<MiniCardProps> = ({
         onBeforeOpenSection?.()
         if (section === 'cardphoto') {
           clearRightPieCardphotoPeek()
-          if (!cardPieEditEngaged && !peekToolbarOnMiniOpen) {
+          if (writeAssemblyFromMini) {
             dispatch(openCardphotoFromMiniStripRequested())
           }
         }
         if (section === 'cardtext') {
           clearRightPieCardtextPeek()
-          if (!cardPieEditEngaged && !peekToolbarOnMiniOpen) {
+          if (writeAssemblyFromMini) {
             dispatch(openCardtextFromMiniStripRequested())
           }
         }
         if (section === 'envelope') {
           clearRightPieEnvelopePeek()
-          if (
-            centerStripListMirrorEnabled &&
-            mirrorTargetLocalId != null &&
-            !cardPieEditEngaged &&
-            !peekToolbarOnMiniOpen
-          ) {
-            dispatch(
-              applyArchiveSectionToEditorRequested({
-                section: 'envelope',
-                sourceLocalId: mirrorTargetLocalId,
-              }),
-            )
-          } else {
+          /**
+           * Dual-mode step 2: never hydrate archive → assembly from mini open.
+           * Copy bridge = mirrorApplyCorner; archive edit hydrate = App.tsx.
+           */
+          if (writeAssemblyFromMini) {
             dispatch(syncEnvelopeFormsFromAppliedRequested())
           }
         }

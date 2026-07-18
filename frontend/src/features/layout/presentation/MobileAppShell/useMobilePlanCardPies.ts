@@ -25,6 +25,7 @@ import {
 } from '@envelope/recipient/infrastructure/selectors'
 import { selectRecipientsList } from '@envelope/infrastructure/selectors'
 import { selectMirrorSectionBackup } from '@cardPanel/infrastructure/selectors/mirrorSectionBackupSelectors'
+import { selectAssemblyBranchFreeze } from '@cardPanel/infrastructure/selectors/assemblyBranchFreezeSelectors'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import {
   cardtextHasRenderableContent,
@@ -71,6 +72,7 @@ export function useMobilePlanCardPies() {
   const cardtextMirrorBackup = useAppSelector((s) =>
     selectMirrorSectionBackup(s, 'cardtext'),
   )
+  const assemblyFreeze = useAppSelector(selectAssemblyBranchFreeze)
   const { activePieSide } = useRightListArchiveMini()
   const [selectedPlanPieId, setSelectedPlanPieId] = useState<string | null>(
     null,
@@ -78,13 +80,16 @@ export function useMobilePlanCardPies() {
 
   const planPies = useMemo((): MobilePlanCardPie[] => {
     let baseInner =
+      (activePieSide === 'right' && assemblyFreeze != null
+        ? cardPieInnerFromEditorActiveData(assemblyFreeze.editorData)
+        : null) ??
       cardPieInnerFromEditorActiveData(activeEditorData) ??
       emptyCardPieInnerData()
     /**
-     * Правый archive-edit гидратит session из открытки корзины и может снять apply.
-     * Мини-pie сборки держим на backup assembly cardtext, пока смотрим/правим archive.
+     * Fallback: cardtext backup if freeze missing (legacy path).
      */
     if (
+      assemblyFreeze == null &&
       activePieSide === 'right' &&
       cardtextMirrorBackup?.section === 'cardtext'
     ) {
@@ -113,7 +118,10 @@ export function useMobilePlanCardPies() {
       }
     }
     const ctx = { envelopeRecipients, recipientEntries }
-    const envelopeComplete = Boolean(envelopeRecord?.isComplete)
+    const envelopeComplete =
+      assemblyFreeze != null && activePieSide === 'right'
+        ? Boolean(assemblyFreeze.sections.envelope)
+        : Boolean(envelopeRecord?.isComplete)
 
     const mapped = entries
       .filter((entry) => entry.variant !== 'inactive')
@@ -134,6 +142,7 @@ export function useMobilePlanCardPies() {
   }, [
     activeEditorData,
     activePieSide,
+    assemblyFreeze,
     cardtextMirrorBackup,
     entries,
     envelopeRecord?.isComplete,

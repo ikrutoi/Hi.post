@@ -4,6 +4,7 @@ import { Toolbar } from '@toolbar/presentation/Toolbar'
 import type { IconKey } from '@shared/config/constants'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import { setCardtextApplyPeekChrome, setCardtextAppliedData } from '@cardtext/infrastructure/state'
+import { clearApply } from '@cardphoto/infrastructure/state'
 import { useCloseArchiveSectionPeek } from '../../application/hooks/useCloseArchiveSectionPeek'
 import { useMobileFactoryListChrome } from '../../application/hooks/useMobileFactoryListChrome'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
@@ -27,14 +28,18 @@ const ARCHIVE_PEEK_UPPER_CLOSE_TOOLBAR: ToolbarConfig = [
 
 /**
  * Верхний ряд factory toolbar в упрощённом режиме:
- * archive peek (корзина/история) — postcardEdit слева, closeBig справа;
- * сборная cardtext — только postcardEdit (без close).
+ * archive peek — postcardEdit слева, closeBig справа;
+ * сборная cardtext/cardphoto — только postcardEdit.
  */
 export const ArchivePeekUpperToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
   const { closeArchiveSectionPeek, isArchiveSectionPeekActive } =
     useCloseArchiveSectionPeek()
-  const { assemblyCardtextSimplifiedPeek } = useMobileFactoryListChrome()
+  const {
+    assemblyCardtextSimplifiedPeek,
+    assemblyCardphotoSimplifiedPeek,
+    assemblySectionSimplifiedPeek,
+  } = useMobileFactoryListChrome()
   const { requestSectionEditFromPeek } = useRightListArchiveMini()
 
   const handleAction = useCallback(
@@ -49,6 +54,9 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
            */
           dispatch(setCardtextAppliedData(null))
           dispatch(setCardtextApplyPeekChrome(false))
+        } else if (assemblyCardphotoSimplifiedPeek) {
+          /** Peek = фото уже на открытке; postcardEdit снимает apply. */
+          dispatch(clearApply())
         }
         return false
       }
@@ -58,6 +66,7 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
       }
     },
     [
+      assemblyCardphotoSimplifiedPeek,
       assemblyCardtextSimplifiedPeek,
       closeArchiveSectionPeek,
       dispatch,
@@ -76,7 +85,7 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
         />
       </div>
       <div className={styles.upperSpacer} aria-hidden />
-      {!assemblyCardtextSimplifiedPeek ? (
+      {!assemblySectionSimplifiedPeek ? (
         <div className={styles.upperToolbar}>
           <Toolbar
             section="date"

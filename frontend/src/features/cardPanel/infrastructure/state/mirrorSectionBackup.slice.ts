@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { setCardPieCopyStripExpanded, setCartListPanelOpen } from '@cart/infrastructure/state'
+import { setCardPieCopyStripExpanded } from '@cart/infrastructure/state'
 import type { CardPanelSection } from '../../domain/types'
 import type {
   MirrorSectionBackup,
@@ -31,17 +31,15 @@ const mirrorSectionBackupSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(setCardPieCopyStripExpanded, (state, action) => {
-        if (!action.payload) {
-          state.bySection = {}
-        }
-      })
-      .addCase(setCartListPanelOpen, (state, action) => {
-        if (!action.payload) {
-          state.bySection = {}
-        }
-      })
+    builder.addCase(setCardPieCopyStripExpanded, (state, action) => {
+      if (!action.payload) {
+        state.bySection = {}
+      }
+    })
+    /**
+     * Do not clear on cart list close — archive-edit enter closes the list before
+     * hydrate stashes assembly backups; wiping here races dual-mode restore.
+     */
   },
 })
 

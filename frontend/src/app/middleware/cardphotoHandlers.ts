@@ -81,6 +81,12 @@ import { persistGlobalSession } from './sessionSaga'
 import { setAsset } from '@/entities/assetRegistry/infrastructure/state'
 import { ImageAsset } from '@/entities/assetRegistry/domain/types'
 import { selectAssetById } from '@/entities/assetRegistry/infrastructure/selectors/assetRegistrySelectors'
+import { selectCartItems, selectCartListSelectedLocalId } from '@cart/infrastructure/selectors'
+import { selectHistoryListSelectedLocalId } from '@date/calendar/infrastructure/selectors'
+import { updateItem } from '@cart/infrastructure/state'
+import { postcardLocalDataChanged } from '@features/sync/store/postcardSync.actions'
+import { requestArchiveSectionPeek } from '@cardPanel/infrastructure/state'
+import type { PostcardHydrated } from '@entities/postcard'
 
 export function* selectCardphotoCropToolbarState(): SagaIterator<
   CardphotoToolbarState | undefined
@@ -728,8 +734,9 @@ export function* handleApplyAction() {
   const appliedId = state.appliedData?.id ?? null
   const isCurrentApplied = !!assetId && !!appliedId && assetId === appliedId
 
+  /** Уже на открытке — не toggle-off; выходим в упрощённый peek (как cardtext). */
   if (isCurrentApplied) {
-    yield put(clearApply())
+    yield put(requestArchiveSectionPeek('cardphoto'))
     return
   }
 
@@ -812,7 +819,44 @@ export function* handleApplyAction() {
         }
 
         yield call([storeAdapters.applyImage, 'put'], wrapper)
-        yield put(applyFinal(prepareForRedux(appliedMeta)))
+        const serializable = prepareForRedux(appliedMeta)
+        yield put(applyFinal(serializable))
+
+        const cartSelected: number | null = yield select(
+          selectCartListSelectedLocalId,
+        )
+        const historySelected: number | null = yield select(
+          selectHistoryListSelectedLocalId,
+        )
+        const localId = cartSelected ?? historySelected
+        if (localId != null) {
+          const items: PostcardHydrated[] = yield select(selectCartItems)
+          const postcard = items.find((p) => p.localId === localId)
+          if (postcard != null) {
+            const nextPostcard: PostcardHydrated = {
+              ...postcard,
+              updatedAt: Date.now(),
+              card: {
+                ...postcard.card,
+                cardphoto: {
+                  ...postcard.card.cardphoto,
+                  appliedData: serializable,
+                  assetData: serializable,
+                },
+              },
+            }
+            try {
+              yield call([storeAdapters.postcards, 'put'], nextPostcard)
+            } catch (e) {
+              console.error('handleApplyAction: persist postcard failed', e)
+            }
+            yield put(updateItem(nextPostcard))
+            yield put(postcardLocalDataChanged())
+          }
+        }
+
+        yield put(requestArchiveSectionPeek('cardphoto'))
+
         if (currentImageMeta.status === 'processed') {
           yield put(clearSessionPendingProcessedId())
           if (state.userOriginalData) {

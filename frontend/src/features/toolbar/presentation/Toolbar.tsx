@@ -407,8 +407,14 @@ export const Toolbar = ({
       buttonStatus = 'disabled'
     }
     if (key === 'apply' && buttonStatus !== 'disabled') {
-      /** cardtext: Apply не зелёный — подтверждение уходит в упрощённый peek. */
-      if (section === 'cardtext' || section === 'cardtextView') {
+      /** cardtext/cardphoto: Apply не зелёный — подтверждение уходит в упрощённый peek. */
+      if (
+        section === 'cardtext' ||
+        section === 'cardtextView' ||
+        section === 'cardphoto' ||
+        section === 'cardphotoView' ||
+        section === 'cardphotoProcessed'
+      ) {
         buttonStatus = 'enabled'
       } else {
         const recipientsMultiApplyMatches =
@@ -427,17 +433,13 @@ export const Toolbar = ({
           senderAppliedIds.length === 1 &&
           senderAppliedIds[0] === senderViewIdForApply
         const applyMatchesPostcard =
-          section === 'cardphoto' ||
-          section === 'cardphotoView' ||
-          section === 'cardphotoProcessed'
-            ? cardphotoApplied
-            : section === 'aroma'
-              ? aromaApplyMatches
-              : section === 'sender'
-                ? senderApplyMatches
-                : section === 'recipients'
-                  ? recipientsMultiApplyMatches || recipientSingleApplyMatches
-                  : false
+          section === 'aroma'
+            ? aromaApplyMatches
+            : section === 'sender'
+              ? senderApplyMatches
+              : section === 'recipients'
+                ? recipientsMultiApplyMatches || recipientSingleApplyMatches
+                : false
 
         buttonStatus = applyMatchesPostcard ? 'selected' : 'enabled'
       }
@@ -601,14 +603,24 @@ export const Toolbar = ({
                   ? { draft: recipientCreateFormDraft ?? undefined }
                   : undefined
             onAction(effectiveIconKey as IconKey, actionPayload)
-            /** cardtext Apply в archive-edit → сразу упрощённый peek (saga допишет applied). */
+            /** Apply в archive-edit → сразу упрощённый peek (saga допишет applied). */
             if (
               effectiveIconKey === 'apply' &&
-              (section === 'cardtext' || section === 'cardtextView') &&
+              (section === 'cardtext' ||
+                section === 'cardtextView' ||
+                section === 'cardphoto' ||
+                section === 'cardphotoView' ||
+                section === 'cardphotoProcessed') &&
               cardPieEditEngaged &&
               exitArchiveEditToSectionPeek != null
             ) {
-              exitArchiveEditToSectionPeek('cardtext')
+              exitArchiveEditToSectionPeek(
+                section === 'cardphoto' ||
+                  section === 'cardphotoView' ||
+                  section === 'cardphotoProcessed'
+                  ? 'cardphoto'
+                  : 'cardtext',
+              )
             }
           }
           e.currentTarget.blur()

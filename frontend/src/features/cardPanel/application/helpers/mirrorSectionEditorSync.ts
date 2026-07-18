@@ -190,3 +190,20 @@ export function isMirrorCardtextHydratedInEditor(
   if (!src || session == null) return false
   return isSameCardtextContent(src, session)
 }
+
+/**
+ * Session уже подтянула фото открытки (для archive peek gate).
+ * После cardPieEdit / postcardEdit `appliedData` может быть null — смотрим assetData.
+ */
+export function isMirrorCardphotoHydratedInEditor(
+  sourcePostcard: PostcardHydrated | null,
+  sessionAsset: ImageMeta | null | undefined,
+): boolean {
+  if (sourcePostcard == null || sessionAsset?.id == null) return false
+  const sourceMeta =
+    sourcePostcard.card?.cardphoto?.appliedData ??
+    sourcePostcard.card?.cardphoto?.assetData ??
+    null
+  if (sourceMeta?.id == null) return false
+  return String(sourceMeta.id) === String(sessionAsset.id)
+}
