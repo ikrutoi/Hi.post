@@ -3,6 +3,9 @@
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
 $list-entry-surface: $color-cart-list-surface;
+/** Левый gutter: чекбокс / dateEdit — шире, иконка по центру. */
+$cart-list-entry-gutter-start: 3rem;
+$cart-list-entry-gutter-end: 2rem;
 
 @mixin cart-list-entry-indicator-border($indicator-color) {
   border-color: $indicator-color;
@@ -15,7 +18,7 @@ $list-entry-bg-hover: #fafafa;
   position: relative;
   box-sizing: border-box;
   margin-bottom: 0.25rem;
-  padding: 0.15rem 2rem;
+  padding: 0.15rem $cart-list-entry-gutter-end 0.15rem $cart-list-entry-gutter-start;
   background-color: #fff;
   border: 1px solid $color-preview-indicator-cart;
   border-radius: $list-entry-radius-sm;
@@ -61,7 +64,7 @@ $list-entry-bg-hover: #fafafa;
   }
 }
 
-/** Левый gutter `2rem`: чекбокс (сегмент «Корзина», актуальные даты). */
+/** Левый gutter: чекбокс по центру зоны (сегмент «Корзина»). */
 .shellCheckboxSlot {
   position: absolute;
   top: 0;
@@ -69,7 +72,7 @@ $list-entry-bg-hover: #fafafa;
   bottom: 0;
   z-index: 2;
   display: flex;
-  width: 2rem;
+  width: $cart-list-entry-gutter-start;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
@@ -121,7 +124,7 @@ $list-entry-bg-hover: #fafafa;
   }
 }
 
-/** Левый gutter `2rem`: dateEdit по центру (как addCart в CardPie). */
+/** Левый gutter: dateEdit по центру зоны (сегмент blocked). */
 .shellDateEditSlot {
   position: absolute;
   top: 0;
@@ -129,7 +132,7 @@ $list-entry-bg-hover: #fafafa;
   bottom: 0;
   z-index: 2;
   display: flex;
-  width: 2rem;
+  width: $cart-list-entry-gutter-start;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
@@ -176,7 +179,7 @@ $list-entry-bg-hover: #fafafa;
   }
 }
 
-/** Правый gutter `2rem`: delete по центру по горизонтали, снизу. */
+/** Правый gutter: delete по центру по горизонтали, снизу. */
 .shellDeleteSlot {
   position: absolute;
   top: 0;
@@ -184,7 +187,7 @@ $list-entry-bg-hover: #fafafa;
   bottom: 0;
   z-index: 2;
   display: flex;
-  width: 2rem;
+  width: $cart-list-entry-gutter-end;
   align-items: flex-end;
   justify-content: center;
   padding-bottom: 0.15rem;
@@ -220,7 +223,7 @@ $list-entry-bg-hover: #fafafa;
 .root {
   position: relative;
   box-sizing: border-box;
-  padding: 1px 0.5rem 1px 0.35rem;
+  padding: 1px 0.5rem 1px 0;
   background-color: $list-entry-bg;
   border: none;
   border-radius: $list-entry-radius-sm;
@@ -281,6 +284,64 @@ $list-entry-bg-hover: #fafafa;
   overflow: hidden;
   border-radius: $list-entry-radius-lg;
   pointer-events: none;
+}
+
+.meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  text-align: left;
+  gap: 0.1rem;
+}
+
+.dateLine {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: $color-font-enabled;
+  line-height: 1.25;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.detailBlock,
+.countryLine {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.detailBlock {
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.18;
+  color: $color-font-enabled-light;
+}
+
+.countryLine {
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.16;
+  color: $color-font-enabled-light;
+}
+
+.root[data-inactive='true'] {
+  .dateLine,
+  .detailBlock {
+    color: $color-font-disabled;
+  }
+
+  .countryLine {
+    color: $color-font-disabled;
+  }
 }
 
 .rightPack {

@@ -21,9 +21,9 @@ export function formatDetailLineFromAddressFields(
 ): string | undefined {
   if (!addr) return undefined
   const name = String(addr.name ?? '').trim()
-  const country = String(addr.country ?? '').trim()
   const city = String(addr.city ?? '').trim()
-  const region = country || city
+  const country = String(addr.country ?? '').trim()
+  const region = [city, country].filter(Boolean).join(', ')
   if (name && region) return `${name}, ${region}`
   return name || region || undefined
 }

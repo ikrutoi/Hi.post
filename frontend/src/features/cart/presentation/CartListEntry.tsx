@@ -19,6 +19,7 @@ import { selectFirstDayOfWeek } from '@date/infrastructure/selectors'
 import { HistoryListPieEntry } from '@date/presentation/historyList/HistoryListPieEntry'
 import { getCurrentDate } from '@shared/utils/date'
 import { getToolbarIcon } from '@shared/utils/icons'
+import { parseListEntryRecipientDetail } from '@shared/utils/listEntryRecipientDetail'
 import styles from './CartListEntry.module.scss'
 
 export type CartListEntryVariant = 'default' | 'inactive'
@@ -72,6 +73,9 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
   const labelForAria = [detailLine ? `${dateLabel}, ${detailLine}` : dateLabel, priceLine]
     .filter(Boolean)
     .join(', ')
+  const recipientParts = parseListEntryRecipientDetail(detailLine)
+  const recipientName = recipientParts?.name ?? detailLine ?? ''
+  const recipientCountry = recipientParts?.region ?? ''
 
   const dispatch = useAppDispatch()
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
@@ -233,6 +237,15 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
               }
               listSource="cart"
             />
+          </div>
+          <div className={styles.meta}>
+            <div className={styles.dateLine}>{dateLabel}</div>
+            {recipientName ? (
+              <div className={styles.detailBlock}>{recipientName}</div>
+            ) : null}
+            {recipientCountry ? (
+              <div className={styles.countryLine}>{recipientCountry}</div>
+            ) : null}
           </div>
           {priceLine ? (
             <div className={styles.rightPack}>

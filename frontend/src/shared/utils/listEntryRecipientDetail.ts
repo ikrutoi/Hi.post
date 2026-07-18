@@ -1,4 +1,4 @@
-/** «Имя, регион» → две части для второй строки списка дат / корзины. */
+/** «Имя, город, страна» → имя и регион (город + страна) для списков дат / корзины. */
 export function parseListEntryRecipientDetail(
   detailLine: string | null | undefined,
 ): { name: string; region: string } | null {
