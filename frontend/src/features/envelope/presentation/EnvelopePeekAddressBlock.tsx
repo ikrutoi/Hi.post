@@ -7,6 +7,10 @@ import {
   selectAppliedRecipientDisplayAddress,
   selectRecipientApplied,
 } from '@envelope/recipient/infrastructure/selectors'
+import {
+  selectAppliedSenderDisplayAddress,
+  selectSenderApplied,
+} from '@envelope/sender/infrastructure/selectors'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import styles from './EnvelopePeekAddressBlock.module.scss'
 
@@ -46,10 +50,12 @@ export const EnvelopePeekAddressBlock: React.FC<
   fromSessionApplied = false,
 }) => {
   const { listRowInner } = useRightListArchiveMini()
+  const appliedSender = useAppSelector(selectAppliedSenderDisplayAddress)
+  const senderAppliedIds = useAppSelector(selectSenderApplied)
   const appliedRecipient = useAppSelector(selectAppliedRecipientDisplayAddress)
   const recipientAppliedIds = useAppSelector(selectRecipientApplied)
 
-  const senderLines = useMemo(() => {
+  const senderLinesFromArchive = useMemo(() => {
     if (listRowInner == null) return []
     const { senderBadgeShow, sender, senderDisplayName } = listRowInner
     if (!senderBadgeShow) return []
@@ -58,6 +64,11 @@ export const EnvelopePeekAddressBlock: React.FC<
     const name = (senderDisplayName ?? '').trim()
     return name ? [{ text: name, isName: true }] : []
   }, [listRowInner])
+
+  const senderLinesFromSession = useMemo(() => {
+    if (senderAppliedIds.length <= 0) return []
+    return addressLinesForPeek(appliedSender)
+  }, [appliedSender, senderAppliedIds.length])
 
   const recipientLinesFromArchive = useMemo(() => {
     if (listRowInner == null) return []
@@ -84,7 +95,9 @@ export const EnvelopePeekAddressBlock: React.FC<
 
   const lines =
     role === 'sender'
-      ? senderLines
+      ? fromSessionApplied
+        ? senderLinesFromSession
+        : senderLinesFromArchive
       : fromSessionApplied
         ? recipientLinesFromSession
         : recipientLinesFromArchive

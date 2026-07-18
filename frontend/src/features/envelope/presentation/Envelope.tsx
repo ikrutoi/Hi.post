@@ -48,7 +48,9 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
   const archiveEditPeekGate = useArchiveEditPeekGate('envelope')
   const envelopePeekMode =
     rightPieEnvelopePeekNoToolbar || archiveEditPeekGate
-  const { assemblyRecipientSimplifiedPeek } = useMobileFactoryListChrome()
+  const { assemblySenderSimplifiedPeek, assemblyRecipientSimplifiedPeek } =
+    useMobileFactoryListChrome()
+  const showSenderApplyPeek = !envelopePeekMode && assemblySenderSimplifiedPeek
   const showRecipientApplyPeek =
     !envelopePeekMode && assemblyRecipientSimplifiedPeek
 
@@ -144,6 +146,14 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
               }
               role="sender"
               compact={isMobile}
+              className={styles.envelopePeekBlock}
+            />
+          ) : showSenderApplyPeek ? (
+            <EnvelopePeekAddressBlock
+              key="peek-env-sender-applied"
+              role="sender"
+              compact={isMobile}
+              fromSessionApplied
               className={styles.envelopePeekBlock}
             />
           ) : (

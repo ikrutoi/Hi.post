@@ -11,6 +11,7 @@ import {
 import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
 import { setRecipientApplied } from '@envelope/recipient/infrastructure/state'
 import { selectSenderView } from '@envelope/sender/infrastructure/selectors'
+import { setSenderApplied } from '@envelope/sender/infrastructure/state'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { ENVELOPE_MOBILE_ADDRESS_VIEW_UPPER_RETURN_TOOLBAR } from '@toolbar/domain/types/addressView.types'
@@ -26,8 +27,8 @@ type AddressAddToolbarMeta = {
   badgeDot: boolean
 }
 
-/** После Apply recipient: одна иконка postcardEdit (IconCardPieEdit). */
-const RECIPIENT_APPLY_PEEK_TOOLBAR: ToolbarConfig = [
+/** После Apply sender/recipient: одна иконка postcardEdit (IconCardPieEdit). */
+const ADDRESS_APPLY_PEEK_TOOLBAR: ToolbarConfig = [
   {
     group: 'edit',
     icons: [{ key: 'postcardEdit', state: 'enabled' }],
@@ -70,15 +71,31 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   const recipientsToolbarState = useAppSelector(
     selectRecipientsToolbarStateWithLiveAddressList,
   )
-  const { assemblyRecipientSimplifiedPeek } = useMobileFactoryListChrome()
+  const { assemblySenderSimplifiedPeek, assemblyRecipientSimplifiedPeek } =
+    useMobileFactoryListChrome()
   const pendingAddressAddFocusRef = useRef<'sender' | 'recipient' | null>(null)
 
-  /** После apply выходим из focus recipient — postcardEdit на месте правого слота. */
+  /** После apply выходим из focus — postcardEdit в слоте sender/recipients. */
   useEffect(() => {
-    if (!assemblyRecipientSimplifiedPeek || mobileFocus == null) return
-    if (mobileFocus.focusRole !== 'recipient') return
-    mobileFocus.clearFocus()
-  }, [assemblyRecipientSimplifiedPeek, mobileFocus])
+    if (mobileFocus == null) return
+    if (
+      assemblySenderSimplifiedPeek &&
+      mobileFocus.focusRole === 'sender'
+    ) {
+      mobileFocus.clearFocus()
+      return
+    }
+    if (
+      assemblyRecipientSimplifiedPeek &&
+      mobileFocus.focusRole === 'recipient'
+    ) {
+      mobileFocus.clearFocus()
+    }
+  }, [
+    assemblySenderSimplifiedPeek,
+    assemblyRecipientSimplifiedPeek,
+    mobileFocus,
+  ])
 
   useEffect(() => {
     if (!isMobile || mobileFocus == null) return
@@ -143,6 +160,15 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     ],
   )
 
+  const handleSenderApplyPeekClick = useCallback(
+    (key: IconKey): void | false => {
+      if (key !== 'postcardEdit') return
+      dispatch(setSenderApplied(false))
+      return false
+    },
+    [dispatch],
+  )
+
   const handleRecipientApplyPeekClick = useCallback(
     (key: IconKey): void | false => {
       if (key !== 'postcardEdit') return
@@ -176,10 +202,24 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     ],
   )
 
+  const senderToolbar = assemblySenderSimplifiedPeek ? (
+    <Toolbar
+      section="sender"
+      groupsOverride={ADDRESS_APPLY_PEEK_TOOLBAR}
+      onActionClick={handleSenderApplyPeekClick}
+    />
+  ) : (
+    <Toolbar
+      section="sender"
+      stateOverride={senderToolbarState}
+      onActionClick={(key) => handleAddressAddClick('sender', key)}
+    />
+  )
+
   const recipientsToolbar = assemblyRecipientSimplifiedPeek ? (
     <Toolbar
       section="recipients"
-      groupsOverride={RECIPIENT_APPLY_PEEK_TOOLBAR}
+      groupsOverride={ADDRESS_APPLY_PEEK_TOOLBAR}
       onActionClick={handleRecipientApplyPeekClick}
     />
   ) : (
@@ -200,15 +240,7 @@ export const EnvelopeInnerToolbar: React.FC = () => {
       {showFocusReturn ? (
         <>
           <div className={styles.envelopeToolbarFocusLeft}>
-            {focusRole === 'sender' ? (
-              <Toolbar
-                section="sender"
-                stateOverride={senderToolbarState}
-                onActionClick={(key) => handleAddressAddClick('sender', key)}
-              />
-            ) : (
-              recipientsToolbar
-            )}
+            {focusRole === 'sender' ? senderToolbar : recipientsToolbar}
           </div>
           <div className={styles.envelopeToolbarFocusReturn}>
             <Toolbar
@@ -231,11 +263,7 @@ export const EnvelopeInnerToolbar: React.FC = () => {
                   styles.envelopeToolbarSlotDisabled,
               )}
             >
-              <Toolbar
-                section="sender"
-                stateOverride={senderToolbarState}
-                onActionClick={(key) => handleAddressAddClick('sender', key)}
-              />
+              {senderToolbar}
             </div>
           ) : null}
           {showRecipientsSlot ? (

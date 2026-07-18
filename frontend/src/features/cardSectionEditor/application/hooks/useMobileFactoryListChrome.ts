@@ -20,6 +20,10 @@ import {
   selectRecipientView,
 } from '@envelope/recipient/infrastructure/selectors'
 import {
+  selectSenderApplied,
+  selectSenderView,
+} from '@envelope/sender/infrastructure/selectors'
+import {
   selectCartCalendarDatePickMode,
   selectIsCardPieListPanelOpen,
   selectIsHistoryListPanelOpen,
@@ -52,6 +56,8 @@ export function useMobileFactoryListChrome() {
   const cardphotoAppliedData = useAppSelector(selectCardphotoAppliedData)
   const recipientAppliedIds = useAppSelector(selectRecipientApplied)
   const recipientView = useAppSelector(selectRecipientView)
+  const senderAppliedIds = useAppSelector(selectSenderApplied)
+  const senderView = useAppSelector(selectSenderView)
   const {
     activePieSide,
     rightPieCardphotoPeekNoToolbar,
@@ -102,7 +108,7 @@ export function useMobileFactoryListChrome() {
 
   /**
    * Сборная: после Apply recipient — упрощённый адрес + postcardEdit вместо recipients-тулбара.
-   * Не входит в assemblySectionSimplifiedPeek: sender-тулбар остаётся.
+   * Не входит в assemblySectionSimplifiedPeek: второй слот тулбара остаётся.
    */
   const assemblyRecipientSimplifiedPeek =
     isMobileLayout &&
@@ -112,6 +118,18 @@ export function useMobileFactoryListChrome() {
     !mobileArchiveSectionPeek &&
     recipientView !== 'recipientCreate' &&
     recipientAppliedIds.length > 0
+
+  /**
+   * Сборная: после Apply sender — упрощённый адрес + postcardEdit вместо sender-тулбара.
+   */
+  const assemblySenderSimplifiedPeek =
+    isMobileLayout &&
+    activeSection === 'envelope' &&
+    activePieSide === 'left' &&
+    !cardPieEditEngaged &&
+    !mobileArchiveSectionPeek &&
+    senderView !== 'senderCreate' &&
+    senderAppliedIds.length > 0
 
   const assemblySectionSimplifiedPeek =
     assemblyCardtextSimplifiedPeek || assemblyCardphotoSimplifiedPeek
@@ -324,6 +342,7 @@ export function useMobileFactoryListChrome() {
     mobileSectionSimplifiedPeek,
     assemblyCardtextSimplifiedPeek,
     assemblyCardphotoSimplifiedPeek,
+    assemblySenderSimplifiedPeek,
     assemblyRecipientSimplifiedPeek,
     assemblySectionSimplifiedPeek,
     cardPieEditEngaged,
