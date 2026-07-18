@@ -16,6 +16,7 @@ import { EnvelopeInnerToolbar } from './EnvelopeInnerToolbar'
 import { EnvelopeMobileAddressViewToolbar } from './EnvelopeMobileAddressViewToolbar'
 import { useEnvelopeMobileAddressFocus } from './EnvelopeMobileAddressFocusContext'
 import { useArchiveEditPeekGate } from '@cardPanel/application/hooks/useArchiveEditPeekGate'
+import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { useAppSelector } from '@app/hooks'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { selectSenderView } from '../sender/infrastructure/selectors'
@@ -47,6 +48,9 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
   const archiveEditPeekGate = useArchiveEditPeekGate('envelope')
   const envelopePeekMode =
     rightPieEnvelopePeekNoToolbar || archiveEditPeekGate
+  const { assemblyRecipientSimplifiedPeek } = useMobileFactoryListChrome()
+  const showRecipientApplyPeek =
+    !envelopePeekMode && assemblyRecipientSimplifiedPeek
 
   const mobileFormRole =
     senderView === 'senderCreate'
@@ -166,6 +170,14 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
               }
               role="recipient"
               compact={isMobile}
+              className={styles.envelopePeekBlock}
+            />
+          ) : showRecipientApplyPeek ? (
+            <EnvelopePeekAddressBlock
+              key="peek-env-recipient-applied"
+              role="recipient"
+              compact={isMobile}
+              fromSessionApplied
               className={styles.envelopePeekBlock}
             />
           ) : (

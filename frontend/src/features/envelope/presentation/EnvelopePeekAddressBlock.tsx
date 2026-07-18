@@ -2,6 +2,11 @@ import React, { useMemo } from 'react'
 import clsx from 'clsx'
 import type { AddressFields } from '@shared/config/constants'
 import { ADDRESS_FIELD_ORDER } from '@shared/config/constants'
+import { useAppSelector } from '@app/hooks'
+import {
+  selectAppliedRecipientDisplayAddress,
+  selectRecipientApplied,
+} from '@envelope/recipient/infrastructure/selectors'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import styles from './EnvelopePeekAddressBlock.module.scss'
 
@@ -11,12 +16,17 @@ export type EnvelopePeekAddressBlockProps = {
   className?: string
   /** Mobile: уплотнить межстрочный интервал адреса в peek. */
   compact?: boolean
+  /**
+   * Assembly apply-peek: брать адрес из session (applied), а не из archive listRow.
+   * Для archive peek оставить false — данные из listRowInner.
+   */
+  fromSessionApplied?: boolean
 }
 
 type PeekAddressLine = { text: string; isName: boolean }
 
 function addressLinesForPeek(
-  address: Readonly<AddressFields> | null,
+  address: Readonly<AddressFields> | null | undefined,
 ): PeekAddressLine[] {
   if (address == null) return []
   const lines: PeekAddressLine[] = []
@@ -29,8 +39,15 @@ function addressLinesForPeek(
 
 export const EnvelopePeekAddressBlock: React.FC<
   EnvelopePeekAddressBlockProps
-> = ({ role, className, compact = false }) => {
+> = ({
+  role,
+  className,
+  compact = false,
+  fromSessionApplied = false,
+}) => {
   const { listRowInner } = useRightListArchiveMini()
+  const appliedRecipient = useAppSelector(selectAppliedRecipientDisplayAddress)
+  const recipientAppliedIds = useAppSelector(selectRecipientApplied)
 
   const senderLines = useMemo(() => {
     if (listRowInner == null) return []
@@ -42,7 +59,7 @@ export const EnvelopePeekAddressBlock: React.FC<
     return name ? [{ text: name, isName: true }] : []
   }, [listRowInner])
 
-  const recipientLines = useMemo(() => {
+  const recipientLinesFromArchive = useMemo(() => {
     if (listRowInner == null) return []
     const { recipient, recipientCount } = listRowInner
     if (recipientCount <= 0) return []
@@ -54,7 +71,23 @@ export const EnvelopePeekAddressBlock: React.FC<
     return addressLinesForPeek(recipient)
   }, [listRowInner])
 
-  const lines = role === 'sender' ? senderLines : recipientLines
+  const recipientLinesFromSession = useMemo(() => {
+    const count = recipientAppliedIds.length
+    if (count <= 0) return []
+    if (count > 1) {
+      const single = addressLinesForPeek(appliedRecipient)
+      if (single.length > 0) return single
+      return [{ text: `${count} recipients`, isName: false }]
+    }
+    return addressLinesForPeek(appliedRecipient)
+  }, [appliedRecipient, recipientAppliedIds.length])
+
+  const lines =
+    role === 'sender'
+      ? senderLines
+      : fromSessionApplied
+        ? recipientLinesFromSession
+        : recipientLinesFromArchive
 
   return (
     <div

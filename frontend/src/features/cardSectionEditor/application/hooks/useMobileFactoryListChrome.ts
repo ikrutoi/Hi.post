@@ -16,6 +16,10 @@ import {
   selectSenderListPanelOpen,
 } from '@envelope/infrastructure/selectors'
 import {
+  selectRecipientApplied,
+  selectRecipientView,
+} from '@envelope/recipient/infrastructure/selectors'
+import {
   selectCartCalendarDatePickMode,
   selectIsCardPieListPanelOpen,
   selectIsHistoryListPanelOpen,
@@ -46,6 +50,8 @@ export function useMobileFactoryListChrome() {
   const cardphotoIsComplete = useAppSelector(selectCardphotoIsComplete)
   const cardphotoAssetData = useAppSelector(selectCardphotoAssetData)
   const cardphotoAppliedData = useAppSelector(selectCardphotoAppliedData)
+  const recipientAppliedIds = useAppSelector(selectRecipientApplied)
+  const recipientView = useAppSelector(selectRecipientView)
   const {
     activePieSide,
     rightPieCardphotoPeekNoToolbar,
@@ -93,6 +99,19 @@ export function useMobileFactoryListChrome() {
     !mobileArchiveSectionPeek &&
     cardphotoIsComplete &&
     cardphotoAssetMatchesApplied
+
+  /**
+   * Сборная: после Apply recipient — упрощённый адрес + postcardEdit вместо recipients-тулбара.
+   * Не входит в assemblySectionSimplifiedPeek: sender-тулбар остаётся.
+   */
+  const assemblyRecipientSimplifiedPeek =
+    isMobileLayout &&
+    activeSection === 'envelope' &&
+    activePieSide === 'left' &&
+    !cardPieEditEngaged &&
+    !mobileArchiveSectionPeek &&
+    recipientView !== 'recipientCreate' &&
+    recipientAppliedIds.length > 0
 
   const assemblySectionSimplifiedPeek =
     assemblyCardtextSimplifiedPeek || assemblyCardphotoSimplifiedPeek
@@ -305,6 +324,7 @@ export function useMobileFactoryListChrome() {
     mobileSectionSimplifiedPeek,
     assemblyCardtextSimplifiedPeek,
     assemblyCardphotoSimplifiedPeek,
+    assemblyRecipientSimplifiedPeek,
     assemblySectionSimplifiedPeek,
     cardPieEditEngaged,
   }
