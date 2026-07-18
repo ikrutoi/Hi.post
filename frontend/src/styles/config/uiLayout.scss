@@ -34,6 +34,27 @@ $list-entry-thumb-inset-md: 0.375rem; // 6px
 $list-entry-thumb-inset-sm: 0.3125rem; // 5px
 
 /**
+ * History list density=2 (5 мини-паев в ряду) и мини-пай в строке корзины.
+ * Размер ячейки: (ширина контейнера списка − gaps) / cols.
+ */
+$history-list-pie-cols-default: 4;
+$history-list-pie-cols-dense: 5;
+$history-list-pie-column-gap: 0.5rem;
+$history-list-pie-row-gap: 0.35rem;
+$history-list-pie-dense-gaps-total: $history-list-pie-column-gap *
+  ($history-list-pie-cols-dense - 1);
+
+/** Query container for list panels that size mini pies like history density=2. */
+$list-archive-panel-container-name: list-archive-panel;
+
+@function history-list-dense-pie-size($container-inline: 100cqw) {
+  @return calc(
+    (#{$container-inline} - #{$history-list-pie-dense-gaps-total}) /
+      #{$history-list-pie-cols-dense}
+  );
+}
+
+/**
  * Shared band height: mobile factory template title chip, history status bar,
  * cart active/blocked header segments.
  */

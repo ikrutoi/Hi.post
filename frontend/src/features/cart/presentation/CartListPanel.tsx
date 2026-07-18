@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo } from 'react'
-import { useListCardPreviewUrl } from '@entities/card/application/hooks/useListCardPreviewUrl'
 import { cardListPreviewUrlFromCard } from '@entities/card/domain/helpers'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
@@ -157,11 +156,6 @@ const CartListPanelRow: React.FC<{
   hideRowDelete = false,
 }) => {
   const { removeItem } = useCartFacade()
-  const { displayUrl, onPreviewImgError } = useListCardPreviewUrl(
-    item.cardId,
-    item.previewUrl,
-    { previewIsProcessed: item.previewIsProcessed },
-  )
   const hidePrice = item.variant === 'inactive'
 
   const handleRemoveFromCart = useCallback(() => {
@@ -177,9 +171,9 @@ const CartListPanelRow: React.FC<{
   return (
     <CartListEntry
       key={item.id}
+      cardId={item.cardId}
       dateLabel={item.dateLabel}
-      previewUrl={displayUrl}
-      onPreviewImgError={onPreviewImgError}
+      previewUrl={item.previewUrl}
       detailLine={item.detailLine}
       priceLine={
         hidePrice ? undefined : (item.priceLine ?? listEntryPriceLine(item.postcard))

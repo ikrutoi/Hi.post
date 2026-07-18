@@ -2,11 +2,7 @@
 @use '@styles/config/uiLayout' as *;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
-$list-entry-row-height: 3rem;
-$list-entry-thumb-size: 2.75rem;
-
 $list-entry-surface: $color-cart-list-surface;
-$list-entry-border: $color-cart-list-border;
 
 @mixin cart-list-entry-indicator-border($indicator-color) {
   border-color: $indicator-color;
@@ -28,6 +24,10 @@ $list-entry-bg-hover: #fafafa;
     border-color 0.15s ease;
 
   @include cart-list-entry-indicator-border($color-preview-indicator-cart);
+
+  &[data-preview-status='cartBlocked'] {
+    @include cart-list-entry-indicator-border($color-preview-indicator-error);
+  }
 
   &[data-preview-status='ready'] {
     @include cart-list-entry-indicator-border($color-preview-indicator-ready);
@@ -220,27 +220,12 @@ $list-entry-bg-hover: #fafafa;
 .root {
   position: relative;
   box-sizing: border-box;
-  min-height: $list-entry-row-height;
   padding: 1px 0.5rem 1px 0.35rem;
-  box-sizing: border-box;
   background-color: $list-entry-bg;
   border: none;
   border-radius: $list-entry-radius-sm;
   user-select: none;
   transition: background-color 0.15s ease;
-
-  &[data-inactive='true'] {
-    background-color: $list-entry-bg;
-
-    .thumb {
-      background-color: mix($color-app-inner, #eee, 55%);
-    }
-
-    .dateLine,
-    .detailBlock {
-      color: $color-font-disabled;
-    }
-  }
 
   &:hover,
   &[data-focused='true'] {
@@ -277,16 +262,25 @@ $list-entry-bg-hover: #fafafa;
   &[data-date-edit-active='true'][data-focused='true'] {
     background-color: $list-entry-bg-hover;
   }
+}
 
-  &[data-date-edit-active='true'][data-inactive='true'] {
-    background-color: $list-entry-bg;
-  }
+.body {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  min-width: 0;
+}
 
-  &[data-date-edit-active='true'][data-selected='true'],
-  &[data-date-edit-active='true'][data-selected='true']:hover,
-  &[data-date-edit-active='true'][data-selected='true'][data-focused='true'] {
-    background-color: $list-entry-bg;
-  }
+.pieSlot {
+  position: relative;
+  flex-shrink: 0;
+  width: history-list-dense-pie-size();
+  height: history-list-dense-pie-size();
+  box-sizing: border-box;
+  overflow: hidden;
+  border-radius: $list-entry-radius-lg;
+  pointer-events: none;
 }
 
 .rightPack {
@@ -297,130 +291,6 @@ $list-entry-bg-hover: #fafafa;
   margin-left: auto;
   min-width: 0;
   max-width: min(50%, 14rem);
-}
-
-.body {
-  display: flex;
-  align-items: stretch;
-  gap: 0.35rem;
-  width: 100%;
-  min-width: 0;
-  min-height: calc(#{$list-entry-row-height} - #{$list-entry-border-adjust});
-}
-
-.root[data-inactive='true'] .thumbImg {
-  filter: grayscale(1);
-  opacity: 0.78;
-}
-
-.thumb {
-  position: relative;
-  flex-shrink: 0;
-  align-self: stretch;
-  width: $list-entry-thumb-size;
-  min-height: 0;
-  border-radius: 0.25rem;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: $color-app-inner;
-}
-
-.statusIndicator {
-  position: absolute;
-  top: 0.15rem;
-  left: 0.15rem;
-  z-index: 1;
-  width: 0.55rem;
-  height: 0.55rem;
-  border-radius: 50%;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
-  background-color: $color-preview-indicator-delivered;
-
-  &[data-status='processed'] {
-    background-color: $color-preview-indicator-processed;
-  }
-
-  &[data-status='cart'] {
-    background-color: $color-preview-indicator-cart;
-  }
-
-  &[data-status='cartBlocked'] {
-    @include preview-indicator-cart-blocked-ring;
-  }
-
-  &[data-status='ready'] {
-    background-color: $color-preview-indicator-ready;
-  }
-
-  &[data-status='sent'] {
-    background-color: $color-preview-indicator-sent;
-  }
-
-  &[data-status='delivered'] {
-    background-color: $color-preview-indicator-delivered;
-  }
-
-  &[data-status='error'] {
-    background-color: $color-preview-indicator-error;
-  }
-}
-
-.thumbImg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.meta {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  text-align: left;
-  gap: 0.1rem;
-  // border: solid 1px blue;
-}
-
-.dateLine {
-  font-size: 0.75rem;
-  font-weight: 400;
-  color: $color-font-enabled;
-  line-height: 1.25;
-  max-width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  // mask-image: linear-gradient(to right, black 88%, transparent 100%);
-  // -webkit-mask-image: linear-gradient(to right, black 88%, transparent 100%);
-}
-
-.detailBlock,
-.countryLine {
-  display: block;
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.detailBlock {
-  font-size: 0.62rem;
-  font-weight: 600;
-  line-height: 1.18;
-  color: $color-font-enabled;
-}
-
-.countryLine {
-  font-size: 0.62rem;
-  font-weight: 600;
-  line-height: 1.16;
-  color: $color-font-enabled-light;
 }
 
 .priceLine {

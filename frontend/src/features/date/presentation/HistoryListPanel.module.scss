@@ -120,13 +120,13 @@ $list-panel-footer-band: calc(
 
 .listGrid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(#{$history-list-pie-cols-default}, minmax(0, 1fr));
   align-content: flex-start;
-  column-gap: 0.5rem;
-  row-gap: 0.35rem;
+  column-gap: $history-list-pie-column-gap;
+  row-gap: $history-list-pie-row-gap;
 
   &[data-density-level='2'] {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(#{$history-list-pie-cols-dense}, minmax(0, 1fr));
   }
 }
 

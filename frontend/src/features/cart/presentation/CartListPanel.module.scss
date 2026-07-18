@@ -330,6 +330,8 @@ $cart-list-panel-inline-end-inset: calc(
   min-height: 100%;
   @include list-panel-scroll-padding;
   outline: none;
+  container-type: inline-size;
+  container-name: #{$list-archive-panel-container-name};
   // border: solid 1px red;
 
   &:focus {

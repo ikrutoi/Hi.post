@@ -16,9 +16,9 @@ import {
   updateLastViewedCalendarDate,
 } from '@date/calendar/infrastructure/state'
 import { selectFirstDayOfWeek } from '@date/infrastructure/selectors'
+import { HistoryListPieEntry } from '@date/presentation/historyList/HistoryListPieEntry'
 import { getCurrentDate } from '@shared/utils/date'
 import { getToolbarIcon } from '@shared/utils/icons'
-import { parseListEntryRecipientDetail } from '@shared/utils/listEntryRecipientDetail'
 import styles from './CartListEntry.module.scss'
 
 export type CartListEntryVariant = 'default' | 'inactive'
@@ -31,11 +31,11 @@ export type CartListEntryProps = {
   variant?: CartListEntryVariant
   previewStatus?: PostcardStatus
   previewIsProcessed?: boolean
+  cardId?: string
   /** `localId` открытки этой строки — нужен для адресного включения `cartCalendarDatePickMode`. */
   postcardLocalId?: number
   onSelect?: () => void
   onDelete?: () => void
-  onPreviewImgError?: () => void
   /** Включение режима dateEdit (заблокированные): правый CardPie и данные строки. */
   onDateEditActivate?: () => void
   /** Сегмент «Корзина» (актуальные даты): чекбокс слева в gutter. */
@@ -53,10 +53,10 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
   variant = 'default',
   previewStatus,
   previewIsProcessed,
+  cardId,
   postcardLocalId,
   onSelect,
   onDelete,
-  onPreviewImgError,
   onDateEditActivate,
   isChecked = false,
   onCheckedChange,
@@ -65,16 +65,13 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
 }) => {
   const interactive = Boolean(onSelect)
   const isBlockedEntry = previewStatus === 'cartBlocked'
-  /** В «Заблокированных» дата/имя как у активных, без серого `inactive`. */
+  /** В «Заблокированных» без серого `inactive`. */
   const inactive = variant === 'inactive' && !isBlockedEntry
   const showCartCheckbox = !isBlockedEntry && !inactive
   const showDelete = Boolean(onDelete)
   const labelForAria = [detailLine ? `${dateLabel}, ${detailLine}` : dateLabel, priceLine]
     .filter(Boolean)
     .join(', ')
-  const recipientParts = parseListEntryRecipientDetail(detailLine)
-  const recipientName = recipientParts?.name ?? detailLine ?? ''
-  const recipientCountry = recipientParts?.region ?? ''
 
   const dispatch = useAppDispatch()
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
@@ -219,31 +216,23 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
         }
       >
         <div className={styles.body}>
-          <div className={styles.thumb} aria-hidden>
-            {previewUrl ? (
-              <img
-                src={previewUrl}
-                alt=""
-                className={styles.thumbImg}
-                onError={onPreviewImgError}
-              />
-            ) : null}
-            {previewStatus && !previewIsProcessed ? (
-              <span
-                className={styles.statusIndicator}
-                data-status={previewStatus}
-                aria-hidden
-              />
-            ) : null}
-          </div>
-          <div className={styles.meta}>
-            <div className={styles.dateLine}>{dateLabel}</div>
-            {recipientName ? (
-              <div className={styles.detailBlock}>{recipientName}</div>
-            ) : null}
-            {recipientCountry ? (
-              <div className={styles.countryLine}>{recipientCountry}</div>
-            ) : null}
+          <div className={styles.pieSlot} aria-hidden>
+            <HistoryListPieEntry
+              cardId={cardId}
+              postcardLocalId={postcardLocalId}
+              previewUrl={previewUrl}
+              dateLabel={dateLabel}
+              detailLine={detailLine}
+              variant={variant}
+              previewStatus={previewStatus}
+              previewIsProcessed={previewIsProcessed}
+              status={
+                previewStatus === 'cart' || previewStatus === 'cartBlocked'
+                  ? previewStatus
+                  : undefined
+              }
+              listSource="cart"
+            />
           </div>
           {priceLine ? (
             <div className={styles.rightPack}>

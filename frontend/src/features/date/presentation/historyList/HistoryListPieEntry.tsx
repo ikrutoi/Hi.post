@@ -9,6 +9,7 @@ import {
   type CardPieInnerData,
 } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import type { PostcardStatus } from '@entities/postcard'
+import type { CardPieRightListSource } from '@features/cardPie/domain/types/cardPie.types'
 import styles from './HistoryListPieEntry.module.scss'
 
 function applyListPreviewToPieInner(
@@ -38,6 +39,9 @@ export type HistoryListPieEntryProps = {
   variant?: HistoryListEntryVariant
   previewStatus?: PostcardStatus
   previewIsProcessed?: boolean
+  /** Если задан — цвет центрального круга; иначе из `previewStatus` (только когда не processed). */
+  status?: PostcardStatus
+  listSource?: CardPieRightListSource
   onSelect?: () => void
   isSelected?: boolean
 }
@@ -52,6 +56,8 @@ export const HistoryListPieEntry: React.FC<HistoryListPieEntryProps> = ({
   variant = 'default',
   previewStatus,
   previewIsProcessed,
+  status,
+  listSource = 'history',
   onSelect,
   isSelected = false,
 }) => {
@@ -60,7 +66,7 @@ export const HistoryListPieEntry: React.FC<HistoryListPieEntryProps> = ({
       ? selectListArchiveCardPieBundle(
           state,
           String(postcardLocalId),
-          'history',
+          listSource,
         )
       : null,
   )
@@ -94,7 +100,8 @@ export const HistoryListPieEntry: React.FC<HistoryListPieEntryProps> = ({
     )
   }, [pieInner, pieBundle])
   const pieStatus =
-    previewStatus && !previewIsProcessed ? previewStatus : undefined
+    status ??
+    (previewStatus && !previewIsProcessed ? previewStatus : undefined)
 
   return (
     <div
