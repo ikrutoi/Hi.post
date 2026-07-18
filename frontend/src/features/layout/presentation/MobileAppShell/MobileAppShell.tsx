@@ -136,6 +136,24 @@ const MOBILE_LIST_TEMPLATE_PREVIEW_PIE_STATE = {
   delete: { state: 'enabled' as const },
 }
 
+/** Aroma cell preview in central CardPie: closeBig сверху справа от pie. */
+const MOBILE_AROMA_PREVIEW_PIE_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'main',
+    icons: [
+      { key: 'closeBig', state: 'enabled' },
+      { key: 'empty', state: 'disabled' },
+      { key: 'empty', state: 'disabled' },
+    ],
+    status: 'enabled',
+  },
+]
+
+const MOBILE_AROMA_PREVIEW_PIE_STATE = {
+  closeBig: { state: 'enabled' as const },
+  empty: { state: 'disabled' as const },
+}
+
 export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   formRef,
   sizeCard,
@@ -503,8 +521,17 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     (mobileCentralPieDisplay === 'addressTemplate' &&
       mobileAddressListTemplatePreview != null)
 
+  const showMobileCentralAromaPreviewPieToolbar =
+    mobileCentralPieDisplay === 'aromaPreview' && mobileAromaPreview != null
+
   const handleTemplatePreviewPieToolbarAction = useCallback(
     (key: IconKey) => {
+      if (mobileCentralPieDisplay === 'aromaPreview') {
+        if (key !== 'closeBig') return
+        dispatch(clearViewAroma())
+        return false
+      }
+
       if (mobileCentralPieDisplay === 'addressTemplate') {
         const preview = mobileAddressListTemplatePreview
         if (!preview) return
@@ -1061,6 +1088,17 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                               ? MOBILE_LIST_TEMPLATE_PREVIEW_PIE_STATE
                               : undefined
                           }
+                          mergedWithCenter
+                          onActionClick={handleTemplatePreviewPieToolbarAction}
+                        />
+                      </div>
+                    ) : null}
+                    {showMobileCentralAromaPreviewPieToolbar ? (
+                      <div className={styles.mobilePieToolbar}>
+                        <Toolbar
+                          section="editorPie"
+                          groupsOverride={MOBILE_AROMA_PREVIEW_PIE_TOOLBAR}
+                          stateOverride={MOBILE_AROMA_PREVIEW_PIE_STATE}
                           mergedWithCenter
                           onActionClick={handleTemplatePreviewPieToolbarAction}
                         />

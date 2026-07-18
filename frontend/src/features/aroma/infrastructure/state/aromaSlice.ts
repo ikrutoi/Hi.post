@@ -19,7 +19,8 @@ export const aromaSlice = createSlice({
     setAroma(state, action: PayloadAction<AromaItem>) {
       const normalized = normalizeAromaItem(action.payload)
       state.selectedAroma = normalized
-      state.viewAroma = normalized
+      /** Apply закрывает превью — центральный CardPie снова сборка с выбранным арома. */
+      state.viewAroma = null
       state.isComplete = true
     },
 

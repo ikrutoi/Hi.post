@@ -9,29 +9,18 @@ import {
   clearApplied,
   clearViewAroma,
 } from '@aroma/infrastructure/state'
-import {
-  selectViewAroma,
-  selectSelectedAroma,
-  selectAromaApplyMatches,
-} from '@aroma/infrastructure/selectors'
+import { selectViewAroma } from '@aroma/infrastructure/selectors'
 
 function* syncAromaToolbarState(): SagaIterator {
   const viewAroma: ReturnType<typeof selectViewAroma> =
     yield select(selectViewAroma)
-  const applyMatches: boolean = yield select(selectAromaApplyMatches)
 
   yield put(
     updateToolbarSection({
       section: 'aroma',
       value: {
         apply: {
-          state: !viewAroma
-            ? ('disabled' as const)
-            : applyMatches
-              ? ('active' as const)
-              : ('enabled' as const),
-        },
-        return: {
+          /** Enabled только пока в центральном CardPie показано превью ячейки. */
           state: viewAroma ? ('enabled' as const) : ('disabled' as const),
         },
       },
@@ -45,29 +34,13 @@ function* handleAromaToolbarAction(
   const { section, key } = action.payload
   if (section !== 'aroma') return
 
-  if (key === 'return') {
-    const viewAroma: ReturnType<typeof selectViewAroma> =
-      yield select(selectViewAroma)
-    if (viewAroma) {
-      yield put(clearViewAroma())
-    }
-    return
-  }
-
   if (key !== 'apply') return
 
   const viewAroma: ReturnType<typeof selectViewAroma> =
     yield select(selectViewAroma)
-  const applyMatches: boolean = yield select(selectAromaApplyMatches)
+  if (!viewAroma) return
 
-  if (applyMatches) {
-    yield put(clearApplied())
-    return
-  }
-
-  if (viewAroma) {
-    yield put(setAroma(viewAroma))
-  }
+  yield put(setAroma(viewAroma))
 }
 
 function* watchAromaToolbar(): SagaIterator {

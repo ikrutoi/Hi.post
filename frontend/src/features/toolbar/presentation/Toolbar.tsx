@@ -10,7 +10,6 @@ import {
   selectRecipientViewId,
   selectRecipientApplied,
 } from '@envelope/recipient/infrastructure/selectors'
-import { selectAromaApplyMatches } from '@aroma/infrastructure/selectors'
 import {
   doesDraftMatchInList,
   doesDraftMatchAnyTemplate,
@@ -129,7 +128,6 @@ export const Toolbar = ({
       ? (recipient.recipientsViewIdsSecondList ?? [])
       : (recipient.recipientsViewIdsFirstList ?? [])
   })
-  const aromaApplyMatches = useAppSelector(selectAromaApplyMatches)
   const cardtextEmpty =
     (section === 'cardtext' || section === 'cardtextView') &&
     !(cardtextPlainText?.trim?.() ?? '').length
@@ -407,13 +405,14 @@ export const Toolbar = ({
       buttonStatus = 'disabled'
     }
     if (key === 'apply' && buttonStatus !== 'disabled') {
-      /** cardtext/cardphoto: Apply не зелёный — подтверждение уходит в упрощённый peek. */
+      /** cardtext/cardphoto/aroma: Apply не зелёный. */
       if (
         section === 'cardtext' ||
         section === 'cardtextView' ||
         section === 'cardphoto' ||
         section === 'cardphotoView' ||
-        section === 'cardphotoProcessed'
+        section === 'cardphotoProcessed' ||
+        section === 'aroma'
       ) {
         buttonStatus = 'enabled'
       } else {
@@ -433,13 +432,11 @@ export const Toolbar = ({
           senderAppliedIds.length === 1 &&
           senderAppliedIds[0] === senderViewIdForApply
         const applyMatchesPostcard =
-          section === 'aroma'
-            ? aromaApplyMatches
-            : section === 'sender'
-              ? senderApplyMatches
-              : section === 'recipients'
-                ? recipientsMultiApplyMatches || recipientSingleApplyMatches
-                : false
+          section === 'sender'
+            ? senderApplyMatches
+            : section === 'recipients'
+              ? recipientsMultiApplyMatches || recipientSingleApplyMatches
+              : false
 
         buttonStatus = applyMatchesPostcard ? 'selected' : 'enabled'
       }

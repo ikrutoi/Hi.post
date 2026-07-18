@@ -14,13 +14,3 @@ export const selectAromaDisplayAroma = (state: RootState) =>
 
 export const selectIsAromaComplete = (state: RootState) =>
   state.aroma.isComplete
-
-export const selectAromaApplyMatches = (state: RootState) => {
-  const viewAroma = state.aroma.viewAroma
-  const selectedAroma = state.aroma.selectedAroma
-  return (
-    viewAroma != null &&
-    selectedAroma != null &&
-    viewAroma.index === selectedAroma.index
-  )
-}
