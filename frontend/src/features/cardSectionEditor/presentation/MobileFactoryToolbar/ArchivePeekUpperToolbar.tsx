@@ -5,6 +5,7 @@ import type { IconKey } from '@shared/config/constants'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import { setCardtextApplyPeekChrome, setCardtextAppliedData } from '@cardtext/infrastructure/state'
 import { clearApply } from '@cardphoto/infrastructure/state'
+import { clearApplied as clearAromaApplied } from '@aroma/infrastructure/state'
 import { useCloseArchiveSectionPeek } from '../../application/hooks/useCloseArchiveSectionPeek'
 import { useMobileFactoryListChrome } from '../../application/hooks/useMobileFactoryListChrome'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
@@ -29,7 +30,7 @@ const ARCHIVE_PEEK_UPPER_CLOSE_TOOLBAR: ToolbarConfig = [
 /**
  * Верхний ряд factory toolbar в упрощённом режиме:
  * archive peek — postcardEdit слева, closeBig справа;
- * сборная cardtext/cardphoto — только postcardEdit.
+ * сборная cardtext/cardphoto/aroma — только postcardEdit.
  */
 export const ArchivePeekUpperToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -38,6 +39,7 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
   const {
     assemblyCardtextSimplifiedPeek,
     assemblyCardphotoSimplifiedPeek,
+    assemblyAromaSimplifiedPeek,
     assemblySectionSimplifiedPeek,
   } = useMobileFactoryListChrome()
   const { requestSectionEditFromPeek } = useRightListArchiveMini()
@@ -57,6 +59,9 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
         } else if (assemblyCardphotoSimplifiedPeek) {
           /** Peek = фото уже на открытке; postcardEdit снимает apply. */
           dispatch(clearApply())
+        } else if (assemblyAromaSimplifiedPeek) {
+          /** Peek = aroma уже на открытке; postcardEdit снимает apply. */
+          dispatch(clearAromaApplied())
         }
         return false
       }
@@ -66,6 +71,7 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
       }
     },
     [
+      assemblyAromaSimplifiedPeek,
       assemblyCardphotoSimplifiedPeek,
       assemblyCardtextSimplifiedPeek,
       closeArchiveSectionPeek,

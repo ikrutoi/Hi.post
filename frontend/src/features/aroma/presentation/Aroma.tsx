@@ -7,6 +7,7 @@ import { useAromaFacade } from '../application/facades'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
+import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { MobileInlineToolbarRow } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import { setCartItemCardAroma } from '@cart/infrastructure/state'
 import { getAromaImage } from '@entities/aroma/mappers/aromaImageMap'
@@ -33,10 +34,36 @@ const AromaSectionShell: React.FC<{
   </div>
 )
 
-export const Aroma: React.FC = () => {
+function AromaFullSectionPeek({
+  aroma,
+  peekKey,
+}: {
+  aroma: AromaItem | null
+  peekKey: string
+}) {
   const notebookTabsOuter = useSectionEditorNotebookTabsOuter()
+  const peekSrc = aroma != null ? getAromaImage(aroma.index) : null
+  const peek = (
+    <AromaSectionShell key={peekKey} peekToolbar>
+      <div className={clsx(styles.form, styles.formPeek)}>
+        {peekSrc ? (
+          <img
+            className={styles.peekMask}
+            src={peekSrc}
+            alt={aroma?.index === 0 ? '' : `Aroma slot ${aroma?.index ?? ''}`}
+            draggable={false}
+          />
+        ) : null}
+      </div>
+    </AromaSectionShell>
+  )
+  return notebookTabsOuter ? peek : <NotebookPeekShell>{peek}</NotebookPeekShell>
+}
+
+export const Aroma: React.FC = () => {
   const dispatch = useAppDispatch()
-  const { viewAroma, previewAroma } = useAromaFacade()
+  const { viewAroma, selectedAroma, previewAroma } = useAromaFacade()
+  const { assemblyAromaSimplifiedPeek } = useMobileFactoryListChrome()
   const {
     centerStripListMirrorEnabled,
     mirrorInner,
@@ -46,7 +73,6 @@ export const Aroma: React.FC = () => {
     listRowLocalId,
   } = useRightListArchiveMini()
 
-  /** In right list mode, highlight the tile that matches the open postcard on the right CardPie. */
   /** Подсветка ячейки — только при превью в центральном CardPie. */
   const tileHighlightAroma =
     centerStripListMirrorEnabled && mirrorInner != null
@@ -69,33 +95,27 @@ export const Aroma: React.FC = () => {
   }
 
   if (rightPieAromaPeekNoToolbar) {
-    const rowAroma = listRowInner?.aroma ?? null
-    const peekSrc =
-      rowAroma != null ? getAromaImage(rowAroma.index) : null
-    const peek = (
-      <AromaSectionShell
-        key={
+    return (
+      <AromaFullSectionPeek
+        aroma={listRowInner?.aroma ?? null}
+        peekKey={
           listRowLocalId != null ? `peek-aroma-${listRowLocalId}` : 'peek-aroma'
         }
-        peekToolbar
-      >
-        <div className={clsx(styles.form, styles.formPeek)}>
-          {peekSrc ? (
-            <img
-              className={styles.peekMask}
-              src={peekSrc}
-              alt={
-                rowAroma?.index === 0
-                  ? ''
-                  : `Aroma slot ${rowAroma?.index ?? ''}`
-              }
-              draggable={false}
-            />
-          ) : null}
-        </div>
-      </AromaSectionShell>
+      />
     )
-    return notebookTabsOuter ? peek : <NotebookPeekShell>{peek}</NotebookPeekShell>
+  }
+
+  if (assemblyAromaSimplifiedPeek) {
+    return (
+      <AromaFullSectionPeek
+        aroma={selectedAroma}
+        peekKey={
+          selectedAroma != null
+            ? `peek-aroma-applied-${selectedAroma.index}`
+            : 'peek-aroma-applied'
+        }
+      />
+    )
   }
 
   return (

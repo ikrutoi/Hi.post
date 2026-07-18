@@ -24,6 +24,10 @@ import {
   selectSenderView,
 } from '@envelope/sender/infrastructure/selectors'
 import {
+  selectIsAromaComplete,
+  selectSelectedAroma,
+} from '@aroma/infrastructure/selectors'
+import {
   selectCartCalendarDatePickMode,
   selectIsCardPieListPanelOpen,
   selectIsHistoryListPanelOpen,
@@ -58,6 +62,8 @@ export function useMobileFactoryListChrome() {
   const recipientView = useAppSelector(selectRecipientView)
   const senderAppliedLocked = useAppSelector(selectSenderAppliedLocked)
   const senderView = useAppSelector(selectSenderView)
+  const aromaIsComplete = useAppSelector(selectIsAromaComplete)
+  const selectedAroma = useAppSelector(selectSelectedAroma)
   const {
     activePieSide,
     rightPieCardphotoPeekNoToolbar,
@@ -132,8 +138,22 @@ export function useMobileFactoryListChrome() {
     senderView !== 'senderCreate' &&
     senderAppliedLocked
 
+  /**
+   * Сборная: после Apply aroma — картинка на всю секцию + postcardEdit.
+   */
+  const assemblyAromaSimplifiedPeek =
+    isMobileLayout &&
+    activeSection === 'aroma' &&
+    activePieSide === 'left' &&
+    !cardPieEditEngaged &&
+    !mobileArchiveSectionPeek &&
+    aromaIsComplete &&
+    selectedAroma != null
+
   const assemblySectionSimplifiedPeek =
-    assemblyCardtextSimplifiedPeek || assemblyCardphotoSimplifiedPeek
+    assemblyCardtextSimplifiedPeek ||
+    assemblyCardphotoSimplifiedPeek ||
+    assemblyAromaSimplifiedPeek
 
   const mobileSectionSimplifiedPeek =
     mobileArchiveSectionPeek || assemblySectionSimplifiedPeek
@@ -343,6 +363,7 @@ export function useMobileFactoryListChrome() {
     mobileSectionSimplifiedPeek,
     assemblyCardtextSimplifiedPeek,
     assemblyCardphotoSimplifiedPeek,
+    assemblyAromaSimplifiedPeek,
     assemblySenderSimplifiedPeek,
     assemblyRecipientSimplifiedPeek,
     assemblySectionSimplifiedPeek,
