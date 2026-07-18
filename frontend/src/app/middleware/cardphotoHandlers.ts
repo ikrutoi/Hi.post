@@ -20,6 +20,7 @@ import {
   clearSessionPendingProcessedId,
   setSessionPendingProcessedId,
   setOriginalUploadReminderActive,
+  setCardphotoListPanelOpen,
 } from '@cardphoto/infrastructure/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import {
@@ -736,6 +737,14 @@ export function* handleApplyAction() {
 
   /** Уже на открытке — не toggle-off; выходим в упрощённый peek (как cardtext). */
   if (isCurrentApplied) {
+    yield put(setCardphotoListPanelOpen(false))
+    yield put(
+      updateToolbarIcon({
+        section: 'cardphoto',
+        key: 'listCardphoto',
+        value: 'enabled',
+      }),
+    )
     yield put(requestArchiveSectionPeek('cardphoto'))
     return
   }
@@ -855,6 +864,14 @@ export function* handleApplyAction() {
           }
         }
 
+        yield put(setCardphotoListPanelOpen(false))
+        yield put(
+          updateToolbarIcon({
+            section: 'cardphoto',
+            key: 'listCardphoto',
+            value: 'enabled',
+          }),
+        )
         yield put(requestArchiveSectionPeek('cardphoto'))
 
         if (currentImageMeta.status === 'processed') {

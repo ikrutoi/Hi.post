@@ -2,17 +2,17 @@
 
 /** Shared center disc for left (logo) and right (status) CardPie. */
 $pie-center-indicator-size: 1.75rem;
-/** Левый центр: лого 2rem + 1px белая обводка (content-box). */
-$pie-center-logo-size: 2rem;
+/** Левый центр: лого 2.2rem + 1px белая обводка (content-box). */
+$pie-center-logo-size: 2.2rem;
 $pie-center-logo-size-pressed: 2.4rem;
-$pie-center-logo-hit-size: 3rem;
+$pie-center-logo-hit-size: 3.4rem;
 $pie-center-right-hit-size: 3rem;
 $pie-center-logo-press-duration: 0.28s;
 /** Жёлтое кольцо вокруг красной заливки (`cartBlocked`), доля от размера индикатора. */
 $pie-center-cart-blocked-ring: $pie-center-indicator-size * 0.225;
 $pie-center-cart-blocked-ring-right: $pie-center-indicator-size * 0.225;
 /** Доля от ширины CardPie (центральный круг мини-паев). */
-$pie-center-disc-size-ratio: 20%;
+$pie-center-disc-size-ratio: 25%;
 
 .hubContainer {
   --outline-hover: #{$color-toggle-active-hover};

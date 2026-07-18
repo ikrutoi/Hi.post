@@ -7,7 +7,7 @@ import {
   openCardphotoFromMiniStripRequested,
   setCardphotoListPanelOpen,
 } from '@cardphoto/infrastructure/state'
-import { selectIsListPanelOpen, selectCardphotoAssetData, selectCardphotoAssetDisplayPreviewUrl } from '@cardphoto/infrastructure/selectors'
+import { selectIsListPanelOpen, selectCardphotoAssetData, selectCardphotoAssetDisplayPreviewUrl, selectCardphotoIsComplete, selectCardphotoAppliedData } from '@cardphoto/infrastructure/selectors'
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import {
   selectCartListPanelOpen,
@@ -171,6 +171,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const cardphotoAssetPreviewUrl = useAppSelector(
     selectCardphotoAssetDisplayPreviewUrl,
   )
+  const cardphotoIsComplete = useAppSelector(selectCardphotoIsComplete)
+  const cardphotoAppliedId = useAppSelector(selectCardphotoAppliedData)?.id ?? null
   const cardtextListPanelOpen = useAppSelector(selectIsCardtextListPanelOpen)
   const cardtextSession = useAppSelector(selectCardtextSessionData)
   const cardtextTemplateId = useAppSelector(selectCardtextId)
@@ -326,12 +328,26 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const mobileCardphotoListTemplatePreview = useMemo(() => {
     if (!cardphotoListPanelOpen || activeSection !== 'cardphoto') return null
     if (rightPieCardphotoPeekNoToolbar) return null
+    /**
+     * Assembly simplified peek after Apply: list may briefly stay open in Redux;
+     * never keep full-bleed template preview over the CardPie with applied photo.
+     */
+    if (
+      cardphotoIsComplete &&
+      cardphotoAssetData?.id != null &&
+      cardphotoAppliedId != null &&
+      cardphotoAssetData.id === cardphotoAppliedId
+    ) {
+      return null
+    }
     if (!cardphotoAssetPreviewUrl || !cardphotoAssetData?.id) return null
     return { id: cardphotoAssetData.id, previewUrl: cardphotoAssetPreviewUrl }
   }, [
     activeSection,
+    cardphotoAppliedId,
     cardphotoAssetData?.id,
     cardphotoAssetPreviewUrl,
+    cardphotoIsComplete,
     cardphotoListPanelOpen,
     rightPieCardphotoPeekNoToolbar,
   ])
