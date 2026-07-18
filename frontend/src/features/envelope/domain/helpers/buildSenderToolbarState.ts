@@ -16,7 +16,7 @@ export interface BuildSenderToolbarParams {
   senderListPanelOpen?: boolean
   /** View показывает адрес из create-черновика */
   viewingFormDraftAddress?: boolean
-  /** Отправитель выключен тумблером — все иконки toolbar disabled */
+  /** Отправитель выключен тумблером — иконки toolbar disabled, кроме addressAdd */
   isEnabled?: boolean
 }
 
@@ -91,6 +91,7 @@ export const buildSenderToolbarState = ({
 
   if (!isEnabled) {
     for (const key of ENVELOPE_KEYS) {
+      if (key === 'addressAdd') continue
       const value = state[key]
       state[key] =
         value != null && typeof value === 'object' && 'state' in value
