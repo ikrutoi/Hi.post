@@ -8,11 +8,19 @@ $pie-center-logo-size-pressed: 2.4rem;
 $pie-center-logo-hit-size: 3.4rem;
 $pie-center-right-hit-size: 3rem;
 $pie-center-logo-press-duration: 0.28s;
-/** Жёлтое кольцо вокруг красной заливки (`cartBlocked`), доля от размера индикатора. */
-$pie-center-cart-blocked-ring: $pie-center-indicator-size * 0.225;
-$pie-center-cart-blocked-ring-right: $pie-center-indicator-size * 0.225;
+/** Жёлтое кольцо вокруг красной заливки (`cartBlocked`), доля от диаметра круга. */
+$pie-center-cart-blocked-ring-ratio: 0.225;
+$pie-center-cart-blocked-ring: $pie-center-indicator-size *
+  $pie-center-cart-blocked-ring-ratio;
+$pie-center-cart-blocked-ring-right: $pie-center-indicator-size *
+  $pie-center-cart-blocked-ring-ratio;
 /** Доля от ширины CardPie (центральный круг мини-паев). */
 $pie-center-disc-size-ratio: 25%;
+/** Красная заливка внутри жёлтого кольца: доля радиуса (диаметр inner / outer = 1 − 2×ring). */
+$pie-center-cart-blocked-inner-stop: (
+    1 - 2 * $pie-center-cart-blocked-ring-ratio
+  ) *
+  100%;
 
 .hubContainer {
   --outline-hover: #{$color-toggle-active-hover};
@@ -90,7 +98,9 @@ $pie-center-disc-size-ratio: 25%;
   }
 
   .pieCenterIndicator.cartBlocked {
-    @include preview-indicator-cart-blocked-ring($pie-center-logo-size * 0.225);
+    @include preview-indicator-cart-blocked-ring(
+      $pie-center-logo-size * $pie-center-cart-blocked-ring-ratio
+    );
   }
 }
 
@@ -351,8 +361,21 @@ $pie-center-disc-size-ratio: 25%;
     background-color: $color-preview-indicator-cart;
   }
 
+  /**
+   * Мини-диск: жёлтое кольцо + красный центр в той же доле, что у центрального
+   * CardPie (`ring = 0.225 × диаметр`). Border-% на маленьком круге ненадёжен.
+   */
   &.cartBlocked {
-    @include preview-indicator-cart-blocked-ring($pie-center-cart-blocked-ring);
+    box-sizing: border-box;
+    border: 1px solid #fff;
+    background-color: $color-preview-indicator-cart;
+    background-image: radial-gradient(
+      circle closest-side,
+      $color-preview-indicator-error 0%,
+      $color-preview-indicator-error #{$pie-center-cart-blocked-inner-stop},
+      $color-preview-indicator-cart #{$pie-center-cart-blocked-inner-stop},
+      $color-preview-indicator-cart 100%
+    );
   }
 
   &.ready {

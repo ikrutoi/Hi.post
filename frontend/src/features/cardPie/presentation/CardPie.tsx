@@ -200,7 +200,10 @@ export const CardPie: React.FC<CardPieProps> = ({
 
   const allSectionsFilled = isReady
   const leftDiscShowsStatus =
-    station === 'left' && leftPieCenterDisc && status != null && !isProcessed
+    station === 'left' &&
+    leftPieCenterDisc &&
+    status != null &&
+    (!isProcessed || status === 'cart' || status === 'cartBlocked')
   const leftCenterActionEnabled =
     leftPieCenterClickable ||
     leftPieCenterOverviewBack ||
