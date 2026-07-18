@@ -316,25 +316,43 @@ $envelope-address-view-row-height: 1.625rem;
   }
 }
 
-/** Mobile envelope create: compact form (toolbar + fields); gap below is app background. */
+/** Mobile envelope create: content inside the inset rounded role card. */
 .savedAddressViewContainerMobileFullscreen {
   flex: 0 0 auto;
   width: 100%;
   height: auto;
   min-height: 0;
-  max-height: 100%;
+  max-height: none;
   overflow: visible;
   display: flex;
   flex-direction: column;
-  background-color: #fff;
+  justify-content: flex-start;
+  background-color: transparent;
   border-radius: inherit;
+  flex-shrink: 0;
 
   .savedAddressViewToolbar {
     flex-shrink: 0;
+    /* Override base `width: 100%` — with horizontal margin it overflowed and clipped the right side. */
+    width: auto;
+    align-self: stretch;
     min-height: var(--mobile-factory-toolbar-row-height, 2.25rem);
-    padding: 0.1rem 0.5rem 0.2rem;
-    background-color: $color-app-inner;
+    margin: 0.35rem 0.5rem 0.65rem;
+    padding: 0.1rem 0.35rem 0.15rem;
+    background-color: #fff;
+    border-radius: 0.5rem;
     box-sizing: border-box;
+    overflow: hidden;
+
+    /* Create toolbar defaults add margin-left + width 100% and spill past the white shell. */
+    :global([class*='toolbarSenderCreate']),
+    :global([class*='toolbarRecipientCreate']) {
+      width: 100%;
+      max-width: 100%;
+      margin-left: 0;
+      margin-right: 0;
+      box-sizing: border-box;
+    }
   }
 
   .savedAddressViewCardWrap {
@@ -344,6 +362,7 @@ $envelope-address-view-row-height: 1.625rem;
     overflow: visible;
     display: flex;
     flex-direction: column;
+    background-color: transparent;
   }
 
   .savedAddressView.savedAddressViewCreateForm {
@@ -353,8 +372,11 @@ $envelope-address-view-row-height: 1.625rem;
     max-height: none;
     overflow: visible;
     display: block;
-    /* bottom padding matches field gap (see AddressFormView $mobile-create-field-gap) */
-    padding: 0.35rem 0.5rem 0.55rem;
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+    /* Gap to Name comes from toolbar margin-bottom; keep side/bottom field padding. */
+    padding: 0 0.5rem 0.55rem;
     box-sizing: border-box;
   }
 }

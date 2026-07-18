@@ -8,6 +8,7 @@ export const VIEW_KEYS = [
   'listClose',
   'listAdd',
   'close',
+  'closeBig',
   'return',
   'sortUp',
   'sortDown',
@@ -121,7 +122,7 @@ export const SENDER_CREATE_TOOLBAR: ToolbarConfig = [
   },
   {
     group: 'close',
-    icons: [{ key: 'close', state: 'enabled' }],
+    icons: [{ key: 'closeBig', state: 'enabled' }],
     status: 'enabled',
   },
 ]
@@ -134,7 +135,7 @@ export const RECIPIENT_CREATE_TOOLBAR: ToolbarConfig = [
   },
   {
     group: 'close',
-    icons: [{ key: 'close', state: 'enabled' }],
+    icons: [{ key: 'closeBig', state: 'enabled' }],
     status: 'enabled',
   },
 ]

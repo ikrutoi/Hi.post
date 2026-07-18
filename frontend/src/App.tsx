@@ -1597,11 +1597,16 @@ const App = () => {
     return <div className={styles.authBoot} aria-busy="true" />
   }
 
-  const mobileEnvelopeAddressFormOpen =
+  const mobileEnvelopeAddressCreateRole =
     isMobileLayout &&
     activeSection === 'envelope' &&
-    !rightPieEnvelopePeekNoToolbar &&
-    (senderView === 'senderCreate' || recipientView === 'recipientCreate')
+    !rightPieEnvelopePeekNoToolbar
+      ? senderView === 'senderCreate'
+        ? ('sender' as const)
+        : recipientView === 'recipientCreate'
+          ? ('recipient' as const)
+          : null
+      : null
 
   if (isMobileLayout) {
     return (
@@ -1621,7 +1626,7 @@ const App = () => {
           showTopCardStripFullSpan={showTopCardStripFullSpan}
           onBeforeLeftPieInteraction={handleBeforeLeftPieInteraction}
           onLeftPieCenterClick={handleLeftPieCenterClick}
-          envelopeAddressCreateMode={mobileEnvelopeAddressFormOpen}
+          envelopeAddressCreateRole={mobileEnvelopeAddressCreateRole}
           cardPieListPanelOpen={cardPieListPanelOpen}
           onEditorPieToolbarAction={handleEditorPieToolbarAction}
           onPostcardPieCartToolbarAction={handlePostcardPieCartToolbarAction}

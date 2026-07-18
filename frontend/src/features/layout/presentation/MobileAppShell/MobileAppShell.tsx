@@ -41,10 +41,11 @@ import {
   selectCartCalendarDatePickMode,
 } from '@date/calendar/infrastructure/selectors'
 import { setCardtextListPanelOpen, deleteCardtextFromViewRequested } from '@cardtext/infrastructure/state'
-import { selectIsCardtextListPanelOpen } from '@cardtext/infrastructure/selectors'
 import {
+  selectIsCardtextListPanelOpen,
   selectCardtextId,
   selectCardtextSessionData,
+  selectCardtextAssetMatchesApplied,
 } from '@cardtext/infrastructure/selectors'
 import {
   cardtextHasRenderableContent,
@@ -144,7 +145,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   showTopCardStripFullSpan,
   onBeforeLeftPieInteraction,
   onLeftPieCenterClick,
-  envelopeAddressCreateMode = false,
+  envelopeAddressCreateRole = null,
   cardPieListPanelOpen,
   onEditorPieToolbarAction,
   onPostcardPieCartToolbarAction,
@@ -157,7 +158,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
 }) => {
   const dispatch = useAppDispatch()
   const shellRef = useRef<HTMLDivElement>(null)
-  useMobileVisualViewport(shellRef)
+  useMobileVisualViewport(shellRef, {
+    pinTop: envelopeAddressCreateRole != null,
+  })
   const userLoginPanelOpen = useAppSelector(selectUserLoginPanelOpen)
   const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
   const cartListSelectedLocalId = useAppSelector(selectCartListSelectedLocalId)
@@ -176,6 +179,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const cardtextListPanelOpen = useAppSelector(selectIsCardtextListPanelOpen)
   const cardtextSession = useAppSelector(selectCardtextSessionData)
   const cardtextTemplateId = useAppSelector(selectCardtextId)
+  const cardtextAssetMatchesApplied = useAppSelector(
+    selectCardtextAssetMatchesApplied,
+  )
   const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
   const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
   const senderSelectedId = useAppSelector(selectSenderSelectedId)
@@ -355,6 +361,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const mobileCardtextListTemplatePreview = useMemo(() => {
     if (!cardtextListPanelOpen || activeSection !== 'cardtext') return null
     if (rightPieCardtextPeekNoToolbar) return null
+    /** Assembly simplified peek after Apply: keep CardPie, not full-bleed template. */
+    if (cardtextAssetMatchesApplied) return null
     if (!cardtextTemplateId) return null
     if (!cardtextHasRenderableContent(cardtextSession)) return null
     return {
@@ -369,6 +377,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     }
   }, [
     activeSection,
+    cardtextAssetMatchesApplied,
     cardtextListPanelOpen,
     cardtextSession,
     cardtextTemplateId,
@@ -378,7 +387,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const mobileCardtextListChromeActive =
     activeSection === 'cardtext' &&
     cardtextListPanelOpen &&
-    !rightPieCardtextPeekNoToolbar
+    !rightPieCardtextPeekNoToolbar &&
+    !cardtextAssetMatchesApplied
 
   const mobileAddressListChromeActive =
     activeSection === 'envelope' &&
@@ -876,9 +886,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       ref={shellRef}
       className={styles.mobileShell}
       style={cardWidthStyle}
-      data-envelope-address-create={
-        envelopeAddressCreateMode ? 'true' : undefined
-      }
+      data-envelope-address-create={envelopeAddressCreateRole ?? undefined}
       onClick={onAppClick}
     >
       <MarkStampYearDevProvider>

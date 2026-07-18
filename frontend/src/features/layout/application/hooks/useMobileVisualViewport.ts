@@ -28,10 +28,21 @@ function readVisualViewportInsets() {
   }
 }
 
+export type UseMobileVisualViewportOptions = {
+  /**
+   * Keep shell `top` at 0 (e.g. envelope address create).
+   * Avoids the form jumping down when the keyboard closes / viewport offset resets.
+   */
+  pinTop?: boolean
+}
+
 /** Keeps mobile shell within the visual viewport when the on-screen keyboard opens. */
 export function useMobileVisualViewport(
   shellRef: RefObject<HTMLElement | null>,
+  options?: UseMobileVisualViewportOptions,
 ) {
+  const pinTop = options?.pinTop === true
+
   useLayoutEffect(() => {
     const shell = shellRef.current
     if (!shell || !window.visualViewport) return
@@ -41,7 +52,10 @@ export function useMobileVisualViewport(
         readVisualViewportInsets()
 
       shell.style.setProperty('--mobile-vv-height', `${height}px`)
-      shell.style.setProperty('--mobile-vv-offset-top', `${offsetTop}px`)
+      shell.style.setProperty(
+        '--mobile-vv-offset-top',
+        `${pinTop ? 0 : offsetTop}px`,
+      )
       shell.style.setProperty('--mobile-keyboard-inset', `${keyboardInset}px`)
       shell.dataset.keyboardOpen = keyboardOpen ? 'true' : 'false'
     }
@@ -62,5 +76,5 @@ export function useMobileVisualViewport(
       shell.style.removeProperty('--mobile-keyboard-inset')
       delete shell.dataset.keyboardOpen
     }
-  }, [shellRef])
+  }, [shellRef, pinTop])
 }

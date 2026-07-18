@@ -145,7 +145,8 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   overflow: hidden;
 }
 
-.mobileShell[data-envelope-address-create='true'] {
+.mobileShell[data-envelope-address-create='sender'],
+.mobileShell[data-envelope-address-create='recipient'] {
   .mobileHeader {
     display: none;
   }
@@ -156,7 +157,9 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
 
   .mobileForm {
     overflow: hidden;
-    padding-top: calc(0.35rem + env(safe-area-inset-top, 0px));
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: 0;
+    background-color: $color-app-inner;
 
     :global([class*='cardSectionEditor']) {
       justify-content: flex-start;
@@ -180,6 +183,44 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
       min-height: 0;
       max-height: 100%;
     }
+
+    /* Fill the screen; insets come only from centralWorkZone (same as main section). */
+    :global([data-mobile-factory-section-frame='true']) {
+      flex: 1 1 auto !important;
+      height: 100% !important;
+      max-height: none;
+      margin-top: 0 !important;
+      padding-top: 0;
+      padding-bottom: 0;
+      margin-bottom: 0;
+      background-color: transparent;
+      --mobile-section-surface-bg: #{$color-app-inner};
+    }
+
+    :global([class*='content']) {
+      flex: 1 1 auto;
+      height: 100%;
+      min-height: 0;
+      gap: 0;
+    }
+
+    :global([class*='toolbarSlot']) {
+      display: none;
+    }
+
+    :global([data-mobile-central-work-zone='true']) {
+      aspect-ratio: unset;
+      flex: 1 1 auto;
+      height: auto;
+      min-height: 0;
+      /* Match L/R of main section; top = same as L/R; bottom already on the zone. */
+      margin-top: var(--mobile-section-inset);
+      overflow: hidden;
+      border-radius: 0.5rem;
+      /* Border on the clip root — nested card borders get clipped at rounded corners. */
+      border: 1px solid var(--envelope-address-create-border);
+      box-sizing: border-box;
+    }
   }
 
   .mobileEditorSection {
@@ -194,10 +235,26 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
       flex: 1 1 auto;
       height: 100%;
       min-height: 0;
-      background-color: $color-app-inner;
-      overflow-y: auto;
+      overflow: hidden;
+      background-color: transparent;
     }
   }
+
+  :global([class*='envelope'][data-envelope-mobile-form='true']),
+  :global([class*='envelope'][data-envelope-mobile-form='true'])
+    :global([class*='envelopeViewContent']) {
+    background-color: transparent;
+  }
+}
+
+.mobileShell[data-envelope-address-create='sender'] {
+  --envelope-address-create-bg: #{$color-envelope-sender-input};
+  --envelope-address-create-border: #{$color-envelope-sender-input-border};
+}
+
+.mobileShell[data-envelope-address-create='recipient'] {
+  --envelope-address-create-bg: #{$color-envelope-recipient-input};
+  --envelope-address-create-border: #{$color-envelope-recipient-input-border};
 }
 
 .mobileShell[data-keyboard-open='true'] {
@@ -214,6 +271,14 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
 
   .mobileEditorSection {
     padding-top: 0;
+  }
+}
+
+.mobileShell[data-envelope-address-create='sender'][data-keyboard-open='true'],
+.mobileShell[data-envelope-address-create='recipient'][data-keyboard-open='true'] {
+  .mobileForm {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: 0;
   }
 }
 
@@ -1191,8 +1256,8 @@ $mobile-central-pie-envelope-empty-icon-width: 40%;
       margin-inline: 0;
       border: none;
       border-radius: 0;
-      background-color: $color-app-inner;
-      overflow-y: auto;
+      background-color: transparent;
+      overflow: hidden;
       aspect-ratio: unset;
     }
   }

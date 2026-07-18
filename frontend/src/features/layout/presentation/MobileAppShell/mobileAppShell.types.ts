@@ -14,8 +14,11 @@ export type MobileAppShellProps = {
   showTopCardStripFullSpan: boolean
   onBeforeLeftPieInteraction: () => void
   onLeftPieCenterClick: () => void
-  /** Mobile envelope: fullscreen address create/edit — hide chrome header and lift form. */
-  envelopeAddressCreateMode?: boolean
+  /**
+   * Mobile envelope: fullscreen address create — hide chrome header, pin form,
+   * and paint the surface with the role form color only.
+   */
+  envelopeAddressCreateRole?: 'sender' | 'recipient' | null
   cardPieListPanelOpen: boolean
   onEditorPieToolbarAction?: (key: IconKey) => void | false
   onPostcardPieCartToolbarAction?: (key: IconKey) => void | false

@@ -9,6 +9,7 @@ import {
   clearDraftData,
   setDraftEngaged,
   setCardtextApplyPeekChrome,
+  setCardtextListPanelOpen,
 } from '@cardtext/infrastructure/state'
 import type { RootState } from '@app/state'
 import {
@@ -94,6 +95,7 @@ export function* applyCardtextFromToolbar(
       }
     }
     yield put(setCardtextApplyPeekChrome(true))
+    yield put(setCardtextListPanelOpen(false))
     yield put(requestArchiveSectionPeek('cardtext'))
   }
 
