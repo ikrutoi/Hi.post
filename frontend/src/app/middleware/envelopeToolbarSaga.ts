@@ -1088,12 +1088,15 @@ function* handleEnvelopeToolbarAction(
   )
     return
 
-  if (key === 'close' || key === 'closeBig') {
-    if (section === 'senderCreate' || section === 'recipientCreate') {
-      yield* closeAddressCreateForm(section)
-      return
-    }
-    if (key === 'closeBig') return
+  if (
+    (section === 'senderCreate' || section === 'recipientCreate') &&
+    (key === 'close' || key === 'closeBig' || key === 'return')
+  ) {
+    yield* closeAddressCreateForm(section)
+    return
+  }
+
+  if (key === 'close') {
     if (section === 'sender') {
       yield put(setSenderViewId(null))
       yield put(clearSender())

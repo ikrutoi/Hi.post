@@ -122,7 +122,7 @@ export const SENDER_CREATE_TOOLBAR: ToolbarConfig = [
   },
   {
     group: 'close',
-    icons: [{ key: 'closeBig', state: 'enabled' }],
+    icons: [{ key: 'return', state: 'enabled' }],
     status: 'enabled',
   },
 ]
@@ -135,7 +135,7 @@ export const RECIPIENT_CREATE_TOOLBAR: ToolbarConfig = [
   },
   {
     group: 'close',
-    icons: [{ key: 'closeBig', state: 'enabled' }],
+    icons: [{ key: 'return', state: 'enabled' }],
     status: 'enabled',
   },
 ]

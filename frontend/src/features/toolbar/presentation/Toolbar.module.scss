@@ -1731,11 +1731,6 @@
     margin-left: 0;
   }
 
-  /* closeBig glyph fills more of the viewBox than applyMedium — match optical size. */
-  [data-icon-key='closeBig'] svg {
-    transform: scale(0.88);
-  }
-
   .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
     color: $color-font-enabled-light;
 
