@@ -56,7 +56,7 @@ import { openCardtextEditorFromView } from '@cardtext/application/helpers'
 import { CardtextView } from '@cardtext/presentation/CardtextView/CardtextView'
 import {
   closeAddressList,
-  setActiveAddressList,
+  requestClearMobileAddressFocus,
   setRecipientsPendingIds,
 } from '@envelope/infrastructure/state'
 import {
@@ -733,15 +733,11 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       if (section === 'envelope' && currentActiveSection === 'envelope') {
         const senderListOpen = selectSenderListPanelOpen(state)
         const recipientListOpen = selectRecipientListPanelOpen(state)
-        if (!senderListOpen && !recipientListOpen) {
-          dispatch(setActiveAddressList('sender'))
-          return
+        // Leave address view / close lists — do not open lists from CardPie.
+        dispatch(requestClearMobileAddressFocus())
+        if (senderListOpen || recipientListOpen) {
+          dispatch(closeAddressList())
         }
-        if (senderListOpen) {
-          dispatch(setActiveAddressList('recipients'))
-          return
-        }
-        dispatch(closeAddressList())
         return
       }
 

@@ -910,7 +910,10 @@ function* handleEnvelopeToolbarAction(
         yield put(incrementAddressTemplatesReloadVersion())
         yield put(incrementAddressBookReloadVersion())
         yield put(clearSenderFormData())
-        yield* ensureAddressListPanelOpen('sender')
+        const isMobileLayout: boolean = yield select(selectIsMobileLayout)
+        if (!isMobileLayout) {
+          yield* ensureAddressListPanelOpen('sender')
+        }
         yield call(syncAddressListIconsFromActive)
         yield call(processEnvelopeVisuals)
       }
@@ -957,7 +960,10 @@ function* handleEnvelopeToolbarAction(
         yield put(incrementAddressTemplatesReloadVersion())
         yield put(incrementAddressBookReloadVersion())
         yield put(clearRecipientFormData())
-        yield* ensureAddressListPanelOpen('recipients')
+        const isMobileLayout: boolean = yield select(selectIsMobileLayout)
+        if (!isMobileLayout) {
+          yield* ensureAddressListPanelOpen('recipients')
+        }
         yield call(syncAddressListIconsFromActive)
         yield call(processEnvelopeVisuals)
       }

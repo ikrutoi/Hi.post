@@ -27,6 +27,7 @@ import {
   setRecipientsPendingIds,
 } from '@envelope/infrastructure/state'
 import { closeCardPieListPanelAndSyncIconsSaga } from '@app/middleware/exclusiveListPanelsSaga'
+import { selectIsMobileLayout } from '@layout/infrastructure/selectors'
 import {
   selectActiveAddressList,
   selectRecipientsPendingIds,
@@ -279,12 +280,15 @@ function* openAddressViewAfterSave(
     }
   }
   if (listStatus === 'inList') {
-    const active: 'sender' | 'recipients' | null = yield select(
-      selectActiveAddressList,
-    )
-    const listMode = role === 'sender' ? 'sender' : 'recipients'
-    if (active !== listMode) {
-      yield put(setActiveAddressList(listMode))
+    const isMobileLayout: boolean = yield select(selectIsMobileLayout)
+    if (!isMobileLayout) {
+      const active: 'sender' | 'recipients' | null = yield select(
+        selectActiveAddressList,
+      )
+      const listMode = role === 'sender' ? 'sender' : 'recipients'
+      if (active !== listMode) {
+        yield put(setActiveAddressList(listMode))
+      }
     }
   }
   yield put(addressSaveSuccess(role))

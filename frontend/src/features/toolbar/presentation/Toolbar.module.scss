@@ -1735,8 +1735,11 @@
     color: $color-font-enabled-light;
 
     &:hover {
-      color: $color-font-enabled;
       background-color: #fff;
+    }
+
+    &:not([data-icon-key='return']):hover {
+      color: $color-font-enabled;
     }
   }
 

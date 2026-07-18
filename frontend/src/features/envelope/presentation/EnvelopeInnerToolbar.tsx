@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 import clsx from 'clsx'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { useAppSelector } from '@app/hooks'
@@ -43,35 +43,6 @@ function readAddressAddMeta(
   }
 }
 
-function withAddressAddDisabledOnAddressViewFocus(
-  toolbarState: Record<string, unknown>,
-  params: {
-    isMobile: boolean
-    role: 'sender' | 'recipient'
-    isFocused: boolean
-    view: string
-    pendingDisableRole: 'sender' | 'recipient' | null
-  },
-): Record<string, unknown> {
-  const { isMobile, role, isFocused, view, pendingDisableRole } = params
-  const targetView = role === 'sender' ? 'senderView' : 'recipientView'
-  const forceDisable =
-    isMobile &&
-    (pendingDisableRole === role || (isFocused && view === targetView))
-  if (!forceDisable) return toolbarState
-
-  const { state, badge, badgeDot } = readAddressAddMeta(toolbarState)
-  if (state !== 'active' && state !== 'enabled') return toolbarState
-
-  return {
-    ...toolbarState,
-    addressAdd: {
-      state: 'disabled',
-      options: { badge, badgeDot },
-    },
-  }
-}
-
 export const EnvelopeInnerToolbar: React.FC = () => {
   const isMobile = useAppSelector(selectIsMobileLayout)
   const senderView = useAppSelector(selectSenderView)
@@ -80,21 +51,13 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const mobileFocus = useEnvelopeMobileAddressFocus()
   const focusRole = mobileFocus?.focusRole ?? null
-  const senderToolbarStateWithLiveAddressList = useAppSelector(
+  const senderToolbarState = useAppSelector(
     selectSenderToolbarStateWithLiveAddressList,
   )
-  const recipientsToolbarStateWithLiveAddressList = useAppSelector(
+  const recipientsToolbarState = useAppSelector(
     selectRecipientsToolbarStateWithLiveAddressList,
   )
   const pendingAddressAddFocusRef = useRef<'sender' | 'recipient' | null>(null)
-  const [addressAddPendingDisableRole, setAddressAddPendingDisableRole] =
-    useState<'sender' | 'recipient' | null>(null)
-
-  useEffect(() => {
-    if (focusRole == null) {
-      setAddressAddPendingDisableRole(null)
-    }
-  }, [focusRole])
 
   useEffect(() => {
     if (!isMobile || mobileFocus == null) return
@@ -115,7 +78,6 @@ export const EnvelopeInnerToolbar: React.FC = () => {
 
     if (view === 'senderCreate' || view === 'recipientCreate') {
       pendingAddressAddFocusRef.current = null
-      setAddressAddPendingDisableRole(null)
     }
   }, [isMobile, mobileFocus, senderView, recipientView])
 
@@ -132,24 +94,15 @@ export const EnvelopeInnerToolbar: React.FC = () => {
       if (isEditMode) return false
 
       const { state: addState } = readAddressAddMeta(
-        section === 'sender'
-          ? senderToolbarStateWithLiveAddressList
-          : recipientsToolbarStateWithLiveAddressList,
+        section === 'sender' ? senderToolbarState : recipientsToolbarState,
       )
 
       if (addState === 'active') {
-        const wasFocused = mobileFocus.isFocused(role)
-        if (wasFocused) {
-          setAddressAddPendingDisableRole(null)
-        } else {
-          setAddressAddPendingDisableRole(role)
-        }
         mobileFocus.toggleFocus(role)
         return false
       }
 
       if (addState === 'enabled') {
-        setAddressAddPendingDisableRole(role)
         pendingAddressAddFocusRef.current = role
         const targetView = role === 'sender' ? 'senderView' : 'recipientView'
         if (view === targetView && !mobileFocus.isFocused(role)) {
@@ -164,8 +117,8 @@ export const EnvelopeInnerToolbar: React.FC = () => {
       recipientView,
       senderViewEditMode,
       recipientViewEditMode,
-      senderToolbarStateWithLiveAddressList,
-      recipientsToolbarStateWithLiveAddressList,
+      senderToolbarState,
+      recipientsToolbarState,
     ],
   )
 
@@ -190,48 +143,6 @@ export const EnvelopeInnerToolbar: React.FC = () => {
       focusRole,
       senderViewEditMode,
       recipientViewEditMode,
-    ],
-  )
-
-  const senderToolbarState = useMemo(
-    () =>
-      withAddressAddDisabledOnAddressViewFocus(
-        senderToolbarStateWithLiveAddressList,
-        {
-          isMobile,
-          role: 'sender',
-          isFocused: mobileFocus?.isFocused('sender') ?? false,
-          view: senderView,
-          pendingDisableRole: addressAddPendingDisableRole,
-        },
-      ),
-    [
-      senderToolbarStateWithLiveAddressList,
-      isMobile,
-      mobileFocus,
-      senderView,
-      addressAddPendingDisableRole,
-    ],
-  )
-
-  const recipientsToolbarState = useMemo(
-    () =>
-      withAddressAddDisabledOnAddressViewFocus(
-        recipientsToolbarStateWithLiveAddressList,
-        {
-          isMobile,
-          role: 'recipient',
-          isFocused: mobileFocus?.isFocused('recipient') ?? false,
-          view: recipientView,
-          pendingDisableRole: addressAddPendingDisableRole,
-        },
-      ),
-    [
-      recipientsToolbarStateWithLiveAddressList,
-      isMobile,
-      mobileFocus,
-      recipientView,
-      addressAddPendingDisableRole,
     ],
   )
 

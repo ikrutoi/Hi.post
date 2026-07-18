@@ -26,6 +26,8 @@ export interface EnvelopeSelectionState {
   recipientAddressListPanelDensity: PanelDensity2Size
   /** @deprecated Раньше одно значение на оба списка; читается при миграции. */
   addressListPanelDensity?: PanelDensity2Size
+  /** Mobile: increment to clear address-view focus (CardPie / navigation). */
+  mobileAddressFocusClearSeq: number
 }
 
 const initialState: EnvelopeSelectionState = {
@@ -39,6 +41,7 @@ const initialState: EnvelopeSelectionState = {
   addressFormViewRole: null,
   senderAddressListPanelDensity: 1,
   recipientAddressListPanelDensity: 1,
+  mobileAddressFocusClearSeq: 0,
 }
 
 export const envelopeSelectionSlice = createSlice({
@@ -74,6 +77,11 @@ export const envelopeSelectionSlice = createSlice({
       state.activeAddressList = null
       state.senderListPanelOpen = false
       state.recipientListPanelOpen = false
+    },
+
+    /** Mobile CardPie / chrome: leave focused address view without opening lists. */
+    requestClearMobileAddressFocus(state) {
+      state.mobileAddressFocusClearSeq += 1
     },
 
     openAddressEditSession(state, action: PayloadAction<AddressEditSession>) {
@@ -160,6 +168,7 @@ export const {
   clearRecipientsPending,
   setActiveAddressList,
   closeAddressList,
+  requestClearMobileAddressFocus,
   openAddressEditSession,
   closeAddressEditSession,
   setAddressCreateEditContext,
