@@ -71,6 +71,29 @@ $pie-center-disc-size-ratio: 25%;
   }
 }
 
+/** Центральный archive CardPie (корзина/история): круг как у сборки слева. */
+.hubContainerFill.hubContainerRight {
+  .pieCenterButton,
+  .pieCenterButtonPointer {
+    width: $pie-center-logo-hit-size;
+    height: $pie-center-logo-hit-size;
+  }
+
+  .pieCenterIcon {
+    width: $pie-center-logo-size;
+    height: $pie-center-logo-size;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #fff;
+    box-sizing: content-box;
+    background-color: #fff;
+  }
+
+  .pieCenterIndicator.cartBlocked {
+    @include preview-indicator-cart-blocked-ring($pie-center-logo-size * 0.225);
+  }
+}
+
 .pieContent {
   width: 100%;
   height: 100%;
