@@ -88,8 +88,10 @@ import {
   setAssemblyBranchFreeze,
   clearAssemblyBranchFreeze,
   clearAllMirrorSectionBackups,
+  clearArchiveEnvelopeSandbox,
 } from '@cardPanel/infrastructure/state'
 import { selectAssemblyBranchFreeze } from '@cardPanel/infrastructure/selectors/assemblyBranchFreezeSelectors'
+import { dispatchLoadArchiveEnvelopeSandbox } from '@cardPanel/application/helpers/archiveEnvelopeSandboxLoad'
 import {
   closeDayPanel,
   openDayPanel,
@@ -627,6 +629,12 @@ const App = () => {
         activePieSide === 'right' &&
         !copyStripFullSpan &&
         cardPieEditEngaged
+      const cartEnvelopeSandboxEdit =
+        section === 'envelope' &&
+        rightListArchiveLocalId != null &&
+        (rightListArchiveSource === 'cart' ||
+          rightArchivePiePostcardStatus === 'cart' ||
+          rightArchivePiePostcardStatus === 'cartBlocked')
       if (fullFactoryFromRightPie) {
         setRightPieCardphotoPeekNoToolbar(false)
         setRightPieCardtextPeekNoToolbar(false)
@@ -636,40 +644,47 @@ const App = () => {
       } else {
         flushSync(() => {
           dispatch(setActiveSection(section))
+          /**
+           * Keep right/cart chrome (peek hides list). Do not close cart or
+           * switch notebook to date — that drops into left assembly mode.
+           */
           syncPeekChromeForOpenedSection(section)
           setActivePieSide('right')
         })
         /**
-         * Cart envelope peek: гидратация session как после Apply в сборке,
-         * чтобы postcardEdit / Apply работали теми же sender/recipients тулбарами.
-         * Dual-mode: freeze assembly first so left/plan pies stay on snapshot.
+         * Cart envelope: archive sandbox only — never hydrate assembly session.
          */
+        if (cartEnvelopeSandboxEdit && rightListArchiveLocalId != null) {
+          dispatchLoadArchiveEnvelopeSandbox(dispatch, store.getState, {
+            localId: rightListArchiveLocalId,
+            source:
+              rightListArchiveSource === 'history' ? 'history' : 'cart',
+          })
+        }
+      }
+      if (fullFactoryFromRightPie && rightListArchiveLocalId != null) {
         if (
           section === 'envelope' &&
-          rightListArchiveLocalId != null &&
           (rightListArchiveSource === 'cart' ||
             rightArchivePiePostcardStatus === 'cart' ||
             rightArchivePiePostcardStatus === 'cartBlocked')
         ) {
-          captureAssemblyBranchFreeze('archivePeek')
+          dispatchLoadArchiveEnvelopeSandbox(dispatch, store.getState, {
+            localId: rightListArchiveLocalId,
+            source:
+              rightListArchiveSource === 'history' ? 'history' : 'cart',
+          })
+        } else {
+          captureAssemblyBranchFreeze('archiveEdit')
           dispatch(
             applyArchiveSectionToEditorRequested({
-              section: 'envelope',
+              section,
               sourceLocalId: rightListArchiveLocalId,
             }),
           )
         }
       }
-      if (fullFactoryFromRightPie && rightListArchiveLocalId != null) {
-        captureAssemblyBranchFreeze('archiveEdit')
-        dispatch(
-          applyArchiveSectionToEditorRequested({
-            section,
-            sourceLocalId: rightListArchiveLocalId,
-          }),
-        )
-      }
-      /** Mobile peek: закладки хедера не переключаем. */
+      /** Mobile peek: закладки хедера не переключаем (корзина/история остаются). */
       const mobileArchivePeek = isMobileLayout && !fullFactoryFromRightPie
       if (!mobileArchivePeek) {
         if (section === 'date') {
@@ -993,11 +1008,8 @@ const App = () => {
 
   const clearRightPieEnvelopePeek = useCallback(() => {
     setRightPieEnvelopePeekNoToolbar(false)
-    /** Peek lease without full edit: restore assembly session. */
-    if (!cardPieEditEngagedRef.current) {
-      releaseAssemblySessionLease()
-    }
-  }, [releaseAssemblySessionLease])
+    dispatch(clearArchiveEnvelopeSandbox())
+  }, [dispatch])
 
   const clearRightPieAromaPeek = useCallback(() => {
     setRightPieAromaPeekNoToolbar(false)
@@ -1022,8 +1034,9 @@ const App = () => {
   useEffect(() => {
     if (activeSection !== 'envelope') {
       setRightPieEnvelopePeekNoToolbar(false)
+      dispatch(clearArchiveEnvelopeSandbox())
     }
-  }, [activeSection])
+  }, [activeSection, dispatch])
 
   useEffect(() => {
     if (activeSection !== 'aroma') {
@@ -1079,10 +1092,11 @@ const App = () => {
     setRightPieEnvelopePeekNoToolbar(false)
     setRightPieAromaPeekNoToolbar(false)
     setRightPieDatePeekNoToolbar(false)
+    dispatch(clearArchiveEnvelopeSandbox())
     if (!cardPieEditEngagedRef.current) {
       releaseAssemblySessionLease()
     }
-  }, [rightListArchiveLocalId, rightListArchiveSource, releaseAssemblySessionLease])
+  }, [rightListArchiveLocalId, rightListArchiveSource, releaseAssemblySessionLease, dispatch])
 
   const showTopCardStripFullSpan =
     cardPieCopyStripExpanded && rightListArchiveLocalId != null
@@ -1156,8 +1170,8 @@ const App = () => {
     setSuppressCardPieEditActiveAfterCopy(true)
     syncPeekChromeForOpenedSection(archivePeekEnterSection)
     /**
-     * Dual-mode: after Apply exits factory-edit, cart envelope peek needs the
-     * session buffer again (editors bind to session; freeze protects assembly).
+     * After Apply exits factory-edit: reload cart envelope into sandbox
+     * (session stays assembly-only).
      */
     if (
       archivePeekEnterSection === 'envelope' &&
@@ -1166,18 +1180,14 @@ const App = () => {
         rightArchivePiePostcardStatus === 'cart' ||
         rightArchivePiePostcardStatus === 'cartBlocked')
     ) {
-      captureAssemblyBranchFreeze('archivePeek')
-      dispatch(
-        applyArchiveSectionToEditorRequested({
-          section: 'envelope',
-          sourceLocalId: rightListArchiveLocalId,
-        }),
-      )
+      dispatchLoadArchiveEnvelopeSandbox(dispatch, store.getState, {
+        localId: rightListArchiveLocalId,
+        source: rightListArchiveSource === 'history' ? 'history' : 'cart',
+      })
     }
   }, [
     archivePeekEnterTick,
     archivePeekEnterSection,
-    captureAssemblyBranchFreeze,
     dispatch,
     endCardPieEditEngaged,
     rightArchivePiePostcardStatus,
@@ -1196,7 +1206,7 @@ const App = () => {
     if (cartDatePickOwnedByCardPieEditRef.current) {
       cartDatePickOwnedByCardPieEditRef.current = false
     }
-  }, [cardPieEditEngaged, listPanelOpen, historyListPanelOpen])
+  }, [cardPieEditEngaged, listPanelOpen, historyListPanelOpen, endCardPieEditEngaged])
 
   /** Гидратация session из выбранной открытки при cardPieEdit / смене строки. */
   useEffect(() => {

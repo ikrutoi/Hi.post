@@ -17,6 +17,19 @@ import {
   setRecipientView,
   setRecipientViewId,
 } from '../../recipient/infrastructure/state'
+import {
+  selectArchiveEnvelopeSandboxActive,
+  selectArchiveSandboxSender,
+  selectArchiveSandboxRecipient,
+  selectArchiveSandboxSenderApplied,
+  selectArchiveSandboxRecipientApplied,
+} from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
+import {
+  setArchiveSenderView,
+  setArchiveSenderViewId,
+  setArchiveRecipientView,
+  setArchiveRecipientViewId,
+} from '@cardPanel/infrastructure/state'
 import { closeAddressEditSession } from '@envelope/infrastructure/state'
 import {
   selectActiveAddressEdit,
@@ -46,7 +59,19 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const facade = role === 'sender' ? senderFacade : recipientFacade
   const { update, address: value } = facade
 
-  const senderAppliedIds = useAppSelector(selectSenderApplied)
+  const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
+  const sandboxSender = useAppSelector(selectArchiveSandboxSender)
+  const sandboxRecipient = useAppSelector(selectArchiveSandboxRecipient)
+  const sessionSenderAppliedIds = useAppSelector(selectSenderApplied)
+  const sandboxSenderAppliedIds = useAppSelector(
+    selectArchiveSandboxSenderApplied,
+  )
+  const sandboxRecipientAppliedIds = useAppSelector(
+    selectArchiveSandboxRecipientApplied,
+  )
+  const senderAppliedIds = sandboxActive
+    ? sandboxSenderAppliedIds
+    : sessionSenderAppliedIds
   const activeAddressEdit = useAppSelector(selectActiveAddressEdit)
   const editingTemplateId =
     role === 'sender'
@@ -56,10 +81,14 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     role === 'sender'
       ? activeAddressEdit?.role === 'sender'
         ? activeAddressEdit.templateId
-        : (editingTemplateId ?? senderAppliedIds[0] ?? null)
+        : (editingTemplateId ??
+          (sandboxActive ? sandboxSender.senderViewId : null) ??
+          senderAppliedIds[0] ??
+          null)
       : activeAddressEdit?.role === 'recipient'
         ? activeAddressEdit.templateId
-        : editingTemplateId
+        : (editingTemplateId ??
+          (sandboxActive ? sandboxRecipient.recipientViewId : null))
 
   const senderEntries = useAppSelector(
     (state) => state.addressBook?.senderEntries ?? [],
@@ -71,10 +100,16 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const dispatch = useAppDispatch()
   const isMobile = useAppSelector(selectIsMobileLayout)
   const mobileFocus = useEnvelopeMobileAddressFocus()
-  const senderView = useAppSelector(selectSenderView)
+  const sessionSenderView = useAppSelector(selectSenderView)
+  const sessionRecipientView = useAppSelector(selectRecipientView)
+  const senderView = sandboxActive
+    ? sandboxSender.currentView
+    : sessionSenderView
+  const recipientView = sandboxActive
+    ? sandboxRecipient.currentView
+    : sessionRecipientView
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
-  const recipientView = useAppSelector(selectRecipientView)
   const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
   const recipientsFormViewIdsCount = useAppSelector(
     selectRecipientsFormViewIdsCount,
@@ -107,7 +142,11 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const recipientsDisplayList = recipientFacade.recipientsDisplayList
 
   const recipientIdForDisplay =
-    role === 'recipient' ? (editingTemplateId ?? null) : null
+    role === 'recipient'
+      ? (editingTemplateId ??
+        (sandboxActive ? sandboxRecipient.recipientViewId : null) ??
+        null)
+      : null
 
   const recipientDisplayEntry = useMemo((): AddressBookEntry | null => {
     if (
@@ -144,14 +183,18 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
   const applyRecipientEntry = useCallback(
     (entry: AddressBookEntry) => {
-      dispatch(setRecipientViewId(entry.id))
+      if (sandboxActive) {
+        dispatch(setArchiveRecipientViewId(entry.id))
+      } else {
+        dispatch(setRecipientViewId(entry.id))
+      }
       ;(
         Object.entries(entry.address) as [keyof typeof value, string][]
       ).forEach(([field, fieldValue]) => {
         update(field as any, fieldValue)
       })
     },
-    [dispatch, update],
+    [dispatch, update, sandboxActive],
   )
 
   useEffect(() => {
@@ -172,7 +215,11 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       }
       if (recipientView !== 'recipientView' || editingTemplateId !== entry.id) {
         applyRecipientEntry(entry)
-        dispatch(setRecipientView('recipientView'))
+        if (sandboxActive) {
+          dispatch(setArchiveRecipientView('recipientView'))
+        } else {
+          dispatch(setRecipientView('recipientView'))
+        }
       }
       return
     }
@@ -184,8 +231,13 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       editingTemplateId == null &&
       !hasRecipientAddressData
     ) {
-      dispatch(setRecipientView('recipientsView'))
-      dispatch(setRecipientViewId(null))
+      if (sandboxActive) {
+        dispatch(setArchiveRecipientView('recipientsView'))
+        dispatch(setArchiveRecipientViewId(null))
+      } else {
+        dispatch(setRecipientView('recipientsView'))
+        dispatch(setRecipientViewId(null))
+      }
     }
   }, [
     role,
@@ -196,11 +248,15 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     hasRecipientAddressData,
     dispatch,
     applyRecipientEntry,
+    sandboxActive,
   ])
 
   const senderIdForDisplay =
     role === 'sender'
-      ? (editingTemplateId ?? senderAppliedIds[0] ?? null)
+      ? (editingTemplateId ??
+        (sandboxActive ? sandboxSender.senderViewId : null) ??
+        senderAppliedIds[0] ??
+        null)
       : null
 
   const senderDisplayEntry = useMemo((): AddressBookEntry | null => {
@@ -226,17 +282,24 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
   const applySenderEntry = useCallback(
     (entry: AddressBookEntry) => {
-      dispatch(setSenderViewId(entry.id))
+      if (sandboxActive) {
+        dispatch(setArchiveSenderViewId(entry.id))
+      } else {
+        dispatch(setSenderViewId(entry.id))
+      }
       ;(Object.entries(entry.address) as [keyof typeof value, string][]).forEach(
         ([field, fieldValue]) => {
           update(field as any, fieldValue)
         },
       )
     },
-    [dispatch, update],
+    [dispatch, update, sandboxActive],
   )
 
   const hasSenderAppliedToEnvelope = senderAppliedIds.length > 0
+  const hasSenderDraftAddress = Object.values(value).some(
+    (v) => (v ?? '').trim() !== '',
+  )
   const isSenderFocusedOnMobile = mobileFocus?.isFocused('sender') ?? false
   const showSenderDetailCard =
     role === 'sender' &&
@@ -246,6 +309,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     (!isMobile ||
       isSenderFocusedOnMobile ||
       hasSenderAppliedToEnvelope ||
+      hasSenderDraftAddress ||
       (editingTemplateId != null && !senderListPanelOpen))
 
   const showSenderEmptyPlaceholder =
@@ -278,7 +342,11 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         editingTemplateId !== senderDisplayEntry.id
       ) {
         applySenderEntry(senderDisplayEntry)
-        dispatch(setSenderView('senderView'))
+        if (sandboxActive) {
+          dispatch(setArchiveSenderView('senderView'))
+        } else {
+          dispatch(setSenderView('senderView'))
+        }
       }
     }
   }, [
@@ -292,22 +360,37 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     isMobile,
     hasSenderAppliedToEnvelope,
     isSenderFocusedOnMobile,
+    sandboxActive,
   ])
 
   const openAddressForm = (r: 'sender' | 'recipient') => {
     envelopeFacade.setAddressFormViewState(true, r)
-    if (r === 'sender') dispatch(setSenderView('senderCreate'))
-    else dispatch(setRecipientView('recipientCreate'))
+    if (r === 'sender') {
+      if (sandboxActive) dispatch(setArchiveSenderView('senderCreate'))
+      else dispatch(setSenderView('senderCreate'))
+    } else if (sandboxActive) {
+      dispatch(setArchiveRecipientView('recipientCreate'))
+    } else {
+      dispatch(setRecipientView('recipientCreate'))
+    }
   }
 
   const handleOpenRecipientFromList = (entry: AddressBookEntry) => {
-    dispatch(setRecipientViewId(entry.id))
+    if (sandboxActive) {
+      dispatch(setArchiveRecipientViewId(entry.id))
+    } else {
+      dispatch(setRecipientViewId(entry.id))
+    }
     ;(Object.entries(entry.address) as [keyof typeof value, string][]).forEach(
       ([field, fieldValue]) => {
         update(field as any, fieldValue)
       },
     )
-    dispatch(setRecipientView('recipientView'))
+    if (sandboxActive) {
+      dispatch(setArchiveRecipientView('recipientView'))
+    } else {
+      dispatch(setRecipientView('recipientView'))
+    }
     if (recipientViewEditMode) {
       dispatch(
         closeAddressEditSession({ role: 'recipient', keepRecipientView: true }),

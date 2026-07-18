@@ -2,10 +2,10 @@
  * Migration status:
  * - Step 1: contract + inventory
  * - Step 2: view isolation (mini open)
- * - Step 3a: assembly freeze lease for archive peek/edit — left CardPie + plan
- *   pies read freeze whenever present; lease release reverts session backups.
- *   Envelope Apply while leased also persists to the selected archive postcard.
- * Target: archive sandbox keyed by localId, Apply → postcard only (no session buffer).
+ * - Step 3a: assembly freeze lease (legacy session buffer)
+ * - Step 3b (in progress): archiveEnvelopeSandbox for cart envelope —
+ *   right mode never hydrates assembly sender/recipient for envelope
+ * Target: full archive sandbox for all sections keyed by localId.
  */
 
 /** Which postcard data branch the central/active CardPie is bound to. */
@@ -101,11 +101,11 @@ export const CARD_PIE_DUAL_MODE_WRITE_PATHS: readonly CardPieDualModeWritePath[]
     {
       id: 'rightPie.envelopePeekHydrate',
       locus:
-        'App.tsx handleRightListPieSectorClick (cart envelope peek) → captureAssemblyBranchFreeze + applyArchiveSectionToEditorRequested',
+        'App.tsx → loadArchiveEnvelopeSandbox (no session hydrate); Apply → persistArchiveEnvelopeSandbox',
       mutates: 'assemblySession',
       target: 'archiveSandbox',
       note:
-        'Step 3a: freeze lease before hydrate; left/plan pies use freeze; leave peek releases lease + revert.',
+        'Step 3b started: cart envelope uses archiveEnvelopeSandbox; assembly sender/recipient untouched.',
     },
     {
       id: 'copyStrip.applySection',

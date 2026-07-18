@@ -24,6 +24,13 @@ import {
   selectSenderView,
 } from '@envelope/sender/infrastructure/selectors'
 import {
+  selectArchiveEnvelopeSandboxActive,
+  selectArchiveSandboxSender,
+  selectArchiveSandboxRecipient,
+  selectArchiveSandboxSenderAppliedLocked,
+  selectArchiveSandboxRecipientApplied,
+} from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
+import {
   selectIsAromaComplete,
   selectSelectedAroma,
 } from '@aroma/infrastructure/selectors'
@@ -62,6 +69,15 @@ export function useMobileFactoryListChrome() {
   const recipientView = useAppSelector(selectRecipientView)
   const senderAppliedLocked = useAppSelector(selectSenderAppliedLocked)
   const senderView = useAppSelector(selectSenderView)
+  const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
+  const sandboxSender = useAppSelector(selectArchiveSandboxSender)
+  const sandboxRecipient = useAppSelector(selectArchiveSandboxRecipient)
+  const sandboxSenderAppliedLocked = useAppSelector(
+    selectArchiveSandboxSenderAppliedLocked,
+  )
+  const sandboxRecipientAppliedIds = useAppSelector(
+    selectArchiveSandboxRecipientApplied,
+  )
   const aromaIsComplete = useAppSelector(selectIsAromaComplete)
   const selectedAroma = useAppSelector(selectSelectedAroma)
   const {
@@ -84,8 +100,8 @@ export function useMobileFactoryListChrome() {
     rightPieDatePeekNoToolbar
 
   /**
-   * Правый CardPie + открытка корзины: peek секции envelope —
-   * два postcardEdit как после Apply в сборке.
+   * Right cart envelope: peek chrome keeps cart strip/list context, but
+   * session apply-peek / EnvelopeInnerToolbar match left (not list-row peek).
    */
   const archiveCartEnvelopeSimplifiedPeek =
     isMobileLayout &&
@@ -128,8 +144,7 @@ export function useMobileFactoryListChrome() {
     cardphotoAssetMatchesApplied
 
   /**
-   * Сборная: после Apply recipient — упрощённый адрес + postcardEdit вместо recipients-тулбара.
-   * Archive cart envelope peek — тот же критерий (applied), не «всегда оба слота».
+   * После Apply recipient — postcardEdit. Left assembly + right cart envelope sandbox.
    */
   const assemblyRecipientSimplifiedPeek =
     (isMobileLayout &&
@@ -140,12 +155,15 @@ export function useMobileFactoryListChrome() {
       recipientView !== 'recipientCreate' &&
       recipientAppliedIds.length > 0) ||
     (archiveCartEnvelopeSimplifiedPeek &&
-      recipientView !== 'recipientCreate' &&
-      recipientAppliedIds.length > 0)
+      (sandboxActive
+        ? sandboxRecipient.currentView !== 'recipientCreate'
+        : recipientView !== 'recipientCreate') &&
+      (sandboxActive
+        ? sandboxRecipientAppliedIds.length > 0
+        : recipientAppliedIds.length > 0))
 
   /**
-   * Сборная: после Apply sender — упрощённый адрес + postcardEdit вместо sender-тулбара.
-   * Archive cart envelope peek — тот же критерий (appliedLocked).
+   * После Apply sender — postcardEdit. Left assembly + right cart envelope sandbox.
    */
   const assemblySenderSimplifiedPeek =
     (isMobileLayout &&
@@ -156,8 +174,10 @@ export function useMobileFactoryListChrome() {
       senderView !== 'senderCreate' &&
       senderAppliedLocked) ||
     (archiveCartEnvelopeSimplifiedPeek &&
-      senderView !== 'senderCreate' &&
-      senderAppliedLocked)
+      (sandboxActive
+        ? sandboxSender.currentView !== 'senderCreate'
+        : senderView !== 'senderCreate') &&
+      (sandboxActive ? sandboxSenderAppliedLocked : senderAppliedLocked))
 
   /**
    * Сборная: после Apply aroma — картинка на всю секцию + postcardEdit.

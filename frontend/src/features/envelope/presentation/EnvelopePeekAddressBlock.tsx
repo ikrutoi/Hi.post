@@ -11,6 +11,14 @@ import {
   selectAppliedSenderDisplayAddress,
   selectSenderApplied,
 } from '@envelope/sender/infrastructure/selectors'
+import {
+  selectArchiveEnvelopeSandboxActive,
+  selectArchiveSandboxAppliedSenderDisplayAddress,
+  selectArchiveSandboxAppliedRecipientDisplayAddress,
+  selectArchiveSandboxSenderApplied,
+  selectArchiveSandboxRecipientApplied,
+  selectArchiveSandboxSenderAppliedLocked,
+} from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import styles from './EnvelopePeekAddressBlock.module.scss'
 
@@ -21,8 +29,8 @@ export type EnvelopePeekAddressBlockProps = {
   /** Mobile: уплотнить межстрочный интервал адреса в peek. */
   compact?: boolean
   /**
-   * Assembly apply-peek: брать адрес из session (applied), а не из archive listRow.
-   * Для archive peek оставить false — данные из listRowInner.
+   * Apply-peek: session (left) or archive sandbox (right).
+   * Archive list-row peek: leave false — данные из listRowInner.
    */
   fromSessionApplied?: boolean
 }
@@ -50,10 +58,26 @@ export const EnvelopePeekAddressBlock: React.FC<
   fromSessionApplied = false,
 }) => {
   const { listRowInner } = useRightListArchiveMini()
+  const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
   const appliedSender = useAppSelector(selectAppliedSenderDisplayAddress)
   const senderAppliedIds = useAppSelector(selectSenderApplied)
   const appliedRecipient = useAppSelector(selectAppliedRecipientDisplayAddress)
   const recipientAppliedIds = useAppSelector(selectRecipientApplied)
+  const sandboxAppliedSender = useAppSelector(
+    selectArchiveSandboxAppliedSenderDisplayAddress,
+  )
+  const sandboxSenderAppliedIds = useAppSelector(
+    selectArchiveSandboxSenderApplied,
+  )
+  const sandboxSenderLocked = useAppSelector(
+    selectArchiveSandboxSenderAppliedLocked,
+  )
+  const sandboxAppliedRecipient = useAppSelector(
+    selectArchiveSandboxAppliedRecipientDisplayAddress,
+  )
+  const sandboxRecipientAppliedIds = useAppSelector(
+    selectArchiveSandboxRecipientApplied,
+  )
 
   const senderLinesFromArchive = useMemo(() => {
     if (listRowInner == null) return []
@@ -66,9 +90,19 @@ export const EnvelopePeekAddressBlock: React.FC<
   }, [listRowInner])
 
   const senderLinesFromSession = useMemo(() => {
+    if (sandboxActive) {
+      if (!sandboxSenderLocked) return []
+      return addressLinesForPeek(sandboxAppliedSender)
+    }
     if (senderAppliedIds.length <= 0) return []
     return addressLinesForPeek(appliedSender)
-  }, [appliedSender, senderAppliedIds.length])
+  }, [
+    sandboxActive,
+    sandboxSenderLocked,
+    sandboxAppliedSender,
+    appliedSender,
+    senderAppliedIds.length,
+  ])
 
   const recipientLinesFromArchive = useMemo(() => {
     if (listRowInner == null) return []
@@ -83,6 +117,16 @@ export const EnvelopePeekAddressBlock: React.FC<
   }, [listRowInner])
 
   const recipientLinesFromSession = useMemo(() => {
+    if (sandboxActive) {
+      const count = sandboxRecipientAppliedIds.length
+      if (count <= 0) return []
+      if (count > 1) {
+        const single = addressLinesForPeek(sandboxAppliedRecipient)
+        if (single.length > 0) return single
+        return [{ text: `${count} recipients`, isName: false }]
+      }
+      return addressLinesForPeek(sandboxAppliedRecipient)
+    }
     const count = recipientAppliedIds.length
     if (count <= 0) return []
     if (count > 1) {
@@ -91,7 +135,13 @@ export const EnvelopePeekAddressBlock: React.FC<
       return [{ text: `${count} recipients`, isName: false }]
     }
     return addressLinesForPeek(appliedRecipient)
-  }, [appliedRecipient, recipientAppliedIds.length])
+  }, [
+    sandboxActive,
+    sandboxRecipientAppliedIds.length,
+    sandboxAppliedRecipient,
+    appliedRecipient,
+    recipientAppliedIds.length,
+  ])
 
   const lines =
     role === 'sender'

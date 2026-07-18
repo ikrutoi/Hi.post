@@ -31,6 +31,7 @@ import {
   CardPanelReducer,
   MirrorSectionBackupReducer,
   AssemblyBranchFreezeReducer,
+  ArchiveEnvelopeSandboxReducer,
 } from '@cardPanel/infrastructure/state'
 
 import { cardEditorReducer } from '@entities/cardEditor/infrastructure/state'
@@ -75,6 +76,7 @@ export const rootReducer = combineReducers({
   cardPanel: CardPanelReducer,
   mirrorSectionBackup: MirrorSectionBackupReducer,
   assemblyBranchFreeze: AssemblyBranchFreezeReducer,
+  archiveEnvelopeSandbox: ArchiveEnvelopeSandboxReducer,
 
   cardEditor: cardEditorReducer,
 

@@ -124,7 +124,21 @@ function* applyArchiveSectionFromPostcard(
       break
     }
     case 'envelope': {
-      yield put(restoreSender(card.envelope.sender))
+      const sender = card.envelope.sender
+      /**
+       * Cart/history envelope is complete ⇒ sender result is applied
+       * (address or empty/disabled). Force appliedLocked so archive peek
+       * shows postcardEdit, not the full sender toolbar.
+       */
+      yield put(
+        restoreSender({
+          ...sender,
+          appliedLocked:
+            Boolean(sender.appliedLocked) ||
+            (sender.applied?.length ?? 0) > 0 ||
+            Boolean(card.envelope.isComplete),
+        }),
+      )
       yield put(restoreRecipient(card.envelope.recipient))
       yield call(processEnvelopeVisuals)
       yield put(syncEnvelopeFormsFromAppliedRequested())

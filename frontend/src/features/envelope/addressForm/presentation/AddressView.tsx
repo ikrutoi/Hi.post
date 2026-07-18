@@ -23,6 +23,11 @@ import {
 import {
   updateSenderField,
 } from '@envelope/sender/infrastructure/state'
+import {
+  updateArchiveSenderField,
+  updateArchiveRecipientField,
+} from '@cardPanel/infrastructure/state'
+import { selectArchiveEnvelopeSandboxActive } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { getToolbarIcon } from '@/shared/utils/icons'
 
@@ -53,6 +58,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   address,
 }) => {
   const dispatch = useAppDispatch()
+  const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const isEditMode =
@@ -80,7 +86,13 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       return
     }
     if (role === 'sender') {
-      dispatch(updateSenderField({ field, value } as any))
+      if (sandboxActive) {
+        dispatch(updateArchiveSenderField({ field, value }))
+      } else {
+        dispatch(updateSenderField({ field, value } as any))
+      }
+    } else if (sandboxActive) {
+      dispatch(updateArchiveRecipientField({ field, value }))
     } else {
       dispatch(updateRecipientField({ field, value } as any))
     }

@@ -21,6 +21,11 @@ import { useAppSelector } from '@app/hooks'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { selectSenderView } from '../sender/infrastructure/selectors'
 import { selectRecipientView } from '../recipient/infrastructure/selectors'
+import {
+  selectArchiveEnvelopeSandboxActive,
+  selectArchiveSandboxSender,
+  selectArchiveSandboxRecipient,
+} from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import styles from './Envelope.module.scss'
 
 type EnvelopeProps = {
@@ -36,8 +41,17 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
   const lang = getSafeLang(i18n.language)
   const senderFacade = useSenderFacade()
   const isMobile = useAppSelector(selectIsMobileLayout)
-  const senderView = useAppSelector(selectSenderView)
-  const recipientView = useAppSelector(selectRecipientView)
+  const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
+  const sandboxSender = useAppSelector(selectArchiveSandboxSender)
+  const sandboxRecipient = useAppSelector(selectArchiveSandboxRecipient)
+  const sessionSenderView = useAppSelector(selectSenderView)
+  const sessionRecipientView = useAppSelector(selectRecipientView)
+  const senderView = sandboxActive
+    ? sandboxSender.currentView
+    : sessionSenderView
+  const recipientView = sandboxActive
+    ? sandboxRecipient.currentView
+    : sessionRecipientView
   const mobileFocus = useEnvelopeMobileAddressFocus()
   const mobileFocusRole = mobileFocus?.focusRole ?? null
   const {
@@ -52,8 +66,8 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
     archiveCartEnvelopeSimplifiedPeek,
   } = useMobileFactoryListChrome()
   /**
-   * Cart envelope peek: session apply-peek как в сборке (не list-row peek).
-   * Иначе postcardEdit не выходит в обычные sender/recipients тулбары с Apply.
+   * Cart envelope: session apply-peek like left (not list-row peek UI).
+   * Peek flag only hides cart list / keeps right chrome.
    */
   const envelopePeekMode =
     (rightPieEnvelopePeekNoToolbar && !archiveCartEnvelopeSimplifiedPeek) ||

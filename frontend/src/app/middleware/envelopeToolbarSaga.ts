@@ -148,6 +148,19 @@ import { handleAddressSave } from '@app/middleware/addressSaveSaga'
 import { closeCardPieListPanelAndSyncIconsSaga } from '@app/middleware/exclusiveListPanelsSaga'
 import { processEnvelopeVisuals } from '@app/middleware/envelopeProcessSaga'
 import { selectAssemblyBranchFreeze } from '@cardPanel/infrastructure/selectors/assemblyBranchFreezeSelectors'
+import {
+  selectArchiveEnvelopeSandboxActive,
+  selectArchiveSandboxSender,
+  selectArchiveSandboxRecipient,
+} from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
+import {
+  setArchiveSenderApplied,
+  setArchiveSenderAppliedWithData,
+  setArchiveSenderView,
+  setArchiveRecipientApplied,
+  setArchiveRecipientAppliedWithData,
+} from '@cardPanel/infrastructure/state'
+import { persistArchiveEnvelopeSandbox } from '@app/middleware/archiveEnvelopeSandboxPersist'
 import { selectCartItems, selectCartListSelectedLocalId } from '@cart/infrastructure/selectors'
 import { selectHistoryListSelectedLocalId } from '@date/calendar/infrastructure/selectors'
 import { updateItem } from '@cart/infrastructure/state'
@@ -160,8 +173,17 @@ const ADDRESS_LIST_UI_PREF_ID = 'addressList' as const
  * Dual-mode: while assembly is leased (freeze), Apply writes envelope to the
  * selected archive postcard — not only shared session. Session is reverted on
  * lease release; cart/history keep the Apply result.
+ * Prefer archiveEnvelopeSandbox when active (no session touch).
  */
 function* persistArchiveEnvelopeIfLeased(): SagaIterator {
+  const sandboxActive: boolean = yield select(
+    selectArchiveEnvelopeSandboxActive,
+  )
+  if (sandboxActive) {
+    yield call(persistArchiveEnvelopeSandbox)
+    return
+  }
+
   const freeze = yield select(selectAssemblyBranchFreeze)
   if (freeze == null) return
 
@@ -194,6 +216,99 @@ function* persistArchiveEnvelopeIfLeased(): SagaIterator {
   }
   yield put(updateItem(nextPostcard))
   yield put(postcardLocalDataChanged())
+}
+
+function* applyArchiveEnvelopeSandboxFromToolbar(
+  section: string,
+): SagaIterator {
+  if (section === 'sender') {
+    const sender: SenderState = yield select(selectArchiveSandboxSender)
+    const senderViewId = sender.senderViewId
+    const senderAppliedIds = sender.applied ?? []
+    const senderViewMatchesApplied =
+      sender.currentView === 'senderView' &&
+      senderViewId != null &&
+      senderAppliedIds.length === 1 &&
+      senderAppliedIds[0] === senderViewId
+
+    if (senderViewMatchesApplied) {
+      yield put(setArchiveSenderApplied(false))
+      return
+    }
+
+    if (!sender.enabled || senderViewId == null) {
+      if (sender.appliedLocked && senderAppliedIds.length === 0) {
+        yield put(setArchiveSenderApplied(false))
+        return
+      }
+      yield put(setArchiveSenderApplied(true))
+      yield call(persistArchiveEnvelopeSandbox)
+      return
+    }
+
+    const data: AddressFields[] = [
+      { ...sender.viewDraft } as AddressFields,
+    ]
+    yield put(
+      setArchiveSenderAppliedWithData({ ids: [senderViewId], data }),
+    )
+    yield put(setArchiveSenderView('senderView'))
+    yield call(persistArchiveEnvelopeSandbox)
+    return
+  }
+
+  if (section === 'recipients') {
+    const recipient: RecipientState = yield select(
+      selectArchiveSandboxRecipient,
+    )
+    const ids: string[] =
+      recipient.currentRecipientsList === 'second'
+        ? (recipient.recipientsViewIdsSecondList ?? [])
+        : (recipient.recipientsViewIdsFirstList ?? [])
+    const appliedIds = recipient.applied ?? []
+
+    if (ids.length === 0) {
+      const recipientViewId = recipient.recipientViewId
+      const singleViewMatchesApplied =
+        recipientViewId != null &&
+        appliedIds.length === 1 &&
+        appliedIds[0] === recipientViewId
+
+      if (singleViewMatchesApplied) {
+        yield put(setArchiveRecipientApplied(false))
+        return
+      }
+
+      if (recipientViewId) {
+        const data: AddressFields[] = [
+          { ...recipient.viewDraft } as AddressFields,
+        ]
+        yield put(
+          setArchiveRecipientAppliedWithData({
+            ids: [recipientViewId],
+            data,
+          }),
+        )
+        yield call(persistArchiveEnvelopeSandbox)
+      }
+      return
+    }
+
+    const recipientsViewIdsEqual =
+      appliedIds.length === ids.length &&
+      appliedIds.length > 0 &&
+      appliedIds.every((id) => ids.includes(id)) &&
+      ids.every((id) => appliedIds.includes(id))
+
+    if (recipientsViewIdsEqual) {
+      yield put(setArchiveRecipientApplied(false))
+      return
+    }
+
+    const appliedData = ids.map(() => ({ ...recipient.viewDraft }))
+    yield put(setArchiveRecipientAppliedWithData({ ids, data: appliedData }))
+    yield call(persistArchiveEnvelopeSandbox)
+  }
 }
 
 function isPanelDensity2Size(d: unknown): d is 1 | 2 {
@@ -1289,6 +1404,13 @@ function* handleEnvelopeToolbarAction(
   }
 
   if (key === 'apply') {
+    const sandboxActive: boolean = yield select(
+      selectArchiveEnvelopeSandboxActive,
+    )
+    if (sandboxActive) {
+      yield call(applyArchiveEnvelopeSandboxFromToolbar, section)
+      return
+    }
     if (section === 'sender') {
       const sender: SenderState = yield select(selectSenderState)
       const senderViewId: string | null = yield select(selectSenderViewId)

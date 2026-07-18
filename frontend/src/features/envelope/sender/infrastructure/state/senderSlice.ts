@@ -58,11 +58,23 @@ const senderSlice = createSlice({
       state.enabled = action.payload
     },
 
-    restoreSender: (state, action: PayloadAction<Partial<SenderState>>) => {
-      return {
+    restoreSender: (_state, action: PayloadAction<Partial<SenderState>>) => {
+      const next: SenderState = {
         ...initialSender,
         ...action.payload,
       }
+      /**
+       * Legacy / archive hydrate: Apply мог зафиксировать пустого/выкл. отправителя
+       * только через appliedLocked; в старых открытках поле отсутствует.
+       * applied ids / appliedData ⇒ тоже считаем зафиксированным.
+       */
+      if (
+        !next.appliedLocked &&
+        ((next.applied?.length ?? 0) > 0 || next.appliedData != null)
+      ) {
+        next.appliedLocked = true
+      }
+      return next
     },
 
     clearSender: () => initialSender,
