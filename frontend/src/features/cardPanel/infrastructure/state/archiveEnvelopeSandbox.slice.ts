@@ -13,6 +13,11 @@ function isComplete(data: AddressFields): boolean {
   return Object.values(data).every((val) => (val ?? '').trim() !== '')
 }
 
+function hasAddressFields(data: AddressFields | null | undefined): boolean {
+  if (data == null) return false
+  return Object.values(data).some((v) => (v ?? '').trim() !== '')
+}
+
 function cloneSender(partial: Partial<SenderState>): SenderState {
   const next: SenderState = {
     ...initialSender,
@@ -98,18 +103,36 @@ const archiveEnvelopeSandboxSlice = createSlice({
       state.recipient = cloneRecipient(recipient)
       if (
         state.recipient.appliedData != null &&
-        !Object.values(state.recipient.viewDraft).some(
-          (v) => (v ?? '').trim() !== '',
-        )
+        !hasAddressFields(state.recipient.viewDraft)
       ) {
         state.recipient.viewDraft = { ...state.recipient.appliedData }
         state.recipient.formIsComplete = isComplete(state.recipient.viewDraft)
       }
+      const appliedRecipientIds = state.recipient.applied ?? []
       if (
         state.recipient.recipientViewId == null &&
-        (state.recipient.applied?.length ?? 0) > 0
+        appliedRecipientIds.length > 0
       ) {
-        state.recipient.recipientViewId = state.recipient.applied[0] ?? null
+        state.recipient.recipientViewId = appliedRecipientIds[0] ?? null
+      }
+      /**
+       * Single applied recipient with no multi-list: keep ids list in sync so
+       * edit UI / Apply can resolve the same way as left assembly.
+       */
+      if (
+        appliedRecipientIds.length === 1 &&
+        (state.recipient.recipientsViewIdsFirstList?.length ?? 0) === 0 &&
+        (state.recipient.recipientsViewIdsSecondList?.length ?? 0) === 0
+      ) {
+        state.recipient.recipientsViewIdsFirstList = [appliedRecipientIds[0]!]
+        state.recipient.currentRecipientsList = 'first'
+      }
+      if (
+        (appliedRecipientIds.length > 0 ||
+          state.recipient.appliedData != null) &&
+        state.recipient.currentView === 'recipientCreate'
+      ) {
+        state.recipient.currentView = 'recipientView'
       }
     },
 
@@ -154,6 +177,8 @@ const archiveEnvelopeSandboxSlice = createSlice({
         if (fromApplied != null) {
           state.sender.viewDraft = { ...fromApplied }
           state.sender.formIsComplete = isComplete(fromApplied)
+        } else {
+          state.sender.formIsComplete = isComplete(state.sender.viewDraft)
         }
         const appliedId = state.sender.applied?.[0]
         if (appliedId) {
@@ -203,11 +228,17 @@ const archiveEnvelopeSandboxSlice = createSlice({
     setArchiveRecipientApplied(state, action: PayloadAction<boolean>) {
       if (!action.payload) {
         const fromApplied = state.recipient.appliedData
-        if (fromApplied != null) {
+        if (fromApplied != null && hasAddressFields(fromApplied)) {
           state.recipient.viewDraft = { ...fromApplied }
           state.recipient.formIsComplete = isComplete(fromApplied)
+        } else {
+          state.recipient.formIsComplete = isComplete(state.recipient.viewDraft)
         }
-        const appliedId = state.recipient.applied?.[0]
+        const appliedId =
+          state.recipient.applied?.[0] ??
+          state.recipient.recipientsViewIdsFirstList?.[0] ??
+          state.recipient.recipientsViewIdsSecondList?.[0] ??
+          null
         if (appliedId) {
           state.recipient.recipientViewId = appliedId
         }

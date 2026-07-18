@@ -24,6 +24,7 @@ import {
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { ENVELOPE_MOBILE_ADDRESS_VIEW_UPPER_RETURN_TOOLBAR } from '@toolbar/domain/types/addressView.types'
+import { isAddressDraftComplete } from '@envelope/domain/helpers/resolveAddListToolbarState'
 import type { IconKey } from '@shared/config/constants'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
@@ -122,24 +123,42 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   const pendingAddressAddFocusRef = useRef<'sender' | 'recipient' | null>(null)
 
   /**
-   * Same as left buildSenderToolbarState: enabled + incomplete/empty → Apply disabled;
+   * Same as left: enabled + incomplete/empty draft → Apply disabled;
    * toggle off → Apply enabled (lock empty/disabled sender).
    */
   const archiveSandboxSenderEditToolbar = useMemo((): ToolbarConfig => {
+    const draft =
+      sandboxSender.currentView === 'senderCreate'
+        ? sandboxSender.formDraft
+        : sandboxSender.viewDraft
+    const draftComplete = isAddressDraftComplete(draft)
     const applyState: 'enabled' | 'disabled' = !sandboxSender.enabled
       ? 'enabled'
-      : sandboxSender.formIsComplete
+      : draftComplete
         ? 'enabled'
         : 'disabled'
     return buildArchiveSandboxSenderEditToolbar(applyState)
-  }, [sandboxSender.enabled, sandboxSender.formIsComplete])
+  }, [
+    sandboxSender.enabled,
+    sandboxSender.currentView,
+    sandboxSender.formDraft,
+    sandboxSender.viewDraft,
+  ])
 
   const archiveSandboxRecipientsEditToolbar = useMemo((): ToolbarConfig => {
-    const applyState: 'enabled' | 'disabled' = sandboxRecipient.formIsComplete
+    const draft =
+      sandboxRecipient.currentView === 'recipientCreate'
+        ? sandboxRecipient.formDraft
+        : sandboxRecipient.viewDraft
+    const applyState: 'enabled' | 'disabled' = isAddressDraftComplete(draft)
       ? 'enabled'
       : 'disabled'
     return buildArchiveSandboxRecipientsEditToolbar(applyState)
-  }, [sandboxRecipient.formIsComplete])
+  }, [
+    sandboxRecipient.currentView,
+    sandboxRecipient.formDraft,
+    sandboxRecipient.viewDraft,
+  ])
 
   /** После apply выходим из focus — postcardEdit в слоте sender/recipients. */
   useEffect(() => {
@@ -197,9 +216,15 @@ export const EnvelopeInnerToolbar: React.FC = () => {
         role === 'sender' ? senderViewEditMode : recipientViewEditMode
       if (isEditMode) return false
 
-      const { state: addState } = readAddressAddMeta(
-        section === 'sender' ? senderToolbarState : recipientsToolbarState,
-      )
+      /**
+       * Archive sandbox uses groupsOverride (always enabled addressAdd).
+       * Do not read empty session toolbar state — it marks addressAdd disabled.
+       */
+      const { state: addState } = sandboxActive
+        ? { state: 'enabled' }
+        : readAddressAddMeta(
+            section === 'sender' ? senderToolbarState : recipientsToolbarState,
+          )
 
       if (addState === 'active') {
         mobileFocus.toggleFocus(role)
@@ -223,6 +248,7 @@ export const EnvelopeInnerToolbar: React.FC = () => {
       recipientViewEditMode,
       senderToolbarState,
       recipientsToolbarState,
+      sandboxActive,
     ],
   )
 

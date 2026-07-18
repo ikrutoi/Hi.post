@@ -159,6 +159,7 @@ import {
   setArchiveSenderView,
   setArchiveRecipientApplied,
   setArchiveRecipientAppliedWithData,
+  setArchiveRecipientView,
 } from '@cardPanel/infrastructure/state'
 import { persistArchiveEnvelopeSandbox } from '@app/middleware/archiveEnvelopeSandboxPersist'
 import { selectCartItems, selectCartListSelectedLocalId } from '@cart/infrastructure/selectors'
@@ -1281,7 +1282,14 @@ function* handleEnvelopeToolbarAction(
   }
 
   if (key === 'addressAdd') {
+    const sandboxActiveForAddressAdd: boolean = yield select(
+      selectArchiveEnvelopeSandboxActive,
+    )
     if (section === 'sender') {
+      if (sandboxActiveForAddressAdd) {
+        yield put(setArchiveSenderView('senderCreate'))
+        return
+      }
       const openedView: boolean = yield call(
         openAddressViewFromFormDraftIfSaved,
         'sender',
@@ -1294,6 +1302,10 @@ function* handleEnvelopeToolbarAction(
       section === 'recipientView' ||
       section === 'recipients'
     ) {
+      if (sandboxActiveForAddressAdd) {
+        yield put(setArchiveRecipientView('recipientCreate'))
+        return
+      }
       const openedView: boolean = yield call(
         openAddressViewFromFormDraftIfSaved,
         'recipient',

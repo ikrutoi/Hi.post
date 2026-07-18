@@ -377,7 +377,14 @@ export const Toolbar = ({
     const mergedOptions = { ...iconOptions, ...options }
 
     const buttonState = typeof rawData === 'string' ? rawData : rawData?.state
-    let buttonStatus = buttonState ?? currentIconState
+    /**
+     * groupsOverride owns icon states (e.g. archive envelope sandbox).
+     * Otherwise store section state wins over the static config default.
+     */
+    let buttonStatus =
+      groupsOverride != null
+        ? (currentIconState ?? buttonState)
+        : (buttonState ?? currentIconState)
 
     if (
       key === 'addList' &&
@@ -404,7 +411,11 @@ export const Toolbar = ({
     if (key === 'apply' && section === 'cardtextView' && cardtextEmpty) {
       buttonStatus = 'disabled'
     }
-    if (key === 'apply' && buttonStatus !== 'disabled') {
+    if (
+      key === 'apply' &&
+      buttonStatus !== 'disabled' &&
+      groupsOverride == null
+    ) {
       /** cardtext/cardphoto/aroma: Apply не зелёный. */
       if (
         section === 'cardtext' ||

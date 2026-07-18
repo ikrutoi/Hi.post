@@ -7,6 +7,12 @@ import { useRecipientFacade } from '@envelope/recipient/application/facades'
 import { selectActiveAddressEdit } from '@envelope/infrastructure/selectors'
 import { selectSenderApplied, selectSenderView } from '@envelope/sender/infrastructure/selectors'
 import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
+import {
+  selectArchiveEnvelopeSandboxActive,
+  selectArchiveSandboxRecipient,
+  selectArchiveSandboxSender,
+  selectArchiveSandboxSenderApplied,
+} from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { useMobileScenarioToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
@@ -23,12 +29,27 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
 > = ({ enabled }) => {
   const isMobile = useAppSelector(selectIsMobileLayout)
   const mobileFocus = useEnvelopeMobileAddressFocus()
-  const senderView = useAppSelector(selectSenderView)
-  const recipientView = useAppSelector(selectRecipientView)
+  const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
+  const sandboxSender = useAppSelector(selectArchiveSandboxSender)
+  const sandboxRecipient = useAppSelector(selectArchiveSandboxRecipient)
+  const sessionSenderView = useAppSelector(selectSenderView)
+  const sessionRecipientView = useAppSelector(selectRecipientView)
+  const senderView = sandboxActive
+    ? sandboxSender.currentView
+    : sessionSenderView
+  const recipientView = sandboxActive
+    ? sandboxRecipient.currentView
+    : sessionRecipientView
   const envelopeFacade = useEnvelopeFacade()
   const senderFacade = useSenderFacade()
   const recipientFacade = useRecipientFacade()
-  const senderAppliedIds = useAppSelector(selectSenderApplied)
+  const sessionSenderAppliedIds = useAppSelector(selectSenderApplied)
+  const sandboxSenderAppliedIds = useAppSelector(
+    selectArchiveSandboxSenderApplied,
+  )
+  const senderAppliedIds = sandboxActive
+    ? sandboxSenderAppliedIds
+    : sessionSenderAppliedIds
   const activeAddressEdit = useAppSelector(selectActiveAddressEdit)
   const senderEntries = useAppSelector(
     (state) => state.addressBook?.senderEntries ?? [],
@@ -43,7 +64,9 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
   const senderIdForDisplay =
     activeAddressEdit?.role === 'sender'
       ? activeAddressEdit.templateId
-      : (envelopeFacade.senderTemplateId ?? senderAppliedIds[0] ?? null)
+      : sandboxActive
+        ? (sandboxSender.senderViewId ?? senderAppliedIds[0] ?? null)
+        : (envelopeFacade.senderTemplateId ?? senderAppliedIds[0] ?? null)
 
   const senderDisplayEntry = useMemo((): AddressBookEntry | null => {
     if (!senderFacade.isEnabled || !senderIdForDisplay) return null
@@ -68,7 +91,9 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
   const recipientIdForDisplay =
     activeAddressEdit?.role === 'recipient'
       ? activeAddressEdit.templateId
-      : envelopeFacade.recipientTemplateId
+      : sandboxActive
+        ? sandboxRecipient.recipientViewId
+        : envelopeFacade.recipientTemplateId
 
   const recipientDisplayEntry = useMemo((): AddressBookEntry | null => {
     if (recipientView !== 'recipientView' || recipientIdForDisplay == null) {

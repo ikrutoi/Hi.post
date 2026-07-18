@@ -387,9 +387,6 @@ export function* processEnvelopeVisuals() {
     }),
   )
 
-  const isSenderEmptyForm =
-    sender.currentView === 'senderView' && sender.senderViewId == null
-
   const senderAppliedIds = sender.applied ?? []
   const senderViewMatchesApplied =
     sender.currentView === 'senderView' &&
@@ -397,6 +394,12 @@ export function* processEnvelopeVisuals() {
     senderAppliedIds.length === 1 &&
     senderAppliedIds[0] === sender.senderViewId
 
+  const senderDraftComplete =
+    sender.currentView === 'senderCreate'
+      ? isAddressDraftComplete(sender.formDraft as AddressFields)
+      : isAddressDraftComplete(sender.viewDraft as AddressFields)
+
+  /** Toggle on + empty/incomplete form → disabled; toggle off → enabled. */
   const senderApplyState = sender.currentView === 'senderCreate'
     ? 'disabled'
     : !sender.enabled
@@ -405,13 +408,9 @@ export function* processEnvelopeVisuals() {
         : 'enabled'
       : senderViewMatchesApplied
         ? 'selected'
-        : sender.currentView === 'senderView' && sender.senderViewId != null
+        : senderDraftComplete
           ? 'enabled'
-          : isSenderEmptyForm
-            ? 'enabled'
-            : senderComplete
-              ? 'enabled'
-              : 'disabled'
+          : 'disabled'
 
   yield put(
     updateToolbarIcon({

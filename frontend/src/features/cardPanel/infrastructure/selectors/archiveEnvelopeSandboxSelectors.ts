@@ -44,7 +44,15 @@ export const selectArchiveSandboxAppliedSenderDisplayAddress = createSelector(
 )
 
 export const selectArchiveSandboxAppliedRecipientDisplayAddress =
-  createSelector([selectArchiveSandboxRecipient], (recipient): Readonly<AddressFields> => {
-    if (recipient.appliedData != null) return recipient.appliedData
-    return initialSection.data
-  })
+  createSelector(
+    [selectArchiveSandboxRecipient],
+    (recipient): Readonly<AddressFields> => {
+      if (recipient.appliedData != null) return recipient.appliedData
+      if (
+        Object.values(recipient.viewDraft).some((v) => (v ?? '').trim() !== '')
+      ) {
+        return recipient.viewDraft
+      }
+      return initialSection.data
+    },
+  )

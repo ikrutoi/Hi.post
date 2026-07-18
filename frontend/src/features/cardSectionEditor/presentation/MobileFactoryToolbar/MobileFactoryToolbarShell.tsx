@@ -4,6 +4,11 @@ import { useAppSelector } from '@app/hooks'
 import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
 import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
 import { selectSenderView } from '@envelope/sender/infrastructure/selectors'
+import {
+  selectArchiveEnvelopeSandboxActive,
+  selectArchiveSandboxRecipient,
+  selectArchiveSandboxSender,
+} from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { useMobileFactoryListChrome } from '../../application/hooks/useMobileFactoryListChrome'
@@ -25,8 +30,17 @@ export const MobileFactoryToolbarShell: React.FC = () => {
   const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const activeSection = useAppSelector(selectActiveSection)
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
-  const senderView = useAppSelector(selectSenderView)
-  const recipientView = useAppSelector(selectRecipientView)
+  const sessionSenderView = useAppSelector(selectSenderView)
+  const sessionRecipientView = useAppSelector(selectRecipientView)
+  const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
+  const sandboxSender = useAppSelector(selectArchiveSandboxSender)
+  const sandboxRecipient = useAppSelector(selectArchiveSandboxRecipient)
+  const senderView = sandboxActive
+    ? sandboxSender.currentView
+    : sessionSenderView
+  const recipientView = sandboxActive
+    ? sandboxRecipient.currentView
+    : sessionRecipientView
   const {
     hideUpperToolbar,
     mobileSectionSimplifiedPeek,

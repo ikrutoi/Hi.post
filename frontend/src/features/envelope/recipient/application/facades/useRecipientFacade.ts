@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { recipientLayout } from '../../domain/types'
 import {
@@ -21,6 +22,7 @@ import {
   removeRecipientFromListById,
 } from '../../infrastructure/state'
 import type { AddressField, AddressFields } from '@shared/config/constants'
+import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import {
   selectArchiveEnvelopeSandboxActive,
   selectArchiveSandboxRecipient,
@@ -29,6 +31,51 @@ import { updateArchiveRecipientField } from '@cardPanel/infrastructure/state'
 
 function isAddressComplete(data: AddressFields): boolean {
   return Object.values(data).every((val) => (val ?? '').trim() !== '')
+}
+
+function hasAddressFields(data: AddressFields | null | undefined): boolean {
+  if (data == null) return false
+  return Object.values(data).some((v) => (v ?? '').trim() !== '')
+}
+
+function buildSandboxRecipientsDisplayList(
+  recipient: ReturnType<typeof selectArchiveSandboxRecipient>,
+  bookEntries: AddressBookEntry[],
+): AddressBookEntry[] {
+  const listIds =
+    recipient.currentRecipientsList === 'second'
+      ? (recipient.recipientsViewIdsSecondList ?? [])
+      : (recipient.recipientsViewIdsFirstList ?? [])
+  const ids =
+    listIds.length > 0
+      ? listIds
+      : recipient.recipientViewId != null
+        ? [recipient.recipientViewId]
+        : (recipient.applied ?? []).filter(Boolean)
+
+  return ids.flatMap((id) => {
+    const fromBook = bookEntries.find((e) => e.id === id)
+    const singleSnapshot =
+      ids.length === 1
+        ? hasAddressFields(recipient.appliedData)
+          ? recipient.appliedData
+          : hasAddressFields(recipient.viewDraft)
+            ? recipient.viewDraft
+            : null
+        : null
+    const address = singleSnapshot ?? fromBook?.address ?? null
+    if (address == null || !hasAddressFields(address as AddressFields)) {
+      return []
+    }
+    return [
+      {
+        id,
+        role: 'recipient' as const,
+        address: { ...(address as AddressFields) },
+        createdAt: fromBook?.createdAt ?? new Date().toISOString(),
+      } satisfies AddressBookEntry,
+    ]
+  })
 }
 
 export const useRecipientFacade = () => {
@@ -44,7 +91,10 @@ export const useRecipientFacade = () => {
   const recipientTemplateId = useAppSelector(selectRecipientViewId)
   const listSelectedIds = useAppSelector(selectRecipientListPendingIds)
   const listPanelOpen = useAppSelector(selectRecipientListPanelOpen)
-  const recipientsDisplayList = useAppSelector(selectRecipientsDisplayList)
+  const sessionRecipientsDisplayList = useAppSelector(selectRecipientsDisplayList)
+  const recipientEntries = useAppSelector(
+    (state) => state.addressBook?.recipientEntries ?? [],
+  )
 
   const state = sandboxActive ? sandboxRecipient : sessionState
   const address = sandboxActive
@@ -67,6 +117,11 @@ export const useRecipientFacade = () => {
           : sandboxRecipient.viewDraft,
       )
     : sessionIsComplete
+
+  const recipientsDisplayList = useMemo(() => {
+    if (!sandboxActive) return sessionRecipientsDisplayList
+    return buildSandboxRecipientsDisplayList(sandboxRecipient, recipientEntries)
+  }, [sandboxActive, sandboxRecipient, recipientEntries, sessionRecipientsDisplayList])
 
   const removeFromList = (id: string) => {
     if (sandboxActive) return
@@ -113,7 +168,9 @@ export const useRecipientFacade = () => {
     selectFromList,
     recipientsDisplayList,
     removeFromList,
-    recipientTemplateId,
+    recipientTemplateId: sandboxActive
+      ? sandboxRecipient.recipientViewId
+      : recipientTemplateId,
 
     update,
     clear,

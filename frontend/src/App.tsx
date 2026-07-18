@@ -70,6 +70,11 @@ import {
 import { EnvelopeRightSlot } from '@envelope/presentation/EnvelopeRightSlot'
 import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
 import { selectSenderView } from '@envelope/sender/infrastructure/selectors'
+import {
+  selectArchiveEnvelopeSandboxActive,
+  selectArchiveSandboxRecipient,
+  selectArchiveSandboxSender,
+} from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import { DateRightSlot } from '@date/presentation/DateRightSlot'
 import { HistoryListRightSlot } from '@date/presentation/HistoryListRightSlot'
 import type { HistoryListPanelItem } from '@date/presentation/HistoryListPanel'
@@ -288,8 +293,19 @@ const App = () => {
 
   const handleAppClick = useToolbarClickReset(colorToolbar, setColorToolbar)
   const { activeSection } = useSectionMenuFacade()
-  const senderView = useAppSelector(selectSenderView)
-  const recipientView = useAppSelector(selectRecipientView)
+  const sessionSenderView = useAppSelector(selectSenderView)
+  const sessionRecipientView = useAppSelector(selectRecipientView)
+  const archiveEnvelopeSandboxActive = useAppSelector(
+    selectArchiveEnvelopeSandboxActive,
+  )
+  const archiveSandboxSender = useAppSelector(selectArchiveSandboxSender)
+  const archiveSandboxRecipient = useAppSelector(selectArchiveSandboxRecipient)
+  const senderView = archiveEnvelopeSandboxActive
+    ? archiveSandboxSender.currentView
+    : sessionSenderView
+  const recipientView = archiveEnvelopeSandboxActive
+    ? archiveSandboxRecipient.currentView
+    : sessionRecipientView
   const prevActiveSectionRef = useRef(activeSection)
   const { listPanelOpen, listSelectedLocalId } = useCartFacade()
   const cartCalendarDatePickLocalId = useAppSelector(
@@ -1701,7 +1717,7 @@ const App = () => {
   const mobileEnvelopeAddressCreateRole =
     isMobileLayout &&
     activeSection === 'envelope' &&
-    !rightPieEnvelopePeekNoToolbar
+    (archiveEnvelopeSandboxActive || !rightPieEnvelopePeekNoToolbar)
       ? senderView === 'senderCreate'
         ? ('sender' as const)
         : recipientView === 'recipientCreate'

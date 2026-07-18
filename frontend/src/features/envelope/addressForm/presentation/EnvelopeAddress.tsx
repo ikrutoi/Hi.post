@@ -87,8 +87,11 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
           null)
       : activeAddressEdit?.role === 'recipient'
         ? activeAddressEdit.templateId
-        : (editingTemplateId ??
-          (sandboxActive ? sandboxRecipient.recipientViewId : null))
+        : sandboxActive
+          ? (sandboxRecipient.recipientViewId ??
+            sandboxRecipientAppliedIds[0] ??
+            null)
+          : editingTemplateId
 
   const senderEntries = useAppSelector(
     (state) => state.addressBook?.senderEntries ?? [],
@@ -111,9 +114,14 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
-  const recipientsFormViewIdsCount = useAppSelector(
+  const sessionRecipientsFormViewIdsCount = useAppSelector(
     selectRecipientsFormViewIdsCount,
   )
+  const recipientsFormViewIdsCount = sandboxActive
+    ? sandboxRecipient.currentRecipientsList === 'second'
+      ? (sandboxRecipient.recipientsViewIdsSecondList?.length ?? 0)
+      : (sandboxRecipient.recipientsViewIdsFirstList?.length ?? 0)
+    : sessionRecipientsFormViewIdsCount
 
   const recipientFieldsetRef = useRef<HTMLDivElement | null>(null)
   const senderFieldsetRef = useRef<HTMLDivElement | null>(null)
@@ -143,24 +151,35 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
   const recipientIdForDisplay =
     role === 'recipient'
-      ? (editingTemplateId ??
-        (sandboxActive ? sandboxRecipient.recipientViewId : null) ??
-        null)
+      ? sandboxActive
+        ? (sandboxRecipient.recipientViewId ??
+          sandboxRecipientAppliedIds[0] ??
+          null)
+        : (editingTemplateId ?? null)
       : null
 
   const recipientDisplayEntry = useMemo((): AddressBookEntry | null => {
-    if (
-      role !== 'recipient' ||
-      recipientView !== 'recipientView' ||
-      recipientIdForDisplay == null
-    ) {
+    if (role !== 'recipient' || recipientView !== 'recipientView') {
       return null
     }
-    const fromBook = recipientEntries.find((e) => e.id === recipientIdForDisplay)
-    if (fromBook) return fromBook
+    if (recipientIdForDisplay != null) {
+      const fromBook = recipientEntries.find(
+        (e) => e.id === recipientIdForDisplay,
+      )
+      if (fromBook) {
+        /** Prefer live sandbox/session draft when it has fields. */
+        if (Object.values(value).some((v) => (v ?? '').trim() !== '')) {
+          return {
+            ...fromBook,
+            address: { ...value },
+          }
+        }
+        return fromBook
+      }
+    }
     if (!Object.values(value).some((v) => (v ?? '').trim() !== '')) return null
     return {
-      id: recipientIdForDisplay,
+      id: recipientIdForDisplay ?? 'sandbox-recipient-draft',
       role: 'recipient',
       address: { ...value },
       createdAt: new Date().toISOString(),
@@ -174,6 +193,8 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   ])
 
   const showRecipientDetailCard = recipientDisplayEntry != null
+  const recipientAddressForView =
+    recipientDisplayEntry?.address ?? value
 
   const showRecipientsEnvelopeList =
     role === 'recipient' &&
@@ -203,17 +224,25 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     // После Close (recipientsView) не открываем карточку снова, даже если в списке 1 id.
     if (recipientView === 'recipientsView') return
 
+    const activeTemplateId = sandboxActive
+      ? sandboxRecipient.recipientViewId
+      : editingTemplateId
+
     if (recipientsDisplayList.length === 1) {
       const entry = recipientsDisplayList[0]
       if (
         recipientView === 'recipientView' &&
-        editingTemplateId != null &&
-        editingTemplateId !== entry.id &&
+        activeTemplateId != null &&
+        activeTemplateId !== entry.id &&
         hasRecipientAddressData
       ) {
         return
       }
-      if (recipientView !== 'recipientView' || editingTemplateId !== entry.id) {
+      const needsHydrate =
+        recipientView !== 'recipientView' ||
+        activeTemplateId !== entry.id ||
+        !hasRecipientAddressData
+      if (needsHydrate) {
         applyRecipientEntry(entry)
         if (sandboxActive) {
           dispatch(setArchiveRecipientView('recipientView'))
@@ -228,7 +257,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       recipientsDisplayList.length > 1 &&
       recipientView === 'recipientView' &&
       !recipientViewEditMode &&
-      editingTemplateId == null &&
+      activeTemplateId == null &&
       !hasRecipientAddressData
     ) {
       if (sandboxActive) {
@@ -244,6 +273,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     recipientView,
     recipientsDisplayList,
     editingTemplateId,
+    sandboxRecipient.recipientViewId,
     recipientViewEditMode,
     hasRecipientAddressData,
     dispatch,
@@ -650,8 +680,10 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                   />
                 ) : showRecipientDetailCard ? (
                   <RecipientView
-                    templateId={cardTemplateId ?? ''}
-                    address={value}
+                    templateId={
+                      cardTemplateId ?? recipientDisplayEntry?.id ?? ''
+                    }
+                    address={recipientAddressForView}
                   />
                 ) : showRecipientsEnvelopeList ? (
                   <RecipientsView
