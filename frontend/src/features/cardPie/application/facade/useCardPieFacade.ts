@@ -46,11 +46,10 @@ export const useCardPieFacade = (
   )
 
   /**
-   * Dual-mode: while archive-edit hydrates shared session, assembly pie keeps
-   * the pre-edit freeze so left branch does not visually mix with archive.
+   * Dual-mode: while archive hydrates shared session (edit or peek), assembly
+   * pie keeps the pre-hydrate freeze so left branch does not mix with archive.
    */
-  const assemblyUsesFreeze =
-    !isListArchivePie && cardPieEditEngaged && assemblyFreeze != null
+  const assemblyUsesFreeze = !isListArchivePie && assemblyFreeze != null
 
   const currentData = isProcessed
     ? assemblyUsesFreeze

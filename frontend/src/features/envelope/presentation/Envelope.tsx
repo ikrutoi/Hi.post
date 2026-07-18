@@ -46,10 +46,18 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
     listRowPostcardStatus,
   } = useRightListArchiveMini()
   const archiveEditPeekGate = useArchiveEditPeekGate('envelope')
+  const {
+    assemblySenderSimplifiedPeek,
+    assemblyRecipientSimplifiedPeek,
+    archiveCartEnvelopeSimplifiedPeek,
+  } = useMobileFactoryListChrome()
+  /**
+   * Cart envelope peek: session apply-peek как в сборке (не list-row peek).
+   * Иначе postcardEdit не выходит в обычные sender/recipients тулбары с Apply.
+   */
   const envelopePeekMode =
-    rightPieEnvelopePeekNoToolbar || archiveEditPeekGate
-  const { assemblySenderSimplifiedPeek, assemblyRecipientSimplifiedPeek } =
-    useMobileFactoryListChrome()
+    (rightPieEnvelopePeekNoToolbar && !archiveCartEnvelopeSimplifiedPeek) ||
+    archiveEditPeekGate
   const showSenderApplyPeek = !envelopePeekMode && assemblySenderSimplifiedPeek
   const showRecipientApplyPeek =
     !envelopePeekMode && assemblyRecipientSimplifiedPeek

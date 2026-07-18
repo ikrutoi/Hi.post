@@ -19,28 +19,17 @@ const ARCHIVE_PEEK_UPPER_EDIT_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-const ARCHIVE_PEEK_UPPER_CLOSE_TOOLBAR: ToolbarConfig = [
-  {
-    group: 'close',
-    icons: [{ key: 'closeBig', state: 'enabled' }],
-    status: 'enabled',
-  },
-]
-
 /**
- * Верхний ряд factory toolbar в упрощённом режиме:
- * archive peek — postcardEdit слева, closeBig справа;
- * сборная cardtext/cardphoto/aroma — только postcardEdit.
+ * Верхний ряд factory toolbar в упрощённом режиме: только postcardEdit слева
+ * (archive peek и сборная cardtext/cardphoto/aroma).
  */
 export const ArchivePeekUpperToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
-  const { closeArchiveSectionPeek, isArchiveSectionPeekActive } =
-    useCloseArchiveSectionPeek()
+  const { isArchiveSectionPeekActive } = useCloseArchiveSectionPeek()
   const {
     assemblyCardtextSimplifiedPeek,
     assemblyCardphotoSimplifiedPeek,
     assemblyAromaSimplifiedPeek,
-    assemblySectionSimplifiedPeek,
   } = useMobileFactoryListChrome()
   const { requestSectionEditFromPeek } = useRightListArchiveMini()
 
@@ -65,16 +54,11 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
         }
         return false
       }
-      if (key === 'closeBig' && isArchiveSectionPeekActive) {
-        closeArchiveSectionPeek()
-        return false
-      }
     },
     [
       assemblyAromaSimplifiedPeek,
       assemblyCardphotoSimplifiedPeek,
       assemblyCardtextSimplifiedPeek,
-      closeArchiveSectionPeek,
       dispatch,
       isArchiveSectionPeekActive,
       requestSectionEditFromPeek,
@@ -91,15 +75,6 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
         />
       </div>
       <div className={styles.upperSpacer} aria-hidden />
-      {!assemblySectionSimplifiedPeek ? (
-        <div className={styles.upperToolbar}>
-          <Toolbar
-            section="date"
-            groupsOverride={ARCHIVE_PEEK_UPPER_CLOSE_TOOLBAR}
-            onActionClick={handleAction}
-          />
-        </div>
-      ) : null}
     </div>
   )
 }

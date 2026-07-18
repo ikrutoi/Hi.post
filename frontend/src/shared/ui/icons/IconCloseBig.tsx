@@ -17,6 +17,6 @@ export const IconCloseBig = (props: React.SVGProps<SVGSVGElement>) => (
     textRendering="geometricPrecision"
     {...props}
   >
-    <path d="m1112 167-944 945M1112 1113 167 168" />
+    <path d="m1065 215-850 850M1065 1065 215 215" />
   </svg>
 )

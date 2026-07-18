@@ -83,6 +83,7 @@ import {
   selectSenderCardAddress,
   selectRecipientCardAddress,
   selectRecipientsList,
+  selectEnvelopeSessionRecord,
 } from '@envelope/infrastructure/selectors'
 import type { AddressEditSession } from '@envelope/domain/types'
 import type { AddressCreateEditContext } from '@envelope/domain/types'
@@ -136,14 +137,64 @@ import {
 } from '@envelope/domain/helpers'
 import { selectIsMobileLayout } from '@layout/infrastructure/selectors'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
-import type { RecipientState, SenderState } from '@envelope/domain/types'
+import type {
+  EnvelopeSessionRecord,
+  RecipientState,
+  SenderState,
+} from '@envelope/domain/types'
 import type { AddressFields } from '@shared/config/constants'
 import type { RootState } from '@app/state'
 import { handleAddressSave } from '@app/middleware/addressSaveSaga'
 import { closeCardPieListPanelAndSyncIconsSaga } from '@app/middleware/exclusiveListPanelsSaga'
 import { processEnvelopeVisuals } from '@app/middleware/envelopeProcessSaga'
+import { selectAssemblyBranchFreeze } from '@cardPanel/infrastructure/selectors/assemblyBranchFreezeSelectors'
+import { selectCartItems, selectCartListSelectedLocalId } from '@cart/infrastructure/selectors'
+import { selectHistoryListSelectedLocalId } from '@date/calendar/infrastructure/selectors'
+import { updateItem } from '@cart/infrastructure/state'
+import { postcardLocalDataChanged } from '@features/sync/store/postcardSync.actions'
+import type { PostcardHydrated } from '@entities/postcard'
 
 const ADDRESS_LIST_UI_PREF_ID = 'addressList' as const
+
+/**
+ * Dual-mode: while assembly is leased (freeze), Apply writes envelope to the
+ * selected archive postcard — not only shared session. Session is reverted on
+ * lease release; cart/history keep the Apply result.
+ */
+function* persistArchiveEnvelopeIfLeased(): SagaIterator {
+  const freeze = yield select(selectAssemblyBranchFreeze)
+  if (freeze == null) return
+
+  const cartSelected: number | null = yield select(selectCartListSelectedLocalId)
+  const historySelected: number | null = yield select(
+    selectHistoryListSelectedLocalId,
+  )
+  const localId = cartSelected ?? historySelected
+  if (localId == null) return
+
+  const items: PostcardHydrated[] = yield select(selectCartItems)
+  const postcard = items.find((p) => p.localId === localId)
+  if (postcard == null) return
+
+  const envelope: EnvelopeSessionRecord = yield select(
+    selectEnvelopeSessionRecord,
+  )
+  const nextPostcard: PostcardHydrated = {
+    ...postcard,
+    updatedAt: Date.now(),
+    card: {
+      ...postcard.card,
+      envelope: JSON.parse(JSON.stringify(envelope)) as EnvelopeSessionRecord,
+    },
+  }
+  try {
+    yield call([storeAdapters.postcards, 'put'], nextPostcard)
+  } catch (e) {
+    console.error('persistArchiveEnvelopeIfLeased: persist failed', e)
+  }
+  yield put(updateItem(nextPostcard))
+  yield put(postcardLocalDataChanged())
+}
 
 function isPanelDensity2Size(d: unknown): d is 1 | 2 {
   return d === 1 || d === 2
@@ -1260,6 +1311,7 @@ function* handleEnvelopeToolbarAction(
           return
         }
         yield put(setSenderApplied(true))
+        yield call(persistArchiveEnvelopeIfLeased)
         return
       }
 
@@ -1268,6 +1320,7 @@ function* handleEnvelopeToolbarAction(
       const data: AddressFields[] = [{ ...displayAddress } as AddressFields]
       yield put(setSenderAppliedWithData({ ids: [senderViewId], data }))
       yield put(setSenderView('senderView'))
+      yield call(persistArchiveEnvelopeIfLeased)
     }
     if (section === 'recipients') {
       const recipient: RecipientState = yield select(selectRecipientState)
@@ -1296,6 +1349,7 @@ function* handleEnvelopeToolbarAction(
             yield select(selectRecipientDisplayAddress)
           const data: AddressFields[] = [{ ...displayAddress } as AddressFields]
           yield put(setRecipientAppliedWithData({ ids: [recipientViewId], data }))
+          yield call(persistArchiveEnvelopeIfLeased)
         } else {
           yield put(recipientSaveRequested({ listStatus: 'outList' }))
         }
@@ -1348,6 +1402,7 @@ function* handleEnvelopeToolbarAction(
             .filter((id): id is string => id != null),
         ),
       )
+      yield call(persistArchiveEnvelopeIfLeased)
     }
   }
 

@@ -71,8 +71,10 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   const recipientsToolbarState = useAppSelector(
     selectRecipientsToolbarStateWithLiveAddressList,
   )
-  const { assemblySenderSimplifiedPeek, assemblyRecipientSimplifiedPeek } =
-    useMobileFactoryListChrome()
+  const {
+    assemblySenderSimplifiedPeek,
+    assemblyRecipientSimplifiedPeek,
+  } = useMobileFactoryListChrome()
   const pendingAddressAddFocusRef = useRef<'sender' | 'recipient' | null>(null)
 
   /** После apply выходим из focus — postcardEdit в слоте sender/recipients. */

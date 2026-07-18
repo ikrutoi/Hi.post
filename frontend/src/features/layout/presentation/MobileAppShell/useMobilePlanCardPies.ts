@@ -79,8 +79,9 @@ export function useMobilePlanCardPies() {
   )
 
   const planPies = useMemo((): MobilePlanCardPie[] => {
+    const useFreeze = assemblyFreeze != null
     let baseInner =
-      (activePieSide === 'right' && assemblyFreeze != null
+      (useFreeze
         ? cardPieInnerFromEditorActiveData(assemblyFreeze.editorData)
         : null) ??
       cardPieInnerFromEditorActiveData(activeEditorData) ??
@@ -89,7 +90,7 @@ export function useMobilePlanCardPies() {
      * Fallback: cardtext backup if freeze missing (legacy path).
      */
     if (
-      assemblyFreeze == null &&
+      !useFreeze &&
       activePieSide === 'right' &&
       cardtextMirrorBackup?.section === 'cardtext'
     ) {
@@ -118,10 +119,21 @@ export function useMobilePlanCardPies() {
       }
     }
     const ctx = { envelopeRecipients, recipientEntries }
-    const envelopeComplete =
-      assemblyFreeze != null && activePieSide === 'right'
-        ? Boolean(assemblyFreeze.sections.envelope)
-        : Boolean(envelopeRecord?.isComplete)
+    const envelopeComplete = useFreeze
+      ? Boolean(assemblyFreeze.sections.envelope)
+      : Boolean(envelopeRecord?.isComplete)
+
+    /**
+     * Dual-mode: while freeze is active, do not merge live session recipient
+     * into plan pies (archive hydrate would otherwise leak into minis).
+     */
+    const planRecipientState = useFreeze
+      ? {
+          ...recipientState,
+          applied: [] as string[],
+          appliedData: baseInner.recipient,
+        }
+      : recipientState
 
     const mapped = entries
       .filter((entry) => entry.variant !== 'inactive')
@@ -130,7 +142,7 @@ export function useMobilePlanCardPies() {
         dispatchBranchKey: entry.dispatchBranchKey ?? null,
         dispatchDate: entry.sourceDate ?? null,
         ...buildCardPieInnerDataForPlanEntry(entry, baseInner, {
-          recipientState,
+          recipientState: planRecipientState,
           envelopeComplete,
           ctx,
         }),

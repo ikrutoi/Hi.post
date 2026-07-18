@@ -2,9 +2,10 @@
  * Migration status:
  * - Step 1: contract + inventory
  * - Step 2: view isolation (mini open)
- * - Step 3a: assembly freeze + revert on archive-edit exit (session still used as
- *   temporary edit buffer; left CardPie/plan pies keep freeze)
- * Target: archive sandbox keyed by localId, Apply → postcard only.
+ * - Step 3a: assembly freeze lease for archive peek/edit — left CardPie + plan
+ *   pies read freeze whenever present; lease release reverts session backups.
+ *   Envelope Apply while leased also persists to the selected archive postcard.
+ * Target: archive sandbox keyed by localId, Apply → postcard only (no session buffer).
  */
 
 /** Which postcard data branch the central/active CardPie is bound to. */
@@ -56,6 +57,7 @@ export type CardPieDualModeWritePathId =
   | 'cardPieEdit.hydrateAll'
   | 'postcardEdit.hydrateSection'
   | 'rightPie.sectorClickWhileEdit'
+  | 'rightPie.envelopePeekHydrate'
   | 'copyStrip.applySection'
   | 'copyStrip.applyAll'
   | 'miniCard.envelopeOpenApply'
@@ -95,6 +97,15 @@ export const CARD_PIE_DUAL_MODE_WRITE_PATHS: readonly CardPieDualModeWritePath[]
       mutates: 'assemblySession',
       target: 'archiveSandbox',
       note: 'Sector switch during cardPieEdit re-hydrates that section into session.',
+    },
+    {
+      id: 'rightPie.envelopePeekHydrate',
+      locus:
+        'App.tsx handleRightListPieSectorClick (cart envelope peek) → captureAssemblyBranchFreeze + applyArchiveSectionToEditorRequested',
+      mutates: 'assemblySession',
+      target: 'archiveSandbox',
+      note:
+        'Step 3a: freeze lease before hydrate; left/plan pies use freeze; leave peek releases lease + revert.',
     },
     {
       id: 'copyStrip.applySection',

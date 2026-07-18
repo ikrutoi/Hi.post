@@ -72,6 +72,8 @@ export function useMobileFactoryListChrome() {
     rightPieAromaPeekNoToolbar,
     rightPieDatePeekNoToolbar,
     cardPieEditEngaged,
+    mirrorListArchiveSource,
+    listRowPostcardStatus,
   } = useRightListArchiveMini()
 
   const mobileArchiveSectionPeek =
@@ -80,6 +82,19 @@ export function useMobileFactoryListChrome() {
     rightPieEnvelopePeekNoToolbar ||
     rightPieAromaPeekNoToolbar ||
     rightPieDatePeekNoToolbar
+
+  /**
+   * Правый CardPie + открытка корзины: peek секции envelope —
+   * два postcardEdit как после Apply в сборке.
+   */
+  const archiveCartEnvelopeSimplifiedPeek =
+    isMobileLayout &&
+    activeSection === 'envelope' &&
+    rightPieEnvelopePeekNoToolbar &&
+    !cardPieEditEngaged &&
+    (mirrorListArchiveSource === 'cart' ||
+      listRowPostcardStatus === 'cart' ||
+      listRowPostcardStatus === 'cartBlocked')
 
   /**
    * Сборная (левый pie): applied cardtext на открытке → упрощённый peek chrome.
@@ -114,29 +129,35 @@ export function useMobileFactoryListChrome() {
 
   /**
    * Сборная: после Apply recipient — упрощённый адрес + postcardEdit вместо recipients-тулбара.
-   * Не входит в assemblySectionSimplifiedPeek: второй слот тулбара остаётся.
+   * Archive cart envelope peek — тот же критерий (applied), не «всегда оба слота».
    */
   const assemblyRecipientSimplifiedPeek =
-    isMobileLayout &&
-    activeSection === 'envelope' &&
-    activePieSide === 'left' &&
-    !cardPieEditEngaged &&
-    !mobileArchiveSectionPeek &&
-    recipientView !== 'recipientCreate' &&
-    recipientAppliedIds.length > 0
+    (isMobileLayout &&
+      activeSection === 'envelope' &&
+      activePieSide === 'left' &&
+      !cardPieEditEngaged &&
+      !mobileArchiveSectionPeek &&
+      recipientView !== 'recipientCreate' &&
+      recipientAppliedIds.length > 0) ||
+    (archiveCartEnvelopeSimplifiedPeek &&
+      recipientView !== 'recipientCreate' &&
+      recipientAppliedIds.length > 0)
 
   /**
    * Сборная: после Apply sender — упрощённый адрес + postcardEdit вместо sender-тулбара.
-   * В т.ч. пустой/выкл. отправитель (appliedLocked).
+   * Archive cart envelope peek — тот же критерий (appliedLocked).
    */
   const assemblySenderSimplifiedPeek =
-    isMobileLayout &&
-    activeSection === 'envelope' &&
-    activePieSide === 'left' &&
-    !cardPieEditEngaged &&
-    !mobileArchiveSectionPeek &&
-    senderView !== 'senderCreate' &&
-    senderAppliedLocked
+    (isMobileLayout &&
+      activeSection === 'envelope' &&
+      activePieSide === 'left' &&
+      !cardPieEditEngaged &&
+      !mobileArchiveSectionPeek &&
+      senderView !== 'senderCreate' &&
+      senderAppliedLocked) ||
+    (archiveCartEnvelopeSimplifiedPeek &&
+      senderView !== 'senderCreate' &&
+      senderAppliedLocked)
 
   /**
    * Сборная: после Apply aroma — картинка на всю секцию + postcardEdit.
@@ -367,6 +388,7 @@ export function useMobileFactoryListChrome() {
     assemblySenderSimplifiedPeek,
     assemblyRecipientSimplifiedPeek,
     assemblySectionSimplifiedPeek,
+    archiveCartEnvelopeSimplifiedPeek,
     cardPieEditEngaged,
   }
 }

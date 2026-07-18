@@ -14,6 +14,7 @@ import { CardtextListMobileFactoryUpperToolbar } from '@cardtext/presentation/Ca
 import { AddressListMobileFactoryUpperToolbar } from '@envelope/addressBook/presentation/AddressListMobileFactoryToolbar'
 import { HistoryListMobileFactoryUpperToolbar } from '@date/presentation/HistoryListMobileFactoryToolbar'
 import { CartListMobileFactoryUpperToolbar } from '@cart/presentation/CartListMobileFactoryToolbar'
+import { EnvelopeInnerToolbar } from '@envelope/presentation/EnvelopeInnerToolbar'
 import { ArchivePeekUpperToolbar } from './ArchivePeekUpperToolbar'
 import { MobileDateCalendarToolbarNav } from '@date/dateHeader/presentation/MobileDateCalendarToolbarNav'
 import { useMobileScenarioToolbarSnapshot } from './MobileScenarioToolbarContext'
@@ -29,6 +30,7 @@ export const MobileFactoryToolbarShell: React.FC = () => {
   const {
     hideUpperToolbar,
     mobileSectionSimplifiedPeek,
+    archiveCartEnvelopeSimplifiedPeek,
     showMobileCardphotoListFactoryChrome,
     showMobileCardtextListFactoryChrome,
     showMobileAddressListFactoryChrome,
@@ -90,7 +92,11 @@ export const MobileFactoryToolbarShell: React.FC = () => {
 
       <div className={styles.rowUpper}>
         {showPeekEmptyToolbarShell ? (
-          <ArchivePeekUpperToolbar />
+          archiveCartEnvelopeSimplifiedPeek ? (
+            <EnvelopeInnerToolbar />
+          ) : (
+            <ArchivePeekUpperToolbar />
+          )
         ) : (
           <>
             {showMobileCardphotoListFactoryChrome ? (

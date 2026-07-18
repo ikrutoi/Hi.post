@@ -89,6 +89,7 @@ import {
   clearAssemblyBranchFreeze,
   clearAllMirrorSectionBackups,
 } from '@cardPanel/infrastructure/state'
+import { selectAssemblyBranchFreeze } from '@cardPanel/infrastructure/selectors/assemblyBranchFreezeSelectors'
 import {
   closeDayPanel,
   openDayPanel,
@@ -193,6 +194,40 @@ const App = () => {
     }
     setCardPieEditEngaged(false)
   }, [dispatch])
+
+  /**
+   * Dual-mode: release assembly session lease used as archive edit/peek buffer.
+   * Restores sender/recipient/etc from mirror backups and clears freeze overlay.
+   * Only runs when freeze is set — does not touch copy-strip backups alone.
+   */
+  const releaseAssemblySessionLease = useCallback(() => {
+    if (cardPieEditEngagedRef.current) {
+      endCardPieEditEngaged()
+      return
+    }
+    if (selectAssemblyBranchFreeze(store.getState()) == null) return
+    dispatch(revertAllMirrorSectionsCopyRequested())
+    dispatch(clearAssemblyBranchFreeze())
+  }, [dispatch, endCardPieEditEngaged])
+
+  /**
+   * Dual-mode: snapshot assembly CardPie before archive hydrates shared session.
+   * Does not overwrite an existing freeze (peek → edit must keep clean snapshot).
+   */
+  const captureAssemblyBranchFreeze = useCallback(
+    (reason: 'archiveEdit' | 'archivePeek' = 'archiveEdit') => {
+      const state = store.getState()
+      if (selectAssemblyBranchFreeze(state) != null) return
+      dispatch(
+        setAssemblyBranchFreeze({
+          editorData: selectActiveCardFullData(state),
+          sections: selectPieProgress(state).sections,
+          reason,
+        }),
+      )
+    },
+    [dispatch],
+  )
   /** `all` — полный factory-edit (editLight на CardPie); `section` — postcardEdit только текущей peek-секции. */
   const [cardPieEditHydrateScope, setCardPieEditHydrateScope] = useState<
     'all' | 'section'
@@ -533,10 +568,14 @@ const App = () => {
   useEffect(() => {
     if (!canShowRightListArchiveCardPie && activePieSide === 'right') {
       setSuppressCardPieEditActiveAfterCopy(true)
-      endCardPieEditEngaged()
+      releaseAssemblySessionLease()
       setActivePieSide('left')
     }
-  }, [canShowRightListArchiveCardPie, activePieSide])
+  }, [
+    canShowRightListArchiveCardPie,
+    activePieSide,
+    releaseAssemblySessionLease,
+  ])
 
   const listRowInner = rightListArchiveBundle?.currentData?.data ?? null
 
@@ -600,8 +639,29 @@ const App = () => {
           syncPeekChromeForOpenedSection(section)
           setActivePieSide('right')
         })
+        /**
+         * Cart envelope peek: гидратация session как после Apply в сборке,
+         * чтобы postcardEdit / Apply работали теми же sender/recipients тулбарами.
+         * Dual-mode: freeze assembly first so left/plan pies stay on snapshot.
+         */
+        if (
+          section === 'envelope' &&
+          rightListArchiveLocalId != null &&
+          (rightListArchiveSource === 'cart' ||
+            rightArchivePiePostcardStatus === 'cart' ||
+            rightArchivePiePostcardStatus === 'cartBlocked')
+        ) {
+          captureAssemblyBranchFreeze('archivePeek')
+          dispatch(
+            applyArchiveSectionToEditorRequested({
+              section: 'envelope',
+              sourceLocalId: rightListArchiveLocalId,
+            }),
+          )
+        }
       }
       if (fullFactoryFromRightPie && rightListArchiveLocalId != null) {
+        captureAssemblyBranchFreeze('archiveEdit')
         dispatch(
           applyArchiveSectionToEditorRequested({
             section,
@@ -631,8 +691,10 @@ const App = () => {
       activePieSide,
       cardPieCopyStripExpanded,
       cardPieEditEngaged,
+      captureAssemblyBranchFreeze,
       rightListArchiveLocalId,
       rightListArchiveSource,
+      rightArchivePiePostcardStatus,
       syncPeekChromeForOpenedSection,
       isMobileLayout,
     ],
@@ -896,8 +958,8 @@ const App = () => {
     dispatch(setCartListSelectedLocalId(null))
     dispatch(setHistoryListSelectedLocalId(null))
     dispatch(closeDayPanel())
-    endCardPieEditEngaged()
-  }, [dispatch])
+    releaseAssemblySessionLease()
+  }, [dispatch, releaseAssemblySessionLease])
 
   const handleBeforeLeftPieInteraction = useCallback(() => {
     exitRightPreviewForLeftMode()
@@ -908,18 +970,18 @@ const App = () => {
     setRightPieDatePeekNoToolbar(false)
     if (activePieSide === 'right') {
       setSuppressCardPieEditActiveAfterCopy(true)
-      endCardPieEditEngaged()
+      releaseAssemblySessionLease()
       setActivePieSide('left')
     }
-  }, [activePieSide, exitRightPreviewForLeftMode])
+  }, [activePieSide, exitRightPreviewForLeftMode, releaseAssemblySessionLease])
 
   const handleLeftPieCenterClick = useCallback(() => {
     if (activePieSide === 'right') {
       setSuppressCardPieEditActiveAfterCopy(true)
-      endCardPieEditEngaged()
+      releaseAssemblySessionLease()
       setActivePieSide('left')
     }
-  }, [activePieSide])
+  }, [activePieSide, releaseAssemblySessionLease])
 
   const clearRightPieCardphotoPeek = useCallback(() => {
     setRightPieCardphotoPeekNoToolbar(false)
@@ -931,7 +993,11 @@ const App = () => {
 
   const clearRightPieEnvelopePeek = useCallback(() => {
     setRightPieEnvelopePeekNoToolbar(false)
-  }, [])
+    /** Peek lease without full edit: restore assembly session. */
+    if (!cardPieEditEngagedRef.current) {
+      releaseAssemblySessionLease()
+    }
+  }, [releaseAssemblySessionLease])
 
   const clearRightPieAromaPeek = useCallback(() => {
     setRightPieAromaPeekNoToolbar(false)
@@ -1013,7 +1079,10 @@ const App = () => {
     setRightPieEnvelopePeekNoToolbar(false)
     setRightPieAromaPeekNoToolbar(false)
     setRightPieDatePeekNoToolbar(false)
-  }, [rightListArchiveLocalId, rightListArchiveSource])
+    if (!cardPieEditEngagedRef.current) {
+      releaseAssemblySessionLease()
+    }
+  }, [rightListArchiveLocalId, rightListArchiveSource, releaseAssemblySessionLease])
 
   const showTopCardStripFullSpan =
     cardPieCopyStripExpanded && rightListArchiveLocalId != null
@@ -1050,19 +1119,24 @@ const App = () => {
         setRightPieAromaPeekNoToolbar(false)
         setRightPieDatePeekNoToolbar(false)
         setSuppressCardPieEditActiveAfterCopy(true)
-        endCardPieEditEngaged()
+        releaseAssemblySessionLease()
         setActivePieSide('left')
       }
     }
     prevShowTopCardStripFullSpanRef.current = showTopCardStripFullSpan
-  }, [showTopCardStripFullSpan, activeSection, syncPeekChromeForOpenedSection])
+  }, [
+    showTopCardStripFullSpan,
+    activeSection,
+    releaseAssemblySessionLease,
+    syncPeekChromeForOpenedSection,
+  ])
 
   useEffect(() => {
     if (rightListArchiveLocalId == null) {
-      endCardPieEditEngaged()
+      releaseAssemblySessionLease()
       setCardPieEditHydrateScope('all')
     }
-  }, [rightListArchiveLocalId])
+  }, [rightListArchiveLocalId, releaseAssemblySessionLease])
 
   useEffect(() => {
     dispatch(setArchiveFactoryEditActive(cardPieEditEngaged))
@@ -1081,10 +1155,34 @@ const App = () => {
     setCardPieEditHydrateScope('all')
     setSuppressCardPieEditActiveAfterCopy(true)
     syncPeekChromeForOpenedSection(archivePeekEnterSection)
+    /**
+     * Dual-mode: after Apply exits factory-edit, cart envelope peek needs the
+     * session buffer again (editors bind to session; freeze protects assembly).
+     */
+    if (
+      archivePeekEnterSection === 'envelope' &&
+      rightListArchiveLocalId != null &&
+      (rightListArchiveSource === 'cart' ||
+        rightArchivePiePostcardStatus === 'cart' ||
+        rightArchivePiePostcardStatus === 'cartBlocked')
+    ) {
+      captureAssemblyBranchFreeze('archivePeek')
+      dispatch(
+        applyArchiveSectionToEditorRequested({
+          section: 'envelope',
+          sourceLocalId: rightListArchiveLocalId,
+        }),
+      )
+    }
   }, [
     archivePeekEnterTick,
     archivePeekEnterSection,
+    captureAssemblyBranchFreeze,
+    dispatch,
     endCardPieEditEngaged,
+    rightArchivePiePostcardStatus,
+    rightListArchiveLocalId,
+    rightListArchiveSource,
     syncPeekChromeForOpenedSection,
   ])
 
@@ -1223,25 +1321,15 @@ const App = () => {
     setRightPieDatePeekNoToolbar(false)
   }, [])
 
-  /**
-   * Dual-mode step 3: snapshot assembly CardPie before archive-edit hydrates
-   * the shared session. Left/plan pies read the freeze while edit is engaged.
-   */
-  const captureAssemblyBranchFreeze = useCallback(() => {
-    const state = store.getState()
-    dispatch(
-      setAssemblyBranchFreeze({
-        editorData: selectActiveCardFullData(state),
-        sections: selectPieProgress(state).sections,
-      }),
-    )
-  }, [dispatch])
-
   /** Полный edit: все секции + active cardPieEdit (кнопка editLight на CardPie). */
   const enterCardPieEditFactoryMode = useCallback(() => {
     const targetSection = resolveCardPieEditTargetSection()
-    captureAssemblyBranchFreeze()
-    dispatch(clearAllMirrorSectionBackups())
+    const hadFreeze = selectAssemblyBranchFreeze(store.getState()) != null
+    captureAssemblyBranchFreeze('archiveEdit')
+    /** Peek already leased assembly — keep backups; otherwise start clean. */
+    if (!hadFreeze) {
+      dispatch(clearAllMirrorSectionBackups())
+    }
     dispatch(setCartListPanelOpen(false))
     dispatch(setCartCalendarDatePickMode(false))
     dispatch(setActiveSection(targetSection))
@@ -1261,8 +1349,11 @@ const App = () => {
   /** postcardEdit из peek: только текущая секция, cardPieEdit не active. */
   const enterSectionEditFromPeek = useCallback(() => {
     const targetSection = resolveCardPieEditTargetSection()
-    captureAssemblyBranchFreeze()
-    dispatch(clearAllMirrorSectionBackups())
+    const hadFreeze = selectAssemblyBranchFreeze(store.getState()) != null
+    captureAssemblyBranchFreeze('archiveEdit')
+    if (!hadFreeze) {
+      dispatch(clearAllMirrorSectionBackups())
+    }
     dispatch(setCartListPanelOpen(false))
     dispatch(setCartCalendarDatePickMode(false))
     dispatch(setActiveSection(targetSection))
