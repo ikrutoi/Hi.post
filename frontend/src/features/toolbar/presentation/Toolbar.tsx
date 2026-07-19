@@ -11,6 +11,11 @@ import {
   selectRecipientApplied,
 } from '@envelope/recipient/infrastructure/selectors'
 import {
+  selectArchiveEnvelopeSandboxActive,
+  selectArchiveSandboxSender,
+  selectArchiveSandboxRecipient,
+} from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
+import {
   doesDraftMatchInList,
   doesDraftMatchAnyTemplate,
   isAddressDraftComplete,
@@ -117,17 +122,37 @@ export const Toolbar = ({
 
   const cardphotoApplied = useAppSelector(selectIsCurrentCropApplied)
   const cardtextPlainText = useAppSelector(selectCardtextPlainText)
-  const senderAppliedIds = useAppSelector(selectSenderApplied)
-  const senderViewIdForApply = useAppSelector(selectSenderViewId)
-  const recipientAppliedIds = useAppSelector(selectRecipientApplied)
-  const recipientViewIdForApply = useAppSelector(selectRecipientViewId)
-  const recipientViewIds = useAppSelector((state: RootState) => {
+  const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
+  const sandboxSender = useAppSelector(selectArchiveSandboxSender)
+  const sandboxRecipient = useAppSelector(selectArchiveSandboxRecipient)
+  const sessionSenderAppliedIds = useAppSelector(selectSenderApplied)
+  const sessionSenderViewIdForApply = useAppSelector(selectSenderViewId)
+  const sessionRecipientAppliedIds = useAppSelector(selectRecipientApplied)
+  const sessionRecipientViewIdForApply = useAppSelector(selectRecipientViewId)
+  const sessionRecipientViewIds = useAppSelector((state: RootState) => {
     const recipient = state.recipient
     if (!recipient) return []
     return recipient.currentRecipientsList === 'second'
       ? (recipient.recipientsViewIdsSecondList ?? [])
       : (recipient.recipientsViewIdsFirstList ?? [])
   })
+  const senderAppliedIds = sandboxActive
+    ? (sandboxSender.applied ?? [])
+    : sessionSenderAppliedIds
+  const senderViewIdForApply = sandboxActive
+    ? sandboxSender.senderViewId
+    : sessionSenderViewIdForApply
+  const recipientAppliedIds = sandboxActive
+    ? (sandboxRecipient.applied ?? [])
+    : sessionRecipientAppliedIds
+  const recipientViewIdForApply = sandboxActive
+    ? sandboxRecipient.recipientViewId
+    : sessionRecipientViewIdForApply
+  const recipientViewIds = sandboxActive
+    ? sandboxRecipient.currentRecipientsList === 'second'
+      ? (sandboxRecipient.recipientsViewIdsSecondList ?? [])
+      : (sandboxRecipient.recipientsViewIdsFirstList ?? [])
+    : sessionRecipientViewIds
   const cardtextEmpty =
     (section === 'cardtext' || section === 'cardtextView') &&
     !(cardtextPlainText?.trim?.() ?? '').length

@@ -18,10 +18,17 @@ import {
   getMatchingEntryId,
   getAddressListToolbarFragment,
   listStatusIsInQuickAddressBook,
+  buildSandboxSenderToolbarState,
+  buildSandboxRecipientsToolbarState,
 } from '../../domain/helpers'
 
 import type { AddressBookEntry } from '../../addressBook/domain/types'
 import type { AddressCreateEditContext, AddressEditSession } from '../../domain/types'
+import {
+  selectArchiveEnvelopeSandboxActive,
+  selectArchiveSandboxSender,
+  selectArchiveSandboxRecipient,
+} from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 
 const EMPTY_RECIPIENT_STATE_LIST: RecipientState[] = []
 
@@ -297,5 +304,65 @@ export const selectRecipientsToolbarStateWithLiveAddressList = createSelector(
         }
       : getAddressListToolbarFragment(recipientInListEntriesCount)
     return { ...base, addressList }
+  },
+)
+
+/**
+ * Active write target: session (left) or archive sandbox (right).
+ * Same toolbar builders / badges either way — only the document source differs.
+ */
+export const selectActiveSenderToolbarState = createSelector(
+  [
+    selectArchiveEnvelopeSandboxActive,
+    selectArchiveSandboxSender,
+    selectSenderToolbarStateWithLiveAddressList,
+    (s: RootState) => s.envelopeSelection?.activeAddressList ?? null,
+    selectSenderInListEntries,
+    (s: RootState) => s.addressBook?.senderEntries ?? [],
+  ],
+  (
+    sandboxActive,
+    sandboxSender,
+    sessionToolbar,
+    activeAddressList,
+    inListEntries,
+    bookEntries,
+  ) => {
+    if (!sandboxActive) return sessionToolbar
+    return buildSandboxSenderToolbarState({
+      sender: sandboxSender,
+      addressListCount: inListEntries.length,
+      listOpen: activeAddressList === 'sender',
+      inListEntries,
+      bookEntries,
+    })
+  },
+)
+
+export const selectActiveRecipientsToolbarState = createSelector(
+  [
+    selectArchiveEnvelopeSandboxActive,
+    selectArchiveSandboxRecipient,
+    selectRecipientsToolbarStateWithLiveAddressList,
+    (s: RootState) => s.envelopeSelection?.activeAddressList ?? null,
+    selectRecipientInListEntries,
+    (s: RootState) => s.addressBook?.recipientEntries ?? [],
+  ],
+  (
+    sandboxActive,
+    sandboxRecipient,
+    sessionToolbar,
+    activeAddressList,
+    inListEntries,
+    bookEntries,
+  ) => {
+    if (!sandboxActive) return sessionToolbar
+    return buildSandboxRecipientsToolbarState({
+      recipient: sandboxRecipient,
+      addressListCount: inListEntries.length,
+      listOpen: activeAddressList === 'recipients',
+      inListEntries,
+      bookEntries,
+    })
   },
 )

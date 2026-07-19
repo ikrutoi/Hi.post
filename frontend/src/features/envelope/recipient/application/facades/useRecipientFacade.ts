@@ -27,7 +27,11 @@ import {
   selectArchiveEnvelopeSandboxActive,
   selectArchiveSandboxRecipient,
 } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
-import { updateArchiveRecipientField } from '@cardPanel/infrastructure/state'
+import {
+  setArchiveRecipientView,
+  setArchiveRecipientViewId,
+  updateArchiveRecipientField,
+} from '@cardPanel/infrastructure/state'
 
 function isAddressComplete(data: AddressFields): boolean {
   return Object.values(data).every((val) => (val ?? '').trim() !== '')
@@ -138,7 +142,15 @@ export const useRecipientFacade = () => {
     id: string
     address: Record<string, string>
   }) => {
-    if (sandboxActive) return
+    if (sandboxActive) {
+      dispatch(setArchiveRecipientViewId(entry.id))
+      ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
+        ([field, value]) =>
+          dispatch(updateArchiveRecipientField({ field, value })),
+      )
+      dispatch(setArchiveRecipientView('recipientView'))
+      return
+    }
     dispatch(toggleRecipientSelection(entry.id))
   }
 

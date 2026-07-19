@@ -157,9 +157,13 @@ import {
   setArchiveSenderApplied,
   setArchiveSenderAppliedWithData,
   setArchiveSenderView,
+  setArchiveSenderViewId,
+  updateArchiveSenderField,
   setArchiveRecipientApplied,
   setArchiveRecipientAppliedWithData,
   setArchiveRecipientView,
+  setArchiveRecipientViewId,
+  updateArchiveRecipientField,
 } from '@cardPanel/infrastructure/state'
 import { persistArchiveEnvelopeSandbox } from '@app/middleware/archiveEnvelopeSandboxPersist'
 import { selectCartItems, selectCartListSelectedLocalId } from '@cart/infrastructure/selectors'
@@ -1287,6 +1291,35 @@ function* handleEnvelopeToolbarAction(
     )
     if (section === 'sender') {
       if (sandboxActiveForAddressAdd) {
+        const sandboxSender: SenderState = yield select(
+          selectArchiveSandboxSender,
+        )
+        if (!(sandboxSender.formIsEmpty ?? true)) {
+          const draft = normalizeAddressFields(
+            sandboxSender.formDraft as AddressFields,
+          )
+          const senderEntries: AddressBookEntry[] = yield select(
+            (s: RootState) => s.addressBook?.senderEntries ?? [],
+          )
+          const id = getMatchingEntryId(
+            draft,
+            senderEntries.map((e) => ({
+              id: e.id,
+              address: normalizeAddressFields(e.address ?? {}),
+            })),
+          )
+          if (id) {
+            yield put(setArchiveSenderViewId(id))
+            for (const [field, value] of Object.entries(draft) as [
+              keyof AddressFields,
+              string,
+            ][]) {
+              yield put(updateArchiveSenderField({ field, value }))
+            }
+            yield put(setArchiveSenderView('senderView'))
+            return
+          }
+        }
         yield put(setArchiveSenderView('senderCreate'))
         return
       }
@@ -1303,6 +1336,38 @@ function* handleEnvelopeToolbarAction(
       section === 'recipients'
     ) {
       if (sandboxActiveForAddressAdd) {
+        const sandboxRecipient: RecipientState = yield select(
+          selectArchiveSandboxRecipient,
+        )
+        const formEmpty = !Object.values(sandboxRecipient.formDraft).some(
+          (v) => (v ?? '').trim() !== '',
+        )
+        if (!formEmpty) {
+          const draft = normalizeAddressFields(
+            sandboxRecipient.formDraft as AddressFields,
+          )
+          const recipientEntries: AddressBookEntry[] = yield select(
+            (s: RootState) => s.addressBook?.recipientEntries ?? [],
+          )
+          const id = getMatchingEntryId(
+            draft,
+            recipientEntries.map((e) => ({
+              id: e.id,
+              address: normalizeAddressFields(e.address ?? {}),
+            })),
+          )
+          if (id) {
+            yield put(setArchiveRecipientViewId(id))
+            for (const [field, value] of Object.entries(draft) as [
+              keyof AddressFields,
+              string,
+            ][]) {
+              yield put(updateArchiveRecipientField({ field, value }))
+            }
+            yield put(setArchiveRecipientView('recipientView'))
+            return
+          }
+        }
         yield put(setArchiveRecipientView('recipientCreate'))
         return
       }

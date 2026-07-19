@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 import clsx from 'clsx'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
-  selectRecipientsToolbarStateWithLiveAddressList,
-  selectSenderToolbarStateWithLiveAddressList,
+  selectActiveRecipientsToolbarState,
+  selectActiveSenderToolbarState,
   selectRecipientViewEditMode,
   selectSenderViewEditMode,
 } from '@envelope/infrastructure/selectors'
@@ -24,7 +24,6 @@ import {
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { ENVELOPE_MOBILE_ADDRESS_VIEW_UPPER_RETURN_TOOLBAR } from '@toolbar/domain/types/addressView.types'
-import { isAddressDraftComplete } from '@envelope/domain/helpers/resolveAddListToolbarState'
 import type { IconKey } from '@shared/config/constants'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
@@ -46,46 +45,14 @@ const ADDRESS_APPLY_PEEK_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-function buildArchiveSandboxSenderEditToolbar(
-  applyState: 'enabled' | 'disabled',
-): ToolbarConfig {
-  return [
-    {
-      group: 'address',
-      icons: [
-        { key: 'apply', state: applyState },
-        { key: 'addressAdd', state: 'enabled' },
-        { key: 'addressList', state: 'enabled' },
-      ],
-      status: 'enabled',
-    },
-  ]
-}
-
-function buildArchiveSandboxRecipientsEditToolbar(
-  applyState: 'enabled' | 'disabled',
-): ToolbarConfig {
-  return [
-    {
-      group: 'recipients',
-      icons: [
-        { key: 'apply', state: applyState },
-        { key: 'addressAdd', state: 'enabled' },
-        { key: 'addressList', state: 'enabled' },
-      ],
-      status: 'enabled',
-    },
-  ]
-}
-
 function readAddressAddMeta(
   toolbarState: Record<string, unknown>,
 ): AddressAddToolbarMeta {
   const raw = toolbarState.addressAdd
-  if (raw == null) return { state: 'disabled', badge: null }
-  if (typeof raw === 'string') return { state: raw, badge: null }
+  if (raw == null) return { state: 'disabled', badge: null, badgeDot: false }
+  if (typeof raw === 'string') return { state: raw, badge: null, badgeDot: false }
   if (typeof raw !== 'object' || raw == null || !('state' in raw)) {
-    return { state: 'disabled', badge: null }
+    return { state: 'disabled', badge: null, badgeDot: false }
   }
   const options =
     'options' in raw && raw.options != null && typeof raw.options === 'object'
@@ -104,61 +71,28 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
   const sandboxSender = useAppSelector(selectArchiveSandboxSender)
   const sandboxRecipient = useAppSelector(selectArchiveSandboxRecipient)
-  const senderView = useAppSelector(selectSenderView)
-  const recipientView = useAppSelector(selectRecipientView)
+  const sessionSenderView = useAppSelector(selectSenderView)
+  const sessionRecipientView = useAppSelector(selectRecipientView)
+  const senderView = sandboxActive
+    ? sandboxSender.currentView
+    : sessionSenderView
+  const recipientView = sandboxActive
+    ? sandboxRecipient.currentView
+    : sessionRecipientView
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const mobileFocus = useEnvelopeMobileAddressFocus()
   const focusRole = mobileFocus?.focusRole ?? null
-  const senderToolbarState = useAppSelector(
-    selectSenderToolbarStateWithLiveAddressList,
-  )
+  /** Session or archive sandbox — same builders / badges. */
+  const senderToolbarState = useAppSelector(selectActiveSenderToolbarState)
   const recipientsToolbarState = useAppSelector(
-    selectRecipientsToolbarStateWithLiveAddressList,
+    selectActiveRecipientsToolbarState,
   )
   const {
     assemblySenderSimplifiedPeek,
     assemblyRecipientSimplifiedPeek,
   } = useMobileFactoryListChrome()
   const pendingAddressAddFocusRef = useRef<'sender' | 'recipient' | null>(null)
-
-  /**
-   * Same as left: enabled + incomplete/empty draft → Apply disabled;
-   * toggle off → Apply enabled (lock empty/disabled sender).
-   */
-  const archiveSandboxSenderEditToolbar = useMemo((): ToolbarConfig => {
-    const draft =
-      sandboxSender.currentView === 'senderCreate'
-        ? sandboxSender.formDraft
-        : sandboxSender.viewDraft
-    const draftComplete = isAddressDraftComplete(draft)
-    const applyState: 'enabled' | 'disabled' = !sandboxSender.enabled
-      ? 'enabled'
-      : draftComplete
-        ? 'enabled'
-        : 'disabled'
-    return buildArchiveSandboxSenderEditToolbar(applyState)
-  }, [
-    sandboxSender.enabled,
-    sandboxSender.currentView,
-    sandboxSender.formDraft,
-    sandboxSender.viewDraft,
-  ])
-
-  const archiveSandboxRecipientsEditToolbar = useMemo((): ToolbarConfig => {
-    const draft =
-      sandboxRecipient.currentView === 'recipientCreate'
-        ? sandboxRecipient.formDraft
-        : sandboxRecipient.viewDraft
-    const applyState: 'enabled' | 'disabled' = isAddressDraftComplete(draft)
-      ? 'enabled'
-      : 'disabled'
-    return buildArchiveSandboxRecipientsEditToolbar(applyState)
-  }, [
-    sandboxRecipient.currentView,
-    sandboxRecipient.formDraft,
-    sandboxRecipient.viewDraft,
-  ])
 
   /** После apply выходим из focus — postcardEdit в слоте sender/recipients. */
   useEffect(() => {
@@ -216,15 +150,9 @@ export const EnvelopeInnerToolbar: React.FC = () => {
         role === 'sender' ? senderViewEditMode : recipientViewEditMode
       if (isEditMode) return false
 
-      /**
-       * Archive sandbox uses groupsOverride (always enabled addressAdd).
-       * Do not read empty session toolbar state — it marks addressAdd disabled.
-       */
-      const { state: addState } = sandboxActive
-        ? { state: 'enabled' }
-        : readAddressAddMeta(
-            section === 'sender' ? senderToolbarState : recipientsToolbarState,
-          )
+      const { state: addState } = readAddressAddMeta(
+        section === 'sender' ? senderToolbarState : recipientsToolbarState,
+      )
 
       if (addState === 'active') {
         mobileFocus.toggleFocus(role)
@@ -248,7 +176,6 @@ export const EnvelopeInnerToolbar: React.FC = () => {
       recipientViewEditMode,
       senderToolbarState,
       recipientsToolbarState,
-      sandboxActive,
     ],
   )
 
@@ -308,12 +235,6 @@ export const EnvelopeInnerToolbar: React.FC = () => {
       groupsOverride={ADDRESS_APPLY_PEEK_TOOLBAR}
       onActionClick={handleSenderApplyPeekClick}
     />
-  ) : sandboxActive ? (
-    <Toolbar
-      section="sender"
-      groupsOverride={archiveSandboxSenderEditToolbar}
-      onActionClick={(key) => handleAddressAddClick('sender', key)}
-    />
   ) : (
     <Toolbar
       section="sender"
@@ -327,12 +248,6 @@ export const EnvelopeInnerToolbar: React.FC = () => {
       section="recipients"
       groupsOverride={ADDRESS_APPLY_PEEK_TOOLBAR}
       onActionClick={handleRecipientApplyPeekClick}
-    />
-  ) : sandboxActive ? (
-    <Toolbar
-      section="recipients"
-      groupsOverride={archiveSandboxRecipientsEditToolbar}
-      onActionClick={(key) => handleAddressAddClick('recipients', key)}
     />
   ) : (
     <Toolbar

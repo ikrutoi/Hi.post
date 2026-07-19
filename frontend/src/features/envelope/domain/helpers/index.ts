@@ -1,5 +1,6 @@
 export * from './buildSenderToolbarState'
 export * from './buildRecipientToolbarState'
+export * from './buildActiveEnvelopeToolbarState'
 export * from './isAddressInList'
 export * from './resolveAddListToolbarState'
 export * from './addressBookQuickList'
