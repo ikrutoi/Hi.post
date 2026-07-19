@@ -732,11 +732,29 @@ const App = () => {
   )
 
   const handleRightPieCenterHistoryClick = useCallback(() => {
+    /**
+     * Right mode + section peek: center closes peek / returns to list only —
+     * do not cycle to the next postcard.
+     */
+    const wasSectionPeek =
+      rightPieCardphotoPeekNoToolbar ||
+      rightPieCardtextPeekNoToolbar ||
+      rightPieEnvelopePeekNoToolbar ||
+      rightPieAromaPeekNoToolbar ||
+      rightPieDatePeekNoToolbar
+
     setRightPieCardphotoPeekNoToolbar(false)
     setRightPieCardtextPeekNoToolbar(false)
     setRightPieEnvelopePeekNoToolbar(false)
     setRightPieAromaPeekNoToolbar(false)
     setRightPieDatePeekNoToolbar(false)
+    if (wasSectionPeek) {
+      dispatch(clearArchiveEnvelopeSandbox())
+      dispatch(setNotebookStripTab('history'))
+      dispatch(setActiveSection('date'))
+      return
+    }
+
     dispatch(setNotebookStripTab('history'))
     /** `date` + strip «История» — календарь; `history` открывает список через saga. */
     dispatch(setActiveSection('date'))
@@ -824,9 +842,25 @@ const App = () => {
     postcardStatuses,
     openDayPanelState?.dateKey,
     listRowInner,
+    rightPieCardphotoPeekNoToolbar,
+    rightPieCardtextPeekNoToolbar,
+    rightPieEnvelopePeekNoToolbar,
+    rightPieAromaPeekNoToolbar,
+    rightPieDatePeekNoToolbar,
   ])
 
   const handleRightPieCenterCartClick = useCallback(() => {
+    /**
+     * Right mode + section peek: center closes peek / returns to list only —
+     * do not cycle to the next postcard.
+     */
+    const wasSectionPeek =
+      rightPieCardphotoPeekNoToolbar ||
+      rightPieCardtextPeekNoToolbar ||
+      rightPieEnvelopePeekNoToolbar ||
+      rightPieAromaPeekNoToolbar ||
+      rightPieDatePeekNoToolbar
+
     setRightPieCardphotoPeekNoToolbar(false)
     setRightPieCardtextPeekNoToolbar(false)
     setRightPieEnvelopePeekNoToolbar(false)
@@ -835,6 +869,10 @@ const App = () => {
     dispatch(setCartCalendarDatePickMode(false))
     dispatch(setNotebookStripTab('cart'))
     dispatch(setActiveSection('date'))
+    if (wasSectionPeek) {
+      dispatch(clearArchiveEnvelopeSandbox())
+      return
+    }
 
     const freshState = store.getState()
     const freshCardsByDateMap = selectCardsByDateMap(freshState)
@@ -962,6 +1000,11 @@ const App = () => {
     rightListArchiveLocalId,
     openDayPanelState?.dateKey,
     listRowInner,
+    rightPieCardphotoPeekNoToolbar,
+    rightPieCardtextPeekNoToolbar,
+    rightPieEnvelopePeekNoToolbar,
+    rightPieAromaPeekNoToolbar,
+    rightPieDatePeekNoToolbar,
   ])
 
   const handleArchivePieCenterClick = useCallback(() => {
@@ -1632,48 +1675,11 @@ const App = () => {
 
   const handlePostcardPieCartToolbarAction = useCallback(
     (key: string) => {
-      if (key === 'editLight') {
-        if (cardPieCopyStripExpanded) {
-          cardPieCopyClosedByEditRef.current = true
-          dispatch(setCardPieCopyStripExpanded(false))
-          enterCardPieEditFactoryMode()
-          return false
-        }
-        if (activePieSide === 'right') {
-          if (cardPieEditEngaged) {
-            endCardPieEditEngaged()
-            setCardPieEditHydrateScope('all')
-            if (
-              rightListArchiveLocalId != null &&
-              activeSection != null &&
-              (SECTION_EDITOR_MENU_ICON_KEYS as readonly string[]).includes(
-                activeSection,
-              )
-            ) {
-              syncPeekChromeForOpenedSection(activeSection)
-            }
-            return false
-          }
-          enterCardPieEditFactoryMode()
-          return false
-        }
-        enterCardPieEditFactoryMode()
-        return false
-      }
       if (key === 'cardPieCopy') {
         dispatch(setCardPieCopyStripExpanded(!cardPieCopyStripExpanded))
       }
     },
-    [
-      dispatch,
-      cardPieCopyStripExpanded,
-      activePieSide,
-      cardPieEditEngaged,
-      activeSection,
-      rightListArchiveLocalId,
-      enterCardPieEditFactoryMode,
-      syncPeekChromeForOpenedSection,
-    ],
+    [dispatch, cardPieCopyStripExpanded],
   )
   const handleEditorPieToolbarPassthrough = useCallback((key: string) => {
     if (key !== 'editLight' && key !== 'cardPie') return
@@ -1691,23 +1697,9 @@ const App = () => {
   const postcardPieCartToolbarStateOverride = useMemo(
     () =>
       ({
-        editLight:
-          rightListArchiveLocalId != null &&
-          !showTopCardStripFullSpan &&
-          activePieSide === 'right' &&
-          cardPieEditEngaged &&
-          !suppressCardPieEditActiveAfterCopy
-            ? ('active' as const)
-            : ('enabled' as const),
         ...(showTopCardStripFullSpan ? { cardPieCopy: 'active' as const } : {}),
       }) satisfies Record<string, string>,
-    [
-      activePieSide,
-      cardPieEditEngaged,
-      rightListArchiveLocalId,
-      showTopCardStripFullSpan,
-      suppressCardPieEditActiveAfterCopy,
-    ],
+    [showTopCardStripFullSpan],
   )
 
   if (!authInitialized) {
