@@ -121,6 +121,14 @@ $pie-center-cart-blocked-inner-stop: (
   height: 100%;
 }
 
+/**
+ * Список «Заблокированные»: все секторы ч/б.
+ * Центр (жёлто-красный) рендерится вне SVG — цвет не трогаем.
+ */
+.svgCartBlockedMuted {
+  filter: grayscale(1);
+}
+
 .rect {
   fill: var(--pie-rect-fill);
 }
