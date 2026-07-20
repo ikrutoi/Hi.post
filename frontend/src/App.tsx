@@ -113,6 +113,7 @@ import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { applyRightListArchiveToolbarVisuals } from '@toolbar/application/syncRightListArchiveToolbarVisuals'
 import { notebookSessionRestored } from '@date/calendar/application/orchestration/notebookOrchestration.events'
+import { resolveCartArchiveViewMode } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 import { SECTION_EDITOR_MENU_ICON_KEYS } from '@features/toolbar/domain/types/sectionEditorMenu.types'
 import { primaryDispatchDateFromPieInner } from '@features/cardPie/domain/primaryDispatchDateFromPieInner'
 import {
@@ -1028,6 +1029,30 @@ const App = () => {
   const rightPieOnCenterClick =
     rightListArchiveSource != null ? handleArchivePieCenterClick : undefined
 
+  /**
+   * Cart list / cart calendar: center cycles forward.
+   * Section peek: center shows cart or calendar — destination back to the
+   * view the pie was opened from (list panel stays open under peek hide).
+   */
+  const rightPieSectionPeekOpen =
+    rightPieCardphotoPeekNoToolbar ||
+    rightPieCardtextPeekNoToolbar ||
+    rightPieEnvelopePeekNoToolbar ||
+    rightPieAromaPeekNoToolbar ||
+    rightPieDatePeekNoToolbar
+  const cartArchiveViewMode = resolveCartArchiveViewMode({
+    cartListPanelOpen: listPanelOpen,
+    notebookStripTab,
+  })
+  const rightPieCenterAffordance =
+    rightListArchiveSource === 'cart' && rightPieOnCenterClick != null
+      ? rightPieSectionPeekOpen
+        ? cartArchiveViewMode === 'calendar'
+          ? ('calendar' as const)
+          : ('cart' as const)
+        : ('cycleForward' as const)
+      : null
+
   const exitRightPreviewForLeftMode = useCallback(() => {
     dispatch(setCartListSelectedLocalId(null))
     dispatch(setHistoryListSelectedLocalId(null))
@@ -1745,6 +1770,7 @@ const App = () => {
           onHistoryListSelectEntry={handleHistoryListSelectEntry}
           onRightListPieSectorClick={handleRightListPieSectorClick}
           onArchivePieCenterClick={handleArchivePieCenterClick}
+          rightPieCenterAffordance={rightPieCenterAffordance}
         />
       </RightListArchiveMiniProvider>
     )
@@ -2000,6 +2026,7 @@ const App = () => {
                               handleRightListPieSectorClick
                             }
                             onRightPieCenterClick={rightPieOnCenterClick}
+                            rightPieCenterAffordance={rightPieCenterAffordance}
                           />
                         </div>
                         {showRightPostcardPieCartToolbar && (
@@ -2053,6 +2080,9 @@ const App = () => {
                                   handleRightListPieSectorClick
                                 }
                                 onRightPieCenterClick={rightPieOnCenterClick}
+                                rightPieCenterAffordance={
+                                  rightPieCenterAffordance
+                                }
                               />
                             </div>
                             {showRightPostcardPieCartToolbar && (

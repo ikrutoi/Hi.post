@@ -5,6 +5,7 @@ import { MONTH_NAMES } from '@entities/date/constants'
 import {
   IconUsers,
   IconLogo,
+  IconCart,
   IconSectionMenuCardphoto,
   IconSectionMenuCardtext,
   IconSectionMenuEnvelopeV2,
@@ -12,6 +13,7 @@ import {
   IconSectionMenuDate,
   IconCalendarMulti,
 } from '@shared/ui/icons'
+import { FaChevronRight } from 'react-icons/fa'
 import type { DispatchDate } from '@entities/date'
 import { getCurrentDate } from '@shared/utils/date'
 import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
@@ -73,6 +75,7 @@ export const CardPie: React.FC<CardPieProps> = ({
   hideEmptySectorPlaceholders = false,
   sectorsInteractive = true,
   onRightPieCenterClick,
+  rightPieCenterAffordance = null,
   rightPieCenterEmpty = false,
 }) => {
   const pieDefsUid = React.useId().replace(/:/g, '')
@@ -845,11 +848,17 @@ export const CardPie: React.FC<CardPieProps> = ({
             station === 'left' ? !leftCenterActionEnabled : undefined
           }
           aria-label={
-            leftPieCenterPlanCycle
-              ? 'Переключить вид плана'
-              : leftPieCenterOverviewBack
-                ? 'Показать общий вид плана'
-                : 'Hidragonfly.com'
+            station === 'right' && rightPieCenterAffordance === 'cycleForward'
+              ? 'Следующая открытка'
+              : station === 'right' && rightPieCenterAffordance === 'cart'
+                ? 'Вернуться к списку корзины'
+                : station === 'right' && rightPieCenterAffordance === 'calendar'
+                  ? 'Вернуться к календарю корзины'
+                  : leftPieCenterPlanCycle
+                    ? 'Переключить вид плана'
+                    : leftPieCenterOverviewBack
+                      ? 'Показать общий вид плана'
+                      : 'Hidragonfly.com'
           }
           onPointerDown={(e) => {
             e.stopPropagation()
@@ -901,8 +910,27 @@ export const CardPie: React.FC<CardPieProps> = ({
                   rightPieCenterEmpty
                     ? styles.pieCenterIndicatorEmpty
                     : styles[status ?? ''],
+                  rightPieCenterAffordance != null &&
+                    styles.pieCenterIndicatorWithAffordance,
                 )}
-              ></span>
+              >
+                {rightPieCenterAffordance === 'cycleForward' ? (
+                  <FaChevronRight
+                    className={styles.pieCenterAffordanceIcon}
+                    aria-hidden
+                  />
+                ) : rightPieCenterAffordance === 'cart' ? (
+                  <IconCart
+                    className={styles.pieCenterAffordanceIcon}
+                    aria-hidden
+                  />
+                ) : rightPieCenterAffordance === 'calendar' ? (
+                  <IconSectionMenuDate
+                    className={styles.pieCenterAffordanceIcon}
+                    aria-hidden
+                  />
+                ) : null}
+              </span>
             )}
           </span>
         </button>

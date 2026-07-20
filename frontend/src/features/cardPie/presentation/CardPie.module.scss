@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
 
 /** Shared center disc for left (logo) and right (status) CardPie. */
 $pie-center-indicator-size: 1.75rem;
@@ -295,6 +296,16 @@ $pie-center-cart-blocked-inner-stop: (
     height: 100%;
     fill: currentColor;
   }
+
+  /** Выше специфичности, чем `svg` выше — иначе иконка всегда 100% круга. */
+  svg.pieCenterAffordanceIcon {
+    width: iconButton.$toolbar-icon-size-standard;
+    height: iconButton.$toolbar-icon-size-standard;
+    flex-shrink: 0;
+    color: #fff;
+    fill: currentColor;
+    filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.35));
+  }
 }
 
 .hubContainer:not(.hubContainerRight) .pieCenterButton {
@@ -441,6 +452,12 @@ $pie-center-cart-blocked-inner-stop: (
   &.error {
     background-color: $color-preview-indicator-error;
   }
+}
+
+.pieCenterIndicatorWithAffordance {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .pieCenterIndicatorEmpty {

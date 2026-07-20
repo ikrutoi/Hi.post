@@ -50,6 +50,12 @@ export interface CardPieProps {
   sectorsInteractive?: boolean
   /** Правый пирог: центральная кнопка (напр. переход к календарю истории на месяц открытки). */
   onRightPieCenterClick?: () => void
+  /**
+   * Правый пирог (корзина): affordance в центре —
+   * `cycleForward` — листание;
+   * `cart` / `calendar` — закрыть peek и вернуть список / календарь корзины.
+   */
+  rightPieCenterAffordance?: 'cycleForward' | 'cart' | 'calendar' | null
   /** Правый пирог: серый центр без индикатора статуса (пустой archive preview). */
   rightPieCenterEmpty?: boolean
 }

@@ -28,4 +28,6 @@ export type MobileAppShellProps = {
   onHistoryListSelectEntry: (item: HistoryListPanelItem) => void
   onRightListPieSectorClick: (section: CardSection) => void
   onArchivePieCenterClick?: () => void
+  /** Cart: cycle / back-to-list / back-to-calendar affordance on archive CardPie center. */
+  rightPieCenterAffordance?: 'cycleForward' | 'cart' | 'calendar' | null
 }

@@ -173,6 +173,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   onHistoryListSelectEntry,
   onRightListPieSectorClick,
   onArchivePieCenterClick,
+  rightPieCenterAffordance = null,
 }) => {
   const dispatch = useAppDispatch()
   const shellRef = useRef<HTMLDivElement>(null)
@@ -961,6 +962,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                             handleRightListArchivePieSectorClick
                           }
                           onRightPieCenterClick={onArchivePieCenterClick}
+                          rightPieCenterAffordance={rightPieCenterAffordance}
                         />
                       ) : mobileCentralPieDisplay === 'cardphotoTemplate' &&
                         mobileCardphotoListTemplatePreview != null ? (
