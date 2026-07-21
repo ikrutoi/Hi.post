@@ -9,8 +9,9 @@ $pie-center-logo-size-pressed: 2.4rem;
 $pie-center-logo-hit-size: 3.4rem;
 $pie-center-right-hit-size: 3rem;
 $pie-center-logo-press-duration: 0.28s;
-/** Жёлтое кольцо вокруг красной заливки (`cartBlocked`), доля от диаметра круга. */
-$pie-center-cart-blocked-ring-ratio: 0.225;
+/** Жёлтое кольцо вокруг красной заливки (`cartBlocked`), доля от диаметра круга.
+ * Inner red radius = (1 − 2×ratio) × outer → 0.15 ⇒ 70%. */
+$pie-center-cart-blocked-ring-ratio: 0.15;
 $pie-center-cart-blocked-ring: $pie-center-indicator-size *
   $pie-center-cart-blocked-ring-ratio;
 $pie-center-cart-blocked-ring-right: $pie-center-indicator-size *
@@ -394,7 +395,7 @@ $pie-center-cart-blocked-inner-stop: (
 
   /**
    * Мини-диск: жёлтое кольцо + красный центр в той же доле, что у центрального
-   * CardPie (`ring = 0.225 × диаметр`). Border-% на маленьком круге ненадёжен.
+   * CardPie (`ring = 0.15 × диаметр` → красный 70% радиуса). Border-% на маленьком круге ненадёжен.
    */
   &.cartBlocked {
     box-sizing: border-box;
