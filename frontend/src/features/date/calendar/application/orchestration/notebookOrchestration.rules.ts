@@ -14,6 +14,7 @@ import {
   setNotebookStripDateOverHistory,
   setNotebookStripTab,
 } from '@date/calendar/infrastructure/state'
+import { archiveCalendarViewEntered } from '@date/calendar/application/orchestration/notebookOrchestration.events'
 import type { DateStripSection } from '@date/presentation/dateStripSection.types'
 import type { CardMenuSection } from '@shared/config/constants'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
@@ -92,6 +93,7 @@ export const buildCartCalendarCommands = (): UnknownAction[] => [
   setCartCalendarDatePickMode(false),
   setNotebookStripTab('cart'),
   setActiveSection('date'),
+  archiveCalendarViewEntered('cart'),
 ]
 
 /** Список корзины (desktop sidebar / mobile). */
@@ -122,6 +124,7 @@ export const buildNotebookCartTabCommandsMobile = (): UnknownAction[] => [
   setCartCalendarDatePickMode(false),
   setNotebookStripTab('cart'),
   setActiveSection('date'),
+  archiveCalendarViewEntered('cart'),
 ]
 
 /** Mobile header History tab: календарь в режиме «История», без списка. */
@@ -131,6 +134,7 @@ export const buildNotebookHistoryTabCommandsMobile = (): UnknownAction[] => [
   closeDayPanel(),
   setNotebookStripTab('history'),
   setActiveSection('date'),
+  archiveCalendarViewEntered('history'),
 ]
 
 /** @deprecated Используйте `buildCartListCommands` или `buildCartArchiveToggleCommands`. */
@@ -149,6 +153,7 @@ export const buildHistoryCalendarCommandsDesktop = (): UnknownAction[] => [
   closeDayPanel(),
   setNotebookStripTab('history'),
   setActiveSection('history'),
+  archiveCalendarViewEntered('history'),
 ]
 
 /** Список истории (desktop sidebar / mobile). */

@@ -8,13 +8,22 @@ import {
   setCartListSelectedLocalId,
   setCartListStatusSegment,
 } from '@cart/infrastructure/state'
-import { selectCartItems, selectCartListPanelOpen } from '@cart/infrastructure/selectors'
+import {
+  selectCartItems,
+  selectCartListPanelOpen,
+  selectCartListSelectedLocalId,
+} from '@cart/infrastructure/selectors'
 import {
   setHistoryListSelectedLocalId,
   setNotebookStripTab,
   updateLastViewedCalendarDate,
 } from '@date/calendar/infrastructure/state'
-import { selectIsHistoryListPanelOpen } from '@date/calendar/infrastructure/selectors'
+import {
+  selectHistoryListSelectedLocalId,
+  selectIsHistoryListPanelOpen,
+} from '@date/calendar/infrastructure/selectors'
+import { archiveCalendarViewEntered } from '@date/calendar/application/orchestration/notebookOrchestration.events'
+import { syncArchiveCenterPostcardCalendarView } from '@date/calendar/application/logic/archiveCenterCalendarSync'
 import type { DateStripSection } from '@date/presentation/dateStripSection.types'
 import {
   calendarViewDateForPostcard,
@@ -128,7 +137,31 @@ function* handleCartItemAdded(
   )
 }
 
+/** Вход в календарь корзины/истории: месяц = дата открытки в центральном CardPie. */
+function* handleArchiveCalendarViewEntered(
+  action: PayloadAction<'cart' | 'history'>,
+): SagaIterator {
+  const source = action.payload
+  const state: RootState = yield select()
+  const localId =
+    source === 'cart'
+      ? selectCartListSelectedLocalId(state)
+      : selectHistoryListSelectedLocalId(state)
+  if (localId == null) return
+
+  syncArchiveCenterPostcardCalendarView(
+    store.dispatch,
+    store.getState,
+    localId,
+    { includeDayPanel: false },
+  )
+}
+
 export function* watchStripDefaultSelection(): SagaIterator {
   yield takeEvery(setNotebookStripTab.type, handleNotebookStripTabChanged)
   yield takeEvery(addItem.type, handleCartItemAdded)
+  yield takeEvery(
+    archiveCalendarViewEntered.type,
+    handleArchiveCalendarViewEntered,
+  )
 }

@@ -25,13 +25,17 @@ export function syncArchiveCenterPostcardCalendarView(
   dispatch: AppDispatch,
   getState: () => RootState,
   localId: number,
+  options?: { includeDayPanel?: boolean },
 ): void {
+  const includeDayPanel = options?.includeDayPanel !== false
   const postcard =
     selectCartItems(getState()).find((item) => item.localId === localId) ??
     null
   if (postcard == null || !isFilledDispatchDate(postcard.date)) return
 
   dispatch(updateLastViewedCalendarDate(calendarViewDateForPostcard(postcard)))
+
+  if (!includeDayPanel) return
 
   const dateKey = dispatchDateKeyFromPostcard(postcard)
   const dayData = selectCardsByDateMap(getState())[dateKey]

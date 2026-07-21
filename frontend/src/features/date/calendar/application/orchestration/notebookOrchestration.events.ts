@@ -31,6 +31,14 @@ export const notebookSessionRestored = createAction<{
 }>('calendar/notebookSessionRestored')
 
 /**
+ * Календарь корзины/истории только что открыт (список закрыт).
+ * Сага якорит месяц/год на открытку в центральном CardPie, если она выбрана.
+ */
+export const archiveCalendarViewEntered = createAction<'cart' | 'history'>(
+  'calendar/archiveCalendarViewEntered',
+)
+
+/**
  * Пользователь выбрал день в календаре в режиме `cartCalendarDatePickMode`:
  * сага обновляет дату открытки `localId` и переводит сегмент списка на `cart`.
  * Режим pick остаётся включённым (повторный выбор), пока пользователь не выйдет из edit.
