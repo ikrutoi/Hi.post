@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback } from 'react'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
@@ -11,7 +11,6 @@ import { MobileDateCalendarToolbarNav } from '@date/dateHeader/presentation/Mobi
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { selectIsCardtextEditorComposerVisible } from '@cardtext/infrastructure/selectors'
 import { toolbarAction } from '@toolbar/application/helpers'
-import { AROMA_UPPER_APPLY_TOOLBAR } from '@toolbar/domain/types/aroma.types'
 import { CARDTEXT_EDITOR_UPPER_RETURN_TOOLBAR } from '@toolbar/domain/types/cardtext.types'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
@@ -41,10 +40,6 @@ export const CardSectionToolbar: React.FC = () => {
     showCalendarToolbar && isMobileLayout
   const showMobileAromaUpperToolbar =
     activeSection === 'aroma' && isMobileLayout
-  const aromaUpperApplyToolbar = useMemo(
-    () => (showMobileAromaUpperToolbar ? AROMA_UPPER_APPLY_TOOLBAR : undefined),
-    [showMobileAromaUpperToolbar],
-  )
 
   const handleCardtextEditorReturn = useCallback(
     (key: IconKey) => {
@@ -97,7 +92,6 @@ export const CardSectionToolbar: React.FC = () => {
         <div className={styles.cardSectionToolbarAromaUpper}>
           <Toolbar
             section="aroma"
-            groupsOverride={aromaUpperApplyToolbar}
             className={toolbarStyles.toolbarAromaUpperApply}
           />
         </div>

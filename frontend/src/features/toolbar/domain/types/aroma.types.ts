@@ -19,9 +19,6 @@ export const AROMA_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-/** Mobile factory upper row: apply слева. */
-export const AROMA_UPPER_APPLY_TOOLBAR: ToolbarConfig = AROMA_TOOLBAR
-
 export const initialAromaToolbarState: AromaToolbarState = {
   ...Object.fromEntries(flattenIcons(AROMA_TOOLBAR)),
   config: [...AROMA_TOOLBAR],
