@@ -21,6 +21,7 @@ import {
 import {
   selectHistoryListSelectedLocalId,
   selectIsHistoryListPanelOpen,
+  selectRightListArchiveCardPieHighlightDispatchDate,
 } from '@date/calendar/infrastructure/selectors'
 import { archiveCalendarViewEntered } from '@date/calendar/application/orchestration/notebookOrchestration.events'
 import { syncArchiveCenterPostcardCalendarView } from '@date/calendar/application/logic/archiveCenterCalendarSync'
@@ -137,12 +138,25 @@ function* handleCartItemAdded(
   )
 }
 
-/** Вход в календарь корзины/истории: месяц = дата открытки в центральном CardPie. */
+/** Вход в календарь корзины/истории: месяц = дата открытки в центральном CardPie
+ * (основной месяц даты отправки, не соседний месяц сетки, где день виден в padding). */
 function* handleArchiveCalendarViewEntered(
   action: PayloadAction<'cart' | 'history'>,
 ): SagaIterator {
   const source = action.payload
   const state: RootState = yield select()
+
+  const highlightDate = selectRightListArchiveCardPieHighlightDispatchDate(state)
+  if (highlightDate != null) {
+    yield put(
+      updateLastViewedCalendarDate({
+        year: highlightDate.year,
+        month: highlightDate.month,
+      }),
+    )
+    return
+  }
+
   const localId =
     source === 'cart'
       ? selectCartListSelectedLocalId(state)

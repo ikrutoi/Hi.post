@@ -10,6 +10,7 @@ import {
   setCardPieListPanelOpen,
   setHistoryListPanelOpen,
   setHistoryListSelectedLocalId,
+  updateLastViewedCalendarDate,
 } from '../../../calendar/infrastructure/state/calendar.slice'
 import {
   selectCartCalendarDatePickLocalId,
@@ -149,6 +150,15 @@ export const useCalendarCellController = ({
     )
     if (primaryLid != null) {
       dispatch(setHistoryListSelectedLocalId(primaryLid))
+      const postcard = cartItems.find((p) => p.localId === primaryLid)
+      if (postcard?.date != null) {
+        dispatch(
+          updateLastViewedCalendarDate({
+            year: postcard.date.year,
+            month: postcard.date.month,
+          }),
+        )
+      }
     }
   }
 
@@ -166,6 +176,18 @@ export const useCalendarCellController = ({
       notebookStripTabIsCart: notebookStripTab === 'cart',
     })
 
+    const syncViewToPostcardMonth = (localId: number) => {
+      const postcard = cartItems.find((p) => p.localId === localId)
+      if (postcard?.date == null) return
+      /** Основной месяц даты отправки — не соседний месяц сетки (dayAfter/dayBefore). */
+      dispatch(
+        updateLastViewedCalendarDate({
+          year: postcard.date.year,
+          month: postcard.date.month,
+        }),
+      )
+    }
+
     if (result.kind === 'cycle') {
       dispatch(
         setCartListStatusSegment(
@@ -173,6 +195,7 @@ export const useCalendarCellController = ({
         ),
       )
       dispatch(setCartListSelectedLocalId(result.localId))
+      syncViewToPostcardMonth(result.localId)
       return
     }
 
@@ -184,6 +207,7 @@ export const useCalendarCellController = ({
       ),
     )
     dispatch(setCartListSelectedLocalId(result.localId))
+    syncViewToPostcardMonth(result.localId)
   }
 
   const handleCellClickLogic = ({
