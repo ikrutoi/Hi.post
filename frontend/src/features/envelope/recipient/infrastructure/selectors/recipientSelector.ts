@@ -112,14 +112,50 @@ export const selectRecipientApplied = (state: RootState): string[] =>
   state.recipient.applied ?? EMPTY_STRINGS
 
 export const selectAppliedRecipientDisplayAddress = createSelector(
-  [selectRecipientState, selectRecipientEntriesState],
-  (recipient, entries): Readonly<AddressFields> => {
-    if (recipient.appliedData != null) return recipient.appliedData
+  [
+    selectRecipientState,
+    selectRecipientEntriesState,
+    selectEnvelopeRecipientsList,
+  ],
+  (recipient, entries, envelopeRecipients): Readonly<AddressFields> => {
+    if (recipient.appliedData != null) {
+      const hasFields = Object.values(recipient.appliedData).some(
+        (v) => (v ?? '').toString().trim() !== '',
+      )
+      if (hasFields) return recipient.appliedData
+    }
+
     const appliedId = recipient.applied?.[0]
     if (appliedId) {
       const entry = entries.find((e: { id: string }) => e.id === appliedId)
       if (entry?.address) return entry.address as AddressFields
+
+      const envelopeRow = envelopeRecipients.find(
+        (row) => row.recipientViewId === appliedId,
+      )
+      if (envelopeRow?.appliedData != null) {
+        const hasFields = Object.values(envelopeRow.appliedData).some(
+          (v) => (v ?? '').toString().trim() !== '',
+        )
+        if (hasFields) return envelopeRow.appliedData
+      }
+      if (envelopeRow?.viewDraft != null) {
+        const hasFields = Object.values(envelopeRow.viewDraft).some(
+          (v) => (v ?? '').toString().trim() !== '',
+        )
+        if (hasFields) return envelopeRow.viewDraft
+      }
     }
+
+    /** После session restore appliedData часто null, а адрес уже в viewDraft. */
+    for (const draft of [recipient.viewDraft, recipient.formDraft] as const) {
+      if (draft == null) continue
+      const hasFields = Object.values(draft).some(
+        (v) => (v ?? '').toString().trim() !== '',
+      )
+      if (hasFields) return draft
+    }
+
     return initialSection.data
   },
 )
