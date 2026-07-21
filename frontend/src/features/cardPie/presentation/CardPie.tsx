@@ -80,6 +80,21 @@ export const CardPie: React.FC<CardPieProps> = ({
 }) => {
   const pieDefsUid = React.useId().replace(/:/g, '')
   const [centerPressSeq, setCenterPressSeq] = React.useState(0)
+  /** Иконка affordance появляется с задержкой — круг статуса сначала «чистый». */
+  const [visibleRightPieCenterAffordance, setVisibleRightPieCenterAffordance] =
+    React.useState<typeof rightPieCenterAffordance>(null)
+
+  React.useEffect(() => {
+    if (rightPieCenterAffordance == null) {
+      setVisibleRightPieCenterAffordance(null)
+      return
+    }
+    setVisibleRightPieCenterAffordance(null)
+    const timerId = window.setTimeout(() => {
+      setVisibleRightPieCenterAffordance(rightPieCenterAffordance)
+    }, 200)
+    return () => window.clearTimeout(timerId)
+  }, [rightPieCenterAffordance])
   const photoFillId = `${pieDefsUid}-photo-apply`
   const photoEmptyFillId = `${pieDefsUid}-photo-empty`
   const cardtextFillId = `${pieDefsUid}-cardtext-fill`
@@ -910,21 +925,21 @@ export const CardPie: React.FC<CardPieProps> = ({
                   rightPieCenterEmpty
                     ? styles.pieCenterIndicatorEmpty
                     : styles[status ?? ''],
-                  rightPieCenterAffordance != null &&
+                  visibleRightPieCenterAffordance != null &&
                     styles.pieCenterIndicatorWithAffordance,
                 )}
               >
-                {rightPieCenterAffordance === 'cycleForward' ? (
+                {visibleRightPieCenterAffordance === 'cycleForward' ? (
                   <FaChevronRight
                     className={styles.pieCenterAffordanceIcon}
                     aria-hidden
                   />
-                ) : rightPieCenterAffordance === 'cart' ? (
+                ) : visibleRightPieCenterAffordance === 'cart' ? (
                   <IconCart
                     className={styles.pieCenterAffordanceIcon}
                     aria-hidden
                   />
-                ) : rightPieCenterAffordance === 'calendar' ? (
+                ) : visibleRightPieCenterAffordance === 'calendar' ? (
                   <IconSectionMenuDate
                     className={styles.pieCenterAffordanceIcon}
                     aria-hidden
