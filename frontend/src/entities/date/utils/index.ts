@@ -2,6 +2,7 @@ export { formatSelectedDispatchDate } from './formatSelectedDispatchDate'
 export {
   isDisabledDate,
   isDispatchDateDisabledForOrder,
+  earliestAllowedDispatchCalendarView,
 } from './isDisabledDate'
 export type { OrderCalendarCurrentDate } from './isDisabledDate'
 export { isSameDispatchDate } from './isSameDispatchDate'

@@ -15,7 +15,6 @@ import {
   setNotebookStripTab,
   updateLastViewedCalendarDate,
 } from '@date/calendar/infrastructure/state'
-import { selectFirstDayOfWeek } from '@date/infrastructure/selectors'
 import { HistoryListPieEntry } from '@date/presentation/historyList/HistoryListPieEntry'
 import { getCurrentDate } from '@shared/utils/date'
 import { getToolbarIcon } from '@shared/utils/icons'
@@ -84,7 +83,6 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
     selectCartCalendarDatePickLocalId,
   )
   const lastViewedCalendarDate = useAppSelector(selectLastCalendarViewDate)
-  const firstDayOfWeek = useAppSelector(selectFirstDayOfWeek)
 
   /** Подсветка строки в режиме dateEdit — только если она про эту открытку. */
   const dateEditHighlight =
@@ -104,8 +102,6 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
         }
         dispatch(setNotebookStripDateOverCart(false))
         const pickView = resolveCartDatePickCalendarViewDate({
-          calendarViewDate: lastViewedCalendarDate,
-          firstDayOfWeek,
           currentDate: now,
         })
         if (
@@ -125,7 +121,6 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
     [
       dispatch,
       dateEditHighlight,
-      firstDayOfWeek,
       isBlockedEntry,
       lastViewedCalendarDate,
       notebookStripTab,

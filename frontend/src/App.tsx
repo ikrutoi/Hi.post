@@ -16,7 +16,6 @@ import {
   selectHistoryOpenDayPanelArchiveLocalId,
   selectIsCardPieListPanelOpen,
   selectIsHistoryListPanelOpen,
-  selectLastCalendarViewDate,
   selectNotebookDateTabPeekClearTick,
   selectComputedNotebookStripTab,
   selectNotebookStripTab,
@@ -132,7 +131,6 @@ import { MarkStampYearDevProvider, useMarkStampYearDev } from '@envelope/applica
 import { MobileAppShell } from '@layout/presentation/MobileAppShell'
 import styles from './App.module.scss'
 import { store } from '@app/state/store'
-import { selectFirstDayOfWeek } from '@date/infrastructure/selectors'
 import { getCurrentDate } from '@shared/utils/date'
 
 function MarkStampYearDevButtons() {
@@ -1687,8 +1685,6 @@ const App = () => {
       dispatch(closeDayPanel())
       const now = getCurrentDate()
       const pickView = resolveCartDatePickCalendarViewDate({
-        calendarViewDate: selectLastCalendarViewDate(store.getState()),
-        firstDayOfWeek: selectFirstDayOfWeek(store.getState()),
         currentDate: now,
       })
       dispatch(updateLastViewedCalendarDate(pickView))

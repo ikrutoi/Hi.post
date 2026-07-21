@@ -27,6 +27,22 @@ function earliestAllowedDispatchMidnight(
   return earliest.setHours(0, 0, 0, 0)
 }
 
+/** Месяц/год первой даты, доступной для заказа (сегодня + lead). */
+export function earliestAllowedDispatchCalendarView(
+  currentDate: OrderCalendarCurrentDate,
+): CalendarViewDate {
+  const earliest = new Date(
+    currentDate.year,
+    currentDate.month,
+    currentDate.day,
+  )
+  earliest.setDate(earliest.getDate() + DISPATCH_MIN_LEAD_DAYS)
+  return {
+    year: earliest.getFullYear(),
+    month: earliest.getMonth(),
+  }
+}
+
 export function isDispatchDateDisabledForOrder(
   d: DispatchDate,
   currentDate: OrderCalendarCurrentDate,
