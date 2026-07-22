@@ -256,6 +256,18 @@ const archiveEnvelopeSandboxSlice = createSlice({
       state.recipient.appliedData =
         action.payload.data.length === 1 ? action.payload.data[0] : null
     },
+
+    clearArchiveSenderFormData(state) {
+      state.sender.formDraft = { ...initialSender.formDraft }
+      state.sender.formIsComplete = false
+      state.sender.formIsEmpty = true
+    },
+
+    clearArchiveRecipientFormData(state) {
+      state.recipient.formDraft = { ...initialRecipient.formDraft }
+      state.recipient.formIsComplete = false
+      state.recipient.formIsEmpty = true
+    },
   },
 })
 
@@ -273,6 +285,8 @@ export const {
   setArchiveRecipientViewId,
   setArchiveRecipientApplied,
   setArchiveRecipientAppliedWithData,
+  clearArchiveSenderFormData,
+  clearArchiveRecipientFormData,
 } = archiveEnvelopeSandboxSlice.actions
 
 export default archiveEnvelopeSandboxSlice.reducer

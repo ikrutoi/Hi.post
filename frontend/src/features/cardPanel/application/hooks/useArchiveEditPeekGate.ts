@@ -15,6 +15,10 @@ import {
 import { selectCardtextState } from '@cardtext/infrastructure/selectors'
 import { selectAppliedRecipientDisplayAddress } from '@envelope/recipient/infrastructure/selectors'
 import { selectAppliedSenderDisplayAddress } from '@envelope/sender/infrastructure/selectors'
+import {
+  selectArchiveEnvelopeSandboxActive,
+  selectArchiveEnvelopeSandboxLocalId,
+} from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import { selectSelectedAroma } from '@aroma/infrastructure/selectors'
 import { selectSelectedDates } from '@date/infrastructure/selectors'
 
@@ -28,6 +32,8 @@ export function useArchiveEditPeekGate(section: CardPanelSection): boolean {
     cardPieEditEngaged,
     listRowInner,
     listRowLocalId,
+    listRowPostcardStatus,
+    mirrorListArchiveSource,
   } = useRightListArchiveMini()
 
   const cartItems = useAppSelector(selectCartItems)
@@ -38,6 +44,8 @@ export function useArchiveEditPeekGate(section: CardPanelSection): boolean {
     selectAppliedRecipientDisplayAddress,
   )
   const appliedSenderAddress = useAppSelector(selectAppliedSenderDisplayAddress)
+  const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
+  const sandboxLocalId = useAppSelector(selectArchiveEnvelopeSandboxLocalId)
   const selectedAroma = useAppSelector(selectSelectedAroma)
   const selectedDates = useAppSelector(selectSelectedDates)
 
@@ -65,6 +73,21 @@ export function useArchiveEditPeekGate(section: CardPanelSection): boolean {
       )
     }
 
+    /**
+     * Cart envelope: data is in archiveEnvelopeSandbox (not assembly session).
+     * Hold peek only until sandbox for this row is loaded — do not require
+     * appliedData match (postcardEdit clears apply into viewDraft).
+     */
+    if (section === 'envelope') {
+      const expectsCartSandbox =
+        mirrorListArchiveSource === 'cart' ||
+        listRowPostcardStatus === 'cart' ||
+        listRowPostcardStatus === 'cartBlocked'
+      if (expectsCartSandbox) {
+        return !(sandboxActive && sandboxLocalId === listRowLocalId)
+      }
+    }
+
     return !isMirrorSectionAppliedToEditor(
       section,
       listRowInner,
@@ -84,6 +107,8 @@ export function useArchiveEditPeekGate(section: CardPanelSection): boolean {
     activePieSide,
     listRowInner,
     listRowLocalId,
+    listRowPostcardStatus,
+    mirrorListArchiveSource,
     cartItems,
     cardphotoAppliedData,
     cardphotoAssetData,
@@ -91,6 +116,8 @@ export function useArchiveEditPeekGate(section: CardPanelSection): boolean {
     cardtextState?.assetData,
     appliedRecipientAddress,
     appliedSenderAddress,
+    sandboxActive,
+    sandboxLocalId,
     selectedAroma,
     selectedDates,
   ])

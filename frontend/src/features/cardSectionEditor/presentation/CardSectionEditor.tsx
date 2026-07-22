@@ -39,11 +39,15 @@ export const CardSectionEditor: React.FC = () => {
     showMobileTemplateList,
     showMobileSectionTemplateList,
     showMobileTemplateListInCentralZone,
+    showMobileAddressListFactoryChrome,
     mobileDateListChromePeek,
     mobileArchiveSectionPeek,
   } = useMobileFactoryListChrome()
 
   const mobileSectionSurface = useMemo((): MobileFactorySectionSurface => {
+    if (showMobileAddressListFactoryChrome) {
+      return 'envelope'
+    }
     if (cartListPanelOpen && !mobileDateListChromePeek) {
       return 'date-cart'
     }
@@ -82,9 +86,13 @@ export const CardSectionEditor: React.FC = () => {
     mobileDateListChromePeek,
     cartListPanelOpen,
     historyListPanelOpen,
+    showMobileAddressListFactoryChrome,
   ])
 
   const mobileTemplateList = useMemo(() => {
+    if (showMobileAddressListFactoryChrome) {
+      return <AddressListMobileSlot />
+    }
     if (cartListPanelOpen) {
       return <MobileCartListSlot />
     }
@@ -101,7 +109,12 @@ export const CardSectionEditor: React.FC = () => {
       default:
         return null
     }
-  }, [activeSection, cartListPanelOpen, historyListPanelOpen])
+  }, [
+    activeSection,
+    cartListPanelOpen,
+    historyListPanelOpen,
+    showMobileAddressListFactoryChrome,
+  ])
 
   const width = sizeCard.width
   const height = sizeCard.height

@@ -25,6 +25,8 @@ export {
   setArchiveRecipientViewId,
   setArchiveRecipientApplied,
   setArchiveRecipientAppliedWithData,
+  clearArchiveSenderFormData,
+  clearArchiveRecipientFormData,
 } from './archiveEnvelopeSandbox.slice'
 
 export { default as CardPanelReducer } from './cardPanel.slice'

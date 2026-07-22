@@ -63,7 +63,10 @@ export const MobileFactoryToolbarShell: React.FC = () => {
     (activeSection === 'date' || activeSection === 'history')
 
   const showPeekEmptyToolbarShell =
-    isMobileLayout && mobileSectionSimplifiedPeek && !envelopeAddressCreateMode
+    isMobileLayout &&
+    mobileSectionSimplifiedPeek &&
+    !envelopeAddressCreateMode &&
+    !showMobileAddressListFactoryChrome
 
   const showUpperContent = !hideUpperToolbar
   const showMobileListFactoryUpper =
@@ -111,25 +114,21 @@ export const MobileFactoryToolbarShell: React.FC = () => {
           ) : (
             <ArchivePeekUpperToolbar />
           )
-        ) : (
-          <>
-            {showMobileCardphotoListFactoryChrome ? (
-              <CardphotoListMobileFactoryUpperToolbar />
-            ) : showMobileCardtextListFactoryChrome ? (
-              <CardtextListMobileFactoryUpperToolbar />
-            ) : showMobileAddressListFactoryChrome ? (
-              <AddressListMobileFactoryUpperToolbar />
-            ) : showMobileCartListFactoryChrome ? (
-              <CartListMobileFactoryUpperToolbar />
-            ) : showMobileHistoryListFactoryChrome ? (
-              <HistoryListMobileFactoryUpperToolbar />
-            ) : showSectionUpperToolbar ? (
-              <CardSectionToolbar />
-            ) : showMobileDateCalendarNavRow ? (
-              <MobileDateCalendarToolbarNav />
-            ) : null}
-          </>
-        )}
+        ) : showMobileCardphotoListFactoryChrome ? (
+          <CardphotoListMobileFactoryUpperToolbar />
+        ) : showMobileCardtextListFactoryChrome ? (
+          <CardtextListMobileFactoryUpperToolbar />
+        ) : showMobileAddressListFactoryChrome ? (
+          <AddressListMobileFactoryUpperToolbar />
+        ) : showMobileCartListFactoryChrome ? (
+          <CartListMobileFactoryUpperToolbar />
+        ) : showMobileHistoryListFactoryChrome ? (
+          <HistoryListMobileFactoryUpperToolbar />
+        ) : showSectionUpperToolbar ? (
+          <CardSectionToolbar />
+        ) : showMobileDateCalendarNavRow ? (
+          <MobileDateCalendarToolbarNav />
+        ) : null}
       </div>
       <div
         className={clsx(

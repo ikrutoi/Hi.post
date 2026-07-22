@@ -210,8 +210,17 @@ export function useMobileFactoryListChrome() {
   const mobileDateListChromePeek =
     mobileSectionSimplifiedPeek || cartCalendarDatePickMode
 
+  /**
+   * If Redux opened the address book on envelope, mount it. Do not gate on
+   * `rightPieEnvelopePeekNoToolbar`: cart peek keeps that flag true (to hide
+   * the cart list) while the envelope editor is still interactive.
+   */
+  const envelopeAddressListVisible =
+    isMobileLayout && activeSection === 'envelope' && addressListPanelOpen
+
   const showMobileSectionTemplateList = useMemo(() => {
     if (!isMobileLayout) return false
+    if (envelopeAddressListVisible) return true
     if (mobileSectionSimplifiedPeek) return false
     if (
       activeSection === 'cardphoto' &&
@@ -227,32 +236,28 @@ export function useMobileFactoryListChrome() {
     ) {
       return true
     }
-    if (
-      activeSection === 'envelope' &&
-      addressListPanelOpen &&
-      !rightPieEnvelopePeekNoToolbar
-    ) {
-      return true
-    }
     return false
   }, [
     isMobileLayout,
+    envelopeAddressListVisible,
     mobileSectionSimplifiedPeek,
     activeSection,
     cardphotoListPanelOpen,
     cardtextListPanelOpen,
-    addressListPanelOpen,
     rightPieCardphotoPeekNoToolbar,
     rightPieCardtextPeekNoToolbar,
-    rightPieEnvelopePeekNoToolbar,
   ])
 
   const showMobileTemplateList = useMemo(() => {
     if (!isMobileLayout) return false
-    /** Списки корзины/истории выше режима section-edit. */
+    /**
+     * Address book wins over cart/history: right cart peek keeps cartListPanelOpen
+     * in Redux while hiding it via peek chrome — opening addressList must still
+     * mount AddressListMobileSlot, not MobileCartListSlot.
+     */
+    if (envelopeAddressListVisible) return true
     if (cartListPanelOpen && !mobileDateListChromePeek) return true
     if (historyListPanelOpen && !mobileDateListChromePeek) return true
-    if (cardPieEditEngaged) return false
     if (mobileSectionSimplifiedPeek) return false
     if (
       activeSection === 'cardphoto' &&
@@ -268,28 +273,19 @@ export function useMobileFactoryListChrome() {
     ) {
       return true
     }
-    if (
-      activeSection === 'envelope' &&
-      addressListPanelOpen &&
-      !rightPieEnvelopePeekNoToolbar
-    ) {
-      return true
-    }
     return false
   }, [
     isMobileLayout,
-    cardPieEditEngaged,
+    envelopeAddressListVisible,
     mobileDateListChromePeek,
     cartListPanelOpen,
     historyListPanelOpen,
     activeSection,
     cardphotoListPanelOpen,
     cardtextListPanelOpen,
-    addressListPanelOpen,
     mobileSectionSimplifiedPeek,
     rightPieCardphotoPeekNoToolbar,
     rightPieCardtextPeekNoToolbar,
-    rightPieEnvelopePeekNoToolbar,
   ])
 
   const showMobileHistoryListFactoryChrome = useMemo(
@@ -310,6 +306,8 @@ export function useMobileFactoryListChrome() {
 
   const hideUpperToolbar = useMemo(() => {
     if (!isMobileLayout) return false
+    /** Address list chrome needs the upper row (return / density). */
+    if (envelopeAddressListVisible) return false
     if (mobileSectionSimplifiedPeek) {
       return true
     }
@@ -325,6 +323,7 @@ export function useMobileFactoryListChrome() {
     return false
   }, [
     isMobileLayout,
+    envelopeAddressListVisible,
     mobileSectionSimplifiedPeek,
     showMobileTemplateList,
     showMobileSectionTemplateList,
@@ -363,17 +362,8 @@ export function useMobileFactoryListChrome() {
   )
 
   const showMobileAddressListFactoryChrome = useMemo(
-    () =>
-      showMobileSectionTemplateList &&
-      activeSection === 'envelope' &&
-      addressListPanelOpen &&
-      !rightPieEnvelopePeekNoToolbar,
-    [
-      showMobileSectionTemplateList,
-      activeSection,
-      addressListPanelOpen,
-      rightPieEnvelopePeekNoToolbar,
-    ],
+    () => envelopeAddressListVisible,
+    [envelopeAddressListVisible],
   )
 
   const showMobileTemplateListInCentralZone = useMemo(

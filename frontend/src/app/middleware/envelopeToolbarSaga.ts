@@ -164,6 +164,8 @@ import {
   setArchiveRecipientView,
   setArchiveRecipientViewId,
   updateArchiveRecipientField,
+  clearArchiveSenderFormData,
+  clearArchiveRecipientFormData,
 } from '@cardPanel/infrastructure/state'
 import { persistArchiveEnvelopeSandbox } from '@app/middleware/archiveEnvelopeSandboxPersist'
 import { selectCartItems, selectCartListSelectedLocalId } from '@cart/infrastructure/selectors'
@@ -778,8 +780,80 @@ function* closeAddressCreateForm(
   section: 'senderCreate' | 'recipientCreate',
 ) {
   const role = section === 'senderCreate' ? 'sender' : 'recipient'
+  const sandboxActive: boolean = yield select(
+    selectArchiveEnvelopeSandboxActive,
+  )
   const editContext: AddressCreateEditContext | null =
     yield select(selectAddressCreateEditContext)
+
+  if (sandboxActive) {
+    if (editContext?.role === role) {
+      yield put(clearAddressCreateEditContext())
+      if (role === 'sender') {
+        yield put(clearArchiveSenderFormData())
+        yield put(setArchiveSenderViewId(editContext.templateId))
+        yield put(setArchiveSenderView('senderView'))
+      } else {
+        yield put(clearArchiveRecipientFormData())
+        yield put(setArchiveRecipientViewId(editContext.templateId))
+        yield put(setArchiveRecipientView('recipientView'))
+      }
+      yield put(setAddressFormView({ show: false, role: null }))
+      return
+    }
+
+    const inListEntries: Pick<AddressBookEntry, 'address'>[] =
+      yield* selectInListEntriesForRole(role)
+
+    if (role === 'sender') {
+      const sender: SenderState = yield select(selectArchiveSandboxSender)
+      if (
+        doesDraftMatchInList(sender.formDraft as AddressFields, inListEntries)
+      ) {
+        yield put(clearArchiveSenderFormData())
+      }
+      const appliedId = sender.applied?.[0]
+      yield put(setArchiveSenderViewId(appliedId ?? null))
+      yield put(setArchiveSenderView('senderView'))
+    } else {
+      const recipient: RecipientState = yield select(
+        selectArchiveSandboxRecipient,
+      )
+      if (
+        doesDraftMatchInList(
+          recipient.formDraft as AddressFields,
+          inListEntries,
+        )
+      ) {
+        yield put(clearArchiveRecipientFormData())
+      }
+      const appliedIds = (recipient.applied ?? []).filter(
+        (id): id is string => id != null && id !== '',
+      )
+      if (appliedIds.length === 1) {
+        yield put(setArchiveRecipientViewId(appliedIds[0]))
+        yield put(setArchiveRecipientView('recipientView'))
+      } else if (appliedIds.length > 1) {
+        yield put(setArchiveRecipientViewId(null))
+        yield put(setArchiveRecipientView('recipientsView'))
+      } else {
+        const formIds = [
+          ...(recipient.recipientsViewIdsFirstList ?? []),
+          ...(recipient.recipientsViewIdsSecondList ?? []),
+        ].filter((id): id is string => id != null && id !== '')
+        if (formIds.length === 1) {
+          yield put(setArchiveRecipientViewId(formIds[0]))
+          yield put(setArchiveRecipientView('recipientView'))
+        } else {
+          yield put(setArchiveRecipientViewId(null))
+          yield put(setArchiveRecipientView('recipientsView'))
+        }
+      }
+    }
+
+    yield put(setAddressFormView({ show: false, role: null }))
+    return
+  }
 
   if (editContext?.role === role) {
     yield put(clearAddressCreateEditContext())

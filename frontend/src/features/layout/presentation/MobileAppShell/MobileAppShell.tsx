@@ -411,8 +411,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
 
   const mobileAddressListChromeActive =
     activeSection === 'envelope' &&
-    (senderListPanelOpen || recipientListPanelOpen) &&
-    !rightPieEnvelopePeekNoToolbar
+    (senderListPanelOpen || recipientListPanelOpen)
 
   const mobileAddressListTemplatePreview = useMemo(() => {
     if (!mobileAddressListChromeActive) return null
