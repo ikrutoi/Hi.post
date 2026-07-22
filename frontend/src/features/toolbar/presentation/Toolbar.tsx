@@ -326,7 +326,7 @@ export const Toolbar = ({
   ) => {
     const elementKey = iconIndex != null ? `${key}-${iconIndex}` : key
     const rawData = sectionState[key]
-    // editorPie assembly: первая дырка — addCart; третья — delete.
+    // editorPie assembly: первая дырка — addCart; вторая — delete.
     // Не применять при groupsOverride (template preview: edit/delete и т.п.).
     const editorPieCartAdd =
       groupsOverride == null &&
@@ -337,7 +337,7 @@ export const Toolbar = ({
       groupsOverride == null &&
       section === 'editorPie' &&
       key === 'empty' &&
-      iconIndex === 2
+      iconIndex === 1
     const templateInQuickList =
       section === 'senderView'
         ? senderTemplateInQuickList

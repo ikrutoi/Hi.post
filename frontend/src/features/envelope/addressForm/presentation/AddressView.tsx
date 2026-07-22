@@ -29,6 +29,7 @@ import {
 } from '@cardPanel/infrastructure/state'
 import { selectArchiveEnvelopeSandboxActive } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import { toolbarAction } from '@toolbar/application/helpers'
+import { capitalizeWords } from '@shared/utils/helpers'
 import { getToolbarIcon } from '@/shared/utils/icons'
 
 type AddressViewRole = 'recipient' | 'sender'
@@ -81,20 +82,26 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   }, [address.zip, address.city])
 
   const updateField = (field: keyof AddressFields, value: string) => {
+    const next =
+      field === 'zip'
+        ? value.toUpperCase()
+        : field === 'name' || field === 'city' || field === 'country'
+          ? capitalizeWords(value)
+          : value
     if (isEditMode) {
-      dispatch(updateAddressEditDraftField({ field, value }))
+      dispatch(updateAddressEditDraftField({ field, value: next }))
       return
     }
     if (role === 'sender') {
       if (sandboxActive) {
-        dispatch(updateArchiveSenderField({ field, value }))
+        dispatch(updateArchiveSenderField({ field, value: next }))
       } else {
-        dispatch(updateSenderField({ field, value } as any))
+        dispatch(updateSenderField({ field, value: next } as any))
       }
     } else if (sandboxActive) {
-      dispatch(updateArchiveRecipientField({ field, value }))
+      dispatch(updateArchiveRecipientField({ field, value: next }))
     } else {
-      dispatch(updateRecipientField({ field, value } as any))
+      dispatch(updateRecipientField({ field, value: next } as any))
     }
   }
 

@@ -1,8 +1,15 @@
 import React, { forwardRef } from 'react'
 import clsx from 'clsx'
 import { getToolbarIcon } from '@shared/utils/icons'
+import { capitalizeWords } from '@shared/utils/helpers'
 import styles from './Label.module.scss'
 import type { AddressFields } from '@shared/config/constants'
+
+const TITLE_CASE_FIELDS = new Set<keyof AddressFields>([
+  'name',
+  'city',
+  'country',
+])
 
 type LabelProps = {
   role: string
@@ -17,7 +24,14 @@ type LabelProps = {
 export const Label = forwardRef<HTMLInputElement, LabelProps>(
   ({ role, roleLabel, label, field, value, onValueChange, onKeyDown }, ref) => {
     const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-      onValueChange(field, e.target.value)
+      const raw = e.target.value
+      const next =
+        field === 'zip'
+          ? raw.toUpperCase()
+          : TITLE_CASE_FIELDS.has(field)
+            ? capitalizeWords(raw)
+            : raw
+      onValueChange(field, next)
     }
 
     const handleClear = () => {
