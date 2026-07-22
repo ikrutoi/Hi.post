@@ -308,6 +308,15 @@ $pie-center-cart-blocked-inner-stop: (
     filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.35));
     animation: pieCenterAffordanceFadeIn 180ms ease-out;
   }
+
+  /**
+   * Stroke-only glyphs (calendar / cart outline): parent `fill: currentColor`
+   * would paint a solid white shape over the yellow disc.
+   */
+  svg.pieCenterAffordanceIconStroke {
+    fill: none;
+    stroke: currentColor;
+  }
 }
 
 @keyframes pieCenterAffordanceFadeIn {

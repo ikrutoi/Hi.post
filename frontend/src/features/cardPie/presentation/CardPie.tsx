@@ -11,7 +11,6 @@ import {
   IconSectionMenuEnvelopeV2,
   IconSectionMenuAromaV2,
   IconSectionMenuDate,
-  IconCalendarMulti,
 } from '@shared/ui/icons'
 import { FaChevronRight } from 'react-icons/fa'
 import type { DispatchDate } from '@entities/date'
@@ -936,12 +935,18 @@ export const CardPie: React.FC<CardPieProps> = ({
                   />
                 ) : visibleRightPieCenterAffordance === 'cart' ? (
                   <IconCart
-                    className={styles.pieCenterAffordanceIcon}
+                    className={clsx(
+                      styles.pieCenterAffordanceIcon,
+                      styles.pieCenterAffordanceIconStroke,
+                    )}
                     aria-hidden
                   />
                 ) : visibleRightPieCenterAffordance === 'calendar' ? (
                   <IconSectionMenuDate
-                    className={styles.pieCenterAffordanceIcon}
+                    className={clsx(
+                      styles.pieCenterAffordanceIcon,
+                      styles.pieCenterAffordanceIconStroke,
+                    )}
                     aria-hidden
                   />
                 ) : null}
