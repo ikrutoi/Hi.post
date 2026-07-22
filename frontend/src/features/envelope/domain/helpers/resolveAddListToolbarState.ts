@@ -70,42 +70,15 @@ export function resolveApplyMediumToolbarState(
 /** @deprecated use resolveApplyMediumToolbarState */
 export const resolveApplyLightToolbarState = resolveApplyMediumToolbarState
 
-/** View показывает адрес из create-черновика (тот же шаблон, что и formDraft). */
-export function isViewingFormDraftAddress(params: {
-  view: string
-  viewId: string | null
-  formIsEmpty: boolean
-  formDraft: AddressFields
-  templateEntries: Pick<AddressBookEntry, 'id' | 'address'>[]
-}): boolean {
-  const { view, viewId, formIsEmpty, formDraft, templateEntries } = params
-  if (formIsEmpty || viewId == null) return false
-  if (view !== 'senderView' && view !== 'recipientView') return false
-  const draftId = getMatchingEntryId(
-    normalizeAddressFields(formDraft),
-    templateEntries.map((e) => ({
-      id: e.id,
-      address: normalizeAddressFields(e.address ?? {}),
-    })),
-  )
-  return draftId != null && draftId === viewId
-}
-
 export function resolveAddressAddToolbarState(params: {
   isAddressFormOpen: boolean
   formIsEmpty: boolean
   formIsComplete: boolean
-  viewingFormDraftAddress: boolean
 }): {
-  state: 'enabled' | 'disabled' | 'active'
+  state: 'enabled' | 'disabled'
   options: { badge: number | null; badgeDot: boolean }
 } {
-  const {
-    isAddressFormOpen,
-    formIsEmpty,
-    formIsComplete,
-    viewingFormDraftAddress,
-  } = params
+  const { isAddressFormOpen, formIsEmpty, formIsComplete } = params
   if (isAddressFormOpen) {
     return { state: 'disabled', options: { badge: null, badgeDot: false } }
   }
@@ -113,8 +86,5 @@ export function resolveAddressAddToolbarState(params: {
   const badge = formIsComplete && !formIsEmpty ? 1 : null
   const badgeDot = !formIsEmpty && !formIsComplete
 
-  if (viewingFormDraftAddress) {
-    return { state: 'active', options: { badge, badgeDot } }
-  }
   return { state: 'enabled', options: { badge, badgeDot } }
 }

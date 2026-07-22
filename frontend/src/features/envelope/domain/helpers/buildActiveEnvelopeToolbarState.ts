@@ -9,7 +9,6 @@ import {
   getAddressListToolbarFragment,
   isAddressDraftComplete,
   isAddressInList,
-  isViewingFormDraftAddress,
 } from '@envelope/domain/helpers'
 
 function hasAddressData(data: AddressFields): boolean {
@@ -29,21 +28,12 @@ export function buildSandboxSenderToolbarState(input: {
   addressListCount: number
   listOpen: boolean
   inListEntries: Pick<AddressBookEntry, 'address'>[]
-  bookEntries: AddressBookEntry[]
 }): EnvelopeToolbarState {
-  const { sender, addressListCount, listOpen, inListEntries, bookEntries } =
-    input
+  const { sender, addressListCount, listOpen, inListEntries } = input
   const draft =
     sender.currentView === 'senderCreate' ? sender.formDraft : sender.viewDraft
   const draftComplete = isAddressDraftComplete(draft as AddressFields)
   const formDraft = sender.formDraft as AddressFields
-  const viewingFormDraftAddress = isViewingFormDraftAddress({
-    view: sender.currentView,
-    viewId: sender.senderViewId,
-    formIsEmpty: formIsEmptyFlag(formDraft),
-    formDraft,
-    templateEntries: bookEntries,
-  })
 
   const base = buildSenderToolbarState({
     isComplete: draftComplete,
@@ -58,7 +48,6 @@ export function buildSandboxSenderToolbarState(input: {
     formIsEmpty: formIsEmptyFlag(formDraft),
     formIsComplete: isAddressDraftComplete(formDraft),
     senderListPanelOpen: listOpen,
-    viewingFormDraftAddress,
     isEnabled: sender.enabled,
   })
 
@@ -105,28 +94,14 @@ export function buildSandboxRecipientsToolbarState(input: {
   addressListCount: number
   listOpen: boolean
   inListEntries: Pick<AddressBookEntry, 'address'>[]
-  bookEntries: AddressBookEntry[]
 }): EnvelopeToolbarState {
-  const {
-    recipient,
-    addressListCount,
-    listOpen,
-    inListEntries,
-    bookEntries,
-  } = input
+  const { recipient, addressListCount, listOpen, inListEntries } = input
   const draft =
     recipient.currentView === 'recipientCreate'
       ? recipient.formDraft
       : recipient.viewDraft
   const draftComplete = isAddressDraftComplete(draft as AddressFields)
   const formDraft = recipient.formDraft as AddressFields
-  const viewingFormDraftAddress = isViewingFormDraftAddress({
-    view: recipient.currentView,
-    viewId: recipient.recipientViewId,
-    formIsEmpty: formIsEmptyFlag(formDraft),
-    formDraft,
-    templateEntries: bookEntries,
-  })
 
   const base = buildRecipientToolbarState({
     isComplete: draftComplete,
@@ -141,7 +116,6 @@ export function buildSandboxRecipientsToolbarState(input: {
     formIsEmpty: formIsEmptyFlag(formDraft),
     formIsComplete: isAddressDraftComplete(formDraft),
     recipientListPanelOpen: listOpen,
-    viewingFormDraftAddress,
   })
 
   const viewIds =

@@ -14,8 +14,6 @@ export interface BuildSenderToolbarParams {
   formIsComplete: boolean
   /** список адресов отправителя открыт — иконка addressList в active */
   senderListPanelOpen?: boolean
-  /** View показывает адрес из create-черновика */
-  viewingFormDraftAddress?: boolean
   /** Отправитель выключен тумблером — иконки toolbar disabled, кроме addressAdd */
   isEnabled?: boolean
 }
@@ -30,7 +28,6 @@ export const buildSenderToolbarState = ({
   formIsEmpty,
   formIsComplete,
   senderListPanelOpen = false,
-  viewingFormDraftAddress = false,
   isEnabled = true,
 }: BuildSenderToolbarParams): EnvelopeToolbarState => {
   const state = {} as EnvelopeToolbarState
@@ -45,7 +42,6 @@ export const buildSenderToolbarState = ({
           isAddressFormOpen,
           formIsEmpty,
           formIsComplete,
-          viewingFormDraftAddress,
         })
         break
       case 'addressList':

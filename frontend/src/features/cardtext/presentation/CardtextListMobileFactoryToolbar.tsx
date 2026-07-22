@@ -24,12 +24,6 @@ function readApplyState(raw: unknown): IconState {
   return 'disabled'
 }
 
-/** List chrome: no green Apply. */
-function listChromeApplyState(raw: unknown): 'enabled' | 'disabled' {
-  const state = readApplyState(raw)
-  return state === 'disabled' ? 'disabled' : 'enabled'
-}
-
 const CARDTEXT_LIST_FACTORY_UPPER_TOOLBAR: ToolbarConfig = [
   {
     group: 'close',
@@ -68,7 +62,7 @@ export const CardtextListMobileFactoryUpperToolbar: React.FC = () => {
     selectCardtextListCentralTemplateTitle,
   )
   const applyRaw = useAppSelector((s) => s.toolbar?.cardtext?.apply)
-  const applyState = listChromeApplyState(applyRaw)
+  const applyState = readApplyState(applyRaw)
 
   const applyToolbar = useMemo((): ToolbarConfig => {
     return [

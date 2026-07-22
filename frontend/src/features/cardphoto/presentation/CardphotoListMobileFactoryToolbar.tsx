@@ -27,12 +27,6 @@ function readApplyState(raw: unknown): IconState {
   return 'disabled'
 }
 
-/** List chrome: no green Apply — enabled when Redux says the asset can be applied. */
-function listChromeApplyState(raw: unknown): 'enabled' | 'disabled' {
-  const state = readApplyState(raw)
-  return state === 'disabled' ? 'disabled' : 'enabled'
-}
-
 const CARDPHOTO_LIST_FACTORY_UPPER_TOOLBAR: ToolbarConfig = [
   {
     group: 'close',
@@ -71,7 +65,7 @@ export const CardphotoListMobileFactoryUpperToolbar: React.FC = () => {
   const assetId = useAppSelector(selectCardphotoAssetData)?.id
   const previewUrl = useAppSelector(selectCardphotoAssetDisplayPreviewUrl)
   const applyRaw = useAppSelector((s) => s.toolbar?.cardphoto?.apply)
-  const applyState = listChromeApplyState(applyRaw)
+  const applyState = readApplyState(applyRaw)
   const centralTemplateTitle =
     assetId && previewUrl ? title.trim() || null : null
 

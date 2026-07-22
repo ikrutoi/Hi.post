@@ -53,6 +53,9 @@ import {
   setRecipientsList,
   setRecipientsPendingIds,
   clearRecipientsPending,
+  restoreRecipientsPendingIds,
+  setAddressListPreviewSnapshot,
+  clearAddressListPreviewSnapshot,
   openAddressEditSession,
   closeAddressEditSession,
   setAddressCreateEditContext,
@@ -68,11 +71,13 @@ import {
   setSenderAddressListPanelDensity,
   setRecipientAddressListPanelDensity,
 } from '@envelope/infrastructure/state'
+import type { AddressListPreviewSnapshot } from '@envelope/infrastructure/state/envelopeSelectionSlice'
 import {
   selectRecipientsPendingIds,
   selectRecipientListPanelOpen,
   selectSenderListPanelOpen,
   selectActiveAddressList,
+  selectAddressListPreviewSnapshot,
   selectAddressFormViewRole,
   selectSenderViewEditMode,
   selectRecipientViewEditMode,
@@ -223,6 +228,138 @@ function* persistArchiveEnvelopeIfLeased(): SagaIterator {
   }
   yield put(updateItem(nextPostcard))
   yield put(postcardLocalDataChanged())
+}
+
+function* closeAddressListIfOpen(): SagaIterator {
+  const senderOpen: boolean = yield select(selectSenderListPanelOpen)
+  const recipientOpen: boolean = yield select(selectRecipientListPanelOpen)
+  if (senderOpen || recipientOpen) {
+    yield put(closeAddressList())
+  }
+}
+
+function* captureAddressListPreviewSnapshot(
+  mode: 'sender' | 'recipients',
+): SagaIterator {
+  const sandboxActive: boolean = yield select(
+    selectArchiveEnvelopeSandboxActive,
+  )
+  if (mode === 'sender') {
+    const sender: SenderState = sandboxActive
+      ? yield select(selectArchiveSandboxSender)
+      : yield select(selectSenderState)
+    yield put(
+      setAddressListPreviewSnapshot({
+        mode: 'sender',
+        sandbox: sandboxActive,
+        senderViewId: sender.senderViewId,
+        currentView: sender.currentView,
+        viewDraft: { ...sender.viewDraft },
+      }),
+    )
+    return
+  }
+
+  const recipient: RecipientState = sandboxActive
+    ? yield select(selectArchiveSandboxRecipient)
+    : yield select(selectRecipientState)
+  const pendingIds: string[] = yield select(selectRecipientsPendingIds)
+  yield put(
+    setAddressListPreviewSnapshot({
+      mode: 'recipients',
+      sandbox: sandboxActive,
+      pendingIds: [...pendingIds],
+      recipientsViewIdsFirstList: [
+        ...(recipient.recipientsViewIdsFirstList ?? []),
+      ],
+      recipientsViewIdsSecondList: [
+        ...(recipient.recipientsViewIdsSecondList ?? []),
+      ],
+      currentRecipientsList: recipient.currentRecipientsList,
+      recipientViewId: recipient.recipientViewId,
+      currentView: recipient.currentView,
+      viewDraft: { ...recipient.viewDraft },
+    }),
+  )
+}
+
+function* restoreSandboxViewDraft(
+  role: 'sender' | 'recipient',
+  viewDraft: AddressFields,
+): SagaIterator {
+  for (const [field, value] of Object.entries(viewDraft) as [
+    keyof AddressFields,
+    string,
+  ][]) {
+    if (role === 'sender') {
+      yield put(updateArchiveSenderField({ field, value: value ?? '' }))
+    } else {
+      yield put(updateArchiveRecipientField({ field, value: value ?? '' }))
+    }
+  }
+}
+
+function* restoreAddressListPreviewSnapshot(
+  snapshot: AddressListPreviewSnapshot,
+): SagaIterator {
+  if (snapshot.mode === 'sender') {
+    if (snapshot.sandbox) {
+      yield put(setArchiveSenderViewId(snapshot.senderViewId))
+      yield put(setArchiveSenderView(snapshot.currentView))
+      yield call(restoreSandboxViewDraft, 'sender', snapshot.viewDraft)
+      return
+    }
+    yield put(setSenderViewId(snapshot.senderViewId))
+    yield put(setSenderView(snapshot.currentView))
+    yield put(setSenderViewDraft(snapshot.viewDraft))
+    return
+  }
+
+  if (snapshot.sandbox) {
+    yield put(setArchiveRecipientViewId(snapshot.recipientViewId))
+    yield put(setArchiveRecipientView(snapshot.currentView))
+    yield call(restoreSandboxViewDraft, 'recipient', snapshot.viewDraft)
+    return
+  }
+
+  yield put(restoreRecipientsPendingIds(snapshot.pendingIds))
+  yield put(setCurrentRecipientsList(snapshot.currentRecipientsList))
+  yield put(setRecipientsViewIds(snapshot.recipientsViewIdsFirstList))
+  yield put(
+    setRecipientsViewIdsSecondList(snapshot.recipientsViewIdsSecondList),
+  )
+  yield put(setRecipientViewId(snapshot.recipientViewId))
+  yield put(setRecipientView(snapshot.currentView))
+  yield put(setRecipientViewDraft(snapshot.viewDraft))
+}
+
+function* restoreAddressListPreviewIfAny(): SagaIterator {
+  const snapshot: AddressListPreviewSnapshot | null = yield select(
+    selectAddressListPreviewSnapshot,
+  )
+  if (snapshot == null) return
+  yield call(restoreAddressListPreviewSnapshot, snapshot)
+  yield put(clearAddressListPreviewSnapshot())
+}
+
+function* handleSetActiveAddressListForPreview(
+  action: PayloadAction<'sender' | 'recipients' | null>,
+): SagaIterator {
+  if (action.payload != null) {
+    const prev: AddressListPreviewSnapshot | null = yield select(
+      selectAddressListPreviewSnapshot,
+    )
+    if (prev != null && prev.mode !== action.payload) {
+      yield call(restoreAddressListPreviewIfAny)
+    }
+    yield call(captureAddressListPreviewSnapshot, action.payload)
+    return
+  }
+  yield call(restoreAddressListPreviewIfAny)
+}
+
+function* handleCloseAddressListRestorePreview(): SagaIterator {
+  yield call(restoreAddressListPreviewIfAny)
 }
 
 function* applyArchiveEnvelopeSandboxFromToolbar(
@@ -1222,10 +1359,13 @@ function* handleEnvelopeToolbarAction(
   ) {
     const moved: boolean = yield* moveAddressTemplateToOutListFromToolbar(section)
     if (!moved) return
-    if (section === 'senderView') {
-      yield* ensureAddressListPanelOpen('sender')
-    } else {
-      yield* ensureAddressListPanelOpen('recipients')
+    const isMobileLayout: boolean = yield select(selectIsMobileLayout)
+    if (!isMobileLayout) {
+      if (section === 'senderView') {
+        yield* ensureAddressListPanelOpen('sender')
+      } else {
+        yield* ensureAddressListPanelOpen('recipients')
+      }
     }
     return
   }
@@ -1555,128 +1695,139 @@ function* handleEnvelopeToolbarAction(
   }
 
   if (key === 'apply') {
-    const sandboxActive: boolean = yield select(
-      selectArchiveEnvelopeSandboxActive,
-    )
-    if (sandboxActive) {
-      yield call(applyArchiveEnvelopeSandboxFromToolbar, section)
-      return
-    }
-    if (section === 'sender') {
-      const sender: SenderState = yield select(selectSenderState)
-      const senderViewId: string | null = yield select(selectSenderViewId)
-      const senderAppliedIds = sender.applied ?? []
-      const senderViewMatchesApplied =
-        sender.currentView === 'senderView' &&
-        senderViewId != null &&
-        senderAppliedIds.length === 1 &&
-        senderAppliedIds[0] === senderViewId
-
-      if (senderViewMatchesApplied) {
-        yield put(setSenderApplied(false))
+    try {
+      const sandboxActive: boolean = yield select(
+        selectArchiveEnvelopeSandboxActive,
+      )
+      if (sandboxActive) {
+        yield call(applyArchiveEnvelopeSandboxFromToolbar, section)
         return
       }
+      if (section === 'sender') {
+        const sender: SenderState = yield select(selectSenderState)
+        const senderViewId: string | null = yield select(selectSenderViewId)
+        const senderAppliedIds = sender.applied ?? []
+        const senderViewMatchesApplied =
+          sender.currentView === 'senderView' &&
+          senderViewId != null &&
+          senderAppliedIds.length === 1 &&
+          senderAppliedIds[0] === senderViewId
 
-      /** Пустой / выкл. тумблер: Apply фиксирует результат без адреса. */
-      if (!sender.enabled || senderViewId == null) {
-        if (sender.appliedLocked && senderAppliedIds.length === 0) {
+        if (senderViewMatchesApplied) {
           yield put(setSenderApplied(false))
           return
         }
-        yield put(setSenderApplied(true))
+
+        /** Пустой / выкл. тумблер: Apply фиксирует результат без адреса. */
+        if (!sender.enabled || senderViewId == null) {
+          if (sender.appliedLocked && senderAppliedIds.length === 0) {
+            yield put(setSenderApplied(false))
+            return
+          }
+          yield put(setSenderApplied(true))
+          yield call(persistArchiveEnvelopeIfLeased)
+          return
+        }
+
+        const displayAddress: Readonly<Record<string, string>> =
+          yield select(selectSenderAddress)
+        const data: AddressFields[] = [{ ...displayAddress } as AddressFields]
+        yield put(setSenderAppliedWithData({ ids: [senderViewId], data }))
+        yield put(setSenderView('senderView'))
         yield call(persistArchiveEnvelopeIfLeased)
         return
       }
+      if (section === 'recipients') {
+        const recipient: RecipientState = yield select(selectRecipientState)
+        const ids: string[] =
+          recipient.currentRecipientsList === 'second'
+            ? (recipient.recipientsViewIdsSecondList ?? [])
+            : (recipient.recipientsViewIdsFirstList ?? [])
+        const appliedIds = recipient.applied ?? []
 
-      const displayAddress: Readonly<Record<string, string>> =
-        yield select(selectSenderAddress)
-      const data: AddressFields[] = [{ ...displayAddress } as AddressFields]
-      yield put(setSenderAppliedWithData({ ids: [senderViewId], data }))
-      yield put(setSenderView('senderView'))
-      yield call(persistArchiveEnvelopeIfLeased)
-    }
-    if (section === 'recipients') {
-      const recipient: RecipientState = yield select(selectRecipientState)
-      const ids: string[] =
-        recipient.currentRecipientsList === 'second'
-          ? (recipient.recipientsViewIdsSecondList ?? [])
-          : (recipient.recipientsViewIdsFirstList ?? [])
-      const appliedIds = recipient.applied ?? []
+        if (ids.length === 0) {
+          const recipientViewId: string | null = yield select(
+            selectRecipientViewId,
+          )
+          const singleViewMatchesApplied =
+            recipientViewId != null &&
+            appliedIds.length === 1 &&
+            appliedIds[0] === recipientViewId
 
-      if (ids.length === 0) {
-        const recipientViewId: string | null = yield select(
-          selectRecipientViewId,
-        )
-        const singleViewMatchesApplied =
-          recipientViewId != null &&
-          appliedIds.length === 1 &&
-          appliedIds[0] === recipientViewId
+          if (singleViewMatchesApplied) {
+            yield put(setRecipientApplied(false))
+            return
+          }
 
-        if (singleViewMatchesApplied) {
+          if (recipientViewId) {
+            const displayAddress: Readonly<Record<string, string>> =
+              yield select(selectRecipientDisplayAddress)
+            const data: AddressFields[] = [
+              { ...displayAddress } as AddressFields,
+            ]
+            yield put(
+              setRecipientAppliedWithData({ ids: [recipientViewId], data }),
+            )
+            yield call(persistArchiveEnvelopeIfLeased)
+          } else {
+            yield put(recipientSaveRequested({ listStatus: 'outList' }))
+          }
+          return
+        }
+
+        const recipientsViewIdsEqual =
+          appliedIds.length === ids.length &&
+          appliedIds.length > 0 &&
+          appliedIds.every((id) => ids.includes(id)) &&
+          ids.every((id) => appliedIds.includes(id))
+
+        if (recipientsViewIdsEqual) {
           yield put(setRecipientApplied(false))
           return
         }
 
-        if (recipientViewId) {
-          const displayAddress: Readonly<Record<string, string>> =
-            yield select(selectRecipientDisplayAddress)
-          const data: AddressFields[] = [{ ...displayAddress } as AddressFields]
-          yield put(setRecipientAppliedWithData({ ids: [recipientViewId], data }))
-          yield call(persistArchiveEnvelopeIfLeased)
-        } else {
-          yield put(recipientSaveRequested({ listStatus: 'outList' }))
+        const list: RecipientState[] = []
+        for (const id of ids) {
+          const record: { id: string; address?: Record<string, string> } | null =
+            yield call([recipientAdapter, 'getById'], id)
+          if (record?.address) {
+            const address = record.address as RecipientState['viewDraft']
+            list.push({
+              currentView: 'recipientView',
+              formDraft: address,
+              viewDraft: address,
+              formIsComplete: Object.values(address).every(
+                (v) => (v ?? '').trim() !== '',
+              ),
+              formIsEmpty: true,
+              sortOptions: { sortedBy: 'name', direction: 'asc' },
+              recipientsViewSortDirection: 'asc',
+              recipientViewId: id,
+              recipientsViewIdsFirstList: [],
+              recipientsViewIdsSecondList: [],
+              currentRecipientsList: 'first',
+              applied: [id],
+              appliedData: address,
+            })
+          }
         }
-        return
+        const appliedData = list.map((r) => ({ ...r.viewDraft }))
+        yield put(setRecipientAppliedWithData({ ids, data: appliedData }))
+        yield put(setRecipientsList(list))
+        yield put(
+          setRecipientsViewIds(
+            list
+              .map((r) => r.recipientViewId)
+              .filter((id): id is string => id != null),
+          ),
+        )
+        yield call(persistArchiveEnvelopeIfLeased)
       }
-
-      const recipientsViewIdsEqual =
-        appliedIds.length === ids.length &&
-        appliedIds.length > 0 &&
-        appliedIds.every((id) => ids.includes(id)) &&
-        ids.every((id) => appliedIds.includes(id))
-
-      if (recipientsViewIdsEqual) {
-        yield put(setRecipientApplied(false))
-        return
-      }
-
-      const list: RecipientState[] = []
-      for (const id of ids) {
-        const record: { id: string; address?: Record<string, string> } | null =
-          yield call([recipientAdapter, 'getById'], id)
-        if (record?.address) {
-          const address = record.address as RecipientState['viewDraft']
-          list.push({
-            currentView: 'recipientView',
-            formDraft: address,
-            viewDraft: address,
-            formIsComplete: Object.values(address).every(
-              (v) => (v ?? '').trim() !== '',
-            ),
-            formIsEmpty: true,
-            sortOptions: { sortedBy: 'name', direction: 'asc' },
-            recipientsViewSortDirection: 'asc',
-            recipientViewId: id,
-            recipientsViewIdsFirstList: [],
-            recipientsViewIdsSecondList: [],
-            currentRecipientsList: 'first',
-            applied: [id],
-            appliedData: address,
-          })
-        }
-      }
-      const appliedData = list.map((r) => ({ ...r.viewDraft }))
-      yield put(setRecipientAppliedWithData({ ids, data: appliedData }))
-      yield put(setRecipientsList(list))
-      yield put(
-        setRecipientsViewIds(
-          list
-            .map((r) => r.recipientViewId)
-            .filter((id): id is string => id != null),
-        ),
-      )
-      yield call(persistArchiveEnvelopeIfLeased)
+    } finally {
+      yield put(clearAddressListPreviewSnapshot())
+      yield call(closeAddressListIfOpen)
     }
+    return
   }
 
   if (key === 'listAdd' || key === 'addList') {
@@ -2027,8 +2178,10 @@ export function* envelopeToolbarSaga() {
       [setRecipientsPendingIds.type, toggleRecipientSelection.type],
       syncRecipientsViewIdsFromPending,
     ),
+    takeEvery(setActiveAddressList.type, handleSetActiveAddressListForPreview),
     takeEvery(setActiveAddressList.type, syncAddressListIconsFromActive),
     takeEvery(setActiveAddressList.type, syncAddressBookModeFromActive),
+    takeEvery(closeAddressList.type, handleCloseAddressListRestorePreview),
     takeEvery(closeAddressList.type, syncAddressListIconsFromActive),
     takeEvery(closeAddressList.type, syncAddressBookModeFromActive),
   ])

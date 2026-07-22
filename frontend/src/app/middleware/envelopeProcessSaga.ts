@@ -70,7 +70,6 @@ import {
   isAddressInList,
   listStatusIsInQuickAddressBook,
   isAddressDraftComplete,
-  isViewingFormDraftAddress,
   resolveAddListToolbarState,
   resolveAddressAddToolbarState,
   resolveApplyMediumToolbarState,
@@ -292,28 +291,6 @@ export function* processEnvelopeVisuals() {
     selectRecipientListPanelOpen,
   )
 
-  const senderBookEntries: AddressBookEntry[] = yield select(
-    (s: RootState) => s.addressBook?.senderEntries ?? [],
-  )
-  const recipientBookEntries: AddressBookEntry[] = yield select(
-    (s: RootState) => s.addressBook?.recipientEntries ?? [],
-  )
-
-  const senderViewingFormDraft = isViewingFormDraftAddress({
-    view: sender.currentView,
-    viewId: sender.senderViewId,
-    formIsEmpty: sender.formIsEmpty ?? true,
-    formDraft: sender.formDraft as AddressFields,
-    templateEntries: senderBookEntries,
-  })
-  const recipientViewingFormDraft = isViewingFormDraftAddress({
-    view: recipient.currentView,
-    viewId: recipient.recipientViewId,
-    formIsEmpty: recipient.formIsEmpty ?? true,
-    formDraft: recipient.formDraft as AddressFields,
-    templateEntries: recipientBookEntries,
-  })
-
   const senderToolbar = buildSenderToolbarState({
     isComplete: senderComplete,
     hasData: checkHasData(sender.viewDraft),
@@ -324,7 +301,6 @@ export function* processEnvelopeVisuals() {
     formIsEmpty: sender.formIsEmpty ?? true,
     formIsComplete: isAddressDraftComplete(sender.formDraft as AddressFields),
     senderListPanelOpen,
-    viewingFormDraftAddress: senderViewingFormDraft,
     isEnabled: sender.enabled,
   })
 
@@ -350,7 +326,6 @@ export function* processEnvelopeVisuals() {
     formIsEmpty: recipient.formIsEmpty ?? true,
     formIsComplete: isAddressDraftComplete(recipient.formDraft as AddressFields),
     recipientListPanelOpen: recipientListPanelOpenForToolbar,
-    viewingFormDraftAddress: recipientViewingFormDraft,
   })
 
   yield put(updateToolbarSection({ section: 'sender', value: senderToolbar }))
@@ -470,7 +445,6 @@ export function* processEnvelopeVisuals() {
           formIsComplete: isAddressDraftComplete(
             recipient.formDraft as AddressFields,
           ),
-          viewingFormDraftAddress: recipientViewingFormDraft,
         }),
       },
     }),

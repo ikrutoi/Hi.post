@@ -92,6 +92,11 @@ export const selectActiveAddressList = createSelector(
   (s) => s.activeAddressList ?? null,
 )
 
+export const selectAddressListPreviewSnapshot = createSelector(
+  [selectEnvelopeSelectionState],
+  (s) => s.addressListPreviewSnapshot ?? null,
+)
+
 export const selectMobileAddressFocusClearSeq = createSelector(
   [selectEnvelopeSelectionState],
   (s) => s.mobileAddressFocusClearSeq ?? 0,
@@ -318,7 +323,6 @@ export const selectActiveSenderToolbarState = createSelector(
     selectSenderToolbarStateWithLiveAddressList,
     (s: RootState) => s.envelopeSelection?.activeAddressList ?? null,
     selectSenderInListEntries,
-    (s: RootState) => s.addressBook?.senderEntries ?? [],
   ],
   (
     sandboxActive,
@@ -326,7 +330,6 @@ export const selectActiveSenderToolbarState = createSelector(
     sessionToolbar,
     activeAddressList,
     inListEntries,
-    bookEntries,
   ) => {
     if (!sandboxActive) return sessionToolbar
     return buildSandboxSenderToolbarState({
@@ -334,7 +337,6 @@ export const selectActiveSenderToolbarState = createSelector(
       addressListCount: inListEntries.length,
       listOpen: activeAddressList === 'sender',
       inListEntries,
-      bookEntries,
     })
   },
 )
@@ -346,7 +348,6 @@ export const selectActiveRecipientsToolbarState = createSelector(
     selectRecipientsToolbarStateWithLiveAddressList,
     (s: RootState) => s.envelopeSelection?.activeAddressList ?? null,
     selectRecipientInListEntries,
-    (s: RootState) => s.addressBook?.recipientEntries ?? [],
   ],
   (
     sandboxActive,
@@ -354,7 +355,6 @@ export const selectActiveRecipientsToolbarState = createSelector(
     sessionToolbar,
     activeAddressList,
     inListEntries,
-    bookEntries,
   ) => {
     if (!sandboxActive) return sessionToolbar
     return buildSandboxRecipientsToolbarState({
@@ -362,7 +362,6 @@ export const selectActiveRecipientsToolbarState = createSelector(
       addressListCount: inListEntries.length,
       listOpen: activeAddressList === 'recipients',
       inListEntries,
-      bookEntries,
     })
   },
 )

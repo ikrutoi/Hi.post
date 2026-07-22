@@ -21,8 +21,6 @@ export interface BuildRecipientToolbarParams {
   formIsComplete: boolean
   /** список адресов получателя открыт — иконка addressList в active */
   recipientListPanelOpen?: boolean
-  /** View показывает адрес из create-черновика */
-  viewingFormDraftAddress?: boolean
 }
 
 export const buildRecipientToolbarState = ({
@@ -35,7 +33,6 @@ export const buildRecipientToolbarState = ({
   formIsEmpty,
   formIsComplete,
   recipientListPanelOpen = false,
-  viewingFormDraftAddress = false,
 }: BuildRecipientToolbarParams): EnvelopeToolbarState => {
   const state = {} as EnvelopeToolbarState
 
@@ -49,7 +46,6 @@ export const buildRecipientToolbarState = ({
           isAddressFormOpen,
           formIsEmpty,
           formIsComplete,
-          viewingFormDraftAddress,
         })
         break
       case 'addressList':

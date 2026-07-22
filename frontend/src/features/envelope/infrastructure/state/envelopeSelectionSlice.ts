@@ -3,11 +3,37 @@ import type { PanelDensity2Size } from '@shared/ui/icons'
 import type { AddressFields } from '@shared/config/constants'
 import type { AddressBookMode } from '../../addressBook/domain/types'
 import type { AddressCreateEditContext, AddressEditSession } from '../../domain/types'
+import type { SenderView } from '../../sender/domain/types'
+import type {
+  CurrentRecipientsList,
+  RecipientView,
+} from '../../recipient/domain/types'
 
 /** @deprecated Используйте `closeAddressEditSession` / payload с `keepRecipientView`. */
 export type RecipientViewEditModePayload =
   | boolean
   | { enabled: boolean; keepRecipientView?: boolean }
+
+/** Preview selection while address template list is open (Apply commits, return reverts). */
+export type AddressListPreviewSnapshot =
+  | {
+      mode: 'sender'
+      sandbox: boolean
+      senderViewId: string | null
+      currentView: SenderView
+      viewDraft: AddressFields
+    }
+  | {
+      mode: 'recipients'
+      sandbox: boolean
+      pendingIds: string[]
+      recipientsViewIdsFirstList: string[]
+      recipientsViewIdsSecondList: string[]
+      currentRecipientsList: CurrentRecipientsList
+      recipientViewId: string | null
+      currentView: RecipientView
+      viewDraft: AddressFields
+    }
 
 export interface EnvelopeSelectionState {
   recipientsPendingIds: string[]
@@ -28,6 +54,8 @@ export interface EnvelopeSelectionState {
   addressListPanelDensity?: PanelDensity2Size
   /** Mobile: increment to clear address-view focus (CardPie / navigation). */
   mobileAddressFocusClearSeq: number
+  /** State before opening address template list — restored on return without Apply. */
+  addressListPreviewSnapshot: AddressListPreviewSnapshot | null
 }
 
 const initialState: EnvelopeSelectionState = {
@@ -42,6 +70,7 @@ const initialState: EnvelopeSelectionState = {
   senderAddressListPanelDensity: 1,
   recipientAddressListPanelDensity: 1,
   mobileAddressFocusClearSeq: 0,
+  addressListPreviewSnapshot: null,
 }
 
 export const envelopeSelectionSlice = createSlice({
@@ -64,6 +93,22 @@ export const envelopeSelectionSlice = createSlice({
 
     clearRecipientsPending(state) {
       state.recipientsPendingIds = []
+    },
+
+    /** Sets pending ids without syncing recipient view (list preview cancel). */
+    restoreRecipientsPendingIds(state, action: PayloadAction<string[]>) {
+      state.recipientsPendingIds = action.payload
+    },
+
+    setAddressListPreviewSnapshot(
+      state,
+      action: PayloadAction<AddressListPreviewSnapshot | null>,
+    ) {
+      state.addressListPreviewSnapshot = action.payload
+    },
+
+    clearAddressListPreviewSnapshot(state) {
+      state.addressListPreviewSnapshot = null
     },
 
     setActiveAddressList(state, action: PayloadAction<AddressBookMode | null>) {
@@ -166,6 +211,9 @@ export const {
   toggleRecipientSelection,
   setRecipientsPendingIds,
   clearRecipientsPending,
+  restoreRecipientsPendingIds,
+  setAddressListPreviewSnapshot,
+  clearAddressListPreviewSnapshot,
   setActiveAddressList,
   closeAddressList,
   requestClearMobileAddressFocus,

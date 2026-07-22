@@ -436,13 +436,13 @@ export const Toolbar = ({
     if (key === 'apply' && section === 'cardtextView' && cardtextEmpty) {
       buttonStatus = 'disabled'
     }
-    if (
-      key === 'apply' &&
-      buttonStatus !== 'disabled' &&
-      groupsOverride == null
-    ) {
-      /** cardtext/cardphoto/aroma: Apply не зелёный. */
+    if (key === 'apply' && buttonStatus !== 'disabled') {
+      /**
+       * Green Apply only on main sender/recipients toolbar.
+       * List chrome (groupsOverride) and cardtext/cardphoto/aroma never green.
+       */
       if (
+        groupsOverride != null ||
         section === 'cardtext' ||
         section === 'cardtextView' ||
         section === 'cardphoto' ||
