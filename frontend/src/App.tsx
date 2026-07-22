@@ -1330,6 +1330,7 @@ const App = () => {
         sourceLocalId: rightListArchiveLocalId,
         clearCardtextApplied: activeSection === 'cardtext',
         clearCardphotoApplied: activeSection === 'cardphoto',
+        clearAromaApplied: activeSection === 'aroma',
       }),
     )
   }, [

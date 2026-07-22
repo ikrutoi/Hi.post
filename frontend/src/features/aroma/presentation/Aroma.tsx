@@ -71,16 +71,23 @@ export const Aroma: React.FC = () => {
     rightPieAromaPeekNoToolbar,
     listRowInner,
     listRowLocalId,
+    cardPieEditEngaged,
   } = useRightListArchiveMini()
 
+  /**
+   * Archive edit uses the same preview→Apply loop as left assembly.
+   * Mirror highlight / instant cart write only when not editing.
+   */
+  const useAssemblyPickFlow =
+    cardPieEditEngaged || !centerStripListMirrorEnabled
+
   /** Подсветка ячейки — только при превью в центральном CardPie. */
-  const tileHighlightAroma =
-    centerStripListMirrorEnabled && mirrorInner != null
-      ? mirrorInner.aroma
-      : viewAroma
+  const tileHighlightAroma = useAssemblyPickFlow
+    ? viewAroma
+    : (mirrorInner?.aroma ?? null)
 
   const handleClickAroma = (aromaItem: AromaItem) => {
-    if (centerStripListMirrorEnabled) {
+    if (!useAssemblyPickFlow) {
       if (mirrorTargetLocalId != null) {
         dispatch(
           setCartItemCardAroma({

@@ -643,7 +643,8 @@ export const Toolbar = ({
                 section === 'cardtextView' ||
                 section === 'cardphoto' ||
                 section === 'cardphotoView' ||
-                section === 'cardphotoProcessed') &&
+                section === 'cardphotoProcessed' ||
+                section === 'aroma') &&
               cardPieEditEngaged &&
               exitArchiveEditToSectionPeek != null
             ) {
@@ -652,7 +653,9 @@ export const Toolbar = ({
                   section === 'cardphotoView' ||
                   section === 'cardphotoProcessed'
                   ? 'cardphoto'
-                  : 'cardtext',
+                  : section === 'aroma'
+                    ? 'aroma'
+                    : 'cardtext',
               )
             }
           }

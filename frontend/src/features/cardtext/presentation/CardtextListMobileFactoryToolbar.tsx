@@ -11,17 +11,24 @@ import {
 } from '@cardtext/infrastructure/selectors'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
-import type { IconKey } from '@shared/config/constants'
+import type { IconKey, IconState } from '@shared/config/constants'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import styles from './CardtextListMobileFactoryToolbar.module.scss'
 
-const CARDTEXT_LIST_FACTORY_UPPER_APPLY_TOOLBAR: ToolbarConfig = [
-  {
-    group: 'cardtext',
-    icons: [{ key: 'apply', state: 'disabled' }],
-    status: 'enabled',
-  },
-]
+function readApplyState(raw: unknown): IconState {
+  if (raw == null) return 'disabled'
+  if (typeof raw === 'string') return raw as IconState
+  if (typeof raw === 'object' && raw !== null && 'state' in raw) {
+    return String((raw as { state: unknown }).state) as IconState
+  }
+  return 'disabled'
+}
+
+/** List chrome: no green Apply. */
+function listChromeApplyState(raw: unknown): 'enabled' | 'disabled' {
+  const state = readApplyState(raw)
+  return state === 'disabled' ? 'disabled' : 'enabled'
+}
 
 const CARDTEXT_LIST_FACTORY_UPPER_TOOLBAR: ToolbarConfig = [
   {
@@ -57,7 +64,21 @@ export const CardtextListMobileFactoryLowerToolbar: React.FC = () => {
 /** Mobile factory: верхний ряд — apply слева, заголовок, return справа. */
 export const CardtextListMobileFactoryUpperToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
-  const centralTemplateTitle = useAppSelector(selectCardtextListCentralTemplateTitle)
+  const centralTemplateTitle = useAppSelector(
+    selectCardtextListCentralTemplateTitle,
+  )
+  const applyRaw = useAppSelector((s) => s.toolbar?.cardtext?.apply)
+  const applyState = listChromeApplyState(applyRaw)
+
+  const applyToolbar = useMemo((): ToolbarConfig => {
+    return [
+      {
+        group: 'cardtext',
+        icons: [{ key: 'apply', state: applyState }],
+        status: 'enabled',
+      },
+    ]
+  }, [applyState])
 
   const closeList = useCallback(() => {
     dispatch(setCardtextListPanelOpen(false))
@@ -77,7 +98,7 @@ export const CardtextListMobileFactoryUpperToolbar: React.FC = () => {
       <div className={styles.upperApply}>
         <Toolbar
           section="cardtext"
-          groupsOverride={CARDTEXT_LIST_FACTORY_UPPER_APPLY_TOOLBAR}
+          groupsOverride={applyToolbar}
           className={toolbarStyles.toolbarAromaUpperApply}
         />
       </div>

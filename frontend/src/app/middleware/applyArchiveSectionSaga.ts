@@ -43,7 +43,7 @@ import { restoreRecipient } from '@envelope/recipient/infrastructure/state'
 import { selectIsEnvelopeReady } from '@envelope/infrastructure/selectors'
 import { syncEnvelopeFormsFromAppliedRequested } from '@envelope/infrastructure/state'
 import { processEnvelopeVisuals } from './envelopeProcessSaga'
-import { setAroma } from '@aroma/infrastructure/state'
+import { setAroma, clearApplied as clearAromaApplied } from '@aroma/infrastructure/state'
 import { setMultiDateMode, setSelectedDates } from '@date/infrastructure/state'
 import { setSectionComplete } from '@entities/cardEditor/infrastructure/state'
 import type { CardPanelSection } from '@cardPanel/domain/types'
@@ -69,7 +69,11 @@ function* stashMirrorSectionBackupIfNeeded(section: CardPanelSection): SagaItera
 function* applyArchiveSectionFromPostcard(
   section: CardPanelSection,
   postcard: PostcardHydrated,
-  options?: { clearCardtextApplied?: boolean; clearCardphotoApplied?: boolean },
+  options?: {
+    clearCardtextApplied?: boolean
+    clearCardphotoApplied?: boolean
+    clearAromaApplied?: boolean
+  },
 ): SagaIterator {
   const card = postcard.card
 
@@ -152,6 +156,13 @@ function* applyArchiveSectionFromPostcard(
     }
     case 'aroma': {
       yield put(setAroma(card.aroma))
+      /**
+       * postcardEdit: снять session-apply после гидратации — как cardphoto.
+       * Плитки + preview→Apply, как на левой сборке.
+       */
+      if (options?.clearAromaApplied) {
+        yield put(clearAromaApplied())
+      }
       break
     }
     case 'date': {
@@ -173,6 +184,7 @@ function* handleApplyArchiveSection(
     sourceLocalId: number
     clearCardtextApplied?: boolean
     clearCardphotoApplied?: boolean
+    clearAromaApplied?: boolean
   }>,
 ): SagaIterator {
   const {
@@ -180,6 +192,7 @@ function* handleApplyArchiveSection(
     sourceLocalId,
     clearCardtextApplied,
     clearCardphotoApplied,
+    clearAromaApplied,
   } = action.payload
   const items: PostcardHydrated[] = yield select(selectCartItems)
   const postcard = items.find((p) => p.localId === sourceLocalId)
@@ -203,7 +216,16 @@ function* handleApplyArchiveSection(
     section === 'cardphoto' &&
     (postcard.card.cardphoto?.appliedData != null ||
       postcard.card.cardphoto?.assetData != null)
-  if (!canApply && !allowClearCardtext && !allowClearCardphoto) {
+  const allowClearAroma =
+    Boolean(clearAromaApplied) &&
+    section === 'aroma' &&
+    postcard.card.aroma != null
+  if (
+    !canApply &&
+    !allowClearCardtext &&
+    !allowClearCardphoto &&
+    !allowClearAroma
+  ) {
     return
   }
 
@@ -211,6 +233,7 @@ function* handleApplyArchiveSection(
   yield call(applyArchiveSectionFromPostcard, section, postcard, {
     clearCardtextApplied,
     clearCardphotoApplied,
+    clearAromaApplied,
   })
 }
 

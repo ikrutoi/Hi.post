@@ -7,4 +7,6 @@ export const applyArchiveSectionToEditorRequested = createAction<{
   clearCardtextApplied?: boolean
   /** Edit: подгрузить фото в asset, session-apply снять (CardPie пустеет). */
   clearCardphotoApplied?: boolean
+  /** postcardEdit aroma: гидратация + снять session-apply (плитки как слева). */
+  clearAromaApplied?: boolean
 }>('cardPanel/applyArchiveSectionToEditorRequested')
