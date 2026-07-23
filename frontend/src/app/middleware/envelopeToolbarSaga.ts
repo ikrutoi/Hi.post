@@ -739,6 +739,7 @@ function* deleteAddressTemplateFromToolbar(
       yield put(setAddressFormView({ show: false, role: null }))
       yield put(clearRecipientFormData())
       yield put(clearRecipientViewDraft())
+      yield call(removeRecipientIdFromFormViewLists, templateId)
       if (nextApplied.length === 1) {
         yield put(setRecipientViewId(nextApplied[0]))
         yield put(setRecipientView('recipientView'))
@@ -1072,6 +1073,37 @@ function* closeSenderViewSaga(): SagaIterator {
   yield put(setAddressFormView({ show: false, role: null }))
 }
 
+/** Сброс выбора в форме получателей (бейдж в легенде). */
+function* clearRecipientsFormViewSelection(): SagaIterator {
+  const recipient: RecipientState = yield select(selectRecipientState)
+  if (recipient.currentRecipientsList === 'second') {
+    yield put(setRecipientsViewIdsSecondList([]))
+  } else {
+    yield put(setRecipientsViewIds([]))
+  }
+  yield put(clearRecipientsPending())
+}
+
+function* removeRecipientIdFromFormViewLists(templateId: string): SagaIterator {
+  const recipient: RecipientState = yield select(selectRecipientState)
+  yield put(
+    setRecipientsViewIds(
+      (recipient.recipientsViewIdsFirstList ?? []).filter(
+        (id) => id !== templateId,
+      ),
+    ),
+  )
+  yield put(
+    setRecipientsViewIdsSecondList(
+      (recipient.recipientsViewIdsSecondList ?? []).filter(
+        (id) => id !== templateId,
+      ),
+    ),
+  )
+  const pending: string[] = yield select(selectRecipientsPendingIds)
+  yield put(setRecipientsPendingIds(pending.filter((id) => id !== templateId)))
+}
+
 function* closeRecipientViewSaga(): SagaIterator {
   const recipient: RecipientState = yield select(selectRecipientState)
   const templateId: string | null = yield select(selectRecipientViewId)
@@ -1109,6 +1141,7 @@ function* closeRecipientViewSaga(): SagaIterator {
   if (appliedIds.includes(templateId)) {
     yield put(setRecipientViewId(null))
     yield put(clearRecipientViewDraft())
+    yield call(clearRecipientsFormViewSelection)
     yield put(setRecipientView('recipientsView'))
     yield put(setAddressFormView({ show: false, role: null }))
     return
@@ -1133,6 +1166,7 @@ function* closeRecipientViewSaga(): SagaIterator {
   yield put(setRecipientViewId(null))
   yield* preserveFormDraftFromViewOnClose('recipient')
   yield put(clearRecipientViewDraft())
+  yield call(clearRecipientsFormViewSelection)
   yield put(setRecipientView('recipientsView'))
   yield put(setAddressFormView({ show: false, role: null }))
 }

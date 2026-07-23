@@ -101,6 +101,13 @@ export const MobileFactoryToolbarShell: React.FC = () => {
     !showPeekEmptyToolbarShell &&
     (showSectionUpperToolbar || showMobileDateCalendarNavRow)
 
+  /** Envelope: короткие вертикальные черточки по центру верхнего/нижнего ряда. */
+  const showEnvelopeToolbarCenterTicks =
+    isMobileLayout &&
+    activeSection === 'envelope' &&
+    !showMobileAddressListFactoryChrome &&
+    !envelopeAddressCreateMode
+
   if (envelopeAddressCreateMode) return null
   if (!showShell) return null
 
@@ -129,6 +136,9 @@ export const MobileFactoryToolbarShell: React.FC = () => {
         ) : showMobileDateCalendarNavRow ? (
           <MobileDateCalendarToolbarNav />
         ) : null}
+        {showEnvelopeToolbarCenterTicks ? (
+          <span className={styles.rowCenterTick} aria-hidden />
+        ) : null}
       </div>
       <div
         className={clsx(
@@ -143,6 +153,9 @@ export const MobileFactoryToolbarShell: React.FC = () => {
         aria-hidden={showPeekEmptyToolbarShell || !showLowerRow ? true : undefined}
       >
         {!showPeekEmptyToolbarShell && showLowerRow ? scenarioToolbar : null}
+        {showEnvelopeToolbarCenterTicks ? (
+          <span className={styles.rowCenterTick} aria-hidden />
+        ) : null}
       </div>
     </div>
   )

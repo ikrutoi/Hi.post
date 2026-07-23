@@ -16,6 +16,7 @@
 
 .rowUpper,
 .rowLower {
+  position: relative;
   flex: 0 0 var(--mobile-factory-toolbar-row-height);
   box-sizing: border-box;
   display: flex;
@@ -24,7 +25,7 @@
   overflow: hidden;
   padding-inline: var(--mobile-factory-toolbar-inset-inline, 0.5rem);
 
-  > * {
+  > *:not(.rowCenterTick) {
     flex: 1 1 auto;
     align-self: stretch;
     width: 100%;
@@ -48,6 +49,18 @@
     margin-inline: 0;
     padding-inline: 0;
   }
+}
+
+.rowCenterTick {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 1px;
+  height: 1.35rem;
+  pointer-events: none;
+  z-index: 1;
+  background-color: var(--mobile-section-surface-bg, $color-section-light);
 }
 
 .rowDivider {
