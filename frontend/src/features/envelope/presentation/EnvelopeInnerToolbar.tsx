@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useRef } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
+import { Toggle } from '@shared/ui/Toggle/Toggle'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
   selectActiveRecipientsToolbarState,
@@ -93,6 +94,8 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     assemblyRecipientSimplifiedPeek,
   } = useMobileFactoryListChrome()
   const pendingAddressAddFocusRef = useRef<'sender' | 'recipient' | null>(null)
+  /** Visual-only: left = sender palette, right = recipient. No business action yet. */
+  const [centerDualToggleOn, setCenterDualToggleOn] = useState(false)
 
   /** После apply выходим из focus — postcardEdit в слоте sender/recipients. */
   useEffect(() => {
@@ -209,6 +212,14 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   const showRecipientsSlot = focusRole !== 'sender'
   const showFocusReturn =
     isMobile && focusRole != null && mobileFocus != null
+  /** Mobile factory: визуальный тумблер по центру (пока без действия). */
+  const showCenterSenderToggle =
+    isMobile &&
+    !showFocusReturn &&
+    showSenderSlot &&
+    showRecipientsSlot &&
+    !assemblySenderSimplifiedPeek &&
+    !assemblyRecipientSimplifiedPeek
 
   const handleFocusReturn = useCallback(
     (key: IconKey): void | false => {
@@ -291,6 +302,18 @@ export const EnvelopeInnerToolbar: React.FC = () => {
               )}
             >
               {senderToolbar}
+            </div>
+          ) : null}
+          {showCenterSenderToggle ? (
+            <div className={styles.envelopeToolbarCenterToggle}>
+              <Toggle
+                label=""
+                checked={centerDualToggleOn}
+                onChange={setCenterDualToggleOn}
+                size="default"
+                variant="envelopeDual"
+                ariaLabel="Envelope side preview"
+              />
             </div>
           ) : null}
           {showRecipientsSlot ? (

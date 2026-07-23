@@ -51,26 +51,13 @@
   }
 }
 
-/** Envelope: одна вертикаль через верхний/нижний ряд (концы как у прежних черточек 1.35rem). */
-.shellCenterTick {
-  position: absolute;
-  left: 50%;
-  top: calc((var(--mobile-factory-toolbar-row-height) - 1.35rem) / 2);
-  bottom: calc((var(--mobile-factory-toolbar-row-height) - 1.35rem) / 2);
-  transform: translateX(-50%);
-  width: 1px;
-  pointer-events: none;
-  z-index: 2;
-  background-color: var(--mobile-section-surface-bg, $color-section-light);
-}
-
 .rowDivider {
   flex: 0 0 1px;
   margin-inline: 0.5rem;
   background-color: var(--mobile-section-surface-bg, $color-section-light);
 }
 
-/** Envelope: разрыв 1rem по центру горизонтальной полоски (под вертикальные черточки). */
+/** Envelope: разрыв 1rem по центру горизонтальной полоски. */
 .rowDividerCenterGap {
   background-color: transparent;
   background-image: linear-gradient(

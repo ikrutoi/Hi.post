@@ -139,6 +139,7 @@
 :global([data-shell-layout='mobile']) {
   .envelopeToolbarRow {
     // В factory shell родитель — row flex; не flex-basis по высоте (иначе ширина ≈ 2.25rem).
+    position: relative;
     flex: 1 1 auto;
     align-self: stretch;
     width: 100%;
@@ -172,6 +173,18 @@
     flex: 0 1 auto;
     justify-content: flex-end;
     margin-left: auto;
+  }
+
+  .envelopeToolbarCenterToggle {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    pointer-events: auto;
+    -webkit-tap-highlight-color: transparent;
   }
 
   /* Focused address view: pin left icons / return like address list factory upper row. */
@@ -426,6 +439,7 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .envelopeSenderToggleIcon {

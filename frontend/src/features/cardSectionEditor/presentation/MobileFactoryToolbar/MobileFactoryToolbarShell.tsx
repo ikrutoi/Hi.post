@@ -101,8 +101,8 @@ export const MobileFactoryToolbarShell: React.FC = () => {
     !showPeekEmptyToolbarShell &&
     (showSectionUpperToolbar || showMobileDateCalendarNavRow)
 
-  /** Envelope: короткие вертикальные черточки по центру верхнего/нижнего ряда. */
-  const showEnvelopeToolbarCenterTicks =
+  /** Envelope: горизонталь с разрывом по центру (тумблер sender — в верхнем ряду). */
+  const showEnvelopeToolbarCenterGap =
     isMobileLayout &&
     activeSection === 'envelope' &&
     !showMobileAddressListFactoryChrome &&
@@ -113,10 +113,6 @@ export const MobileFactoryToolbarShell: React.FC = () => {
 
   return (
     <div className={styles.shell} aria-label="Section toolbars">
-      {showEnvelopeToolbarCenterTicks ? (
-        <span className={styles.shellCenterTick} aria-hidden />
-      ) : null}
-
       <div className={styles.rowUpper}>
         {showPeekEmptyToolbarShell ? (
           archiveCartEnvelopeSimplifiedPeek ? (
@@ -145,7 +141,7 @@ export const MobileFactoryToolbarShell: React.FC = () => {
           styles.rowDivider,
           useAssemblySectionDivider && styles.rowDividerEnabled,
           showCartYellowDivider && styles.rowDividerCart,
-          showEnvelopeToolbarCenterTicks && styles.rowDividerCenterGap,
+          showEnvelopeToolbarCenterGap && styles.rowDividerCenterGap,
         )}
         aria-hidden
       />

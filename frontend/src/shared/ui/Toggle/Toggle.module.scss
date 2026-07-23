@@ -8,6 +8,8 @@
   font-size: 0.9rem;
   font-weight: 500;
   color: $color-font-enabled-light;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .toggleInput {
@@ -95,6 +97,23 @@
 
   .toggleText {
     color: $color-envelope-recipient-legend;
+  }
+}
+
+/** Центр тулбара конверта: слева — sender, справа — recipient. */
+.toggleEnvelopeDual {
+  .toggleSlider {
+    background-color: $color-envelope-sender-border;
+    box-shadow: 0 0 0 1px rgba($color-envelope-sender-legend, 0.25);
+
+    &::after {
+      background-color: #fff;
+    }
+  }
+
+  .toggleInput:checked + .toggleSlider {
+    background-color: $color-envelope-recipient-border;
+    box-shadow: 0 0 0 1px rgba($color-envelope-recipient-legend, 0.25);
   }
 }
 
