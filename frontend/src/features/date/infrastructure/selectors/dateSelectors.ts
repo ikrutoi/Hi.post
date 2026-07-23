@@ -9,7 +9,6 @@ import {
 } from '@entities/date/domain/types'
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
 import {
-  selectEnvelopeSessionRecord,
   selectIsEnvelopeReady,
 } from '@envelope/infrastructure/selectors'
 import { selectCartItems } from '@cart/infrastructure/selectors'
@@ -19,7 +18,6 @@ import { selectIsAromaComplete } from '@aroma/infrastructure/selectors'
 import {
   dispatchBranchKeyFromPostcard,
   dispatchDateKeyFromDispatchDate,
-  recipientBranchKeyFromEnvelope,
 } from '@date/domain/dispatchBranchKey'
 
 export const selectDateState = (state: RootState): DateState => state.date
@@ -71,11 +69,12 @@ export const selectRecipientBranchSlotKeys = createSelector(
 
 /** Как `branchKey` у `recipientSlots` в `useDispatchPlanListEntries` (CardPie / план отправки). */
 export const selectRecipientPlanBranchSlotKeys = createSelector(
-  [selectRecipientState, selectEnvelopeSessionRecord],
-  (recipient, envelope): string[] => {
+  [selectRecipientState],
+  (recipient): string[] => {
     const applied = recipient.applied ?? []
     if (applied.length > 0) return applied.map(String)
-    return [recipientBranchKeyFromEnvelope(envelope)]
+    /** Без applied — стабильный `session` (не recipientViewId из preview списка). */
+    return ['session']
   },
 )
 

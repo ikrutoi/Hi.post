@@ -31,6 +31,11 @@ export type RightListArchiveMiniContextValue = {
    * Target: edit archive sandbox only.
    */
   cardPieEditEngaged: boolean
+  /**
+   * `all` — editLight (полный factory-edit); `section` — postcardEdit только peek-секции.
+   * Archive CardPie zeros the edited section from session isComplete while engaged.
+   */
+  cardPieEditHydrateScope: 'all' | 'section'
   /** Полный factory-edit (все секции) — кнопка editLight на CardPie. */
   requestCardPieEdit: (() => void) | null
   /** Edit только текущей peek-секции (postcardEdit в верхнем тулбаре). */
@@ -72,6 +77,7 @@ const defaultValue: RightListArchiveMiniContextValue = {
   activePieSide: 'left',
   dualMode: defaultDualMode,
   cardPieEditEngaged: false,
+  cardPieEditHydrateScope: 'all',
   requestCardPieEdit: null,
   requestSectionEditFromPeek: null,
   exitArchiveEditToSectionPeek: null,

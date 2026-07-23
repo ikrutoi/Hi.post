@@ -1,4 +1,5 @@
 import { setActiveSection } from '@/entities/sectionEditorMenu/infrastructure/state'
+import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { openCardphotoFromMiniStripRequested } from '@cardphoto/infrastructure/state'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import type { PostcardStatus } from '@entities/postcard'
@@ -12,7 +13,10 @@ import { CardSection } from '@/shared/config/constants'
 import { clearRainbow } from '@/entities/cardEditor/infrastructure/state'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { selectCardphotoIsComplete } from '@cardphoto/infrastructure/selectors'
+import { selectCardtextIsComplete } from '@cardtext/infrastructure/selectors'
+import { selectIsAromaComplete } from '@aroma/infrastructure/selectors'
 import { selectAssemblyBranchFreeze } from '@cardPanel/infrastructure/selectors/assemblyBranchFreezeSelectors'
+import type { CardPieSectionFlags } from '../../infrastructure/postcardCardPieViewModel'
 
 const EMPTY_CART_PIE_SECTIONS = {
   cardphoto: false,
@@ -21,6 +25,35 @@ const EMPTY_CART_PIE_SECTIONS = {
   aroma: false,
   date: false,
 } as const
+
+function resolveArchiveEditSections(
+  archiveSections: CardPieSectionFlags,
+  cardPieEditEngaged: boolean,
+  hydrateScope: 'all' | 'section',
+  activeSection: string | null,
+  sessionComplete: {
+    cardphoto: boolean
+    cardtext: boolean
+    aroma: boolean
+  },
+): CardPieSectionFlags {
+  if (!cardPieEditEngaged) return archiveSections
+
+  if (hydrateScope === 'section') {
+    if (activeSection === 'cardphoto') {
+      return { ...archiveSections, cardphoto: sessionComplete.cardphoto }
+    }
+    if (activeSection === 'cardtext') {
+      return { ...archiveSections, cardtext: sessionComplete.cardtext }
+    }
+    if (activeSection === 'aroma') {
+      return { ...archiveSections, aroma: sessionComplete.aroma }
+    }
+    return archiveSections
+  }
+
+  return { ...archiveSections, cardphoto: sessionComplete.cardphoto }
+}
 
 export const useCardPieFacade = (
   isProcessed: boolean,
@@ -34,8 +67,12 @@ export const useCardPieFacade = (
   const activeData = useAppSelector(selectActiveCardFullData)
   const editorProgress = useAppSelector(selectPieProgress)
   const cardphotoIsComplete = useAppSelector(selectCardphotoIsComplete)
+  const cardtextIsComplete = useAppSelector(selectCardtextIsComplete)
+  const aromaIsComplete = useAppSelector(selectIsAromaComplete)
+  const activeSection = useAppSelector(selectActiveSection)
   const assemblyFreeze = useAppSelector(selectAssemblyBranchFreeze)
-  const { cardPieEditEngaged } = useRightListArchiveMini()
+  const { cardPieEditEngaged, cardPieEditHydrateScope } =
+    useRightListArchiveMini()
   /** Правая колонка: пирог по открытке из списка (корзина / история), `id` — `String(localId)`. */
   const isListArchivePie = !isProcessed && Boolean(id)
 
@@ -62,13 +99,22 @@ export const useCardPieFacade = (
   const archiveSections =
     listArchiveBundle?.sections ?? EMPTY_CART_PIE_SECTIONS
   /**
-   * cardPieEdit: сектор cardphoto на archive CardPie следует session isComplete
-   * (apply снят при гидратации), а не appliedData на открытке корзины.
+   * Archive edit: zero the section(s) cleared in session on hydrate, same as left
+   * pie (session isComplete), not cart postcard appliedData.
+   * `all` — only cardphoto is cleared; `section` — active peek section.
    */
   const sections = isListArchivePie
-    ? cardPieEditEngaged
-      ? { ...archiveSections, cardphoto: cardphotoIsComplete }
-      : archiveSections
+    ? resolveArchiveEditSections(
+        archiveSections,
+        cardPieEditEngaged,
+        cardPieEditHydrateScope,
+        activeSection,
+        {
+          cardphoto: cardphotoIsComplete,
+          cardtext: cardtextIsComplete,
+          aroma: aromaIsComplete,
+        },
+      )
     : assemblyUsesFreeze
       ? assemblyFreeze.sections
       : editorProgress.sections

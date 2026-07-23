@@ -156,7 +156,9 @@ export const CardPie: React.FC<CardPieProps> = ({
     : null
   const aromaIndex = cardData?.aroma?.index
   const aromaImageUrl =
-    aromaIndex != null ? (AROMA_IMAGES[aromaIndex] ?? null) : null
+    sections.aroma && aromaIndex != null
+      ? (AROMA_IMAGES[aromaIndex] ?? null)
+      : null
   const recipient = cardData?.recipient ? cardData?.recipient : null
   const recipientCount: number =
     (cardData as { recipientCount?: number } | undefined)?.recipientCount ??

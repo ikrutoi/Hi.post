@@ -34,7 +34,6 @@ import { listEntryPriceLine } from '@shared/utils/listEntryPriceLine'
 import {
   dispatchBranchKeyFromPostcard,
   dispatchDateKeyFromDispatchDate,
-  recipientBranchKeyFromEnvelope,
 } from '@date/domain/dispatchBranchKey'
 import {
   formatDetailLineFromAddressBookEntry,
@@ -226,7 +225,11 @@ export function useDispatchPlanListEntries(
     }
 
     const applied = recipientState.applied ?? []
-    const sessionBranchKey = recipientBranchKeyFromEnvelope(envelopeRecord)
+    /**
+     * Без applied — стабильный `session`, не `recipientViewId`.
+     * Иначе клик по шаблону в списке (preview) меняет viewId → id мини-пая
+     * и мигает полоса выбора в gutter.
+     */
     if (applied.length > 0) {
       return applied.map((id) => ({
         branchKey: id,
@@ -237,7 +240,7 @@ export function useDispatchPlanListEntries(
     if (recipientState.appliedData != null) {
       return [
         {
-          branchKey: sessionBranchKey,
+          branchKey: 'session',
           detailLine: formatDetailLineFromAddressFields(
             recipientState.appliedData,
           ),
@@ -247,7 +250,7 @@ export function useDispatchPlanListEntries(
     }
     return [
       {
-        branchKey: sessionBranchKey,
+        branchKey: 'session',
         detailLine: sessionRecipientDetail,
         isSessionSlot: true,
       },
@@ -261,7 +264,6 @@ export function useDispatchPlanListEntries(
     recipientEntries,
     cartPostcardByRecipientId,
     sessionRecipientDetail,
-    envelopeRecord,
   ])
 
   return useMemo(() => {

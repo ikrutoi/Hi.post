@@ -1500,6 +1500,7 @@ const App = () => {
       activePieSide,
       dualMode,
       cardPieEditEngaged,
+      cardPieEditHydrateScope,
       requestCardPieEdit: enterCardPieEditFactoryMode,
       requestSectionEditFromPeek: enterSectionEditFromPeek,
       exitArchiveEditToSectionPeek,
@@ -1533,6 +1534,7 @@ const App = () => {
   }, [
     activePieSide,
     cardPieEditEngaged,
+    cardPieEditHydrateScope,
     enterCardPieEditFactoryMode,
     enterSectionEditFromPeek,
     exitArchiveEditToSectionPeek,
