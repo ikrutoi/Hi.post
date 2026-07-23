@@ -113,6 +113,9 @@ export const MobileFactoryToolbarShell: React.FC = () => {
 
   return (
     <div className={styles.shell} aria-label="Section toolbars">
+      {showEnvelopeToolbarCenterTicks ? (
+        <span className={styles.shellCenterTick} aria-hidden />
+      ) : null}
 
       <div className={styles.rowUpper}>
         {showPeekEmptyToolbarShell ? (
@@ -136,15 +139,13 @@ export const MobileFactoryToolbarShell: React.FC = () => {
         ) : showMobileDateCalendarNavRow ? (
           <MobileDateCalendarToolbarNav />
         ) : null}
-        {showEnvelopeToolbarCenterTicks ? (
-          <span className={styles.rowCenterTick} aria-hidden />
-        ) : null}
       </div>
       <div
         className={clsx(
           styles.rowDivider,
           useAssemblySectionDivider && styles.rowDividerEnabled,
           showCartYellowDivider && styles.rowDividerCart,
+          showEnvelopeToolbarCenterTicks && styles.rowDividerCenterGap,
         )}
         aria-hidden
       />
@@ -153,9 +154,6 @@ export const MobileFactoryToolbarShell: React.FC = () => {
         aria-hidden={showPeekEmptyToolbarShell || !showLowerRow ? true : undefined}
       >
         {!showPeekEmptyToolbarShell && showLowerRow ? scenarioToolbar : null}
-        {showEnvelopeToolbarCenterTicks ? (
-          <span className={styles.rowCenterTick} aria-hidden />
-        ) : null}
       </div>
     </div>
   )

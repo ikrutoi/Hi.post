@@ -25,7 +25,7 @@
   overflow: hidden;
   padding-inline: var(--mobile-factory-toolbar-inset-inline, 0.5rem);
 
-  > *:not(.rowCenterTick) {
+  > * {
     flex: 1 1 auto;
     align-self: stretch;
     width: 100%;
@@ -51,15 +51,16 @@
   }
 }
 
-.rowCenterTick {
+/** Envelope: одна вертикаль через верхний/нижний ряд (концы как у прежних черточек 1.35rem). */
+.shellCenterTick {
   position: absolute;
   left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  top: calc((var(--mobile-factory-toolbar-row-height) - 1.35rem) / 2);
+  bottom: calc((var(--mobile-factory-toolbar-row-height) - 1.35rem) / 2);
+  transform: translateX(-50%);
   width: 1px;
-  height: 1.35rem;
   pointer-events: none;
-  z-index: 1;
+  z-index: 2;
   background-color: var(--mobile-section-surface-bg, $color-section-light);
 }
 
@@ -69,6 +70,20 @@
   background-color: var(--mobile-section-surface-bg, $color-section-light);
 }
 
+/** Envelope: разрыв 1rem по центру горизонтальной полоски (под вертикальные черточки). */
+.rowDividerCenterGap {
+  background-color: transparent;
+  background-image: linear-gradient(
+    to right,
+    var(--mobile-section-surface-bg, $color-section-light) 0,
+    var(--mobile-section-surface-bg, $color-section-light) calc(50% - 0.5rem),
+    transparent calc(50% - 0.5rem),
+    transparent calc(50% + 0.5rem),
+    var(--mobile-section-surface-bg, $color-section-light) calc(50% + 0.5rem),
+    var(--mobile-section-surface-bg, $color-section-light) 100%
+  );
+}
+
 .rowDividerHidden {
   background-color: transparent;
 }
@@ -76,6 +91,10 @@
 /** Между рядами в секции сборки — цвет фона текущей секции. */
 .rowDividerEnabled {
   background-color: var(--mobile-section-surface-bg, $color-section-light);
+}
+
+.rowDividerEnabled.rowDividerCenterGap {
+  background-color: transparent;
 }
 
 .rowDividerCart {
