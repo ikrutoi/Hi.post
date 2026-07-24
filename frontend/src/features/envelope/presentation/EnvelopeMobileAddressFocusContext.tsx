@@ -11,11 +11,20 @@ import { selectMobileAddressFocusClearSeq } from '@envelope/infrastructure/selec
 
 export type EnvelopeMobileAddressFocusRole = 'sender' | 'recipient'
 
+/** Upper dual toggle: left = sender, right = recipient. */
+export type EnvelopeMobileDualSide = 'sender' | 'recipient'
+
 type EnvelopeMobileAddressFocusContextValue = {
   focusRole: EnvelopeMobileAddressFocusRole | null
   toggleFocus: (role: EnvelopeMobileAddressFocusRole) => void
   clearFocus: () => void
   isFocused: (role: EnvelopeMobileAddressFocusRole) => boolean
+  /**
+   * Mobile factory dual toggle: which side stays full View;
+   * the other side shows simplified peek.
+   */
+  dualSide: EnvelopeMobileDualSide
+  setDualSide: (side: EnvelopeMobileDualSide) => void
 }
 
 const EnvelopeMobileAddressFocusContext =
@@ -26,6 +35,7 @@ export const EnvelopeMobileAddressFocusProvider: React.FC<{
 }> = ({ children }) => {
   const [focusRole, setFocusRole] =
     useState<EnvelopeMobileAddressFocusRole | null>(null)
+  const [dualSide, setDualSide] = useState<EnvelopeMobileDualSide>('sender')
   const clearSeq = useAppSelector(selectMobileAddressFocusClearSeq)
 
   const toggleFocus = useCallback((role: EnvelopeMobileAddressFocusRole) => {
@@ -53,8 +63,10 @@ export const EnvelopeMobileAddressFocusProvider: React.FC<{
       toggleFocus,
       clearFocus,
       isFocused,
+      dualSide,
+      setDualSide,
     }),
-    [focusRole, toggleFocus, clearFocus, isFocused],
+    [focusRole, toggleFocus, clearFocus, isFocused, dualSide],
   )
 
   return (

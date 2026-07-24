@@ -33,6 +33,10 @@ export type EnvelopePeekAddressBlockProps = {
    * Archive list-row peek: leave false — данные из listRowInner.
    */
   fromSessionApplied?: boolean
+  /**
+   * Dual-side simplified: if session applied lines are empty, show this draft.
+   */
+  addressFallback?: Readonly<AddressFields> | null
 }
 
 type PeekAddressLine = { text: string; isName: boolean }
@@ -56,6 +60,7 @@ export const EnvelopePeekAddressBlock: React.FC<
   className,
   compact = false,
   fromSessionApplied = false,
+  addressFallback = null,
 }) => {
   const { listRowInner } = useRightListArchiveMini()
   const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
@@ -143,7 +148,7 @@ export const EnvelopePeekAddressBlock: React.FC<
     recipientAppliedIds.length,
   ])
 
-  const lines =
+  const linesFromRole =
     role === 'sender'
       ? fromSessionApplied
         ? senderLinesFromSession
@@ -151,6 +156,13 @@ export const EnvelopePeekAddressBlock: React.FC<
       : fromSessionApplied
         ? recipientLinesFromSession
         : recipientLinesFromArchive
+  const fallbackLines = addressLinesForPeek(addressFallback)
+  const lines =
+    linesFromRole.length > 0
+      ? linesFromRole
+      : fromSessionApplied
+        ? fallbackLines
+        : linesFromRole
 
   return (
     <div

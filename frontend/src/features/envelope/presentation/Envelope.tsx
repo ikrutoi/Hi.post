@@ -7,6 +7,7 @@ import { i18n } from '@i18n/i18n'
 import { EnvelopeAddress } from '../addressForm/presentation'
 import { EnvelopePeekAddressBlock } from './EnvelopePeekAddressBlock'
 import { useSenderFacade } from '../sender/application/facades'
+import { useRecipientFacade } from '../recipient/application/facades'
 import { IconUserSenderCentered } from '@shared/ui/icons'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
@@ -40,6 +41,7 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
   const notebookTabsOuter = useSectionEditorNotebookTabsOuter()
   const lang = getSafeLang(i18n.language)
   const senderFacade = useSenderFacade()
+  const recipientFacade = useRecipientFacade()
   const isMobile = useAppSelector(selectIsMobileLayout)
   const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
   const sandboxSender = useAppSelector(selectArchiveSandboxSender)
@@ -54,6 +56,7 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
     : sessionRecipientView
   const mobileFocus = useEnvelopeMobileAddressFocus()
   const mobileFocusRole = mobileFocus?.focusRole ?? null
+  const dualSide = mobileFocus?.dualSide ?? 'sender'
   const {
     rightPieEnvelopePeekNoToolbar,
     listRowLocalId,
@@ -72,9 +75,22 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
   const envelopePeekMode =
     (rightPieEnvelopePeekNoToolbar && !archiveCartEnvelopeSimplifiedPeek) ||
     archiveEditPeekGate
-  const showSenderApplyPeek = !envelopePeekMode && assemblySenderSimplifiedPeek
-  const showRecipientApplyPeek =
-    !envelopePeekMode && assemblyRecipientSimplifiedPeek
+
+  /**
+   * Mobile dual toggle: active side = full View, other = simplified peek.
+   * Desktop keeps apply-peek after Apply.
+   */
+  const useMobileDualForms =
+    isMobile &&
+    !envelopePeekMode &&
+    senderView !== 'senderCreate' &&
+    recipientView !== 'recipientCreate'
+  const showSenderSimplified = useMobileDualForms
+    ? dualSide === 'recipient'
+    : !envelopePeekMode && assemblySenderSimplifiedPeek
+  const showRecipientSimplified = useMobileDualForms
+    ? dualSide === 'sender'
+    : !envelopePeekMode && assemblyRecipientSimplifiedPeek
 
   const mobileFormRole =
     senderView === 'senderCreate'
@@ -170,12 +186,13 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
               compact={isMobile}
               className={styles.envelopePeekBlock}
             />
-          ) : showSenderApplyPeek ? (
+          ) : showSenderSimplified ? (
             <EnvelopePeekAddressBlock
-              key="peek-env-sender-applied"
+              key="peek-env-sender-simplified"
               role="sender"
               compact={isMobile}
               fromSessionApplied
+              addressFallback={senderFacade.address}
               className={styles.envelopePeekBlock}
             />
           ) : (
@@ -204,12 +221,13 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
               compact={isMobile}
               className={styles.envelopePeekBlock}
             />
-          ) : showRecipientApplyPeek ? (
+          ) : showRecipientSimplified ? (
             <EnvelopePeekAddressBlock
-              key="peek-env-recipient-applied"
+              key="peek-env-recipient-simplified"
               role="recipient"
               compact={isMobile}
               fromSessionApplied
+              addressFallback={recipientFacade.address}
               className={styles.envelopePeekBlock}
             />
           ) : (
@@ -226,7 +244,7 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
         className={styles.envelopeSenderToggle}
         data-envelope-mobile-focus-chrome
       >
-        {envelopePeekMode || showSenderApplyPeek ? (
+        {envelopePeekMode || showSenderSimplified ? (
           <div className={styles.envelopeFooterSpacer} aria-hidden />
         ) : (
           <div
