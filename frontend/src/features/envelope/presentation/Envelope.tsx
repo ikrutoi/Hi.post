@@ -77,7 +77,7 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
     archiveEditPeekGate
 
   /**
-   * Mobile dual toggle: active side = full View, other = simplified peek.
+   * Mobile dual toggle: sender/recipient = that side View; both = both simplified.
    * Desktop keeps apply-peek after Apply.
    */
   const useMobileDualForms =
@@ -86,10 +86,10 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
     senderView !== 'senderCreate' &&
     recipientView !== 'recipientCreate'
   const showSenderSimplified = useMobileDualForms
-    ? dualSide === 'recipient'
+    ? dualSide !== 'sender'
     : !envelopePeekMode && assemblySenderSimplifiedPeek
   const showRecipientSimplified = useMobileDualForms
-    ? dualSide === 'sender'
+    ? dualSide !== 'recipient'
     : !envelopePeekMode && assemblyRecipientSimplifiedPeek
 
   const mobileFormRole =

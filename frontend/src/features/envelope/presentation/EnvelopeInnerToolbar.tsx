@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useRef } from 'react'
 import clsx from 'clsx'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
-import { Toggle } from '@shared/ui/Toggle/Toggle'
+import { TriToggle } from '@shared/ui/Toggle/TriToggle'
+import type { TriTogglePosition } from '@shared/ui/Toggle/TriToggle'
 import { useAppSelector } from '@app/hooks'
 import {
   selectActiveRecipientsToolbarState,
@@ -85,9 +86,9 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   )
   const pendingAddressAddFocusRef = useRef<'sender' | 'recipient' | null>(null)
 
-  /** Dual: inactive side uses simplified peek chrome (postcardEdit). */
-  const senderSideSimplified = isMobile && dualSide === 'recipient'
-  const recipientSideSimplified = isMobile && dualSide === 'sender'
+  /** Dual: non-active side(s) use simplified peek chrome (postcardEdit). */
+  const senderSideSimplified = isMobile && dualSide !== 'sender'
+  const recipientSideSimplified = isMobile && dualSide !== 'recipient'
 
   /** После apply выходим из focus — postcardEdit в слоте sender/recipients. */
   useEffect(() => {
@@ -186,7 +187,7 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   const showRecipientsSlot = focusRole !== 'sender'
   const showFocusReturn =
     isMobile && focusRole != null && mobileFocus != null
-  /** Mobile factory: dual toggle — active side View, other simplified. */
+  /** Mobile factory: 3-stop dual toggle (sender / both / recipient). */
   const showCenterDualToggle =
     isMobile &&
     !showFocusReturn &&
@@ -194,9 +195,18 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     showRecipientsSlot &&
     setDualSide != null
 
-  const handleCenterDualToggle = useCallback(
-    (checked: boolean) => {
-      setDualSide?.(checked ? 'recipient' : 'sender')
+  const centerTriValue: TriTogglePosition =
+    dualSide === 'sender'
+      ? 'left'
+      : dualSide === 'recipient'
+        ? 'right'
+        : 'center'
+
+  const handleCenterTriToggle = useCallback(
+    (position: TriTogglePosition) => {
+      if (position === 'left') setDualSide?.('sender')
+      else if (position === 'right') setDualSide?.('recipient')
+      else setDualSide?.('both')
     },
     [setDualSide],
   )
@@ -286,11 +296,9 @@ export const EnvelopeInnerToolbar: React.FC = () => {
           ) : null}
           {showCenterDualToggle ? (
             <div className={styles.envelopeToolbarCenterToggle}>
-              <Toggle
-                label=""
-                checked={dualSide === 'recipient'}
-                onChange={handleCenterDualToggle}
-                size="default"
+              <TriToggle
+                value={centerTriValue}
+                onChange={handleCenterTriToggle}
                 variant="envelopeDual"
                 ariaLabel="Envelope side"
               />

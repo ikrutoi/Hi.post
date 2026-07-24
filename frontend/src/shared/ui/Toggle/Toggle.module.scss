@@ -100,7 +100,7 @@
   }
 }
 
-/** Центр тулбара конверта: слева — sender, справа — recipient. */
+/** Центр тулбара конверта (2 положения) — legacy; см. TriToggle. */
 .toggleEnvelopeDual {
   .toggleSlider {
     background-color: $color-envelope-sender-border;
@@ -114,6 +114,101 @@
   .toggleInput:checked + .toggleSlider {
     background-color: $color-envelope-recipient-border;
     box-shadow: 0 0 0 1px rgba($color-envelope-recipient-legend, 0.25);
+  }
+}
+
+/** Три положения: шире обычного тумблера, шарик left / center / right. */
+.triToggle {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  outline: none;
+}
+
+.triToggleTrack {
+  position: relative;
+  width: 68px;
+  height: 18px;
+  border-radius: 18px;
+  box-sizing: border-box;
+  overflow: hidden;
+  transition: box-shadow 0.4s ease;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    transition: background-color 0.4s ease;
+  }
+
+  &::before {
+    left: 0;
+  }
+
+  &::after {
+    right: 0;
+  }
+}
+
+.triToggleThumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  z-index: 1;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: #fff;
+  pointer-events: none;
+  transition: transform 0.4s ease;
+}
+
+.triToggle_left .triToggleThumb {
+  transform: translateX(0);
+}
+
+.triToggle_center .triToggleThumb {
+  transform: translateX(25px);
+}
+
+.triToggle_right .triToggleThumb {
+  transform: translateX(50px);
+}
+
+.triToggleEnvelopeDual {
+  &.triToggle_left .triToggleTrack {
+    box-shadow: 0 0 0 1px rgba($color-envelope-sender-legend, 0.25);
+
+    &::before,
+    &::after {
+      background-color: $color-envelope-sender-border;
+    }
+  }
+
+  &.triToggle_right .triToggleTrack {
+    box-shadow: 0 0 0 1px rgba($color-envelope-recipient-legend, 0.25);
+
+    &::before,
+    &::after {
+      background-color: $color-envelope-recipient-border;
+    }
+  }
+
+  &.triToggle_center .triToggleTrack {
+    box-shadow: 0 0 0 1px rgba($color-envelope-sender-legend, 0.14);
+
+    &::before {
+      background-color: $color-envelope-sender-border;
+    }
+
+    &::after {
+      background-color: $color-envelope-recipient-border;
+    }
   }
 }
 
