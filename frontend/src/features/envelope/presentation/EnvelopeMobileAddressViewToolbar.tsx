@@ -15,6 +15,7 @@ import {
 } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { useMobileScenarioToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
+import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import { ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR } from '@toolbar/domain/types/addressView.types'
 import { useEnvelopeMobileAddressFocus } from './EnvelopeMobileAddressFocusContext'
@@ -29,6 +30,12 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
 > = ({ enabled }) => {
   const isMobile = useAppSelector(selectIsMobileLayout)
   const mobileFocus = useEnvelopeMobileAddressFocus()
+  const {
+    assemblySenderSimplifiedPeek,
+    assemblyRecipientSimplifiedPeek,
+  } = useMobileFactoryListChrome()
+  const bothFormsApplied =
+    assemblySenderSimplifiedPeek && assemblyRecipientSimplifiedPeek
   const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
   const sandboxSender = useAppSelector(selectArchiveSandboxSender)
   const sandboxRecipient = useAppSelector(selectArchiveSandboxRecipient)
@@ -117,8 +124,10 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
     recipientAddress,
   ])
 
-  /** Lower View toolbar follows dualSide (form click / center toggle). */
-  const activeViewRole = mobileFocus?.dualSide ?? 'sender'
+  /** Lower View toolbar follows dualSide; hidden when both forms are applied. */
+  const activeViewRole = bothFormsApplied
+    ? null
+    : (mobileFocus?.dualSide ?? 'sender')
 
   const showSenderToolbar =
     enabled &&

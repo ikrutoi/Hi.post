@@ -46,6 +46,7 @@ import {
 } from '@shared/ui/icons'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
+import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { useEnvelopeMobileAddressFocus } from '../../presentation/EnvelopeMobileAddressFocusContext'
 
 export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
@@ -103,6 +104,12 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const dispatch = useAppDispatch()
   const isMobile = useAppSelector(selectIsMobileLayout)
   const mobileFocus = useEnvelopeMobileAddressFocus()
+  const {
+    assemblySenderSimplifiedPeek,
+    assemblyRecipientSimplifiedPeek,
+  } = useMobileFactoryListChrome()
+  const bothFormsApplied =
+    assemblySenderSimplifiedPeek && assemblyRecipientSimplifiedPeek
   const sessionSenderView = useAppSelector(selectSenderView)
   const sessionRecipientView = useAppSelector(selectRecipientView)
   const senderView = sandboxActive
@@ -445,6 +452,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const trySelectMobileAddressSide = useCallback(
     (targetRole: 'sender' | 'recipient', el: HTMLElement) => {
       if (!isMobile || mobileFocus == null) return false
+      if (bothFormsApplied) return false
       if (targetRole === 'sender' && senderView === 'senderCreate') return false
       if (targetRole === 'recipient' && recipientView === 'recipientCreate') {
         return false
@@ -468,6 +476,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     [
       isMobile,
       mobileFocus,
+      bothFormsApplied,
       senderView,
       recipientView,
       senderViewEditMode,

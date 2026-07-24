@@ -100,7 +100,10 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   const prevRecipientPeekRef = useRef(false)
 
   /**
-   * Dual toggle tracks last Apply side; locked (gray) when both forms are applied.
+   * After Apply on a side:
+   * - other side still editable → select it (toggle + accent + lower View)
+   * - other side already applied → leave dualSide; accent/View hidden while both peek
+   * After postcardEdit un-apply → select the side that became editable again.
    */
   useEffect(() => {
     if (!isMobile || setDualSide == null) {
@@ -108,12 +111,25 @@ export const EnvelopeInnerToolbar: React.FC = () => {
       prevRecipientPeekRef.current = assemblyRecipientSimplifiedPeek
       return
     }
-    if (assemblySenderSimplifiedPeek && !prevSenderPeekRef.current) {
+    const senderJustApplied =
+      assemblySenderSimplifiedPeek && !prevSenderPeekRef.current
+    const recipientJustApplied =
+      assemblyRecipientSimplifiedPeek && !prevRecipientPeekRef.current
+    const senderJustUnapplied =
+      !assemblySenderSimplifiedPeek && prevSenderPeekRef.current
+    const recipientJustUnapplied =
+      !assemblyRecipientSimplifiedPeek && prevRecipientPeekRef.current
+
+    if (senderJustApplied && !assemblyRecipientSimplifiedPeek) {
+      setDualSide('recipient')
+    } else if (recipientJustApplied && !assemblySenderSimplifiedPeek) {
       setDualSide('sender')
-    }
-    if (assemblyRecipientSimplifiedPeek && !prevRecipientPeekRef.current) {
+    } else if (senderJustUnapplied) {
+      setDualSide('sender')
+    } else if (recipientJustUnapplied) {
       setDualSide('recipient')
     }
+
     prevSenderPeekRef.current = assemblySenderSimplifiedPeek
     prevRecipientPeekRef.current = assemblyRecipientSimplifiedPeek
   }, [

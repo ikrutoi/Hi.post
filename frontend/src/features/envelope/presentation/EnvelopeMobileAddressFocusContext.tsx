@@ -20,8 +20,8 @@ type EnvelopeMobileAddressFocusContextValue = {
   clearFocus: () => void
   isFocused: (role: EnvelopeMobileAddressFocusRole) => boolean
   /**
-   * Mobile factory dual toggle — visual side marker.
-   * Locked gray when both sender and recipient are Apply-peek.
+   * Mobile factory dual toggle — which side is selected (accent + lower View).
+   * Locked gray when both sender and recipient are Apply-peek; accent hidden then.
    */
   dualSide: EnvelopeMobileDualSide
   setDualSide: (side: EnvelopeMobileDualSide) => void

@@ -79,10 +79,13 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
     !envelopePeekMode && assemblySenderSimplifiedPeek
   const showRecipientSimplified =
     !envelopePeekMode && assemblyRecipientSimplifiedPeek
+  const bothFormsApplied =
+    assemblySenderSimplifiedPeek && assemblyRecipientSimplifiedPeek
 
   const showDualSideSelectionBorder =
     isMobile &&
     !envelopePeekMode &&
+    !bothFormsApplied &&
     senderView !== 'senderCreate' &&
     recipientView !== 'recipientCreate'
 
