@@ -11,8 +11,8 @@ import { selectMobileAddressFocusClearSeq } from '@envelope/infrastructure/selec
 
 export type EnvelopeMobileAddressFocusRole = 'sender' | 'recipient'
 
-/** Upper dual toggle: left = sender, center = both simplified, right = recipient. */
-export type EnvelopeMobileDualSide = 'sender' | 'both' | 'recipient'
+/** Upper dual toggle: left = sender, right = recipient. */
+export type EnvelopeMobileDualSide = 'sender' | 'recipient'
 
 type EnvelopeMobileAddressFocusContextValue = {
   focusRole: EnvelopeMobileAddressFocusRole | null
@@ -20,9 +20,8 @@ type EnvelopeMobileAddressFocusContextValue = {
   clearFocus: () => void
   isFocused: (role: EnvelopeMobileAddressFocusRole) => boolean
   /**
-   * Mobile factory dual toggle:
-   * - sender / recipient — that side full View, other simplified
-   * - both — both sides simplified (section kit complete view)
+   * Mobile factory dual toggle — visual side marker.
+   * Locked gray when both sender and recipient are Apply-peek.
    */
   dualSide: EnvelopeMobileDualSide
   setDualSide: (side: EnvelopeMobileDualSide) => void

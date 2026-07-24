@@ -1,9 +1,8 @@
 import React, { useCallback, useEffect, useRef } from 'react'
 import clsx from 'clsx'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
-import { TriToggle } from '@shared/ui/Toggle/TriToggle'
-import type { TriTogglePosition } from '@shared/ui/Toggle/TriToggle'
-import { useAppSelector } from '@app/hooks'
+import { Toggle } from '@shared/ui/Toggle/Toggle'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
   selectActiveRecipientsToolbarState,
   selectActiveSenderToolbarState,
@@ -11,13 +10,20 @@ import {
   selectSenderViewEditMode,
 } from '@envelope/infrastructure/selectors'
 import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
+import { setRecipientApplied } from '@envelope/recipient/infrastructure/state'
 import { selectSenderView } from '@envelope/sender/infrastructure/selectors'
+import { setSenderApplied } from '@envelope/sender/infrastructure/state'
+import {
+  setArchiveSenderApplied,
+  setArchiveRecipientApplied,
+} from '@cardPanel/infrastructure/state'
 import {
   selectArchiveEnvelopeSandboxActive,
   selectArchiveSandboxSender,
   selectArchiveSandboxRecipient,
 } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
+import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { ENVELOPE_MOBILE_ADDRESS_VIEW_UPPER_RETURN_TOOLBAR } from '@toolbar/domain/types/addressView.types'
 import type { IconKey } from '@shared/config/constants'
 import type { ToolbarConfig } from '@toolbar/domain/types'
@@ -61,6 +67,7 @@ function readAddressAddMeta(
 }
 
 export const EnvelopeInnerToolbar: React.FC = () => {
+  const dispatch = useAppDispatch()
   const isMobile = useAppSelector(selectIsMobileLayout)
   const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
   const sandboxSender = useAppSelector(selectArchiveSandboxSender)
@@ -84,23 +91,59 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   const recipientsToolbarState = useAppSelector(
     selectActiveRecipientsToolbarState,
   )
+  const {
+    assemblySenderSimplifiedPeek,
+    assemblyRecipientSimplifiedPeek,
+  } = useMobileFactoryListChrome()
   const pendingAddressAddFocusRef = useRef<'sender' | 'recipient' | null>(null)
+  const prevSenderPeekRef = useRef(false)
+  const prevRecipientPeekRef = useRef(false)
 
-  /** Dual: non-active side(s) use simplified peek chrome (postcardEdit). */
-  const senderSideSimplified = isMobile && dualSide !== 'sender'
-  const recipientSideSimplified = isMobile && dualSide !== 'recipient'
+  /**
+   * Dual toggle tracks last Apply side; locked (gray) when both forms are applied.
+   */
+  useEffect(() => {
+    if (!isMobile || setDualSide == null) {
+      prevSenderPeekRef.current = assemblySenderSimplifiedPeek
+      prevRecipientPeekRef.current = assemblyRecipientSimplifiedPeek
+      return
+    }
+    if (assemblySenderSimplifiedPeek && !prevSenderPeekRef.current) {
+      setDualSide('sender')
+    }
+    if (assemblyRecipientSimplifiedPeek && !prevRecipientPeekRef.current) {
+      setDualSide('recipient')
+    }
+    prevSenderPeekRef.current = assemblySenderSimplifiedPeek
+    prevRecipientPeekRef.current = assemblyRecipientSimplifiedPeek
+  }, [
+    isMobile,
+    setDualSide,
+    assemblySenderSimplifiedPeek,
+    assemblyRecipientSimplifiedPeek,
+  ])
 
   /** После apply выходим из focus — postcardEdit в слоте sender/recipients. */
   useEffect(() => {
     if (mobileFocus == null) return
-    if (senderSideSimplified && mobileFocus.focusRole === 'sender') {
+    if (
+      assemblySenderSimplifiedPeek &&
+      mobileFocus.focusRole === 'sender'
+    ) {
       mobileFocus.clearFocus()
       return
     }
-    if (recipientSideSimplified && mobileFocus.focusRole === 'recipient') {
+    if (
+      assemblyRecipientSimplifiedPeek &&
+      mobileFocus.focusRole === 'recipient'
+    ) {
       mobileFocus.clearFocus()
     }
-  }, [senderSideSimplified, recipientSideSimplified, mobileFocus])
+  }, [
+    assemblySenderSimplifiedPeek,
+    assemblyRecipientSimplifiedPeek,
+    mobileFocus,
+  ])
 
   useEffect(() => {
     if (!isMobile || mobileFocus == null) return
@@ -168,26 +211,36 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   const handleSenderApplyPeekClick = useCallback(
     (key: IconKey): void | false => {
       if (key !== 'postcardEdit') return
-      setDualSide?.('sender')
+      if (sandboxActive) {
+        dispatch(setArchiveSenderApplied(false))
+      } else {
+        dispatch(setSenderApplied(false))
+      }
       return false
     },
-    [setDualSide],
+    [dispatch, sandboxActive],
   )
 
   const handleRecipientApplyPeekClick = useCallback(
     (key: IconKey): void | false => {
       if (key !== 'postcardEdit') return
-      setDualSide?.('recipient')
+      if (sandboxActive) {
+        dispatch(setArchiveRecipientApplied(false))
+      } else {
+        dispatch(setRecipientApplied(false))
+      }
       return false
     },
-    [setDualSide],
+    [dispatch, sandboxActive],
   )
 
   const showSenderSlot = focusRole !== 'recipient'
   const showRecipientsSlot = focusRole !== 'sender'
   const showFocusReturn =
     isMobile && focusRole != null && mobileFocus != null
-  /** Mobile factory: 3-stop dual toggle (sender / both / recipient). */
+  const bothFormsApplied =
+    assemblySenderSimplifiedPeek && assemblyRecipientSimplifiedPeek
+  /** Dual toggle stays visible; gray+locked when both sides are Apply-peek. */
   const showCenterDualToggle =
     isMobile &&
     !showFocusReturn &&
@@ -195,20 +248,12 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     showRecipientsSlot &&
     setDualSide != null
 
-  const centerTriValue: TriTogglePosition =
-    dualSide === 'sender'
-      ? 'left'
-      : dualSide === 'recipient'
-        ? 'right'
-        : 'center'
-
-  const handleCenterTriToggle = useCallback(
-    (position: TriTogglePosition) => {
-      if (position === 'left') setDualSide?.('sender')
-      else if (position === 'right') setDualSide?.('recipient')
-      else setDualSide?.('both')
+  const handleCenterDualToggle = useCallback(
+    (checked: boolean) => {
+      if (bothFormsApplied) return
+      setDualSide?.(checked ? 'recipient' : 'sender')
     },
-    [setDualSide],
+    [bothFormsApplied, setDualSide],
   )
 
   const handleFocusReturn = useCallback(
@@ -230,7 +275,7 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     ],
   )
 
-  const senderToolbar = senderSideSimplified ? (
+  const senderToolbar = assemblySenderSimplifiedPeek ? (
     <Toolbar
       section="sender"
       groupsOverride={ADDRESS_APPLY_PEEK_TOOLBAR}
@@ -244,7 +289,7 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     />
   )
 
-  const recipientsToolbar = recipientSideSimplified ? (
+  const recipientsToolbar = assemblyRecipientSimplifiedPeek ? (
     <Toolbar
       section="recipients"
       groupsOverride={ADDRESS_APPLY_PEEK_TOOLBAR}
@@ -296,10 +341,13 @@ export const EnvelopeInnerToolbar: React.FC = () => {
           ) : null}
           {showCenterDualToggle ? (
             <div className={styles.envelopeToolbarCenterToggle}>
-              <TriToggle
-                value={centerTriValue}
-                onChange={handleCenterTriToggle}
+              <Toggle
+                label=""
+                checked={dualSide === 'recipient'}
+                onChange={handleCenterDualToggle}
+                size="default"
                 variant="envelopeDual"
+                disabled={bothFormsApplied}
                 ariaLabel="Envelope side"
               />
             </div>

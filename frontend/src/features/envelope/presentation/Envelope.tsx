@@ -75,22 +75,16 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
   const envelopePeekMode =
     (rightPieEnvelopePeekNoToolbar && !archiveCartEnvelopeSimplifiedPeek) ||
     archiveEditPeekGate
+  const showSenderSimplified =
+    !envelopePeekMode && assemblySenderSimplifiedPeek
+  const showRecipientSimplified =
+    !envelopePeekMode && assemblyRecipientSimplifiedPeek
 
-  /**
-   * Mobile dual toggle: sender/recipient = that side View; both = both simplified.
-   * Desktop keeps apply-peek after Apply.
-   */
-  const useMobileDualForms =
+  const showDualSideSelectionBorder =
     isMobile &&
     !envelopePeekMode &&
     senderView !== 'senderCreate' &&
     recipientView !== 'recipientCreate'
-  const showSenderSimplified = useMobileDualForms
-    ? dualSide !== 'sender'
-    : !envelopePeekMode && assemblySenderSimplifiedPeek
-  const showRecipientSimplified = useMobileDualForms
-    ? dualSide !== 'recipient'
-    : !envelopePeekMode && assemblyRecipientSimplifiedPeek
 
   const mobileFormRole =
     senderView === 'senderCreate'
@@ -172,7 +166,13 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
           />
         </div>
         <div
-          className={clsx(styles.envelopeSection, styles.envelopeSectionSender)}
+          className={clsx(
+            styles.envelopeSection,
+            styles.envelopeSectionSender,
+            showDualSideSelectionBorder &&
+              dualSide === 'sender' &&
+              styles.envelopeSectionSenderDualSelected,
+          )}
           data-envelope-mobile-focus-sender
         >
           {envelopePeekMode ? (
@@ -208,6 +208,9 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
           className={clsx(
             styles.envelopeSection,
             styles.envelopeSectionRecipient,
+            showDualSideSelectionBorder &&
+              dualSide === 'recipient' &&
+              styles.envelopeSectionRecipientDualSelected,
           )}
         >
           {envelopePeekMode ? (

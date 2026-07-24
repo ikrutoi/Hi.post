@@ -101,13 +101,6 @@ export const MobileFactoryToolbarShell: React.FC = () => {
     !showPeekEmptyToolbarShell &&
     (showSectionUpperToolbar || showMobileDateCalendarNavRow)
 
-  /** Envelope: горизонталь с разрывом по центру (тумблер sender — в верхнем ряду). */
-  const showEnvelopeToolbarCenterGap =
-    isMobileLayout &&
-    activeSection === 'envelope' &&
-    !showMobileAddressListFactoryChrome &&
-    !envelopeAddressCreateMode
-
   if (envelopeAddressCreateMode) return null
   if (!showShell) return null
 
@@ -141,7 +134,6 @@ export const MobileFactoryToolbarShell: React.FC = () => {
           styles.rowDivider,
           useAssemblySectionDivider && styles.rowDividerEnabled,
           showCartYellowDivider && styles.rowDividerCart,
-          showEnvelopeToolbarCenterGap && styles.rowDividerCenterGap,
         )}
         aria-hidden
       />

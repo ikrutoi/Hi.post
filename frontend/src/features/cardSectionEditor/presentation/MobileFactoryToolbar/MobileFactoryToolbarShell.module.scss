@@ -57,20 +57,6 @@
   background-color: var(--mobile-section-surface-bg, $color-section-light);
 }
 
-/** Envelope: разрыв 1rem по центру горизонтальной полоски. */
-.rowDividerCenterGap {
-  background-color: transparent;
-  background-image: linear-gradient(
-    to right,
-    var(--mobile-section-surface-bg, $color-section-light) 0,
-    var(--mobile-section-surface-bg, $color-section-light) calc(50% - 0.5rem),
-    transparent calc(50% - 0.5rem),
-    transparent calc(50% + 0.5rem),
-    var(--mobile-section-surface-bg, $color-section-light) calc(50% + 0.5rem),
-    var(--mobile-section-surface-bg, $color-section-light) 100%
-  );
-}
-
 .rowDividerHidden {
   background-color: transparent;
 }
@@ -78,10 +64,6 @@
 /** Между рядами в секции сборки — цвет фона текущей секции. */
 .rowDividerEnabled {
   background-color: var(--mobile-section-surface-bg, $color-section-light);
-}
-
-.rowDividerEnabled.rowDividerCenterGap {
-  background-color: transparent;
 }
 
 .rowDividerCart {
