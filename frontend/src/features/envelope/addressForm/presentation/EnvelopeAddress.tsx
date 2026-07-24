@@ -330,14 +330,12 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const hasSenderDraftAddress = Object.values(value).some(
     (v) => (v ?? '').trim() !== '',
   )
-  const isSenderFocusedOnMobile = mobileFocus?.isFocused('sender') ?? false
   const showSenderDetailCard =
     role === 'sender' &&
     senderFacade.isEnabled &&
     senderView === 'senderView' &&
     senderDisplayEntry != null &&
     (!isMobile ||
-      isSenderFocusedOnMobile ||
       hasSenderAppliedToEnvelope ||
       hasSenderDraftAddress ||
       (editingTemplateId != null && !senderListPanelOpen))
@@ -360,7 +358,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     if (
       isMobile &&
       !hasSenderAppliedToEnvelope &&
-      !isSenderFocusedOnMobile &&
       editingTemplateId == null
     ) {
       return
@@ -389,7 +386,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     applySenderEntry,
     isMobile,
     hasSenderAppliedToEnvelope,
-    isSenderFocusedOnMobile,
     sandboxActive,
   ])
 
@@ -442,7 +438,11 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     openAddressForm(r)
   }
 
-  const tryToggleMobileAddressFocus = useCallback(
+  /**
+   * Mobile: select address side (dual toggle + lower View toolbar).
+   * Does not enter focus chrome that hides the other form / envelope chrome.
+   */
+  const trySelectMobileAddressSide = useCallback(
     (targetRole: 'sender' | 'recipient', el: HTMLElement) => {
       if (!isMobile || mobileFocus == null) return false
       if (targetRole === 'sender' && senderView === 'senderCreate') return false
@@ -459,7 +459,10 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       ) {
         return false
       }
-      mobileFocus.toggleFocus(targetRole)
+      if (mobileFocus.dualSide !== targetRole) {
+        mobileFocus.setDualSide(targetRole)
+      }
+      mobileFocus.clearFocus()
       return true
     },
     [
@@ -508,7 +511,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         }
         return
       }
-      if (tryToggleMobileAddressFocus('recipient', el)) {
+      if (trySelectMobileAddressSide('recipient', el)) {
         e.stopPropagation()
         return
       }
@@ -529,7 +532,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       openAddressListFromFieldset,
       recipientViewEditMode,
       showRecipientEmptyPlaceholder,
-      tryToggleMobileAddressFocus,
+      trySelectMobileAddressSide,
     ],
   )
 
@@ -548,7 +551,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         openAddressListFromFieldset('sender')
         return
       }
-      if (tryToggleMobileAddressFocus('sender', el)) {
+      if (trySelectMobileAddressSide('sender', el)) {
         e.stopPropagation()
         return
       }
@@ -567,7 +570,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       openAddressListFromFieldset,
       senderViewEditMode,
       showSenderEmptyPlaceholder,
-      tryToggleMobileAddressFocus,
+      trySelectMobileAddressSide,
     ],
   )
 

@@ -155,9 +155,8 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     const view = pending === 'sender' ? senderView : recipientView
 
     if (view === targetView) {
-      if (!mobileFocus.isFocused(pending)) {
-        mobileFocus.toggleFocus(pending)
-      }
+      mobileFocus.setDualSide(pending)
+      mobileFocus.clearFocus()
       pendingAddressAddFocusRef.current = null
       return
     }
@@ -184,15 +183,17 @@ export const EnvelopeInnerToolbar: React.FC = () => {
       )
 
       if (addState === 'active') {
-        mobileFocus.toggleFocus(role)
+        mobileFocus.setDualSide(role)
+        mobileFocus.clearFocus()
         return false
       }
 
       if (addState === 'enabled') {
         pendingAddressAddFocusRef.current = role
         const targetView = role === 'sender' ? 'senderView' : 'recipientView'
-        if (view === targetView && !mobileFocus.isFocused(role)) {
-          mobileFocus.toggleFocus(role)
+        if (view === targetView) {
+          mobileFocus.setDualSide(role)
+          mobileFocus.clearFocus()
         }
       }
     },
