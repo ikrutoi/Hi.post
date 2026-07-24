@@ -117,10 +117,17 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
     recipientAddress,
   ])
 
+  /**
+   * Lower View toolbar (addList / edit / delete): same as form focus chrome.
+   * Without focus — follow dualSide; with focus — focused form (as before).
+   */
+  const activeViewRole =
+    mobileFocus?.focusRole ?? mobileFocus?.dualSide ?? 'sender'
+
   const showSenderToolbar =
     enabled &&
     isMobile &&
-    (mobileFocus?.isFocused('sender') ?? false) &&
+    activeViewRole === 'sender' &&
     senderFacade.isEnabled &&
     senderView === 'senderView' &&
     senderDisplayEntry != null
@@ -128,7 +135,7 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
   const showRecipientToolbar =
     enabled &&
     isMobile &&
-    (mobileFocus?.isFocused('recipient') ?? false) &&
+    activeViewRole === 'recipient' &&
     recipientView === 'recipientView' &&
     recipientDisplayEntry != null
 
