@@ -65,6 +65,14 @@ export const Label = forwardRef<HTMLInputElement, LabelProps>(
             type="text"
             value={value}
             aria-label={label}
+            autoCapitalize={
+              field === 'zip'
+                ? 'characters'
+                : TITLE_CASE_FIELDS.has(field)
+                  ? 'words'
+                  : 'sentences'
+            }
+            autoCorrect="on"
             onChange={handleChange}
             onKeyDown={onKeyDown}
           />

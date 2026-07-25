@@ -354,6 +354,8 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
               styles.recipientAddressInputActive,
             )}
             value={address.name}
+            autoCapitalize="words"
+            autoCorrect="on"
             onChange={(e) => updateField('name', e.target.value)}
             onKeyDown={handleKeyDown('name')}
             onBlur={handleBlur}
@@ -405,6 +407,9 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
                 cityZipFocus === 'zip' && styles.recipientAddressInputActive,
               )}
               value={address.zip}
+              autoCapitalize="characters"
+              autoCorrect="off"
+              spellCheck={false}
               onChange={(e) => updateField('zip', e.target.value)}
               onFocus={() => setCityZipFocus('zip')}
               onKeyDown={(e) => {
@@ -430,6 +435,8 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
                 cityZipFocus === 'city' && styles.recipientAddressInputActive,
               )}
               value={address.city}
+              autoCapitalize="words"
+              autoCorrect="on"
               onChange={(e) => updateField('city', e.target.value)}
               onFocus={() => setCityZipFocus('city')}
               onKeyDown={(e) => {
@@ -476,6 +483,8 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
               styles.recipientAddressInputActive,
             )}
             value={address.country}
+            autoCapitalize="words"
+            autoCorrect="on"
             onChange={(e) => updateField('country', e.target.value)}
             onKeyDown={handleKeyDown('country')}
             onBlur={handleBlur}
