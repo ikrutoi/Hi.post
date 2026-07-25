@@ -140,6 +140,7 @@
     &[data-icon-key='panelDensity2'].toolbarKeyEnabled,
     &[data-icon-key='addressList'].toolbarKeyEnabled,
     &[data-icon-key='addressAdd'].toolbarKeyEnabled,
+    &[data-icon-key='postcardEdit'].toolbarKeyEnabled,
     &[data-icon-key='editLight'].toolbarKeyEnabled,
     &[data-icon-key='cardPieCopy'].toolbarKeyEnabled {
       color: $color-font-enabled-light;
@@ -2180,32 +2181,30 @@
         stroke: currentColor;
       }
 
-      &:hover {
-        color: $color-font-enabled;
-        background-color: #fff;
-      }
-
-      &:active {
-        color: $color-font-enabled;
+      @include iconButton.toolbar-key-hover-fine-pointer {
+        &:hover {
+          color: $color-font-enabled;
+          background-color: #fff;
+        }
       }
     }
 
     .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
       color: $color-font-enabled-light;
 
-      &:hover {
-        color: $color-font-enabled;
-        background-color: #fff;
-      }
-
-      &:active {
-        color: $color-font-enabled;
+      @include iconButton.toolbar-key-hover-fine-pointer {
+        &:hover {
+          color: $color-font-enabled;
+          background-color: #fff;
+        }
       }
     }
 
     .toolbarKey.toolbarKeyActive:not([data-icon-key='apply']) {
-      &:hover {
-        background-color: #fff;
+      @include iconButton.toolbar-key-hover-fine-pointer {
+        &:hover {
+          background-color: #fff;
+        }
       }
     }
   }
@@ -2228,19 +2227,19 @@
     .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
       color: $color-font-enabled-light;
 
-      &:hover {
-        color: $color-font-enabled;
-        background-color: #fff;
-      }
-
-      &:active {
-        color: $color-font-enabled;
+      @include iconButton.toolbar-key-hover-fine-pointer {
+        &:hover {
+          color: $color-font-enabled;
+          background-color: #fff;
+        }
       }
     }
 
     .toolbarKey.toolbarKeyActive:not([data-icon-key='apply']) {
-      &:hover {
-        background-color: #fff;
+      @include iconButton.toolbar-key-hover-fine-pointer {
+        &:hover {
+          background-color: #fff;
+        }
       }
     }
   }
