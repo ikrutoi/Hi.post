@@ -68,8 +68,12 @@ export function resolveAddressAddToolbarState(params: {
     return { state: 'disabled', options: { badge: null, badgeDot: false } }
   }
 
-  /** Dot only: draft exists but not all fields filled. No numeric badge. */
+  /**
+   * Partial create draft → reminder dot.
+   * Complete draft (Close or applyMedium without clearing) → badge `1`.
+   */
+  const badge = !formIsEmpty && formIsComplete ? 1 : null
   const badgeDot = !formIsEmpty && !formIsComplete
 
-  return { state: 'enabled', options: { badge: null, badgeDot } }
+  return { state: 'enabled', options: { badge, badgeDot } }
 }

@@ -83,7 +83,7 @@ export const SENDER_VIEW_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-/** Mobile focused address view (lower scenario bar): addList + edit. */
+/** Mobile focused address view (lower scenario bar): addList + edit + delete. */
 export const ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'senderView',
@@ -91,6 +91,11 @@ export const ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR: ToolbarConfig = [
       { key: 'addList', state: 'enabled' },
       { key: 'edit', state: 'enabled' },
     ],
+    status: 'enabled',
+  },
+  {
+    group: 'actions',
+    icons: [{ key: 'delete', state: 'enabled' }],
     status: 'enabled',
   },
 ]

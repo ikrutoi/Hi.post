@@ -4,7 +4,7 @@ import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { useMobileScenarioToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
-import { closeAddressList } from '@envelope/infrastructure/state'
+import { closeAddressList, clearAddressListPreviewSnapshot } from '@envelope/infrastructure/state'
 import {
   selectActiveRecipientsToolbarState,
   selectActiveSenderToolbarState,
@@ -59,7 +59,7 @@ export const AddressListMobileFactoryLowerToolbar: React.FC = () => {
   return null
 }
 
-/** Mobile factory: верхний ряд — apply слева, return справа. */
+/** Mobile factory: верхний ряд — applyMedium слева, return справа. */
 export const AddressListMobileFactoryUpperToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
   const senderListOpen = useAppSelector(selectSenderListPanelOpen)
@@ -75,7 +75,7 @@ export const AddressListMobileFactoryUpperToolbar: React.FC = () => {
     return [
       {
         group: senderListOpen ? 'address' : 'recipients',
-        icons: [{ key: 'apply', state: applyState }],
+        icons: [{ key: 'applyMedium', state: applyState }],
         status: 'enabled',
       },
     ]
@@ -84,6 +84,21 @@ export const AddressListMobileFactoryUpperToolbar: React.FC = () => {
   const closeList = useCallback(() => {
     dispatch(closeAddressList())
   }, [dispatch])
+
+  const handleApplyAction = useCallback(
+    (key: IconKey) => {
+      if (key !== 'applyMedium') return
+      /**
+       * Keep the list selection in View: drop preview snapshot so Close
+       * does not restore the pre-list address, then close the list.
+       * Does not Apply the address onto the postcard.
+       */
+      dispatch(clearAddressListPreviewSnapshot())
+      dispatch(closeAddressList())
+      return false
+    },
+    [dispatch],
+  )
 
   const handleAction = useCallback(
     (key: IconKey) => {
@@ -101,6 +116,7 @@ export const AddressListMobileFactoryUpperToolbar: React.FC = () => {
           section={applySection}
           groupsOverride={applyToolbar}
           className={toolbarStyles.toolbarAromaUpperApply}
+          onActionClick={handleApplyAction}
         />
       </div>
       <div className={styles.upperToolbar}>
