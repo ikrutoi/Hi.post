@@ -48,7 +48,8 @@ export const selectIsSenderComplete = createSelector(
     if (sender.currentView === 'senderCreate') {
       return isAddressDraftComplete(sender.formDraft)
     }
-    return sender.formIsComplete
+    /** Envelope form completeness = visible viewDraft, not addressAdd formDraft. */
+    return isAddressDraftComplete(sender.viewDraft)
   },
 )
 

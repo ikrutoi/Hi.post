@@ -26,7 +26,6 @@ import {
   selectActiveAddressList,
   selectSenderCardAddress,
   selectRecipientCardAddress,
-  selectAddressCreateEditContext,
 } from '@envelope/infrastructure/selectors'
 import {
   toggleRecipientSelection,
@@ -113,16 +112,10 @@ export function* syncAddressViewToolbarAddList(): SagaIterator {
   )
   const senderInList = filterInListEntries(senderEntries)
   const recipientInList = filterInListEntries(recipientEntries)
-  const createEditContext: AddressCreateEditContext | null =
-    yield select(selectAddressCreateEditContext)
 
   if (sender.currentView === 'senderCreate') {
     const draft = sender.formDraft as AddressFields
     const senderDraftComplete = isAddressDraftComplete(draft)
-    const editingTemplateId =
-      createEditContext?.role === 'sender'
-        ? createEditContext.templateId
-        : null
     yield put(
       updateToolbarIcon({
         section: 'senderCreate',
@@ -141,12 +134,7 @@ export function* syncAddressViewToolbarAddList(): SagaIterator {
         section: 'senderCreate',
         key: 'applyMedium',
         value: {
-          state: resolveApplyMediumToolbarState(
-            senderDraftComplete,
-            draft,
-            senderEntries,
-            editingTemplateId,
-          ),
+          state: resolveApplyMediumToolbarState(draft),
         },
       }),
     )
@@ -179,10 +167,6 @@ export function* syncAddressViewToolbarAddList(): SagaIterator {
   if (recipient.currentView === 'recipientCreate') {
     const draft = recipient.formDraft as AddressFields
     const recipientDraftComplete = isAddressDraftComplete(draft)
-    const editingTemplateId =
-      createEditContext?.role === 'recipient'
-        ? createEditContext.templateId
-        : null
     yield put(
       updateToolbarIcon({
         section: 'recipientCreate',
@@ -201,12 +185,7 @@ export function* syncAddressViewToolbarAddList(): SagaIterator {
         section: 'recipientCreate',
         key: 'applyMedium',
         value: {
-          state: resolveApplyMediumToolbarState(
-            recipientDraftComplete,
-            draft,
-            recipientEntries,
-            editingTemplateId,
-          ),
+          state: resolveApplyMediumToolbarState(draft),
         },
       }),
     )
@@ -374,7 +353,11 @@ export function* processEnvelopeVisuals() {
       ? isAddressDraftComplete(sender.formDraft as AddressFields)
       : isAddressDraftComplete(sender.viewDraft as AddressFields)
 
-  /** Toggle on + empty/incomplete form → disabled; toggle off → enabled. */
+  /**
+   * Toggle off → Apply enabled (confirm no sender address).
+   * Toggle on → Apply only with a selected complete address (viewId + draft).
+   * Empty form + toggle on → disabled.
+   */
   const senderApplyState = sender.currentView === 'senderCreate'
     ? 'disabled'
     : !sender.enabled
@@ -383,7 +366,7 @@ export function* processEnvelopeVisuals() {
         : 'enabled'
       : senderViewMatchesApplied
         ? 'selected'
-        : senderDraftComplete
+        : sender.senderViewId != null && senderDraftComplete
           ? 'enabled'
           : 'disabled'
 

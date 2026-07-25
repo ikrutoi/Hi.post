@@ -432,8 +432,14 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   }
 
   const handlePlaceholderClick = (r: 'sender' | 'recipient') => {
+    if (isMobile) {
+      if (!bothFormsApplied && mobileFocus != null && mobileFocus.dualSide !== r) {
+        mobileFocus.setDualSide(r)
+      }
+      return
+    }
     const entries = r === 'sender' ? senderEntries : recipientEntries
-    if (isMobile || entries.length > 0) {
+    if (entries.length > 0) {
       dispatch(
         toolbarAction({
           section: r === 'sender' ? 'sender' : 'recipients',
@@ -502,26 +508,22 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       const fieldset = recipientFieldsetRef.current
       const el = e.target as HTMLElement | null
       if (!fieldset || !el || !fieldset.contains(el)) return
-      if (
-        isMobile &&
-        showRecipientEmptyPlaceholder &&
-        !el.closest('button, a, input, textarea, select, [role="button"]')
-      ) {
-        e.preventDefault()
-        e.stopPropagation()
-        openAddressListFromFieldset('recipient')
+
+      /** Mobile: only select dualSide — never open address list from form click. */
+      if (isMobile) {
+        if (trySelectMobileAddressSide('recipient', el)) {
+          e.preventDefault()
+          e.stopPropagation()
+        }
         return
       }
+
       if (
         el.closest(`.${styles.envelopeRecipientToolbarIconContainer}`)
       ) {
         if (recipientViewEditMode) {
           dispatch(toolbarAction({ section: 'recipientView', key: 'edit' }))
         }
-        return
-      }
-      if (trySelectMobileAddressSide('recipient', el)) {
-        e.stopPropagation()
         return
       }
       if (el.closest('button, a, input, textarea, select, [role="button"]'))
@@ -540,7 +542,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       isMobile,
       openAddressListFromFieldset,
       recipientViewEditMode,
-      showRecipientEmptyPlaceholder,
       trySelectMobileAddressSide,
     ],
   )
@@ -550,20 +551,16 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       const fieldset = senderFieldsetRef.current
       const el = e.target as HTMLElement | null
       if (!fieldset || !el || !fieldset.contains(el)) return
-      if (
-        isMobile &&
-        showSenderEmptyPlaceholder &&
-        !el.closest('button, a, input, textarea, select, [role="button"]')
-      ) {
-        e.preventDefault()
-        e.stopPropagation()
-        openAddressListFromFieldset('sender')
+
+      /** Mobile: only select dualSide — never open address list from form click. */
+      if (isMobile) {
+        if (trySelectMobileAddressSide('sender', el)) {
+          e.preventDefault()
+          e.stopPropagation()
+        }
         return
       }
-      if (trySelectMobileAddressSide('sender', el)) {
-        e.stopPropagation()
-        return
-      }
+
       if (el.closest('button, a, input, textarea, select, [role="button"]'))
         return
       if (el.closest('[data-envelope-address-surface]')) return
@@ -578,7 +575,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       isMobile,
       openAddressListFromFieldset,
       senderViewEditMode,
-      showSenderEmptyPlaceholder,
       trySelectMobileAddressSide,
     ],
   )

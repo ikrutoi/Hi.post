@@ -28,14 +28,7 @@ import {
   selectShowAddressFormCloseButton,
   selectSenderInListEntries,
   selectRecipientInListEntries,
-  selectAddressCreateEditContext,
 } from '../../infrastructure/selectors'
-import {
-  selectSenderEntriesState,
-} from '../../sender/infrastructure/selectors'
-import {
-  selectRecipientEntriesState,
-} from '../../recipient/infrastructure/selectors'
 import {
   updateRecipientField,
   clearRecipient,
@@ -105,9 +98,6 @@ export const useEnvelopeFacade = () => {
   )
   const senderInListEntries = useAppSelector(selectSenderInListEntries)
   const recipientInListEntries = useAppSelector(selectRecipientInListEntries)
-  const senderTemplateEntries = useAppSelector(selectSenderEntriesState)
-  const recipientTemplateEntries = useAppSelector(selectRecipientEntriesState)
-  const addressCreateEditContext = useAppSelector(selectAddressCreateEditContext)
 
   const handleFieldChange = (
     role: EnvelopeRole,
@@ -242,26 +232,12 @@ export const useEnvelopeFacade = () => {
     const inList = isSenderSection
       ? senderInListEntries
       : recipientInListEntries
-    const allTemplates = isSenderSection
-      ? senderTemplateEntries
-      : recipientTemplateEntries
     const addListState = resolveAddListToolbarState(
       isAddressComplete,
       draft,
       inList,
     )
-    const applyMediumState = resolveApplyMediumToolbarState(
-      isAddressComplete,
-      draft,
-      allTemplates,
-      isSenderSection
-        ? addressCreateEditContext?.role === 'sender'
-          ? addressCreateEditContext.templateId
-          : null
-        : addressCreateEditContext?.role === 'recipient'
-          ? addressCreateEditContext.templateId
-          : null,
-    )
+    const applyMediumState = resolveApplyMediumToolbarState(draft)
     dispatch(
       updateToolbarIcon({
         section,

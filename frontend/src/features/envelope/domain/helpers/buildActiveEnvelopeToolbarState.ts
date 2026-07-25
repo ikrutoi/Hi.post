@@ -67,7 +67,7 @@ export function buildSandboxSenderToolbarState(input: {
           : 'enabled'
         : senderViewMatchesApplied
           ? 'selected'
-          : draftComplete
+          : sender.senderViewId != null && draftComplete
             ? 'enabled'
             : 'disabled'
 

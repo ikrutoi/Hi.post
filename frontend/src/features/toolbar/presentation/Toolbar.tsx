@@ -5,7 +5,7 @@ import { useToolbarFacade } from '../application/facades'
 import { useCardtextFacade } from '@cardtext/application/facades'
 import { useSizeFacade } from '@layout/application/facades'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
-import { selectSenderViewId, selectSenderApplied } from '@envelope/sender/infrastructure/selectors'
+import { selectSenderViewId, selectSenderApplied, selectIsSenderEnabled, selectSenderAddressFormData } from '@envelope/sender/infrastructure/selectors'
 import {
   selectRecipientViewId,
   selectRecipientApplied,
@@ -17,8 +17,8 @@ import {
 } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import {
   doesDraftMatchInList,
-  doesDraftMatchAnyTemplate,
   isAddressDraftComplete,
+  isAddressDraftEmpty,
   listStatusIsInQuickAddressBook,
 } from '@envelope/domain/helpers'
 import type { AddressFields } from '@shared/config/constants'
@@ -142,6 +142,21 @@ export const Toolbar = ({
   const senderViewIdForApply = sandboxActive
     ? sandboxSender.senderViewId
     : sessionSenderViewIdForApply
+  const sessionSenderEnabled = useAppSelector(selectIsSenderEnabled)
+  const sessionSenderViewDraft = useAppSelector(selectSenderAddressFormData)
+  const senderEnabled = sandboxActive
+    ? sandboxSender.enabled
+    : sessionSenderEnabled
+  const senderViewDraft = (
+    sandboxActive ? sandboxSender.viewDraft : sessionSenderViewDraft
+  ) as AddressFields
+  /**
+   * Sender toggle on + empty form: no viewId (nothing selected) or blank draft.
+   * Apply must stay disabled until a complete address is selected.
+   */
+  const senderFormVisiblyEmpty =
+    senderViewIdForApply == null || isAddressDraftEmpty(senderViewDraft)
+  const senderDraftCompleteForApply = isAddressDraftComplete(senderViewDraft)
   const recipientAppliedIds = sandboxActive
     ? (sandboxRecipient.applied ?? [])
     : sessionRecipientAppliedIds
@@ -245,24 +260,6 @@ export const Toolbar = ({
       listStatusIsInQuickAddressBook(e.listStatus),
     )
     return doesDraftMatchInList(draft, inList)
-  })
-
-  const senderCreateDraftDuplicate = useAppSelector((s: RootState) => {
-    if (s.sender?.currentView !== 'senderCreate') return false
-    const draft = s.sender.formDraft as AddressFields
-    return doesDraftMatchAnyTemplate(
-      draft,
-      s.addressBook?.senderEntries ?? [],
-    )
-  })
-
-  const recipientCreateDraftDuplicate = useAppSelector((s: RootState) => {
-    if (s.recipient?.currentView !== 'recipientCreate') return false
-    const draft = s.recipient.formDraft as AddressFields
-    return doesDraftMatchAnyTemplate(
-      draft,
-      s.addressBook?.recipientEntries ?? [],
-    )
   })
 
   const senderCreateDraftComplete = useAppSelector((s: RootState) => {
@@ -477,6 +474,19 @@ export const Toolbar = ({
         buttonStatus = applyMatchesPostcard ? 'selected' : 'enabled'
       }
     }
+    /**
+     * Sender toggle on: Apply only with selected + complete address.
+     * Empty form (no viewId / blank draft) → disabled — overrides force-enabled above.
+     */
+    if (key === 'apply' && section === 'sender' && senderEnabled) {
+      if (
+        senderFormVisiblyEmpty ||
+        !senderDraftCompleteForApply ||
+        senderViewIdForApply == null
+      ) {
+        buttonStatus = 'disabled'
+      }
+    }
     if (key === 'edit' && section === 'senderView' && senderViewEditMode) {
       buttonStatus = 'active'
     }
@@ -484,18 +494,16 @@ export const Toolbar = ({
       buttonStatus = 'active'
     }
     if (key === 'applyMedium' && section === 'senderCreate') {
-      buttonStatus = senderCreateDraftInList
-        ? 'disabled'
-        : senderCreateDraftComplete && !senderCreateDraftDuplicate
-          ? 'enabled'
-          : 'disabled'
+      buttonStatus =
+        senderCreateDraftInList || !senderCreateDraftComplete
+          ? 'disabled'
+          : 'enabled'
     }
     if (key === 'applyMedium' && section === 'recipientCreate') {
-      buttonStatus = recipientCreateDraftInList
-        ? 'disabled'
-        : recipientCreateDraftComplete && !recipientCreateDraftDuplicate
-          ? 'enabled'
-          : 'disabled'
+      buttonStatus =
+        recipientCreateDraftInList || !recipientCreateDraftComplete
+          ? 'disabled'
+          : 'enabled'
     }
     if (editorPieCartAdd && !editorPieComplete) {
       buttonStatus = 'disabled'

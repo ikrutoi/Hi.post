@@ -136,9 +136,9 @@ import {
   getAddressListToolbarFragment,
   getMatchingEntryId,
   isAddressDraftComplete,
+  isAddressDraftEmpty,
   listStatusIsInQuickAddressBook,
   normalizeAddressFields,
-  resolveApplyMediumToolbarState,
 } from '@envelope/domain/helpers'
 import { selectIsMobileLayout } from '@layout/infrastructure/selectors'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
@@ -380,13 +380,17 @@ function* applyArchiveEnvelopeSandboxFromToolbar(
       return
     }
 
-    if (!sender.enabled || senderViewId == null) {
+    if (!sender.enabled) {
       if (sender.appliedLocked && senderAppliedIds.length === 0) {
         yield put(setArchiveSenderApplied(false))
         return
       }
       yield put(setArchiveSenderApplied(true))
       yield call(persistArchiveEnvelopeSandbox)
+      return
+    }
+
+    if (senderViewId == null) {
       return
     }
 
@@ -1640,27 +1644,31 @@ function* handleEnvelopeToolbarAction(
       const editContext: AddressCreateEditContext | null =
         yield select(selectAddressCreateEditContext)
       if (editContext?.role === 'sender') {
-        if (
-          resolveApplyMediumToolbarState(
-            isAddressDraftComplete(draft),
-            draft,
-            senderEntries,
-            editContext.templateId,
-          ) === 'enabled'
-        ) {
-          yield call(
-            persistAddressTemplateUpdate,
-            'sender',
-            editContext.templateId,
-            draft,
+        if (isAddressDraftComplete(draft)) {
+          const matchingId = getMatchingEntryId(
+            normalizeAddressFields(draft),
+            senderEntries.map((e) => ({
+              id: e.id,
+              address: normalizeAddressFields(e.address ?? {}),
+            })),
           )
-          yield put(clearAddressCreateEditContext())
-          yield put(clearSenderFormData())
-          yield put(setAddressFormView({ show: false, role: null }))
-          yield put(setSenderViewId(editContext.templateId))
-          yield put(setSenderView('senderView'))
-          yield call(processEnvelopeVisuals)
+          if (matchingId == null || matchingId === editContext.templateId) {
+            yield call(
+              persistAddressTemplateUpdate,
+              'sender',
+              editContext.templateId,
+              draft,
+            )
+            yield put(clearAddressCreateEditContext())
+            yield put(clearSenderFormData())
+            yield put(setAddressFormView({ show: false, role: null }))
+            yield put(setSenderViewId(editContext.templateId))
+            yield put(setSenderView('senderView'))
+            yield call(processEnvelopeVisuals)
+            return
+          }
         }
+        yield* closeAddressCreateForm('senderCreate')
         return
       }
       if (
@@ -1675,6 +1683,8 @@ function* handleEnvelopeToolbarAction(
             draft: { ...draft },
           }),
         )
+      } else if (!isAddressDraftEmpty(draft)) {
+        yield* closeAddressCreateForm('senderCreate')
       }
       return
     }
@@ -1688,27 +1698,31 @@ function* handleEnvelopeToolbarAction(
       const editContext: AddressCreateEditContext | null =
         yield select(selectAddressCreateEditContext)
       if (editContext?.role === 'recipient') {
-        if (
-          resolveApplyMediumToolbarState(
-            isAddressDraftComplete(draft),
-            draft,
-            recipientEntries,
-            editContext.templateId,
-          ) === 'enabled'
-        ) {
-          yield call(
-            persistAddressTemplateUpdate,
-            'recipient',
-            editContext.templateId,
-            draft,
+        if (isAddressDraftComplete(draft)) {
+          const matchingId = getMatchingEntryId(
+            normalizeAddressFields(draft),
+            recipientEntries.map((e) => ({
+              id: e.id,
+              address: normalizeAddressFields(e.address ?? {}),
+            })),
           )
-          yield put(clearAddressCreateEditContext())
-          yield put(clearRecipientFormData())
-          yield put(setAddressFormView({ show: false, role: null }))
-          yield put(setRecipientViewId(editContext.templateId))
-          yield put(setRecipientView('recipientView'))
-          yield call(processEnvelopeVisuals)
+          if (matchingId == null || matchingId === editContext.templateId) {
+            yield call(
+              persistAddressTemplateUpdate,
+              'recipient',
+              editContext.templateId,
+              draft,
+            )
+            yield put(clearAddressCreateEditContext())
+            yield put(clearRecipientFormData())
+            yield put(setAddressFormView({ show: false, role: null }))
+            yield put(setRecipientViewId(editContext.templateId))
+            yield put(setRecipientView('recipientView'))
+            yield call(processEnvelopeVisuals)
+            return
+          }
         }
+        yield* closeAddressCreateForm('recipientCreate')
         return
       }
       if (
@@ -1723,6 +1737,8 @@ function* handleEnvelopeToolbarAction(
             draft: { ...draft },
           }),
         )
+      } else if (!isAddressDraftEmpty(draft)) {
+        yield* closeAddressCreateForm('recipientCreate')
       }
       return
     }
@@ -1752,14 +1768,19 @@ function* handleEnvelopeToolbarAction(
           return
         }
 
-        /** Пустой / выкл. тумблер: Apply фиксирует результат без адреса. */
-        if (!sender.enabled || senderViewId == null) {
+        /** Выкл. тумблер: Apply фиксирует «без адреса отправителя». */
+        if (!sender.enabled) {
           if (sender.appliedLocked && senderAppliedIds.length === 0) {
             yield put(setSenderApplied(false))
             return
           }
           yield put(setSenderApplied(true))
           yield call(persistArchiveEnvelopeIfLeased)
+          return
+        }
+
+        /** Вкл. тумблер без выбранного адреса — Apply недоступен. */
+        if (senderViewId == null) {
           return
         }
 

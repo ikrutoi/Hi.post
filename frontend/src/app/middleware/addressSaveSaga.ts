@@ -163,7 +163,7 @@ export function* handleAddressSave(
         }),
       )
 
-      /** addList из create: адрес в inList — черновик формы больше не нужен (бейдж addressAdd). */
+      /** addList из create: адрес в inList — черновик формы больше не нужен (точка addressAdd). */
       if (isCreateFlow && listStatus === 'inList') {
         yield call(closeCardPieListPanelAndSyncIconsSaga)
         if (role === 'sender') {

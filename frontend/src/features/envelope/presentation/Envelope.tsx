@@ -20,13 +20,18 @@ import { useArchiveEditPeekGate } from '@cardPanel/application/hooks/useArchiveE
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { useAppSelector } from '@app/hooks'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
-import { selectSenderView } from '../sender/infrastructure/selectors'
-import { selectRecipientView } from '../recipient/infrastructure/selectors'
+import { selectSenderView, selectSenderAddressFormData } from '../sender/infrastructure/selectors'
+import { selectRecipientView, selectRecipientAddressFormData } from '../recipient/infrastructure/selectors'
 import {
   selectArchiveEnvelopeSandboxActive,
   selectArchiveSandboxSender,
   selectArchiveSandboxRecipient,
 } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
+import {
+  isAddressDraftComplete,
+  isAddressDraftEmpty,
+} from '@envelope/domain/helpers'
+import type { AddressFields } from '@shared/config/constants'
 import styles from './Envelope.module.scss'
 
 type EnvelopeProps = {
@@ -82,6 +87,42 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
   const bothFormsApplied =
     assemblySenderSimplifiedPeek && assemblyRecipientSimplifiedPeek
 
+  const sessionSenderViewDraft = useAppSelector(selectSenderAddressFormData)
+  const sessionRecipientViewDraft = useAppSelector(
+    selectRecipientAddressFormData,
+  )
+  /** What’s on the envelope form (viewDraft), not addressAdd formDraft leftovers. */
+  const senderVisibleAddress = (
+    sandboxActive ? sandboxSender.viewDraft : sessionSenderViewDraft
+  ) as AddressFields
+  const recipientVisibleAddress = (
+    sandboxActive ? sandboxRecipient.viewDraft : sessionRecipientViewDraft
+  ) as AddressFields
+  /**
+   * Solo only when the visible form has an incomplete address.
+   * Empty placeholder (even with leftover addressAdd formDraft) keeps chrome visible.
+   */
+  const hasIncompleteVisibleSender =
+    !isAddressDraftEmpty(senderVisibleAddress) &&
+    !isAddressDraftComplete(senderVisibleAddress)
+  const hasIncompleteVisibleRecipient =
+    !isAddressDraftEmpty(recipientVisibleAddress) &&
+    !isAddressDraftComplete(recipientVisibleAddress)
+  const addressAddSoloRole =
+    isMobile &&
+    !envelopePeekMode &&
+    !bothFormsApplied &&
+    dualSide === 'sender' &&
+    hasIncompleteVisibleSender
+      ? ('sender' as const)
+      : isMobile &&
+          !envelopePeekMode &&
+          !bothFormsApplied &&
+          dualSide === 'recipient' &&
+          hasIncompleteVisibleRecipient
+        ? ('recipient' as const)
+        : null
+
   const showDualSideSelectionBorder =
     isMobile &&
     !envelopePeekMode &&
@@ -103,7 +144,7 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
 
   const showMobileAddressFocus =
     isMobile &&
-    mobileFocusRole != null &&
+    addressAddSoloRole != null &&
     !showMobileAddressForm &&
     !envelopePeekMode
 
@@ -290,7 +331,9 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
     <div
       className={styles.envelope}
       data-envelope-mobile-form={showMobileAddressForm ? 'true' : undefined}
-      data-envelope-mobile-focus={showMobileAddressFocus ? mobileFocusRole! : undefined}
+      data-envelope-mobile-focus={
+        showMobileAddressFocus ? addressAddSoloRole! : undefined
+      }
     >
       <div className={styles.envelopeViewWrap}>
         {!isMobile &&

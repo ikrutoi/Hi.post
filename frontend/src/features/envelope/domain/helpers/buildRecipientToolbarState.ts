@@ -15,7 +15,7 @@ export interface BuildRecipientToolbarParams {
   isCurrentAddressInList: boolean
   hasDraft: boolean
   isAddressFormOpen: boolean
-  /** true = форма создания адреса при закрытии была пустой; для индикатора addressAdd */
+  /** true = форма создания адреса при закрытии была пустой; для точки addressAdd */
   formIsEmpty: boolean
   /** formDraft заполнен полностью */
   formIsComplete: boolean

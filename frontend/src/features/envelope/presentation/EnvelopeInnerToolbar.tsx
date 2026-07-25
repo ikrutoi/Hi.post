@@ -29,13 +29,8 @@ import type { IconKey } from '@shared/config/constants'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
 import { useEnvelopeMobileAddressFocus } from './EnvelopeMobileAddressFocusContext'
+import { readAddressAddToolbarMeta } from './readAddressAddToolbarMeta'
 import styles from './Envelope.module.scss'
-
-type AddressAddToolbarMeta = {
-  state: string
-  badge: number | null
-  badgeDot: boolean
-}
 
 /** После Apply sender/recipient: одна иконка postcardEdit (IconCardPieEdit). */
 const ADDRESS_APPLY_PEEK_TOOLBAR: ToolbarConfig = [
@@ -45,26 +40,6 @@ const ADDRESS_APPLY_PEEK_TOOLBAR: ToolbarConfig = [
     status: 'enabled',
   },
 ]
-
-function readAddressAddMeta(
-  toolbarState: Record<string, unknown>,
-): AddressAddToolbarMeta {
-  const raw = toolbarState.addressAdd
-  if (raw == null) return { state: 'disabled', badge: null, badgeDot: false }
-  if (typeof raw === 'string') return { state: raw, badge: null, badgeDot: false }
-  if (typeof raw !== 'object' || raw == null || !('state' in raw)) {
-    return { state: 'disabled', badge: null, badgeDot: false }
-  }
-  const options =
-    'options' in raw && raw.options != null && typeof raw.options === 'object'
-      ? (raw.options as { badge?: number | null; badgeDot?: boolean })
-      : null
-  return {
-    state: String(raw.state ?? 'disabled'),
-    badge: options?.badge ?? null,
-    badgeDot: Boolean(options?.badgeDot),
-  }
-}
 
 export const EnvelopeInnerToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -194,7 +169,7 @@ export const EnvelopeInnerToolbar: React.FC = () => {
         role === 'sender' ? senderViewEditMode : recipientViewEditMode
       if (isEditMode) return false
 
-      const { state: addState } = readAddressAddMeta(
+      const { state: addState } = readAddressAddToolbarMeta(
         section === 'sender' ? senderToolbarState : recipientsToolbarState,
       )
 
