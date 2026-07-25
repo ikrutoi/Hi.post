@@ -75,9 +75,9 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   const prevRecipientPeekRef = useRef(false)
 
   /**
-   * After Apply on a side:
-   * - other side still editable → select it (toggle + accent + lower View)
-   * - other side already applied → leave dualSide; accent/View hidden while both peek
+   * Dual toggle after Apply:
+   * - one side applied → pin to the still-editable side (toggle locked)
+   * - both applied → leave dualSide; accent/View hidden; toggle disabled
    * After postcardEdit un-apply → select the side that became editable again.
    */
   useEffect(() => {
@@ -86,18 +86,14 @@ export const EnvelopeInnerToolbar: React.FC = () => {
       prevRecipientPeekRef.current = assemblyRecipientSimplifiedPeek
       return
     }
-    const senderJustApplied =
-      assemblySenderSimplifiedPeek && !prevSenderPeekRef.current
-    const recipientJustApplied =
-      assemblyRecipientSimplifiedPeek && !prevRecipientPeekRef.current
     const senderJustUnapplied =
       !assemblySenderSimplifiedPeek && prevSenderPeekRef.current
     const recipientJustUnapplied =
       !assemblyRecipientSimplifiedPeek && prevRecipientPeekRef.current
 
-    if (senderJustApplied && !assemblyRecipientSimplifiedPeek) {
+    if (assemblySenderSimplifiedPeek && !assemblyRecipientSimplifiedPeek) {
       setDualSide('recipient')
-    } else if (recipientJustApplied && !assemblySenderSimplifiedPeek) {
+    } else if (assemblyRecipientSimplifiedPeek && !assemblySenderSimplifiedPeek) {
       setDualSide('sender')
     } else if (senderJustUnapplied) {
       setDualSide('sender')
@@ -232,7 +228,10 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     isMobile && focusRole != null && mobileFocus != null
   const bothFormsApplied =
     assemblySenderSimplifiedPeek && assemblyRecipientSimplifiedPeek
-  /** Dual toggle stays visible; gray+locked when both sides are Apply-peek. */
+  /**
+   * One side Apply-peek → pin to editable (ignore toggles toward peek).
+   * Both applied → fully disabled (gray).
+   */
   const showCenterDualToggle =
     isMobile &&
     !showFocusReturn &&
@@ -243,9 +242,17 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   const handleCenterDualToggle = useCallback(
     (checked: boolean) => {
       if (bothFormsApplied) return
-      setDualSide?.(checked ? 'recipient' : 'sender')
+      const next: 'sender' | 'recipient' = checked ? 'recipient' : 'sender'
+      if (next === 'sender' && assemblySenderSimplifiedPeek) return
+      if (next === 'recipient' && assemblyRecipientSimplifiedPeek) return
+      setDualSide?.(next)
     },
-    [bothFormsApplied, setDualSide],
+    [
+      bothFormsApplied,
+      assemblySenderSimplifiedPeek,
+      assemblyRecipientSimplifiedPeek,
+      setDualSide,
+    ],
   )
 
   const handleFocusReturn = useCallback(

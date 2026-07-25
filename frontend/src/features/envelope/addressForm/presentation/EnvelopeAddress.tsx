@@ -459,6 +459,11 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     (targetRole: 'sender' | 'recipient', el: HTMLElement) => {
       if (!isMobile || mobileFocus == null) return false
       if (bothFormsApplied) return false
+      /** Applied (Apply-peek) side is not selectable — toggle stays on editable form. */
+      if (targetRole === 'sender' && assemblySenderSimplifiedPeek) return false
+      if (targetRole === 'recipient' && assemblyRecipientSimplifiedPeek) {
+        return false
+      }
       if (targetRole === 'sender' && senderView === 'senderCreate') return false
       if (targetRole === 'recipient' && recipientView === 'recipientCreate') {
         return false
@@ -483,6 +488,8 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       isMobile,
       mobileFocus,
       bothFormsApplied,
+      assemblySenderSimplifiedPeek,
+      assemblyRecipientSimplifiedPeek,
       senderView,
       recipientView,
       senderViewEditMode,

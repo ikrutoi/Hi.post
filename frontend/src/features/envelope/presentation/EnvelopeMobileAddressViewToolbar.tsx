@@ -135,6 +135,7 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
     activeViewRole === 'sender' &&
     senderFacade.isEnabled &&
     senderView === 'senderView' &&
+    !assemblySenderSimplifiedPeek &&
     senderDisplayEntry != null
 
   const showRecipientToolbar =
@@ -142,6 +143,7 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
     isMobile &&
     activeViewRole === 'recipient' &&
     recipientView === 'recipientView' &&
+    !assemblyRecipientSimplifiedPeek &&
     recipientDisplayEntry != null
 
   const section: 'senderView' | 'recipientView' | null = showSenderToolbar
