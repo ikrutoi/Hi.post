@@ -73,6 +73,7 @@ import { CardtextColorButton } from './CardtextColorButton'
 import { CardphotoPrintQualitySlot } from './CardphotoPrintQualitySlot'
 import { UserLoginToolbarIcon } from './UserLoginToolbarIcon'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
+import { useEnvelopeMobileAddressFocus } from '@envelope/presentation/EnvelopeMobileAddressFocusContext'
 import { getApplyToolbarIconColor, getCardPieEditToolbarIconColor } from './applyToolbarIconColor'
 import styles from './Toolbar.module.scss'
 
@@ -112,6 +113,7 @@ export const Toolbar = ({
   const { onAction } = toolbarActions
   const { cardPieEditEngaged, exitArchiveEditToSectionPeek } =
     useRightListArchiveMini()
+  const mobileAddressFocus = useEnvelopeMobileAddressFocus()
 
   const { fontSizeStep } = useCardtextFacade()
 
@@ -348,18 +350,12 @@ export const Toolbar = ({
           ? recipientCreateDraftInList
           : false
     const showCreateListCheck = key === 'addList' && createDraftInList
-    const showApplyMediumCheck =
-      key === 'applyMedium' &&
-      (section === 'senderCreate' || section === 'recipientCreate') &&
-      createDraftInList
     const effectiveIconKey: IconKey = editorPieCartAdd
       ? 'addCart'
       : editorPieDelete
         ? 'delete'
       : showCreateListCheck
       ? 'listCheck'
-      : showApplyMediumCheck
-        ? 'applyMediumCheck'
       : key === 'addList' &&
           (section === 'senderView' ||
             section === 'recipientView' ||
@@ -511,7 +507,15 @@ export const Toolbar = ({
     if (editorPieDelete && editorPieProgress === 0) {
       buttonStatus = 'disabled'
     }
-    const badge = mergedOptions?.badge ?? (rawData as any)?.options?.badge
+    const badgeFromState =
+      mergedOptions?.badge ?? (rawData as any)?.options?.badge
+    /** Create form: duplicate of an inList address → keep applyMedium + `!` badge. */
+    const badge =
+      key === 'applyMedium' &&
+      (section === 'senderCreate' || section === 'recipientCreate') &&
+      createDraftInList
+        ? '!'
+        : badgeFromState
     const hasBadge =
       badge != null &&
       (typeof badge === 'number' || typeof badge === 'string') &&
@@ -537,6 +541,17 @@ export const Toolbar = ({
       key === 'left'
         ? 'enabled'
         : buttonStatus
+
+    const addressListFlashSide =
+      key === 'addressList' && section === 'sender'
+        ? 'sender'
+        : key === 'addressList' && section === 'recipients'
+          ? 'recipient'
+          : null
+    const addressListFlashing =
+      addressListFlashSide != null &&
+      mobileAddressFocus?.addressListFlashSide === addressListFlashSide &&
+      mobileAddressFocus.addressListFlashSeq > 0
 
     if (
       (section === 'cardtextEditor' || section === 'cardtextCreate') &&
@@ -622,18 +637,34 @@ export const Toolbar = ({
             )}`
           ],
           groupStatus === 'disabled' && styles.toolbarKeyDisabled,
+          addressListFlashing &&
+            addressListFlashSide === 'sender' &&
+            styles.toolbarKeyAddressListFlashSender,
+          addressListFlashing &&
+            addressListFlashSide === 'recipient' &&
+            styles.toolbarKeyAddressListFlashRecipient,
         )}
         style={forcedIconColor != null ? { color: forcedIconColor } : undefined}
         data-icon-key={effectiveIconKey}
         data-icon-state={buttonStatus}
         disabled={buttonStatus === 'disabled' || groupStatus === 'disabled'}
-        onMouseDown={(e) => {
+        onPointerDown={(e) => {
+          /** Touch + open keyboard: act on pointerdown before viewport reflow steals the tap. */
+          if (e.pointerType === 'mouse' && e.button !== 0) return
           if (groupStatus === 'disabled' || buttonStatus === 'disabled') {
             e.preventDefault()
             return
           }
 
           e.preventDefault()
+          if (
+            key === 'addList' &&
+            (section === 'senderView' || section === 'recipientView')
+          ) {
+            mobileAddressFocus?.triggerAddressListFlash(
+              section === 'senderView' ? 'sender' : 'recipient',
+            )
+          }
           const stopDefault = onActionClick?.(effectiveIconKey as IconKey)
           if (stopDefault !== false) {
             const actionPayload =
@@ -668,9 +699,6 @@ export const Toolbar = ({
             }
           }
           e.currentTarget.blur()
-        }}
-        onPointerUp={(event) => {
-          event.currentTarget.blur()
         }}
       >
         {section === 'rightSidebar' &&

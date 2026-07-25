@@ -25,6 +25,10 @@ type EnvelopeMobileAddressFocusContextValue = {
    */
   dualSide: EnvelopeMobileDualSide
   setDualSide: (side: EnvelopeMobileDualSide) => void
+  /** Upper addressList flash after lower addList / removeFromList (View toolbar). */
+  addressListFlashSide: EnvelopeMobileDualSide | null
+  addressListFlashSeq: number
+  triggerAddressListFlash: (side: EnvelopeMobileDualSide) => void
 }
 
 const EnvelopeMobileAddressFocusContext =
@@ -36,6 +40,9 @@ export const EnvelopeMobileAddressFocusProvider: React.FC<{
   const [focusRole, setFocusRole] =
     useState<EnvelopeMobileAddressFocusRole | null>(null)
   const [dualSide, setDualSide] = useState<EnvelopeMobileDualSide>('sender')
+  const [addressListFlashSide, setAddressListFlashSide] =
+    useState<EnvelopeMobileDualSide | null>(null)
+  const [addressListFlashSeq, setAddressListFlashSeq] = useState(0)
   const clearSeq = useAppSelector(selectMobileAddressFocusClearSeq)
 
   const toggleFocus = useCallback((role: EnvelopeMobileAddressFocusRole) => {
@@ -46,11 +53,25 @@ export const EnvelopeMobileAddressFocusProvider: React.FC<{
     setFocusRole(null)
   }, [])
 
+  const triggerAddressListFlash = useCallback((side: EnvelopeMobileDualSide) => {
+    setAddressListFlashSide(side)
+    setAddressListFlashSeq((n) => n + 1)
+  }, [])
+
   useEffect(() => {
     if (clearSeq > 0) {
       setFocusRole(null)
     }
   }, [clearSeq])
+
+  /** Flash duration: 0.2s in + 0.2s out. */
+  useEffect(() => {
+    if (addressListFlashSeq === 0) return
+    const id = window.setTimeout(() => {
+      setAddressListFlashSide(null)
+    }, 400)
+    return () => window.clearTimeout(id)
+  }, [addressListFlashSeq])
 
   const isFocused = useCallback(
     (role: EnvelopeMobileAddressFocusRole) => focusRole === role,
@@ -65,8 +86,20 @@ export const EnvelopeMobileAddressFocusProvider: React.FC<{
       isFocused,
       dualSide,
       setDualSide,
+      addressListFlashSide,
+      addressListFlashSeq,
+      triggerAddressListFlash,
     }),
-    [focusRole, toggleFocus, clearFocus, isFocused, dualSide],
+    [
+      focusRole,
+      toggleFocus,
+      clearFocus,
+      isFocused,
+      dualSide,
+      addressListFlashSide,
+      addressListFlashSeq,
+      triggerAddressListFlash,
+    ],
   )
 
   return (
