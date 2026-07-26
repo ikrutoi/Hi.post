@@ -315,11 +315,25 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     />
   )
 
+  /**
+   * Role fade on upper row when dual chrome is active (same recipe as lower View).
+   * Skip when both Apply-peek — toggle is neutral/disabled.
+   */
+  const upperToolbarRoleFade =
+    showFocusReturn && focusRole != null
+      ? focusRole
+      : showCenterDualToggle && !bothFormsApplied
+        ? dualSide
+        : null
+
   return (
     <div
       className={clsx(
         styles.envelopeToolbarRow,
         showFocusReturn && styles.envelopeToolbarRowAddressFocus,
+        upperToolbarRoleFade === 'sender' && styles.envelopeToolbarRowSender,
+        upperToolbarRoleFade === 'recipient' &&
+          styles.envelopeToolbarRowRecipient,
       )}
     >
       {showFocusReturn ? (

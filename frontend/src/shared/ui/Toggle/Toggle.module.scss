@@ -100,11 +100,11 @@
   }
 }
 
-/** Центр тулбара конверта: слева — sender, справа — recipient. */
+/** Центр тулбара конверта: нейтральный enabled-track (без sender/recipient tint). */
 .toggleEnvelopeDual {
   .toggleSlider {
-    background-color: $color-envelope-sender-border;
-    box-shadow: 0 0 0 1px rgba($color-envelope-sender-legend, 0.25);
+    background-color: $color-inactive-light;
+    box-shadow: 0 0 0 1px rgba($color-font-enabled-light, 0.22);
 
     &::after {
       background-color: #fff;
@@ -112,8 +112,8 @@
   }
 
   .toggleInput:checked + .toggleSlider {
-    background-color: $color-envelope-recipient-border;
-    box-shadow: 0 0 0 1px rgba($color-envelope-recipient-legend, 0.25);
+    background-color: $color-inactive-light;
+    box-shadow: 0 0 0 1px rgba($color-font-enabled-light, 0.22);
   }
 
   &.toggleDisabled {

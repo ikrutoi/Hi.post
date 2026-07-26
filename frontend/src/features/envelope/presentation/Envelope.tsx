@@ -216,6 +216,10 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
             showDualSideSelectionBorder &&
               dualSide === 'sender' &&
               styles.envelopeSectionSenderDualSelected,
+            showDualSideSelectionBorder &&
+              dualSide !== 'sender' &&
+              !showSenderSimplified &&
+              styles.envelopeSectionDualUnfocused,
           )}
           data-envelope-mobile-focus-sender
         >
@@ -258,6 +262,10 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
             showDualSideSelectionBorder &&
               dualSide === 'recipient' &&
               styles.envelopeSectionRecipientDualSelected,
+            showDualSideSelectionBorder &&
+              dualSide !== 'recipient' &&
+              !showRecipientSimplified &&
+              styles.envelopeSectionDualUnfocused,
           )}
         >
           {envelopePeekMode ? (

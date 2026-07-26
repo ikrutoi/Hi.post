@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react'
+import clsx from 'clsx'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { useAppSelector } from '@app/hooks'
 import { useEnvelopeFacade } from '@envelope/application/facades'
@@ -155,7 +156,12 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
   const mobileContent =
     section != null ? (
       <div
-        className={styles.envelopeAddressViewToolbarRow}
+        className={clsx(
+          styles.envelopeAddressViewToolbarRow,
+          section === 'senderView'
+            ? styles.envelopeAddressViewToolbarRowSender
+            : styles.envelopeAddressViewToolbarRowRecipient,
+        )}
         data-envelope-address-view-toolbar
       >
         <Toolbar
