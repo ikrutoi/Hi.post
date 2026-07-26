@@ -239,6 +239,19 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     showRecipientsSlot &&
     setDualSide != null
 
+  /** Disable upper toolbar on the non-selected dual side (both forms still editable). */
+  const dualToolbarDisableActive =
+    showCenterDualToggle &&
+    !bothFormsApplied &&
+    !assemblySenderSimplifiedPeek &&
+    !assemblyRecipientSimplifiedPeek
+  const senderToolbarSlotDisabled =
+    senderView === 'senderCreate' ||
+    (dualToolbarDisableActive && dualSide !== 'sender')
+  const recipientsToolbarSlotDisabled =
+    recipientView === 'recipientCreate' ||
+    (dualToolbarDisableActive && dualSide !== 'recipient')
+
   const handleCenterDualToggle = useCallback(
     (checked: boolean) => {
       if (bothFormsApplied) return
@@ -331,7 +344,7 @@ export const EnvelopeInnerToolbar: React.FC = () => {
             <div
               className={clsx(
                 styles.envelopeToolbarSlotSender,
-                senderView === 'senderCreate' &&
+                senderToolbarSlotDisabled &&
                   styles.envelopeToolbarSlotDisabled,
               )}
             >
@@ -355,7 +368,7 @@ export const EnvelopeInnerToolbar: React.FC = () => {
             <div
               className={clsx(
                 styles.envelopeToolbarSlotRecipients,
-                recipientView === 'recipientCreate' &&
+                recipientsToolbarSlotDisabled &&
                   styles.envelopeToolbarSlotDisabled,
               )}
             >
