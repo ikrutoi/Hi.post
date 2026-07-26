@@ -637,12 +637,6 @@ export const Toolbar = ({
             )}`
           ],
           groupStatus === 'disabled' && styles.toolbarKeyDisabled,
-          addressListFlashing &&
-            addressListFlashSide === 'sender' &&
-            styles.toolbarKeyAddressListFlashSender,
-          addressListFlashing &&
-            addressListFlashSide === 'recipient' &&
-            styles.toolbarKeyAddressListFlashRecipient,
         )}
         style={forcedIconColor != null ? { color: forcedIconColor } : undefined}
         data-icon-key={effectiveIconKey}
@@ -658,7 +652,7 @@ export const Toolbar = ({
 
           e.preventDefault()
           if (
-            key === 'addList' &&
+            (key === 'addList' || key === 'removeFromList') &&
             (section === 'senderView' || section === 'recipientView')
           ) {
             mobileAddressFocus?.triggerAddressListFlash(
@@ -749,7 +743,17 @@ export const Toolbar = ({
         )}
 
         {hasBadge && (
-          <span className={styles.toolbarBadge}>
+          <span
+            className={clsx(
+              styles.toolbarBadge,
+              addressListFlashing && styles.toolbarBadgeAddressListFlash,
+            )}
+            key={
+              addressListFlashing
+                ? `badge-flash-${mobileAddressFocus?.addressListFlashSeq}`
+                : undefined
+            }
+          >
             <span className={styles.toolbarBadgeValue}>{badge}</span>
           </span>
         )}

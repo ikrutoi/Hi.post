@@ -11,7 +11,8 @@
   background-color: #fff;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  /* visible: addressList badge pulse may paint past the upper row edge */
+  overflow: visible;
 }
 
 .rowUpper,
@@ -22,9 +23,20 @@
   display: flex;
   align-items: center;
   width: 100%;
-  overflow: hidden;
   padding-inline: var(--mobile-factory-toolbar-inset-inline, 0.5rem);
+}
 
+.rowLower {
+  overflow: hidden;
+}
+
+.rowUpper {
+  overflow: visible;
+  z-index: 2;
+}
+
+.rowUpper,
+.rowLower {
   > * {
     flex: 1 1 auto;
     align-self: stretch;

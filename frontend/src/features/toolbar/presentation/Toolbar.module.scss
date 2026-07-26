@@ -2361,41 +2361,19 @@
   }
 }
 
-/** Lower View addList/removeFromList → flash matching upper addressList (dual-toggle colors). */
-@keyframes toolbarAddressListFlashSender {
+/** Lower View addList/removeFromList → pulse addressList badge (scale +50%). */
+@keyframes toolbarBadgeAddressListFlash {
   0%,
   100% {
-    background-image: none;
+    transform: scale(1);
   }
   50% {
-    background-image: radial-gradient(
-      circle at center,
-      $color-envelope-sender-border 0%,
-      lighten($color-envelope-sender-border, 6%) 42%,
-      #fff 78%
-    );
+    transform: scale(1.5);
   }
 }
 
-@keyframes toolbarAddressListFlashRecipient {
-  0%,
-  100% {
-    background-image: none;
-  }
-  50% {
-    background-image: radial-gradient(
-      circle at center,
-      $color-envelope-recipient-border 0%,
-      lighten($color-envelope-recipient-border, 6%) 42%,
-      #fff 78%
-    );
-  }
-}
-
-.toolbarKeyAddressListFlashSender {
-  animation: toolbarAddressListFlashSender 0.4s ease-in-out;
-}
-
-.toolbarKeyAddressListFlashRecipient {
-  animation: toolbarAddressListFlashRecipient 0.4s ease-in-out;
+.toolbarBadgeAddressListFlash {
+  z-index: 30;
+  transform-origin: center center;
+  animation: toolbarBadgeAddressListFlash 0.4s ease-in-out;
 }

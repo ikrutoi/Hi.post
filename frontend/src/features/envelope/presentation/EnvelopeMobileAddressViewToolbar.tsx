@@ -130,22 +130,28 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
     ? null
     : (mobileFocus?.dualSide ?? 'sender')
 
-  const showSenderToolbar =
+  /** Keep the role-colored row even when tools are hidden (e.g. sender toggle off). */
+  const senderToolbarSlot =
     enabled &&
     isMobile &&
     activeViewRole === 'sender' &&
-    senderFacade.isEnabled &&
     senderView === 'senderView' &&
-    !assemblySenderSimplifiedPeek &&
-    senderDisplayEntry != null
+    !assemblySenderSimplifiedPeek
 
-  const showRecipientToolbar =
+  const recipientToolbarSlot =
     enabled &&
     isMobile &&
     activeViewRole === 'recipient' &&
     recipientView === 'recipientView' &&
-    !assemblyRecipientSimplifiedPeek &&
-    recipientDisplayEntry != null
+    !assemblyRecipientSimplifiedPeek
+
+  const showSenderToolbar =
+    senderToolbarSlot &&
+    senderFacade.isEnabled &&
+    senderDisplayEntry != null
+
+  const showRecipientToolbar =
+    recipientToolbarSlot && recipientDisplayEntry != null
 
   const section: 'senderView' | 'recipientView' | null = showSenderToolbar
     ? 'senderView'
@@ -153,21 +159,30 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
       ? 'recipientView'
       : null
 
+  const slotRole: 'sender' | 'recipient' | null = senderToolbarSlot
+    ? 'sender'
+    : recipientToolbarSlot
+      ? 'recipient'
+      : null
+
   const mobileContent =
-    section != null ? (
+    slotRole != null ? (
       <div
         className={clsx(
           styles.envelopeAddressViewToolbarRow,
-          section === 'senderView'
+          slotRole === 'sender'
             ? styles.envelopeAddressViewToolbarRowSender
             : styles.envelopeAddressViewToolbarRowRecipient,
         )}
         data-envelope-address-view-toolbar
+        aria-hidden={section == null ? true : undefined}
       >
-        <Toolbar
-          section={section}
-          groupsOverride={ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR}
-        />
+        {section != null ? (
+          <Toolbar
+            section={section}
+            groupsOverride={ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR}
+          />
+        ) : null}
       </div>
     ) : null
 
