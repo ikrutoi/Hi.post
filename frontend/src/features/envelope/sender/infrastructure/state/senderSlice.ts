@@ -101,6 +101,8 @@ const senderSlice = createSlice({
         state.appliedLocked = false
       } else {
         /** Подтвердить результат без адреса (тумблер выкл / пустое поле). */
+        state.applied = []
+        state.appliedData = null
         state.appliedLocked = true
       }
     },

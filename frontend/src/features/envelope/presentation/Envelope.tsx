@@ -236,7 +236,10 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
               role="sender"
               compact={isMobile}
               fromSessionApplied
-              addressFallback={senderFacade.address}
+              /** Toggle off Apply = confirm no sender; keep form draft, do not show it in peek. */
+              addressFallback={
+                senderFacade.isEnabled ? senderFacade.address : null
+              }
               className={styles.envelopePeekBlock}
             />
           ) : (

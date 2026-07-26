@@ -189,6 +189,9 @@ const archiveEnvelopeSandboxSlice = createSlice({
         state.sender.appliedData = null
         state.sender.appliedLocked = false
       } else {
+        /** Confirm no sender address (toggle off). Keep viewDraft; clear applied payload. */
+        state.sender.applied = []
+        state.sender.appliedData = null
         state.sender.appliedLocked = true
       }
     },
