@@ -117,13 +117,12 @@ const MOBILE_TEMPLATE_PREVIEW_PIE_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-/** Cardtext / address list: edit сверху, delete снизу рядом с центральным превью. */
+/** Cardtext / address list preview: edit + delete evenly spaced beside the pie. */
 const MOBILE_LIST_TEMPLATE_PREVIEW_PIE_TOOLBAR: ToolbarConfig = [
   {
     group: 'main',
     icons: [
       { key: 'edit', state: 'enabled' },
-      { key: 'empty', state: 'disabled' },
       { key: 'delete', state: 'enabled' },
     ],
     status: 'enabled',
@@ -132,7 +131,6 @@ const MOBILE_LIST_TEMPLATE_PREVIEW_PIE_TOOLBAR: ToolbarConfig = [
 
 const MOBILE_LIST_TEMPLATE_PREVIEW_PIE_STATE = {
   edit: { state: 'enabled' as const },
-  empty: { state: 'disabled' as const },
   delete: { state: 'enabled' as const },
 }
 

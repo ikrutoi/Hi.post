@@ -364,9 +364,10 @@ const calendarSlice = createSlice({
     builder.addCase(setCartListPanelOpen, (state, action) => {
       if (action.payload === true) {
         state.notebookStripDateOverCart = false
+        /** Opening the list cancels an in-flight date pick; closing must not. */
+        state.cartCalendarDatePickMode = false
+        state.cartCalendarDatePickLocalId = null
       }
-      state.cartCalendarDatePickMode = false
-      state.cartCalendarDatePickLocalId = null
     })
   },
 })

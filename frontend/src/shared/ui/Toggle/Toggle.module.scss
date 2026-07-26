@@ -107,7 +107,7 @@
     box-shadow: 0 0 0 1px rgba($color-font-enabled-light, 0.22);
 
     &::after {
-      background-color: #fff;
+      background-color: $color-app-header;
     }
   }
 
@@ -127,8 +127,9 @@
     }
 
     .toggleSlider::after {
+      /** Contrast on `$color-disabled` track (app-header ≈ same beige). */
       background-color: #fff;
-      opacity: 0.85;
+      opacity: 0.95;
     }
   }
 }

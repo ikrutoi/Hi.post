@@ -504,6 +504,62 @@ $envelope-address-view-row-height: 1.625rem;
   box-sizing: border-box;
 }
 
+/** View: in-list status — same shell as close, transparent fill.
+ * Color/opacity match CardPie empty sector placeholders (`.pieSectorIconBg`). */
+.savedAddressListIndicator {
+  position: absolute;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  box-sizing: border-box;
+  pointer-events: none;
+  @include overlay.sectionViewOverlayChip(transparent, transparent, false);
+  @include overlay.sectionViewOverlayChipIcon;
+  border-radius: 50%;
+  @include savedAddressCloseButtonMobileSize;
+  @include savedAddressCloseButtonDesktopSize;
+  color: $color-app-sidebar-icon;
+  opacity: 0.14;
+
+  svg {
+    display: block;
+  }
+
+  &:hover {
+    background-color: transparent;
+    color: $color-app-sidebar-icon;
+  }
+}
+
+.savedAddressListIndicatorSender {
+  right: $saved-address-action-inset-desktop;
+  bottom: $saved-address-action-inset-desktop;
+
+  :global([data-shell-layout='desktop']) & {
+    right: $saved-address-action-inset-desktop;
+    bottom: $saved-address-action-inset-desktop;
+  }
+
+  :global([data-shell-layout='mobile']) & {
+    @include savedAddressDeleteButtonMobileInset;
+    @include savedAddressCloseButtonMobileInsetRight;
+  }
+}
+
+.savedAddressListIndicatorRecipient {
+  left: $saved-address-action-inset-desktop;
+  bottom: $saved-address-action-inset-desktop;
+  right: auto;
+
+  :global([data-shell-layout='mobile']) & {
+    @include savedAddressDeleteButtonMobileInset;
+    @include savedAddressCloseButtonMobileInsetLeft;
+  }
+}
+
 .savedAddressDeleteButton {
   @include overlay.sectionViewOverlayDeleteButton;
   box-sizing: border-box;

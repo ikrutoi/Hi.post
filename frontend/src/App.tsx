@@ -1442,6 +1442,43 @@ const App = () => {
   /** postcardEdit из peek: только текущая секция, cardPieEdit не active. */
   const enterSectionEditFromPeek = useCallback(() => {
     const targetSection = resolveCardPieEditTargetSection()
+
+    /**
+     * Date peek on a cart / cartBlocked postcard: open calendar date-pick
+     * (same as list dateEdit). Factory section-edit races with list chrome
+     * and never hydrates blocked dates.
+     */
+    if (
+      targetSection === 'date' &&
+      rightListArchiveSource === 'cart' &&
+      rightListArchiveLocalId != null
+    ) {
+      const lid = rightListArchiveLocalId
+      const segment =
+        rightArchivePiePostcardStatus === 'cartBlocked'
+          ? 'cartBlocked'
+          : 'cart'
+      cartDatePickOwnedByCardPieEditRef.current = false
+      cartDatePickOwnedByListEntryRef.current = true
+      endCardPieEditEngaged()
+      dispatch(setNotebookStripTab('cart'))
+      dispatch(setActiveSection('date'))
+      dispatch(setCartListStatusSegment(segment))
+      dispatch(setCartListSelectedLocalId(lid))
+      setSuppressCardPieEditActiveAfterCopy(true)
+      setActivePieSide('right')
+      dispatch(closeDayPanel())
+      const now = getCurrentDate()
+      const pickView = resolveCartDatePickCalendarViewDate({
+        currentDate: now,
+      })
+      dispatch(updateLastViewedCalendarDate(pickView))
+      dispatch(setCartCalendarDatePickMode(true))
+      dispatch(setCartCalendarDatePickLocalId(lid))
+      clearRightPiePeekChrome()
+      return
+    }
+
     const hadFreeze = selectAssemblyBranchFreeze(store.getState()) != null
     captureAssemblyBranchFreeze('archiveEdit')
     if (!hadFreeze) {
@@ -1460,7 +1497,11 @@ const App = () => {
     captureAssemblyBranchFreeze,
     clearRightPiePeekChrome,
     dispatch,
+    endCardPieEditEngaged,
     resolveCardPieEditTargetSection,
+    rightArchivePiePostcardStatus,
+    rightListArchiveLocalId,
+    rightListArchiveSource,
   ])
 
   /** Apply в archive-edit → упрощённый peek секции; assembly session восстанавливаем. */

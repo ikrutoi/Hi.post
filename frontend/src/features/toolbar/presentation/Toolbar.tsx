@@ -542,16 +542,17 @@ export const Toolbar = ({
         ? 'enabled'
         : buttonStatus
 
-    const addressListFlashSide =
+    const addressListBadgePulseSide =
       key === 'addressList' && section === 'sender'
         ? 'sender'
         : key === 'addressList' && section === 'recipients'
           ? 'recipient'
           : null
-    const addressListFlashing =
-      addressListFlashSide != null &&
-      mobileAddressFocus?.addressListFlashSide === addressListFlashSide &&
-      mobileAddressFocus.addressListFlashSeq > 0
+    const addressListBadgePulsing =
+      addressListBadgePulseSide != null &&
+      mobileAddressFocus?.addressListBadgePulseSide ===
+        addressListBadgePulseSide &&
+      mobileAddressFocus.addressListBadgePulseSeq > 0
 
     if (
       (section === 'cardtextEditor' || section === 'cardtextCreate') &&
@@ -655,7 +656,7 @@ export const Toolbar = ({
             (key === 'addList' || key === 'removeFromList') &&
             (section === 'senderView' || section === 'recipientView')
           ) {
-            mobileAddressFocus?.triggerAddressListFlash(
+            mobileAddressFocus?.triggerAddressListBadgePulse(
               section === 'senderView' ? 'sender' : 'recipient',
             )
           }
@@ -746,11 +747,11 @@ export const Toolbar = ({
           <span
             className={clsx(
               styles.toolbarBadge,
-              addressListFlashing && styles.toolbarBadgeAddressListFlash,
+              addressListBadgePulsing && styles.toolbarBadgePulse,
             )}
             key={
-              addressListFlashing
-                ? `badge-flash-${mobileAddressFocus?.addressListFlashSeq}`
+              addressListBadgePulsing
+                ? `badge-pulse-${mobileAddressFocus?.addressListBadgePulseSeq}`
                 : undefined
             }
           >

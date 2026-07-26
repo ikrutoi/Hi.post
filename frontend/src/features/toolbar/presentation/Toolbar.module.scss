@@ -2362,7 +2362,7 @@
 }
 
 /** Lower View addList/removeFromList → pulse addressList badge (scale +50%). */
-@keyframes toolbarBadgeAddressListFlash {
+@keyframes toolbarBadgePulse {
   0%,
   100% {
     transform: scale(1);
@@ -2372,8 +2372,8 @@
   }
 }
 
-.toolbarBadgeAddressListFlash {
+.toolbarBadgePulse {
   z-index: 30;
   transform-origin: center center;
-  animation: toolbarBadgeAddressListFlash 0.4s ease-in-out;
+  animation: toolbarBadgePulse 0.4s ease-in-out;
 }
