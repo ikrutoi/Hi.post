@@ -93,10 +93,11 @@ export const CardSectionEditor: React.FC = () => {
     if (showMobileAddressListFactoryChrome) {
       return <AddressListMobileSlot />
     }
-    if (cartListPanelOpen) {
+    /** Same gate as showMobileTemplateList — never mount cart/history during date-pick. */
+    if (cartListPanelOpen && !mobileDateListChromePeek) {
       return <MobileCartListSlot />
     }
-    if (historyListPanelOpen) {
+    if (historyListPanelOpen && !mobileDateListChromePeek) {
       return <MobileHistoryListSlot />
     }
     switch (activeSection) {
@@ -113,6 +114,7 @@ export const CardSectionEditor: React.FC = () => {
     activeSection,
     cartListPanelOpen,
     historyListPanelOpen,
+    mobileDateListChromePeek,
     showMobileAddressListFactoryChrome,
   ])
 

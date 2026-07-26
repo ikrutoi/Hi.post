@@ -7,7 +7,7 @@ import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/sta
 import {
   closeDayPanel,
   setCardPieListPanelOpen,
-  setCartCalendarDatePickMode,
+  endCartCalendarDatePick,
   setHistoryListSelectedLocalId,
   setHistoryListPanelOpen,
   setNotebookStripDateOverCart,
@@ -55,7 +55,7 @@ export const buildNotebookDateTabCommands = (): UnknownAction[] => [
   setCartListSelectedLocalId(null),
   setHistoryListSelectedLocalId(null),
   closeDayPanel(),
-  setCartCalendarDatePickMode(false),
+  endCartCalendarDatePick(),
   setNotebookStripTab('date'),
   setCardPieListPanelOpen(true),
   setActiveSection('date'),
@@ -70,7 +70,7 @@ export const buildNotebookDateTabCommandsMobile = (): UnknownAction[] => [
   setCartListPanelOpen(false),
   setHistoryListPanelOpen(false),
   closeDayPanel(),
-  setCartCalendarDatePickMode(false),
+  endCartCalendarDatePick(),
   setNotebookStripTab('date'),
   setActiveSection('date'),
 ]
@@ -90,7 +90,7 @@ export const buildCartCalendarCommands = (): UnknownAction[] => [
     key: 'cart',
     value: 'active',
   }),
-  setCartCalendarDatePickMode(false),
+  endCartCalendarDatePick(),
   setNotebookStripTab('cart'),
   setActiveSection('date'),
   archiveCalendarViewEntered('cart'),
@@ -111,7 +111,7 @@ export const buildCartListCommands = (): UnknownAction[] => [
     key: 'cart',
     value: 'active',
   }),
-  setCartCalendarDatePickMode(false),
+  endCartCalendarDatePick(),
   setNotebookStripTab('cart'),
   setActiveSection('date'),
 ]
@@ -121,7 +121,7 @@ export const buildNotebookCartTabCommandsMobile = (): UnknownAction[] => [
   setCartListPanelOpen(false),
   setHistoryListPanelOpen(false),
   closeDayPanel(),
-  setCartCalendarDatePickMode(false),
+  endCartCalendarDatePick(),
   setNotebookStripTab('cart'),
   setActiveSection('date'),
   archiveCalendarViewEntered('cart'),
@@ -210,7 +210,7 @@ export function buildHistoryArchiveToggleCommands(input: {
 /** Mobile Cart slot: только список корзины, режим календаря не меняется. */
 export const buildMobileCartSlotOpenCommands = (): UnknownAction[] => [
   setHistoryListPanelOpen(false),
-  setCartCalendarDatePickMode(false),
+  endCartCalendarDatePick(),
   setCartListPanelOpen(true),
 ]
 
@@ -221,7 +221,7 @@ export const buildMobileCartSlotCloseCommands = (): UnknownAction[] => [
 /** Mobile History slot: только список истории, режим календаря не меняется. */
 export const buildMobileHistorySlotOpenCommands = (): UnknownAction[] => [
   setCartListPanelOpen(false),
-  setCartCalendarDatePickMode(false),
+  endCartCalendarDatePick(),
   setHistoryListPanelOpen(true),
 ]
 

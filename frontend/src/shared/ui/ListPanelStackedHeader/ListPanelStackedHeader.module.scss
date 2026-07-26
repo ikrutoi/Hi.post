@@ -90,11 +90,6 @@
   &:focus-visible {
     outline: none;
   }
-
-  &:hover {
-    color: $color-font-enabled;
-    background-color: transparent;
-  }
 }
 
 .headerDivider {
@@ -177,11 +172,6 @@
       min-height: iconButton.$toolbar-hit-size-standard *
         iconButton.$toolbar-desktop-scale;
     }
-
-    &:hover {
-      color: $color-font-enabled;
-      background-color: transparent;
-    }
   }
 
   .headerToolbarRow {
@@ -234,11 +224,6 @@
     padding: 0;
     border-radius: 0.6rem;
     color: $color-font-enabled-light;
-
-    &:hover {
-      color: $color-font-enabled;
-      background-color: transparent;
-    }
   }
 
   .headerTopRow {

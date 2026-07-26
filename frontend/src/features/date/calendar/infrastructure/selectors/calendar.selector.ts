@@ -70,6 +70,9 @@ export const selectCartCalendarDatePickLocalId = (
   state: RootState,
 ): number | null => state.calendar.cartCalendarDatePickLocalId
 
+export const selectCartDatePickSessionActive = (state: RootState): boolean =>
+  state.calendar.cartDatePickSessionActive
+
 export const selectNotebookDateTabPeekClearTick = (state: RootState): number =>
   state.calendar.notebookDateTabPeekClearTick
 

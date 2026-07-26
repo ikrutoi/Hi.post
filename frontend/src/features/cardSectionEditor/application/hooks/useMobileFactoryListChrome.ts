@@ -36,6 +36,7 @@ import {
 } from '@aroma/infrastructure/selectors'
 import {
   selectCartCalendarDatePickMode,
+  selectCartDatePickSessionActive,
   selectIsCardPieListPanelOpen,
   selectIsHistoryListPanelOpen,
 } from '@date/calendar/infrastructure/selectors'
@@ -60,6 +61,9 @@ export function useMobileFactoryListChrome() {
   const addressListPanelOpen = senderListPanelOpen || recipientListPanelOpen
   const cardPieListPanelOpen = useAppSelector(selectIsCardPieListPanelOpen)
   const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
+  const cartDatePickSessionActive = useAppSelector(
+    selectCartDatePickSessionActive,
+  )
   const cardtextInteractionMode = useAppSelector(selectCardtextInteractionMode)
   const cardtextIsComplete = useAppSelector(selectCardtextIsComplete)
   const cardphotoIsComplete = useAppSelector(selectCardphotoIsComplete)
@@ -206,9 +210,12 @@ export function useMobileFactoryListChrome() {
 
   /**
    * Скрыть список корзины/истории: peek секции редактора или выбор новой даты (cartBlocked → dateEdit).
+   * Session flag survives transient mode clears so the blocked list does not flash.
    */
   const mobileDateListChromePeek =
-    mobileSectionSimplifiedPeek || cartCalendarDatePickMode
+    mobileSectionSimplifiedPeek ||
+    cartCalendarDatePickMode ||
+    cartDatePickSessionActive
 
   /**
    * If Redux opened the address book on envelope, mount it. Do not gate on

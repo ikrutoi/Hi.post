@@ -66,6 +66,11 @@ type CalendarState = {
    * сага применяет новую дату именно к ней.
    */
   cartCalendarDatePickLocalId: number | null
+  /**
+   * Sticky session for date-pick: keeps cart/history list chrome hidden even if
+   * `cartCalendarDatePickMode` is transiently cleared (panel open / sagas).
+   */
+  cartDatePickSessionActive: boolean
   historyListPanelOpen: boolean
   /** Выбранная строка списка истории — правый CardPie по `localId` открытки. */
   historyListSelectedLocalId: number | null
@@ -117,6 +122,7 @@ const initialState: CalendarState = {
   notebookStripDateOverHistory: false,
   cartCalendarDatePickMode: false,
   cartCalendarDatePickLocalId: null,
+  cartDatePickSessionActive: false,
   dateListPanelOpen: false,
   cardPieListPanelOpen: false,
   historyListPanelOpen: false,
@@ -273,6 +279,7 @@ const calendarSlice = createSlice({
       if (action.payload !== 'cart') {
         state.cartCalendarDatePickMode = false
         state.cartCalendarDatePickLocalId = null
+        state.cartDatePickSessionActive = false
       }
     },
 
@@ -288,6 +295,12 @@ const calendarSlice = createSlice({
       state.cartCalendarDatePickMode = action.payload
       if (!action.payload) {
         state.cartCalendarDatePickLocalId = null
+        /**
+         * Keep `cartDatePickSessionActive` — only `endCartCalendarDatePick`
+         * drops the session so list chrome can return.
+         */
+      } else {
+        state.cartDatePickSessionActive = true
       }
     },
 
@@ -296,6 +309,23 @@ const calendarSlice = createSlice({
       action: PayloadAction<number | null>,
     ) {
       state.cartCalendarDatePickLocalId = action.payload
+    },
+
+    /** Start date-pick and pin list chrome hidden for the session. */
+    beginCartCalendarDatePick(
+      state,
+      action: PayloadAction<{ localId: number }>,
+    ) {
+      state.cartCalendarDatePickMode = true
+      state.cartCalendarDatePickLocalId = action.payload.localId
+      state.cartDatePickSessionActive = true
+    },
+
+    /** End date-pick session (list chrome may show again). */
+    endCartCalendarDatePick(state) {
+      state.cartCalendarDatePickMode = false
+      state.cartCalendarDatePickLocalId = null
+      state.cartDatePickSessionActive = false
     },
 
     bumpNotebookDateTabPeekClearTick(state) {
@@ -364,9 +394,11 @@ const calendarSlice = createSlice({
     builder.addCase(setCartListPanelOpen, (state, action) => {
       if (action.payload === true) {
         state.notebookStripDateOverCart = false
-        /** Opening the list cancels an in-flight date pick; closing must not. */
-        state.cartCalendarDatePickMode = false
-        state.cartCalendarDatePickLocalId = null
+        /**
+         * Do not clear date-pick here: callers that leave pick call
+         * `endCartCalendarDatePick` / `setCartCalendarDatePickMode(false)`.
+         * Clearing on open raced peek→edit (list under peek stayed open).
+         */
       }
     })
   },
@@ -392,6 +424,8 @@ export const {
   setNotebookStripDateOverHistory,
   setCartCalendarDatePickMode,
   setCartCalendarDatePickLocalId,
+  beginCartCalendarDatePick,
+  endCartCalendarDatePick,
   bumpNotebookDateTabPeekClearTick,
   stepStripMonthCycle,
 } = calendarSlice.actions

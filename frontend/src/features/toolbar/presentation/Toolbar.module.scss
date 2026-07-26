@@ -63,7 +63,7 @@
       }
     }
 
-    /* Закрытие списков шаблонов: только затемнение иконки, без фона при hover */
+    /* Закрытие списков шаблонов: без затемнения иконки при hover */
     &[data-icon-key='listDelete'].toolbarKeyEnabled,
     &[data-icon-key='listClose'].toolbarKeyEnabled,
     &[data-icon-key='checkBox'].toolbarKeyEnabled {
@@ -71,7 +71,6 @@
 
       @include iconButton.toolbar-key-hover-fine-pointer {
         &:hover {
-          color: $color-font-enabled;
           background-color: white;
           cursor: pointer;
         }
@@ -98,14 +97,8 @@
 
       @include iconButton.toolbar-key-hover-fine-pointer {
         &:hover {
-          color: $color-font-enabled;
           background-color: white;
           cursor: pointer;
-
-          svg [data-apply-part='frame'],
-          svg [data-apply-part='check'] {
-            stroke: $color-font-enabled;
-          }
         }
       }
     }
@@ -147,7 +140,6 @@
 
       @include iconButton.toolbar-key-hover-fine-pointer {
         &:hover {
-          color: $color-font-enabled;
           background-color: #fff;
         }
       }
@@ -164,10 +156,6 @@
         }
       }
     }
-
-    &[data-icon-key='historyView'].toolbarKeyEnabled:active {
-      color: $color-font-enabled;
-    }
   }
 
   &:not(.toolbarRightSidebar):not(.toolbarCart) .toolbarKey {
@@ -176,7 +164,6 @@
 
       @include iconButton.toolbar-key-hover-fine-pointer {
         &:hover {
-          color: $color-font-enabled;
           background-color: #fff;
         }
       }
@@ -306,6 +293,14 @@
     font-weight: 700;
     line-height: 1;
     font-family: sans-serif;
+  }
+
+  /** editorPie cart add: larger `+` glyph, same badge chip size. */
+  .toolbarBadgePlus {
+    .toolbarBadgeValue {
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
   }
 
   .toolbarBadgeDot {
@@ -946,7 +941,7 @@
     }
 
     &:hover {
-      color: $color-font-enabled;
+      color: $color-font-enabled-light;
     }
   }
 }
@@ -989,7 +984,7 @@
   }
 }
 
-/* date / cart / history: hover — затемнение иконки, без подложки */
+/* date / cart / history: light icons, no darken on hover */
 .toolbarHistory,
 .toolbarDate,
 .toolbarCart {
@@ -997,7 +992,6 @@
     color: $color-font-enabled-light;
 
     &:hover {
-      color: $color-font-enabled;
       background-color: $color-app-inner;
     }
   }
@@ -1020,7 +1014,6 @@
     color: $color-font-enabled-light;
 
     &:hover {
-      color: $color-font-enabled;
       background-color: #fff;
     }
   }
@@ -1038,7 +1031,6 @@
     box-shadow: none;
 
     &:hover {
-      color: $color-font-enabled;
       background-color: #fff;
     }
   }
@@ -1055,7 +1047,6 @@
 
     @include iconButton.toolbar-key-hover-fine-pointer {
       &:hover {
-        color: $color-font-enabled;
         background-color: #fff;
       }
     }
@@ -1071,7 +1062,6 @@
 
     @include iconButton.toolbar-key-hover-fine-pointer {
       &:hover {
-        color: $color-font-enabled;
         background-color: #fff;
         cursor: pointer;
       }
@@ -1167,7 +1157,6 @@
       cursor: pointer;
 
       &:hover {
-        color: $color-font-enabled;
         background-color: #fff;
       }
     }
@@ -1292,7 +1281,6 @@
       color: $color-font-enabled-light;
 
       &:hover {
-        color: $color-font-enabled;
         background-color: $color-app-inner;
       }
     }
@@ -1348,7 +1336,6 @@
       color: $color-font-enabled-light;
 
       &:hover {
-        color: $color-font-enabled;
         background-color: $color-app-inner;
       }
     }
@@ -1400,7 +1387,6 @@
     }
 
     &.toolbarKeyEnabled:hover {
-      color: $color-font-enabled;
       background-color: #fff;
     }
 
@@ -1437,7 +1423,6 @@
     }
 
     &.toolbarKeyEnabled:hover {
-      color: $color-font-enabled;
       background-color: #fff;
     }
 
@@ -1670,7 +1655,6 @@
     color: $color-font-enabled-light;
 
     &:hover {
-      color: $color-font-enabled;
       background-color: transparent;
       box-shadow: none;
     }
@@ -1706,12 +1690,11 @@
     margin-left: 0;
   }
 
-  /* Same hover idea as cart list keys: no $color-enabled chip, only icon color */
+  /* Same as cart list keys: no icon darken on hover */
   .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
     color: $color-font-enabled-light;
 
     &:hover {
-      color: $color-font-enabled;
       background-color: #fff;
     }
   }
@@ -1738,10 +1721,6 @@
     &:hover {
       background-color: #fff;
     }
-
-    &:not([data-icon-key='return']):hover {
-      color: $color-font-enabled;
-    }
   }
 
   .toolbarKey.toolbarKeyActive:hover {
@@ -1756,7 +1735,6 @@
     color: $color-font-enabled-light;
 
     &:hover {
-      color: $color-font-enabled;
       background-color: #fff;
     }
   }
@@ -1995,10 +1973,6 @@
         color: $color-font-enabled-light;
         background-color: transparent;
       }
-
-      &:active {
-        color: $color-font-enabled;
-      }
     }
 
     [data-icon-key='apply'].toolbarKeyEnabled,
@@ -2013,10 +1987,6 @@
       &:hover {
         color: $color-font-enabled-light;
         background-color: transparent;
-      }
-
-      &:active {
-        color: $color-font-enabled;
       }
     }
   }
@@ -2183,7 +2153,6 @@
 
       @include iconButton.toolbar-key-hover-fine-pointer {
         &:hover {
-          color: $color-font-enabled;
           background-color: #fff;
         }
       }
@@ -2194,7 +2163,6 @@
 
       @include iconButton.toolbar-key-hover-fine-pointer {
         &:hover {
-          color: $color-font-enabled;
           background-color: #fff;
         }
       }
@@ -2229,7 +2197,6 @@
 
       @include iconButton.toolbar-key-hover-fine-pointer {
         &:hover {
-          color: $color-font-enabled;
           background-color: #fff;
         }
       }

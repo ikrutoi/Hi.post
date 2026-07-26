@@ -325,7 +325,7 @@ export const Toolbar = ({
   ) => {
     const elementKey = iconIndex != null ? `${key}-${iconIndex}` : key
     const rawData = sectionState[key]
-    // editorPie assembly: первая дырка — addCart; вторая — delete.
+    // editorPie assembly: первая дырка — cart (действие addCart); вторая — delete.
     // Не применять при groupsOverride (template preview: edit/delete и т.п.).
     const editorPieCartAdd =
       groupsOverride == null &&
@@ -351,7 +351,7 @@ export const Toolbar = ({
           : false
     const showCreateListCheck = key === 'addList' && createDraftInList
     const effectiveIconKey: IconKey = editorPieCartAdd
-      ? 'addCart'
+      ? 'cart'
       : editorPieDelete
         ? 'delete'
       : showCreateListCheck
@@ -388,6 +388,10 @@ export const Toolbar = ({
               ? 'sortAZDown'
               : 'sortAZUp'
             : key
+    /** Visual remaps (e.g. cart glyph) must still fire the real action key. */
+    const actionIconKey: IconKey = editorPieCartAdd
+      ? 'addCart'
+      : effectiveIconKey
     const options =
       rawData && typeof rawData === 'object' && 'options' in rawData
         ? rawData.options
@@ -509,11 +513,15 @@ export const Toolbar = ({
     }
     const badgeFromState =
       mergedOptions?.badge ?? (rawData as any)?.options?.badge
-    /** Create form: duplicate of an inList address → keep applyMedium + `!` badge. */
-    const badge =
-      key === 'applyMedium' &&
-      (section === 'senderCreate' || section === 'recipientCreate') &&
-      createDraftInList
+    /**
+     * editorPie cart: `+` badge (glyph is cart, action still addCart).
+     * Create form: duplicate of an inList address → keep applyMedium + `!` badge.
+     */
+    const badge = editorPieCartAdd
+      ? '+'
+      : key === 'applyMedium' &&
+          (section === 'senderCreate' || section === 'recipientCreate') &&
+          createDraftInList
         ? '!'
         : badgeFromState
     const hasBadge =
@@ -660,19 +668,19 @@ export const Toolbar = ({
               section === 'senderView' ? 'sender' : 'recipient',
             )
           }
-          const stopDefault = onActionClick?.(effectiveIconKey as IconKey)
+          const stopDefault = onActionClick?.(actionIconKey)
           if (stopDefault !== false) {
             const actionPayload =
-              effectiveIconKey === 'applyMedium' && section === 'senderCreate'
+              actionIconKey === 'applyMedium' && section === 'senderCreate'
                 ? { draft: senderCreateFormDraft ?? undefined }
-                : effectiveIconKey === 'applyMedium' &&
+                : actionIconKey === 'applyMedium' &&
                     section === 'recipientCreate'
                   ? { draft: recipientCreateFormDraft ?? undefined }
                   : undefined
-            onAction(effectiveIconKey as IconKey, actionPayload)
+            onAction(actionIconKey, actionPayload)
             /** Apply в archive-edit → сразу упрощённый peek (saga допишет applied). */
             if (
-              effectiveIconKey === 'apply' &&
+              actionIconKey === 'apply' &&
               (section === 'cardtext' ||
                 section === 'cardtextView' ||
                 section === 'cardphoto' ||
@@ -747,6 +755,7 @@ export const Toolbar = ({
           <span
             className={clsx(
               styles.toolbarBadge,
+              editorPieCartAdd && styles.toolbarBadgePlus,
               addressListBadgePulsing && styles.toolbarBadgePulse,
             )}
             key={

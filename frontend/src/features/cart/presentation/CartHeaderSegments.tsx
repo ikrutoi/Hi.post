@@ -8,7 +8,8 @@ import {
 import {
   setCartListStatusSegment,
 } from '@cart/infrastructure/state'
-import { setCartCalendarDatePickMode } from '@date/calendar/infrastructure/state'
+import { endCartCalendarDatePick } from '@date/calendar/infrastructure/state'
+import { releaseCartDatePickListEntryOwnership } from '@date/calendar/application/logic/cartDatePickListEntryOwnership'
 import styles from './CartListPanel.module.scss'
 
 export const CartHeaderSegments: React.FC<{
@@ -20,7 +21,8 @@ export const CartHeaderSegments: React.FC<{
 
   const handleSelectCartSegment = useCallback(() => {
     if (listSegment === 'cartBlocked') {
-      dispatch(setCartCalendarDatePickMode(false))
+      releaseCartDatePickListEntryOwnership()
+      dispatch(endCartCalendarDatePick())
     }
     dispatch(setCartListStatusSegment('cart'))
   }, [dispatch, listSegment])

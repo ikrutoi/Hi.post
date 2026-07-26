@@ -3,14 +3,18 @@ import type { PostcardStatus } from '@entities/postcard'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { resolveCartDatePickCalendarViewDate } from '@date/calendar/application/logic/cartDatePickCalendarView'
 import {
+  claimCartDatePickListEntryOwnership,
+  releaseCartDatePickListEntryOwnership,
+} from '@date/calendar/application/logic/cartDatePickListEntryOwnership'
+import {
   selectCartCalendarDatePickLocalId,
   selectCartCalendarDatePickMode,
   selectLastCalendarViewDate,
   selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
 import {
-  setCartCalendarDatePickLocalId,
-  setCartCalendarDatePickMode,
+  beginCartCalendarDatePick,
+  endCartCalendarDatePick,
   setNotebookStripDateOverCart,
   setNotebookStripTab,
   updateLastViewedCalendarDate,
@@ -96,6 +100,7 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
       if (!isBlockedEntry) return
       const next = !dateEditHighlight
       if (next) {
+        if (postcardLocalId == null) return
         const now = getCurrentDate()
         if (notebookStripTab !== 'cart') {
           dispatch(setNotebookStripTab('cart'))
@@ -111,11 +116,12 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
         ) {
           dispatch(updateLastViewedCalendarDate(pickView))
         }
-        dispatch(setCartCalendarDatePickLocalId(postcardLocalId ?? null))
-        dispatch(setCartCalendarDatePickMode(true))
+        claimCartDatePickListEntryOwnership()
+        dispatch(beginCartCalendarDatePick({ localId: postcardLocalId }))
         onDateEditActivate?.()
       } else {
-        dispatch(setCartCalendarDatePickMode(false))
+        releaseCartDatePickListEntryOwnership()
+        dispatch(endCartCalendarDatePick())
       }
     },
     [

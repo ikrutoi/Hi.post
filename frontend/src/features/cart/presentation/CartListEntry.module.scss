@@ -95,20 +95,10 @@ $list-entry-bg-hover: #fafafa;
   cursor: pointer;
   color: $color-font-enabled-light;
   line-height: 1;
-  transition: color 0.15s ease;
-
-  &:hover {
-    color: $color-font-enabled;
-  }
 
   &[aria-checked='true'] {
     color: $color-font-enabled-light;
     --icon-checkbox-check: #{$color-font-active};
-
-    &:hover {
-      color: $color-font-enabled;
-      --icon-checkbox-check: #{$color-font-active};
-    }
   }
 
   &:focus-visible {
@@ -160,11 +150,6 @@ $list-entry-bg-hover: #fafafa;
   cursor: pointer;
   color: $color-font-enabled-light;
   line-height: 1;
-  transition: color 0.15s ease;
-
-  &:hover {
-    color: $color-font-enabled;
-  }
 
   &[aria-pressed='true'] {
     color: $color-font-enabled;

@@ -57,6 +57,8 @@ import { useCartFacade } from './features/cart/application/facades/useCartFacade
 import {
   selectCartItems,
   selectCardPieCopyStripExpanded,
+  selectCartListPanelOpen,
+  selectCartListSelectedLocalId,
   selectCartListSelectedLocalIdsBySegment,
   selectCartListStatusSegment,
 } from '@cart/infrastructure/selectors'
@@ -99,6 +101,8 @@ import { dispatchLoadArchiveEnvelopeSandbox } from '@cardPanel/application/helpe
 import {
   closeDayPanel,
   openDayPanel,
+  beginCartCalendarDatePick,
+  endCartCalendarDatePick,
   setCartCalendarDatePickMode,
   setCartCalendarDatePickLocalId,
   setHistoryListPanelOpen,
@@ -107,6 +111,11 @@ import {
   updateLastViewedCalendarDate,
 } from '@date/calendar/infrastructure/state'
 import { resolveCartDatePickCalendarViewDate } from '@date/calendar/application/logic/cartDatePickCalendarView'
+import {
+  claimCartDatePickListEntryOwnership,
+  isCartDatePickListEntryOwned,
+  releaseCartDatePickListEntryOwnership,
+} from '@date/calendar/application/logic/cartDatePickListEntryOwnership'
 import { calendarDayHasCards } from '@date/cell/domain/calendarDayContent'
 import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
@@ -169,7 +178,7 @@ const App = () => {
   const cardPieCopyClosedByEditRef = useRef(false)
   /** date pick включён через cardPieEdit (не dateEdit строки cartBlocked). */
   const cartDatePickOwnedByCardPieEditRef = useRef(false)
-  /** date pick включён через dateEdit строки «Заблокированные» — не сбрасывать в cardPieEdit effect. */
+  /** @deprecated prefer isCartDatePickListEntryOwned(); kept in sync for cardPieEdit effect. */
   const cartDatePickOwnedByListEntryRef = useRef(false)
   const [colorToolbar, setColorToolbar] = useState<boolean | null>(null)
   const [activePieSide, setActivePieSide] = useState<'left' | 'right'>('left')
@@ -865,7 +874,9 @@ const App = () => {
     setRightPieEnvelopePeekNoToolbar(false)
     setRightPieAromaPeekNoToolbar(false)
     setRightPieDatePeekNoToolbar(false)
-    dispatch(setCartCalendarDatePickMode(false))
+    releaseCartDatePickListEntryOwnership()
+    cartDatePickOwnedByListEntryRef.current = false
+    dispatch(endCartCalendarDatePick())
     dispatch(setNotebookStripTab('cart'))
     dispatch(setActiveSection('date'))
     if (wasSectionPeek) {
@@ -1344,14 +1355,39 @@ const App = () => {
   useEffect(() => {
     if (!cartCalendarDatePickMode) {
       cartDatePickOwnedByCardPieEditRef.current = false
-      cartDatePickOwnedByListEntryRef.current = false
+      /**
+       * Do not release list-entry ownership here: transient mode clears
+       * (panel chrome / sagas) would drop ownership and flash the cart list.
+       * Intentional exits call releaseCartDatePickListEntryOwnership().
+       */
     }
   }, [cartCalendarDatePickMode])
 
+  /** Re-assert date-pick while list-entry ownership is claimed. */
+  useLayoutEffect(() => {
+    if (!isCartDatePickListEntryOwned()) return
+    if (cartCalendarDatePickMode) return
+    const lid = rightListArchiveLocalId ?? listSelectedLocalId
+    if (lid == null) {
+      releaseCartDatePickListEntryOwnership()
+      cartDatePickOwnedByListEntryRef.current = false
+      dispatch(endCartCalendarDatePick())
+      return
+    }
+    dispatch(beginCartCalendarDatePick({ localId: lid }))
+  }, [
+    cartCalendarDatePickMode,
+    dispatch,
+    listSelectedLocalId,
+    rightListArchiveLocalId,
+  ])
+
   useEffect(() => {
+    const listEntryOwned =
+      isCartDatePickListEntryOwned() || cartDatePickOwnedByListEntryRef.current
     const shouldPickFromCardPieEdit =
       cardPieEditEngaged &&
-      !cartDatePickOwnedByListEntryRef.current &&
+      !listEntryOwned &&
       activePieSide === 'right' &&
       rightListArchiveLocalId != null &&
       activeSection === 'date' &&
@@ -1365,10 +1401,7 @@ const App = () => {
       return
     }
 
-    if (
-      cartDatePickOwnedByCardPieEditRef.current &&
-      !cartDatePickOwnedByListEntryRef.current
-    ) {
+    if (cartDatePickOwnedByCardPieEditRef.current && !listEntryOwned) {
       cartDatePickOwnedByCardPieEditRef.current = false
       dispatch(setCartCalendarDatePickMode(false))
     }
@@ -1424,7 +1457,9 @@ const App = () => {
       dispatch(clearAllMirrorSectionBackups())
     }
     dispatch(setCartListPanelOpen(false))
-    dispatch(setCartCalendarDatePickMode(false))
+    releaseCartDatePickListEntryOwnership()
+    cartDatePickOwnedByListEntryRef.current = false
+    dispatch(endCartCalendarDatePick())
     dispatch(setActiveSection(targetSection))
     setCardPieEditHydrateScope('all')
     setSuppressCardPieEditActiveAfterCopy(false)
@@ -1442,40 +1477,52 @@ const App = () => {
   /** postcardEdit из peek: только текущая секция, cardPieEdit не active. */
   const enterSectionEditFromPeek = useCallback(() => {
     const targetSection = resolveCardPieEditTargetSection()
+    const state = store.getState()
+    const lid =
+      rightListArchiveLocalId ?? selectCartListSelectedLocalId(state)
+    const status =
+      rightArchivePiePostcardStatus ??
+      (lid != null
+        ? selectCartItems(state).find((p) => p.localId === lid)?.status
+        : undefined)
+    const fromCartArchive =
+      rightListArchiveSource === 'cart' ||
+      status === 'cart' ||
+      status === 'cartBlocked'
 
     /**
      * Date peek on a cart / cartBlocked postcard: open calendar date-pick
      * (same as list dateEdit). Factory section-edit races with list chrome
      * and never hydrates blocked dates.
+     *
+     * Close the cart list in the same flush as begin-pick + clear-peek:
+     * otherwise the blocked list under peek remounts when peek chrome drops.
      */
-    if (
-      targetSection === 'date' &&
-      rightListArchiveSource === 'cart' &&
-      rightListArchiveLocalId != null
-    ) {
-      const lid = rightListArchiveLocalId
-      const segment =
-        rightArchivePiePostcardStatus === 'cartBlocked'
-          ? 'cartBlocked'
-          : 'cart'
-      cartDatePickOwnedByCardPieEditRef.current = false
-      cartDatePickOwnedByListEntryRef.current = true
-      endCardPieEditEngaged()
-      dispatch(setNotebookStripTab('cart'))
-      dispatch(setActiveSection('date'))
-      dispatch(setCartListStatusSegment(segment))
-      dispatch(setCartListSelectedLocalId(lid))
-      setSuppressCardPieEditActiveAfterCopy(true)
-      setActivePieSide('right')
-      dispatch(closeDayPanel())
+    if (targetSection === 'date' && fromCartArchive && lid != null) {
+      const segment = status === 'cartBlocked' ? 'cartBlocked' : 'cart'
       const now = getCurrentDate()
       const pickView = resolveCartDatePickCalendarViewDate({
         currentDate: now,
       })
-      dispatch(updateLastViewedCalendarDate(pickView))
-      dispatch(setCartCalendarDatePickMode(true))
-      dispatch(setCartCalendarDatePickLocalId(lid))
-      clearRightPiePeekChrome()
+      flushSync(() => {
+        cartDatePickOwnedByCardPieEditRef.current = false
+        claimCartDatePickListEntryOwnership()
+        cartDatePickOwnedByListEntryRef.current = true
+        endCardPieEditEngaged()
+        dispatch(beginCartCalendarDatePick({ localId: lid }))
+        dispatch(setCartListPanelOpen(false))
+        dispatch(setNotebookStripTab('cart'))
+        dispatch(setActiveSection('date'))
+        dispatch(setCartListStatusSegment(segment))
+        if (selectCartListSelectedLocalId(state) !== lid) {
+          dispatch(setCartListSelectedLocalId(lid))
+        }
+        setSuppressCardPieEditActiveAfterCopy(true)
+        setActivePieSide('right')
+        dispatch(closeDayPanel())
+        dispatch(updateLastViewedCalendarDate(pickView))
+        clearRightPiePeekChrome()
+      })
       return
     }
 
@@ -1485,7 +1532,9 @@ const App = () => {
       dispatch(clearAllMirrorSectionBackups())
     }
     dispatch(setCartListPanelOpen(false))
-    dispatch(setCartCalendarDatePickMode(false))
+    releaseCartDatePickListEntryOwnership()
+    cartDatePickOwnedByListEntryRef.current = false
+    dispatch(endCartCalendarDatePick())
     dispatch(setActiveSection(targetSection))
     setCardPieEditHydrateScope('section')
     setSuppressCardPieEditActiveAfterCopy(true)
@@ -1652,7 +1701,9 @@ const App = () => {
         nextLid == null ||
         nextLid !== cartCalendarDatePickLocalId
       ) {
-        dispatch(setCartCalendarDatePickMode(false))
+        releaseCartDatePickListEntryOwnership()
+        cartDatePickOwnedByListEntryRef.current = false
+        dispatch(endCartCalendarDatePick())
       }
       if (nextLid != null) {
         dispatch(
@@ -1717,25 +1768,29 @@ const App = () => {
       const lid = item.postcard?.localId
       if (lid == null) return
       /** Режим pick из строки «Заблокированные» — не перехватывать/сбрасывать в cardPieEdit effect. */
-      cartDatePickOwnedByCardPieEditRef.current = false
-      cartDatePickOwnedByListEntryRef.current = true
-      endCardPieEditEngaged()
-      dispatch(setNotebookStripTab('cart'))
-      dispatch(setActiveSection('date'))
-      dispatch(setCartListStatusSegment('cartBlocked'))
-      dispatch(setCartListSelectedLocalId(lid))
-      setSuppressCardPieEditActiveAfterCopy(true)
-      setActivePieSide('right')
-      dispatch(closeDayPanel())
       const now = getCurrentDate()
       const pickView = resolveCartDatePickCalendarViewDate({
         currentDate: now,
       })
-      dispatch(updateLastViewedCalendarDate(pickView))
-      dispatch(setCartCalendarDatePickMode(true))
-      dispatch(setCartCalendarDatePickLocalId(lid))
+      flushSync(() => {
+        cartDatePickOwnedByCardPieEditRef.current = false
+        claimCartDatePickListEntryOwnership()
+        cartDatePickOwnedByListEntryRef.current = true
+        endCardPieEditEngaged()
+        dispatch(beginCartCalendarDatePick({ localId: lid }))
+        /** Close list so blocked segment cannot remount over the calendar. */
+        dispatch(setCartListPanelOpen(false))
+        dispatch(setNotebookStripTab('cart'))
+        dispatch(setActiveSection('date'))
+        dispatch(setCartListStatusSegment('cartBlocked'))
+        dispatch(setCartListSelectedLocalId(lid))
+        setSuppressCardPieEditActiveAfterCopy(true)
+        setActivePieSide('right')
+        dispatch(closeDayPanel())
+        dispatch(updateLastViewedCalendarDate(pickView))
+      })
     },
-    [dispatch],
+    [dispatch, endCardPieEditEngaged],
   )
 
   const handlePostcardPieCartToolbarAction = useCallback(

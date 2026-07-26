@@ -1,8 +1,19 @@
-import React, { useCallback, useMemo } from 'react'
+import React, {
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { useCalendarFacade } from '@date/calendar/application/facades'
-import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
-import { setCartCalendarDatePickMode } from '@date/calendar/infrastructure/state'
+import {
+  selectCartCalendarDatePickMode,
+  selectCartDatePickSessionActive,
+  selectNotebookStripTab,
+} from '@date/calendar/infrastructure/selectors'
+import { endCartCalendarDatePick } from '@date/calendar/infrastructure/state'
+import { releaseCartDatePickListEntryOwnership } from '@date/calendar/application/logic/cartDatePickListEntryOwnership'
 import {
   buildMobileCartSlotOpenCommands,
   buildMobileHistorySlotOpenCommands,
@@ -17,11 +28,24 @@ import headerStyles from './DateHeader.module.scss'
 import type { CalendarViewDate } from '@entities/date/domain/types'
 import styles from './MobileDateCalendarToolbarNav.module.scss'
 
+/**
+ * After peek→edit the cart icon mounts under the same gesture. Swallow the
+ * ghost click on that control, then arm. Safety covers delayed touch→click
+ * when the ghost never hits the button (iOS ~300ms).
+ */
+const MODE_LIST_ICON_GESTURE_SAFETY_MS = 350
+
 export const MobileDateCalendarToolbarNav: React.FC = () => {
   const dispatch = useAppDispatch()
   const { triggerFlash } = useFlashEffect()
   const { lastViewedCalendarDate } = useCalendarFacade()
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
+  const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
+  const cartDatePickSessionActive = useAppSelector(
+    selectCartDatePickSessionActive,
+  )
+  const modeListButtonRef = useRef<HTMLButtonElement>(null)
+  const [modeListIconArmed, setModeListIconArmed] = useState(true)
   const currentDate = useMemo(() => getCurrentDate(), [])
   const fallbackCalendarViewDate = useMemo<CalendarViewDate>(
     () => ({ year: currentDate.year, month: currentDate.month }),
@@ -35,8 +59,73 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
 
   useInitializeCalendarViewDate()
 
+  /**
+   * Only while date-pick is active (peek/list edit): the list icon replaced
+   * postcardEdit. Normal cart calendar stays armed immediately.
+   */
+  useLayoutEffect(() => {
+    const guardGhostClick =
+      cartCalendarDatePickMode || cartDatePickSessionActive
+    if (!guardGhostClick) {
+      setModeListIconArmed(true)
+      return
+    }
+
+    setModeListIconArmed(false)
+    let settled = false
+    let safetyTimer = 0
+
+    const settle = () => {
+      if (settled) return
+      settled = true
+      setModeListIconArmed(true)
+      window.removeEventListener('pointerup', onPointerEnd, true)
+      window.removeEventListener('pointercancel', onPointerEnd, true)
+      window.removeEventListener('click', onClickCapture, true)
+      if (safetyTimer !== 0) window.clearTimeout(safetyTimer)
+    }
+
+    const onClickCapture = (event: MouseEvent) => {
+      const node = modeListButtonRef.current
+      if (
+        node == null ||
+        !(event.target instanceof Node) ||
+        !node.contains(event.target)
+      ) {
+        return
+      }
+      event.preventDefault()
+      event.stopImmediatePropagation()
+      settle()
+    }
+
+    const onPointerEnd = () => {
+      if (safetyTimer !== 0) window.clearTimeout(safetyTimer)
+      /** pointerup → click follows; keep capture listener, then safety-arm. */
+      safetyTimer = window.setTimeout(settle, MODE_LIST_ICON_GESTURE_SAFETY_MS)
+    }
+
+    window.addEventListener('pointerup', onPointerEnd, true)
+    window.addEventListener('pointercancel', onPointerEnd, true)
+    window.addEventListener('click', onClickCapture, true)
+    /**
+     * Often we mount inside postcardEdit's click — pointer already up.
+     * Wait for a ghost click on this button, or safety timeout.
+     */
+    safetyTimer = window.setTimeout(settle, MODE_LIST_ICON_GESTURE_SAFETY_MS)
+
+    return () => {
+      settled = true
+      window.removeEventListener('pointerup', onPointerEnd, true)
+      window.removeEventListener('pointercancel', onPointerEnd, true)
+      window.removeEventListener('click', onClickCapture, true)
+      if (safetyTimer !== 0) window.clearTimeout(safetyTimer)
+    }
+  }, [cartCalendarDatePickMode, cartDatePickSessionActive])
+
   const openModeList = useCallback(() => {
-    dispatch(setCartCalendarDatePickMode(false))
+    releaseCartDatePickListEntryOwnership()
+    dispatch(endCartCalendarDatePick())
     const commands =
       notebookStripTab === 'cart'
         ? buildMobileCartSlotOpenCommands()
@@ -48,26 +137,36 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
     }
   }, [dispatch, notebookStripTab])
 
+  const onModeListClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      if (!modeListIconArmed) {
+        event.preventDefault()
+        event.stopPropagation()
+        return
+      }
+      openModeList()
+    },
+    [modeListIconArmed, openModeList],
+  )
+
   const onCurrentMonth = isCurrentMonth()
 
   const modeIcon =
-    notebookStripTab === 'cart' ? (
+    notebookStripTab === 'cart' || notebookStripTab === 'history' ? (
       <button
+        ref={modeListButtonRef}
         type="button"
         className={styles.modeIcon}
-        aria-label="Open cart list"
-        onClick={openModeList}
+        aria-label={
+          notebookStripTab === 'cart' ? 'Open cart list' : 'Open history list'
+        }
+        aria-disabled={!modeListIconArmed}
+        tabIndex={modeListIconArmed ? 0 : -1}
+        onClick={onModeListClick}
       >
-        {getToolbarIcon({ key: 'cart' })}
-      </button>
-    ) : notebookStripTab === 'history' ? (
-      <button
-        type="button"
-        className={styles.modeIcon}
-        aria-label="Open history list"
-        onClick={openModeList}
-      >
-        {getToolbarIcon({ key: 'historyV2' })}
+        {getToolbarIcon({
+          key: notebookStripTab === 'cart' ? 'cart' : 'historyV2',
+        })}
       </button>
     ) : null
 
