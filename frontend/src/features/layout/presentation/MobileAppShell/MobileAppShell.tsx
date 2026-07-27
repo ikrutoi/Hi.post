@@ -105,11 +105,11 @@ import { useMobileVisualViewport } from '@layout/application/hooks/useMobileVisu
 import type { MobileAppShellProps } from './mobileAppShell.types'
 import styles from './MobileAppShell.module.scss'
 
+/** Cardphoto list preview: delete in a two-slot column beside the pie. */
 const MOBILE_TEMPLATE_PREVIEW_PIE_TOOLBAR: ToolbarConfig = [
   {
     group: 'main',
     icons: [
-      { key: 'empty', state: 'disabled' },
       { key: 'empty', state: 'disabled' },
       { key: 'delete', state: 'enabled' },
     ],

@@ -42,6 +42,9 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
   const cardtextTint =
     assemblyCardtextSimplifiedPeek ||
     (isArchiveSectionPeekActive && activeSection === 'cardtext')
+  const cardphotoTint =
+    assemblyCardphotoSimplifiedPeek ||
+    (isArchiveSectionPeekActive && activeSection === 'cardphoto')
 
   const handleAction = useCallback(
     (key: IconKey) => {
@@ -81,6 +84,7 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
         styles.upperRow,
         aromaTint && styles.upperRowAroma,
         cardtextTint && styles.upperRowCardtext,
+        cardphotoTint && styles.upperRowCardphoto,
       )}
     >
       <div className={styles.sideLeft}>

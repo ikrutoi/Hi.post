@@ -64,7 +64,15 @@ export const CardSectionToolbar: React.FC = () => {
         cardPieCopyStripExpanded && styles.cardSectionToolbarDisabled,
       )}
     >
-      {activeSection === 'cardphoto' && <Toolbar section="cardphoto" />}
+      {activeSection === 'cardphoto' && (
+        <div
+          className={clsx(
+            isMobileLayout && styles.cardSectionToolbarCardphotoTint,
+          )}
+        >
+          <Toolbar section="cardphoto" />
+        </div>
+      )}
       {showMobileCalendarModeToolbar && (
         <Toolbar section={calendarToolbarSection} />
       )}

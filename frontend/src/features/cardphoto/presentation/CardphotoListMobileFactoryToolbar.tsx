@@ -48,10 +48,17 @@ export const CardphotoListMobileFactoryLowerToolbar: React.FC = () => {
     activeSection === 'cardphoto' &&
     showMobileCardphotoListFactoryChrome
 
-  const content = useMemo(
-    () => (enabled ? <Toolbar section="cardphotoList" /> : null),
-    [enabled],
-  )
+  const content = useMemo(() => {
+    if (!enabled) return null
+    return (
+      <div
+        className={styles.cardphotoListToolbarRow}
+        data-cardphoto-list-toolbar
+      >
+        <Toolbar section="cardphotoList" />
+      </div>
+    )
+  }, [enabled])
 
   useMobileScenarioToolbar(content)
 
