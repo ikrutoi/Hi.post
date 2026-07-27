@@ -5,6 +5,7 @@ import type { RootState } from '@app/state'
 import { store } from '@app/state/store'
 import {
   addItem,
+  setCartListPanelOpen,
   setCartListSelectedLocalId,
   setCartListStatusSegment,
 } from '@cart/infrastructure/state'
@@ -49,6 +50,8 @@ export function* applyCartStripDefaultSelectionIfNeededSaga(): SagaIterator {
   const postcard = resolveDefaultCartStripPostcard(cartItems)
   if (postcard == null) return
 
+  const segment = cartListStatusSegmentForLocalId(cartItems, postcard.localId)
+  yield put(setCartListStatusSegment(segment))
   yield put(setCartListSelectedLocalId(postcard.localId))
   yield put(updateLastViewedCalendarDate(calendarViewDateForPostcard(postcard)))
   yield call(
@@ -94,6 +97,14 @@ function* handleNotebookStripTabChanged(
   if (enteredHistoryStrip) {
     yield* applyHistoryStripDefaultSelectionIfNeededSaga()
   }
+}
+
+/** Mobile list open may keep strip on cart — still need first-focus selection. */
+function* handleCartListPanelOpenChanged(
+  action: PayloadAction<boolean>,
+): SagaIterator {
+  if (!action.payload) return
+  yield* applyCartStripDefaultSelectionIfNeededSaga()
 }
 
 function* handleCartItemAdded(
@@ -173,6 +184,7 @@ function* handleArchiveCalendarViewEntered(
 
 export function* watchStripDefaultSelection(): SagaIterator {
   yield takeEvery(setNotebookStripTab.type, handleNotebookStripTabChanged)
+  yield takeEvery(setCartListPanelOpen.type, handleCartListPanelOpenChanged)
   yield takeEvery(addItem.type, handleCartItemAdded)
   yield takeEvery(
     archiveCalendarViewEntered.type,

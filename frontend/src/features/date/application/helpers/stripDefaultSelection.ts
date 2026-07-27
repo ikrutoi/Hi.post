@@ -1,5 +1,8 @@
 import type { RootState } from '@app/state'
-import type { CalendarViewDate } from '@entities/date/domain/types'
+import type {
+  CalendarViewDate,
+  DispatchDate,
+} from '@entities/date/domain/types'
 import type { PostcardHydrated } from '@entities/postcard'
 import type { PostcardStatus } from '@entities/postcard/domain/types'
 import {
@@ -11,7 +14,7 @@ import {
   selectHistoryListSelectedLocalId,
 } from '@date/calendar/infrastructure/selectors'
 import { isHistoryListSelectedLocalIdInSortedList } from '@date/application/helpers/historyListPanelEntries'
-import { orderedStripPostcardsByDispatchDate } from './calendarStripMonthCycle'
+import { getCurrentDate } from '@shared/utils/date'
 
 /** Приоритет выбора открытки в strip «История» (цикл по статусу в календаре). */
 export const HISTORY_STRIP_STATUS_PRIORITY = [
@@ -25,20 +28,64 @@ export const HISTORY_STRIP_STATUS_PRIORITY = [
 export type HistoryStripDefaultSelectionStatus =
   (typeof HISTORY_STRIP_STATUS_PRIORITY)[number]
 
-/** Первая открытка в корзине; если корзина пуста — первая заблокированная. */
+function dispatchDateMs(d: DispatchDate): number | null {
+  if (d.year === 0 && d.month === 0 && d.day === 0) return null
+  return new Date(d.year, d.month, d.day).getTime()
+}
+
+/**
+ * Ближайшая к `today` по дате отправки.
+ * При равной дистанции — будущая раньше прошлой; затем меньший `localId`.
+ */
+export function resolveNearestPostcardByDispatchDate(
+  items: readonly PostcardHydrated[],
+  today: Pick<DispatchDate, 'year' | 'month' | 'day'> = getCurrentDate(),
+): PostcardHydrated | null {
+  const todayMs = new Date(today.year, today.month, today.day).getTime()
+  let best: PostcardHydrated | null = null
+  let bestAbs = Number.POSITIVE_INFINITY
+  let bestSigned = 0
+
+  for (const item of items) {
+    const ms = dispatchDateMs(item.date)
+    if (ms == null) continue
+    const signed = ms - todayMs
+    const abs = Math.abs(signed)
+    if (
+      best == null ||
+      abs < bestAbs ||
+      (abs === bestAbs &&
+        ((signed >= 0 && bestSigned < 0) ||
+          ((signed >= 0) === (bestSigned >= 0) &&
+            item.localId < best.localId)))
+    ) {
+      best = item
+      bestAbs = abs
+      bestSigned = signed
+    }
+  }
+
+  if (best != null) return best
+  if (items.length === 0) return null
+  return items.reduce((a, b) => (a.localId <= b.localId ? a : b))
+}
+
+/**
+ * Ближайшая по времени открытка в корзине; если пусто — среди заблокированных.
+ * Используется при первом фокусе (ещё не выбирали / выбор невалиден).
+ */
 export function resolveDefaultCartStripPostcard(
   cartItems: readonly PostcardHydrated[],
+  today: Pick<DispatchDate, 'year' | 'month' | 'day'> = getCurrentDate(),
 ): PostcardHydrated | null {
-  const cartPostcards = orderedStripPostcardsByDispatchDate(cartItems, 'cart')
-  if (cartPostcards.length > 0) return cartPostcards[0]!
+  const cartPostcards = cartItems.filter((item) => item.status === 'cart')
+  const nearestCart = resolveNearestPostcardByDispatchDate(cartPostcards, today)
+  if (nearestCart != null) return nearestCart
 
-  const blockedPostcards = orderedStripPostcardsByDispatchDate(
-    cartItems,
-    'cartBlocked',
+  const blockedPostcards = cartItems.filter(
+    (item) => item.status === 'cartBlocked',
   )
-  if (blockedPostcards.length > 0) return blockedPostcards[0]!
-
-  return null
+  return resolveNearestPostcardByDispatchDate(blockedPostcards, today)
 }
 
 export function isCartListSelectedLocalIdSaved(
