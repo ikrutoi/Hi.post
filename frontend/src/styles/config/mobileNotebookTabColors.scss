@@ -43,6 +43,12 @@ $mobile-notebook-cart-tab-top: color.adjust(
   $saturation: 14%,
   $lightness: 1%
 );
+/** Toolbar fade: lighter than section surface, still warmer than list surface. */
+$mobile-notebook-cart-toolbar-fade: color.mix(
+  $color-cart-list-surface,
+  $mobile-notebook-cart-tab-top,
+  55%
+);
 $mobile-notebook-cart-tab-bottom: color.adjust(
   color.mix($color-cart-list-border, $color-preview-indicator-cart, 32%),
   $saturation: 18%,

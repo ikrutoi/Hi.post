@@ -44,17 +44,20 @@ export const CartListMobileFactoryLowerToolbar: React.FC = () => {
     return CART_LIST_TOOLBAR.filter((group) => group.group !== 'cartList')
   }, [listSegment])
 
-  const content = useMemo(
-    () =>
-      enabled && hasRows ? (
-        <Toolbar
-          section="cartList"
-          groupsOverride={cartListToolbarGroupsOverride}
-          justifyGroupsEnd={cartListToolbarGroupsOverride != null}
-        />
-      ) : null,
-    [enabled, hasRows, cartListToolbarGroupsOverride],
-  )
+  const content = useMemo(() => {
+    if (!enabled) return null
+    return (
+      <div className={styles.cartListToolbarRow} data-cart-list-toolbar>
+        {hasRows ? (
+          <Toolbar
+            section="cartList"
+            groupsOverride={cartListToolbarGroupsOverride}
+            justifyGroupsEnd={cartListToolbarGroupsOverride != null}
+          />
+        ) : null}
+      </div>
+    )
+  }, [enabled, hasRows, cartListToolbarGroupsOverride])
 
   useMobileScenarioToolbar(content)
 

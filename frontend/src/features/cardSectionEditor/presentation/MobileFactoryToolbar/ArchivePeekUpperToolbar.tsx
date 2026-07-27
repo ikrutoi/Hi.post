@@ -34,7 +34,10 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
     assemblyCardphotoSimplifiedPeek,
     assemblyAromaSimplifiedPeek,
   } = useMobileFactoryListChrome()
-  const { requestSectionEditFromPeek } = useRightListArchiveMini()
+  const {
+    requestSectionEditFromPeek,
+    rightPieDatePeekNoToolbar,
+  } = useRightListArchiveMini()
 
   const aromaTint =
     assemblyAromaSimplifiedPeek ||
@@ -45,6 +48,8 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
   const cardphotoTint =
     assemblyCardphotoSimplifiedPeek ||
     (isArchiveSectionPeekActive && activeSection === 'cardphoto')
+  /** Date sector peek from cart/history — blue fade even if strip tab is cart. */
+  const dateTint = rightPieDatePeekNoToolbar
 
   const handleAction = useCallback(
     (key: IconKey) => {
@@ -85,6 +90,7 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
         aromaTint && styles.upperRowAroma,
         cardtextTint && styles.upperRowCardtext,
         cardphotoTint && styles.upperRowCardphoto,
+        dateTint && styles.upperRowDate,
       )}
     >
       <div className={styles.sideLeft}>

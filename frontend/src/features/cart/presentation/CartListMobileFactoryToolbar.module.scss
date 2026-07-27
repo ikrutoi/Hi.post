@@ -1,5 +1,32 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/mobileNotebookTabColors' as notebookTab;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
+
+/** Same edge-fade as date section cart mode (section surface yellow). */
+@mixin cart-list-toolbar-role-fade {
+  background-color: transparent;
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    notebookTab.$mobile-notebook-cart-toolbar-fade 14%,
+    notebookTab.$mobile-notebook-cart-toolbar-fade 86%,
+    transparent 100%
+  );
+}
+
+@mixin cart-list-toolbar-role-keys-clear {
+  :global(button[class*='toolbarKey']),
+  .calendarIcon {
+    background-color: transparent !important;
+
+    &:hover,
+    &:active,
+    &:focus,
+    &:focus-visible {
+      background-color: transparent !important;
+    }
+  }
+}
 
 .upperRow {
   position: relative;
@@ -11,6 +38,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
+  @include cart-list-toolbar-role-fade;
+  @include cart-list-toolbar-role-keys-clear;
 }
 
 .sideLeft {
@@ -63,5 +93,28 @@
 
   > * {
     pointer-events: auto;
+  }
+}
+
+.cartListToolbarRow {
+  flex: 1 1 auto;
+  align-self: stretch;
+  width: 100%;
+  min-width: 0;
+  height: var(--mobile-factory-toolbar-row-height);
+  min-height: var(--mobile-factory-toolbar-row-height);
+  max-height: var(--mobile-factory-toolbar-row-height);
+  display: flex;
+  align-items: center;
+  border: none;
+  padding-inline: 0;
+  box-sizing: border-box;
+  @include cart-list-toolbar-role-fade;
+  @include cart-list-toolbar-role-keys-clear;
+
+  > * {
+    width: 100%;
+    flex: 1 1 auto;
+    min-width: 0;
   }
 }

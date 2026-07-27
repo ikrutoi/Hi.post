@@ -5,6 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react'
+import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { useCalendarFacade } from '@date/calendar/application/facades'
 import {
@@ -171,7 +172,13 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
     ) : null
 
   return (
-    <div className={styles.root}>
+    <div
+      className={clsx(
+        styles.root,
+        notebookStripTab === 'date' && styles.rootDateTint,
+        notebookStripTab === 'cart' && styles.rootCartTint,
+      )}
+    >
       <div className={styles.sideLeft}>{modeIcon}</div>
       <div className={styles.center}>
         <DateHeaderNavigation

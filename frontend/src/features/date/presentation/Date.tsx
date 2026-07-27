@@ -59,7 +59,11 @@ const DateSectionShell: React.FC<{
   <div className={styles.date} data-mobile-date-strip={stripSection}>
     <div className={styles.dateViewWrap}>
       <MobileInlineToolbarRow
-        className={styles.dateToolbarRow}
+        className={clsx(
+          styles.dateToolbarRow,
+          stripSection === 'date' && styles.dateToolbarRowDate,
+          stripSection === 'cart' && styles.dateToolbarRowCart,
+        )}
         emptyClassName={styles.dateToolbarRowEmpty}
         show={showMobileSliderToolbar}
       >

@@ -1,6 +1,7 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
 @use '@styles/config/historyFooterChrome' as historyFooter;
+@use '@styles/config/mobileNotebookTabColors' as notebookTab;
 @use '@styles/mixins/sectionToolbarRow' as sectionToolbarRow;
 
 $mobile-date-calendar-chrome-row-height: 2rem;
@@ -78,12 +79,6 @@ $mobile-date-calendar-chrome-gap: 0.125rem;
   width: 100%;
   background-color: #fff;
 
-  :global([data-shell-layout='mobile']) & {
-    flex: 0 0 var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
-    min-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
-    max-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
-  }
-
   :global([data-shell-layout='desktop']) & {
     border-radius: 0.5rem 0.5rem 0 0;
   }
@@ -96,14 +91,54 @@ $mobile-date-calendar-chrome-gap: 0.125rem;
   box-sizing: border-box;
   @include sectionToolbarRow.section-toolbar-row-empty-divider;
 
-  :global([data-shell-layout='mobile']) & {
-    flex: 0 0 var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
+  :global([data-shell-layout='desktop']) & {
+    border-radius: 0.5rem 0.5rem 0 0;
+  }
+}
+
+/** Same edge-fade as other section toolbars. */
+@mixin date-toolbar-role-fade($fill: $color-date-input) {
+  background-color: transparent;
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    $fill 14%,
+    $fill 86%,
+    transparent 100%
+  );
+
+  :global(button[class*='toolbarKey']),
+  :global(button[class*='navArrow']) {
+    background-color: transparent !important;
+
+    &:hover,
+    &:active {
+      background-color: transparent !important;
+    }
+  }
+}
+
+/**
+ * Factory shell mounts the row outside `.date`, so mobile sizing + fade
+ * are keyed off the shell layout attribute rather than a section ancestor.
+ */
+:global([data-shell-layout='mobile']) {
+  .dateToolbarRow,
+  .dateToolbarRowEmpty {
+    flex: 1 1 auto;
+    align-self: stretch;
+    min-width: 0;
+    height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
     min-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
     max-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
   }
 
-  :global([data-shell-layout='desktop']) & {
-    border-radius: 0.5rem 0.5rem 0 0;
+  .dateToolbarRowDate {
+    @include date-toolbar-role-fade;
+  }
+
+  .dateToolbarRowCart {
+    @include date-toolbar-role-fade(notebookTab.$mobile-notebook-cart-toolbar-fade);
   }
 }
 
