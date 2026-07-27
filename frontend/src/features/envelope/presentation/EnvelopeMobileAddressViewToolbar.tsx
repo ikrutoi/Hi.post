@@ -138,11 +138,16 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
     senderView === 'senderView' &&
     !assemblySenderSimplifiedPeek
 
+  /**
+   * Recipient: keep the role-colored lower band whenever dualSide is recipient
+   * and create is closed — including empty placeholder (`recipientsView`) where
+   * there is no View entry / tools yet (otherwise the factory shell stays white).
+   */
   const recipientToolbarSlot =
     enabled &&
     isMobile &&
     activeViewRole === 'recipient' &&
-    recipientView === 'recipientView' &&
+    recipientView !== 'recipientCreate' &&
     !assemblyRecipientSimplifiedPeek
 
   const showSenderToolbar =
@@ -151,7 +156,9 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
     senderDisplayEntry != null
 
   const showRecipientToolbar =
-    recipientToolbarSlot && recipientDisplayEntry != null
+    recipientToolbarSlot &&
+    recipientView === 'recipientView' &&
+    recipientDisplayEntry != null
 
   const section: 'senderView' | 'recipientView' | null = showSenderToolbar
     ? 'senderView'

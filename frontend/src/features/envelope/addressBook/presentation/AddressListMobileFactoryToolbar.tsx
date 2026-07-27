@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo } from 'react'
+import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
@@ -50,8 +51,24 @@ export const AddressListMobileFactoryLowerToolbar: React.FC = () => {
 
   const content = useMemo(() => {
     if (!enabled) return null
-    if (senderListOpen) return <Toolbar section="addressListSender" />
-    return <Toolbar section="addressListRecipients" />
+    const role = senderListOpen ? 'sender' : 'recipient'
+    return (
+      <div
+        className={clsx(
+          styles.addressListToolbarRow,
+          role === 'sender'
+            ? styles.addressListToolbarRowSender
+            : styles.addressListToolbarRowRecipient,
+        )}
+        data-address-list-toolbar-role={role}
+      >
+        <Toolbar
+          section={
+            senderListOpen ? 'addressListSender' : 'addressListRecipients'
+          }
+        />
+      </div>
+    )
   }, [enabled, senderListOpen])
 
   useMobileScenarioToolbar(content)
@@ -110,7 +127,13 @@ export const AddressListMobileFactoryUpperToolbar: React.FC = () => {
   )
 
   return (
-    <div className={styles.upperRow}>
+    <div
+      className={clsx(
+        styles.upperRow,
+        senderListOpen ? styles.upperRowSender : styles.upperRowRecipient,
+      )}
+      data-address-list-toolbar-role={senderListOpen ? 'sender' : 'recipient'}
+    >
       <div className={styles.upperApply}>
         <Toolbar
           section={applySection}
