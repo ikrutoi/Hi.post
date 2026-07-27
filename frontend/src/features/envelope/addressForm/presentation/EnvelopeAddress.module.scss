@@ -294,10 +294,13 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
         > [data-envelope-address-surface][data-envelope-address-view-mode='view']
     ) {
     padding: 0;
-    overflow: hidden;
+    /* Keep overflow visible so IconUsers (lifted above the top edge) stays shown
+     * for a single selected recipient — same as empty / multi-recipient modes. */
+    overflow: visible;
 
-    .envelopeRecipientToolbarIconContainer {
-      display: none;
+    .addressFieldsetInner {
+      overflow: hidden;
+      border-radius: inherit;
     }
   }
 }

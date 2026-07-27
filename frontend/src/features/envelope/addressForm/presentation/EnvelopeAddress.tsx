@@ -676,7 +676,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               onMouseDownCapture={handleRecipientFieldsetMouseDownCapture}
             >
               <div className={styles.envelopeRecipientToolbarIconContainer}>
-                {recipientsFormViewIdsCount > 0 && (
+                {recipientsFormViewIdsCount > 1 && (
                   <span className={styles.recipientsCountBadge}>
                     {recipientsFormViewIdsCount}
                   </span>
