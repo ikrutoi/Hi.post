@@ -1,11 +1,13 @@
 import React, { useCallback } from 'react'
-import { useAppDispatch } from '@app/hooks'
+import clsx from 'clsx'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import type { IconKey } from '@shared/config/constants'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import { setCardtextApplyPeekChrome, setCardtextAppliedData } from '@cardtext/infrastructure/state'
 import { clearApply } from '@cardphoto/infrastructure/state'
 import { clearApplied as clearAromaApplied } from '@aroma/infrastructure/state'
+import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { useCloseArchiveSectionPeek } from '../../application/hooks/useCloseArchiveSectionPeek'
 import { useMobileFactoryListChrome } from '../../application/hooks/useMobileFactoryListChrome'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
@@ -25,6 +27,7 @@ const ARCHIVE_PEEK_UPPER_EDIT_TOOLBAR: ToolbarConfig = [
  */
 export const ArchivePeekUpperToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
+  const activeSection = useAppSelector(selectActiveSection)
   const { isArchiveSectionPeekActive } = useCloseArchiveSectionPeek()
   const {
     assemblyCardtextSimplifiedPeek,
@@ -32,6 +35,13 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
     assemblyAromaSimplifiedPeek,
   } = useMobileFactoryListChrome()
   const { requestSectionEditFromPeek } = useRightListArchiveMini()
+
+  const aromaTint =
+    assemblyAromaSimplifiedPeek ||
+    (isArchiveSectionPeekActive && activeSection === 'aroma')
+  const cardtextTint =
+    assemblyCardtextSimplifiedPeek ||
+    (isArchiveSectionPeekActive && activeSection === 'cardtext')
 
   const handleAction = useCallback(
     (key: IconKey) => {
@@ -66,7 +76,13 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
   )
 
   return (
-    <div className={styles.upperRow}>
+    <div
+      className={clsx(
+        styles.upperRow,
+        aromaTint && styles.upperRowAroma,
+        cardtextTint && styles.upperRowCardtext,
+      )}
+    >
       <div className={styles.sideLeft}>
         <Toolbar
           section="date"

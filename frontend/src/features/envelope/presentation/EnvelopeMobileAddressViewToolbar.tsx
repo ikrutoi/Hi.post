@@ -125,7 +125,7 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
     recipientAddress,
   ])
 
-  /** Lower View toolbar follows dualSide; hidden when both forms are applied. */
+  /** Lower View toolbar follows dualSide; both applied → neutral tint band only. */
   const activeViewRole = bothFormsApplied
     ? null
     : (mobileFocus?.dualSide ?? 'sender')
@@ -150,6 +150,9 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
     recipientView !== 'recipientCreate' &&
     !assemblyRecipientSimplifiedPeek
 
+  const bothAppliedToolbarSlot =
+    enabled && isMobile && bothFormsApplied
+
   const showSenderToolbar =
     senderToolbarSlot &&
     senderFacade.isEnabled &&
@@ -166,20 +169,24 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
       ? 'recipientView'
       : null
 
-  const slotRole: 'sender' | 'recipient' | null = senderToolbarSlot
-    ? 'sender'
-    : recipientToolbarSlot
-      ? 'recipient'
-      : null
+  const slotRole: 'sender' | 'recipient' | 'complete' | null = bothAppliedToolbarSlot
+    ? 'complete'
+    : senderToolbarSlot
+      ? 'sender'
+      : recipientToolbarSlot
+        ? 'recipient'
+        : null
 
   const mobileContent =
     slotRole != null ? (
       <div
         className={clsx(
           styles.envelopeAddressViewToolbarRow,
-          slotRole === 'sender'
-            ? styles.envelopeAddressViewToolbarRowSender
-            : styles.envelopeAddressViewToolbarRowRecipient,
+          slotRole === 'sender' && styles.envelopeAddressViewToolbarRowSender,
+          slotRole === 'recipient' &&
+            styles.envelopeAddressViewToolbarRowRecipient,
+          slotRole === 'complete' &&
+            styles.envelopeAddressViewToolbarRowComplete,
         )}
         data-envelope-address-view-toolbar
         aria-hidden={section == null ? true : undefined}

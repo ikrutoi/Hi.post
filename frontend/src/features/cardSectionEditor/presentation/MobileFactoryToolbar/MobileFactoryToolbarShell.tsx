@@ -139,9 +139,9 @@ export const MobileFactoryToolbarShell: React.FC = () => {
       />
       <div
         className={styles.rowLower}
-        aria-hidden={showPeekEmptyToolbarShell || !showLowerRow ? true : undefined}
+        aria-hidden={!showLowerRow ? true : undefined}
       >
-        {!showPeekEmptyToolbarShell && showLowerRow ? scenarioToolbar : null}
+        {showLowerRow ? scenarioToolbar : null}
       </div>
     </div>
   )

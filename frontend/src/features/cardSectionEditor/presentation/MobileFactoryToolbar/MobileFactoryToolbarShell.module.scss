@@ -158,7 +158,9 @@
   :global([class*='envelopeToolbarRow']),
   :global([class*='envelopeAddressViewToolbarRow']),
   :global([class*='addressListToolbarRow']),
+  :global([class*='cardtextListToolbarRow']),
   :global([class*='aromaToolbarRow']),
+  :global([class*='aromaToolbarBand']),
   :global([class*='dateToolbarRow']) {
     flex: 1 1 auto;
     align-self: stretch;

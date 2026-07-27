@@ -45,17 +45,24 @@ export const CardtextListMobileFactoryLowerToolbar: React.FC = () => {
     activeSection === 'cardtext' &&
     showMobileCardtextListFactoryChrome
 
-  const content = useMemo(
-    () => (enabled ? <Toolbar section="cardtextList" /> : null),
-    [enabled],
-  )
+  const content = useMemo(() => {
+    if (!enabled) return null
+    return (
+      <div
+        className={styles.cardtextListToolbarRow}
+        data-cardtext-list-toolbar
+      >
+        <Toolbar section="cardtextList" />
+      </div>
+    )
+  }, [enabled])
 
   useMobileScenarioToolbar(content)
 
   return null
 }
 
-/** Mobile factory: верхний ряд — apply слева, заголовок, return справа. */
+/** Mobile factory: верхний ряд — applyMedium слева, заголовок, return справа. */
 export const CardtextListMobileFactoryUpperToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
   const centralTemplateTitle = useAppSelector(
@@ -68,7 +75,7 @@ export const CardtextListMobileFactoryUpperToolbar: React.FC = () => {
     return [
       {
         group: 'cardtext',
-        icons: [{ key: 'apply', state: applyState }],
+        icons: [{ key: 'applyMedium', state: applyState }],
         status: 'enabled',
       },
     ]
@@ -77,6 +84,20 @@ export const CardtextListMobileFactoryUpperToolbar: React.FC = () => {
   const closeList = useCallback(() => {
     dispatch(setCardtextListPanelOpen(false))
   }, [dispatch])
+
+  const handleApplyAction = useCallback(
+    (key: IconKey) => {
+      if (key !== 'applyMedium') return
+      /**
+       * Keep the list selection in View: close the list without postcard Apply.
+       * Final Apply stays on the View toolbar (`apply`).
+       * Must intercept — saga maps applyMedium → applyLight (processed upsert).
+       */
+      dispatch(setCardtextListPanelOpen(false))
+      return false
+    },
+    [dispatch],
+  )
 
   const handleAction = useCallback(
     (key: IconKey) => {
@@ -94,6 +115,7 @@ export const CardtextListMobileFactoryUpperToolbar: React.FC = () => {
           section="cardtext"
           groupsOverride={applyToolbar}
           className={toolbarStyles.toolbarAromaUpperApply}
+          onActionClick={handleApplyAction}
         />
       </div>
       {centralTemplateTitle ? (

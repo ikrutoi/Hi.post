@@ -138,10 +138,18 @@
   @include envelope-toolbar-role-fade($color-envelope-recipient-input);
 }
 
+/** Both addresses applied: neutral envelope tint (not dual-role). */
+.envelopeToolbarRowComplete,
+.envelopeAddressViewToolbarRowComplete {
+  @include envelope-toolbar-role-fade($color-envelope-recipient-input);
+}
+
 /** Upper + lower role bars: let form gradient show through icon chips. */
 .envelopeAddressViewToolbarRow,
 .envelopeToolbarRowSender,
-.envelopeToolbarRowRecipient {
+.envelopeToolbarRowRecipient,
+.envelopeToolbarRowComplete,
+.envelopeAddressViewToolbarRowComplete {
   :global(button[class*='toolbarKey']) {
     background-color: transparent !important;
 

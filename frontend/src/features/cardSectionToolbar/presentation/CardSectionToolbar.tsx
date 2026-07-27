@@ -72,7 +72,12 @@ export const CardSectionToolbar: React.FC = () => {
       {activeSection === 'envelope' && <EnvelopeInnerToolbar />}
       {activeSection === 'cardtext' &&
         (showCardtextEditorComposer ? (
-          <div className={styles.cardSectionToolbarAromaUpper}>
+          <div
+            className={clsx(
+              styles.cardSectionToolbarAromaUpper,
+              isMobileLayout && styles.cardSectionToolbarCardtextTint,
+            )}
+          >
             <div className={styles.cardSectionToolbarHeader}>
               <Toolbar section="cardtext" />
             </div>
@@ -84,12 +89,22 @@ export const CardSectionToolbar: React.FC = () => {
             />
           </div>
         ) : (
-          <div className={styles.cardSectionToolbarHeader}>
+          <div
+            className={clsx(
+              styles.cardSectionToolbarHeader,
+              isMobileLayout && styles.cardSectionToolbarCardtextTint,
+            )}
+          >
             <Toolbar section="cardtext" />
           </div>
         ))}
       {showMobileAromaUpperToolbar ? (
-        <div className={styles.cardSectionToolbarAromaUpper}>
+        <div
+          className={clsx(
+            styles.cardSectionToolbarAromaUpper,
+            styles.cardSectionToolbarAromaTint,
+          )}
+        >
           <Toolbar
             section="aroma"
             className={toolbarStyles.toolbarAromaUpperApply}

@@ -505,7 +505,7 @@ $envelope-address-view-row-height: 1.625rem;
 }
 
 /** View: in-list status — same shell as close, transparent fill.
- * Color/opacity match CardPie empty sector placeholders (`.pieSectorIconBg`). */
+ * Icon color matches toolbar addressList enabled. */
 .savedAddressListIndicator {
   position: absolute;
   z-index: 1;
@@ -521,8 +521,8 @@ $envelope-address-view-row-height: 1.625rem;
   border-radius: 50%;
   @include savedAddressCloseButtonMobileSize;
   @include savedAddressCloseButtonDesktopSize;
-  color: $color-app-sidebar-icon;
-  opacity: 0.14;
+  color: $color-font-enabled-light;
+  opacity: 1;
 
   svg {
     display: block;
@@ -530,7 +530,7 @@ $envelope-address-view-row-height: 1.625rem;
 
   &:hover {
     background-color: transparent;
-    color: $color-app-sidebar-icon;
+    color: $color-font-enabled-light;
   }
 }
 

@@ -1,6 +1,30 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
+@use '@styles/config/mobileSectionGutter' as sectionGutter;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
+
+/** Same edge-fade as cardtext section toolbars. */
+@mixin cardtext-list-toolbar-role-fade {
+  background-color: transparent;
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    $color-cardtext-input 14%,
+    $color-cardtext-input 86%,
+    transparent 100%
+  );
+}
+
+@mixin cardtext-list-toolbar-role-keys-clear {
+  :global(button[class*='toolbarKey']) {
+    background-color: transparent !important;
+
+    &:hover,
+    &:active {
+      background-color: transparent !important;
+    }
+  }
+}
 
 .upperRow {
   position: relative;
@@ -12,6 +36,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
+  @include cardtext-list-toolbar-role-fade;
+  @include cardtext-list-toolbar-role-keys-clear;
 }
 
 .upperApply {
@@ -44,7 +71,7 @@
   white-space: nowrap;
   text-align: left;
   padding-inline: $list-panel-header-chip-padding-inline;
-  background-color: $color-app-inner;
+  background-color: sectionGutter.$mobile-section-gutter-cardtext;
   color: $color-font-enabled-light;
 }
 
@@ -80,5 +107,28 @@
     :global([class*='toolbarGroup']) {
       justify-content: flex-end;
     }
+  }
+}
+
+.cardtextListToolbarRow {
+  flex: 1 1 auto;
+  align-self: stretch;
+  width: 100%;
+  min-width: 0;
+  height: var(--mobile-factory-toolbar-row-height);
+  min-height: var(--mobile-factory-toolbar-row-height);
+  max-height: var(--mobile-factory-toolbar-row-height);
+  display: flex;
+  align-items: center;
+  border: none;
+  padding-inline: 0;
+  box-sizing: border-box;
+  @include cardtext-list-toolbar-role-fade;
+  @include cardtext-list-toolbar-role-keys-clear;
+
+  > * {
+    width: 100%;
+    flex: 1 1 auto;
+    min-width: 0;
   }
 }

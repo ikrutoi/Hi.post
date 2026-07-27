@@ -1,3 +1,4 @@
+@use '@styles/config/colors' as *;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
 .upperRow {
@@ -10,6 +11,46 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.upperRowAroma {
+  background-color: transparent;
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    $color-aroma-input 14%,
+    $color-aroma-input 86%,
+    transparent 100%
+  );
+
+  :global(button[class*='toolbarKey']) {
+    background-color: transparent !important;
+
+    &:hover,
+    &:active {
+      background-color: transparent !important;
+    }
+  }
+}
+
+.upperRowCardtext {
+  background-color: transparent;
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    $color-cardtext-input 14%,
+    $color-cardtext-input 86%,
+    transparent 100%
+  );
+
+  :global(button[class*='toolbarKey']) {
+    background-color: transparent !important;
+
+    &:hover,
+    &:active {
+      background-color: transparent !important;
+    }
+  }
 }
 
 .sideLeft {

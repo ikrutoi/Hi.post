@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import clsx from 'clsx'
 import { useSizeFacade } from '@layout/application/facades'
 import { useMobileScenarioToolbar } from './MobileScenarioToolbarContext'
@@ -18,9 +18,24 @@ export const MobileInlineToolbarRow: React.FC<MobileInlineToolbarRowProps> = ({
   children,
 }) => {
   const { isMobileLayout } = useSizeFacade()
-  const mobileContent = show ? children : null
 
-  useMobileScenarioToolbar(isMobileLayout ? mobileContent : null)
+  const mobileContent = useMemo(() => {
+    if (!isMobileLayout) return null
+    if (show) {
+      return <div className={className}>{children}</div>
+    }
+    if (emptyClassName != null) {
+      return (
+        <div
+          className={clsx(className, emptyClassName)}
+          aria-hidden
+        />
+      )
+    }
+    return null
+  }, [isMobileLayout, show, className, emptyClassName, children])
+
+  useMobileScenarioToolbar(mobileContent)
 
   if (isMobileLayout) return null
 
@@ -29,7 +44,7 @@ export const MobileInlineToolbarRow: React.FC<MobileInlineToolbarRowProps> = ({
       className={clsx(className, !show && emptyClassName)}
       aria-hidden={show ? undefined : true}
     >
-      {mobileContent}
+      {show ? children : null}
     </div>
   )
 }
