@@ -35,6 +35,17 @@ export const selectArchiveSandboxRecipientApplied = (
   state: RootState,
 ): string[] => state.archiveEnvelopeSandbox.recipient.applied ?? []
 
+/** Same completeness rule as assembly `selectEnvelopeSessionRecord`. */
+export const selectArchiveSandboxEnvelopeComplete = createSelector(
+  [selectArchiveSandboxSender, selectArchiveSandboxRecipient],
+  (sender, recipient): boolean => {
+    const senderApplied =
+      Boolean(sender.appliedLocked) || (sender.applied?.length ?? 0) > 0
+    const recipientApplied = (recipient.applied?.length ?? 0) > 0
+    return senderApplied && recipientApplied
+  },
+)
+
 export const selectArchiveSandboxAppliedSenderDisplayAddress = createSelector(
   [selectArchiveSandboxSender],
   (sender): Readonly<AddressFields> => {

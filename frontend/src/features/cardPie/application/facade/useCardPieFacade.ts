@@ -16,6 +16,10 @@ import { selectCardphotoIsComplete } from '@cardphoto/infrastructure/selectors'
 import { selectCardtextIsComplete } from '@cardtext/infrastructure/selectors'
 import { selectIsAromaComplete } from '@aroma/infrastructure/selectors'
 import { selectAssemblyBranchFreeze } from '@cardPanel/infrastructure/selectors/assemblyBranchFreezeSelectors'
+import {
+  selectArchiveEnvelopeSandboxLocalId,
+  selectArchiveSandboxEnvelopeComplete,
+} from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import type { CardPieSectionFlags } from '../../infrastructure/postcardCardPieViewModel'
 
 const EMPTY_CART_PIE_SECTIONS = {
@@ -71,6 +75,12 @@ export const useCardPieFacade = (
   const aromaIsComplete = useAppSelector(selectIsAromaComplete)
   const activeSection = useAppSelector(selectActiveSection)
   const assemblyFreeze = useAppSelector(selectAssemblyBranchFreeze)
+  const archiveSandboxLocalId = useAppSelector(
+    selectArchiveEnvelopeSandboxLocalId,
+  )
+  const archiveSandboxEnvelopeComplete = useAppSelector(
+    selectArchiveSandboxEnvelopeComplete,
+  )
   const { cardPieEditEngaged, cardPieEditHydrateScope } =
     useRightListArchiveMini()
   /** Правая колонка: пирог по открытке из списка (корзина / история), `id` — `String(localId)`. */
@@ -99,13 +109,24 @@ export const useCardPieFacade = (
   const archiveSections =
     listArchiveBundle?.sections ?? EMPTY_CART_PIE_SECTIONS
   /**
+   * Cart envelope lives in archiveEnvelopeSandbox (not postcard isComplete).
+   * Overlay so postcardEdit → clear apply blanks the right pie sector like left.
+   */
+  const archiveSectionsForPie =
+    isListArchivePie &&
+    archiveSandboxLocalId != null &&
+    id != null &&
+    String(archiveSandboxLocalId) === id
+      ? { ...archiveSections, envelope: archiveSandboxEnvelopeComplete }
+      : archiveSections
+  /**
    * Archive edit: zero the section(s) cleared in session on hydrate, same as left
    * pie (session isComplete), not cart postcard appliedData.
    * `all` — only cardphoto is cleared; `section` — active peek section.
    */
   const sections = isListArchivePie
     ? resolveArchiveEditSections(
-        archiveSections,
+        archiveSectionsForPie,
         cardPieEditEngaged,
         cardPieEditHydrateScope,
         activeSection,
