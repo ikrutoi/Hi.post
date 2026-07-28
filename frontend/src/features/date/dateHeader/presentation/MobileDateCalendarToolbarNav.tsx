@@ -177,6 +177,7 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
         styles.root,
         notebookStripTab === 'date' && styles.rootDateTint,
         notebookStripTab === 'cart' && styles.rootCartTint,
+        notebookStripTab === 'history' && styles.rootHistoryTint,
       )}
     >
       <div className={styles.sideLeft}>{modeIcon}</div>

@@ -57,6 +57,21 @@
   }
 }
 
+.rootHistoryTint {
+  @include notebookTab.mobile-notebook-history-toolbar-role-fade;
+
+  .modeIcon {
+    background: transparent !important;
+
+    &:hover,
+    &:active,
+    &:focus,
+    &:focus-visible {
+      background: transparent !important;
+    }
+  }
+}
+
 .sideLeft,
 .sideRight {
   position: absolute;

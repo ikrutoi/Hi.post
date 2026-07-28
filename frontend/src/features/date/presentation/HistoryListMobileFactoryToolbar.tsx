@@ -22,16 +22,17 @@ export const HistoryListMobileFactoryLowerToolbar: React.FC = () => {
     historyListPanelOpen &&
     showMobileHistoryListFactoryChrome
 
-  const content = useMemo(
-    () =>
-      enabled ? (
+  const content = useMemo(() => {
+    if (!enabled) return null
+    return (
+      <div className={styles.historyListToolbarRow} data-history-list-toolbar>
         <Toolbar
           section="historyList"
           groupsOverride={HISTORY_LIST_FACTORY_LOWER_TOOLBAR}
         />
-      ) : null,
-    [enabled],
-  )
+      </div>
+    )
+  }, [enabled])
 
   useMobileScenarioToolbar(content)
 

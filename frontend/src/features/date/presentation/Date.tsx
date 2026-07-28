@@ -63,6 +63,7 @@ const DateSectionShell: React.FC<{
           styles.dateToolbarRow,
           stripSection === 'date' && styles.dateToolbarRowDate,
           stripSection === 'cart' && styles.dateToolbarRowCart,
+          stripSection === 'history' && styles.dateToolbarRowHistory,
         )}
         emptyClassName={styles.dateToolbarRowEmpty}
         show={showMobileSliderToolbar}

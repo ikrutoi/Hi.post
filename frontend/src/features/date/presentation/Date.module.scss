@@ -140,6 +140,20 @@ $mobile-date-calendar-chrome-gap: 0.125rem;
   .dateToolbarRowCart {
     @include date-toolbar-role-fade(notebookTab.$mobile-notebook-cart-toolbar-fade);
   }
+
+  .dateToolbarRowHistory {
+    @include notebookTab.mobile-notebook-history-toolbar-role-fade;
+
+    :global(button[class*='toolbarKey']),
+    :global(button[class*='navArrow']) {
+      background-color: transparent !important;
+
+      &:hover,
+      &:active {
+        background-color: transparent !important;
+      }
+    }
+  }
 }
 
 .dateViewContent {

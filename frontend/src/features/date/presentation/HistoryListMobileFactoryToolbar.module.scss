@@ -1,6 +1,25 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
+@use '@styles/config/mobileNotebookTabColors' as notebookTab;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
+
+@mixin history-list-toolbar-role-fade {
+  @include notebookTab.mobile-notebook-history-toolbar-role-fade;
+}
+
+@mixin history-list-toolbar-role-keys-clear {
+  :global(button[class*='toolbarKey']),
+  .calendarIcon {
+    background-color: transparent !important;
+
+    &:hover,
+    &:active,
+    &:focus,
+    &:focus-visible {
+      background-color: transparent !important;
+    }
+  }
+}
 
 .upperRow {
   position: relative;
@@ -12,6 +31,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
+  @include history-list-toolbar-role-fade;
+  @include history-list-toolbar-role-keys-clear;
 }
 
 .sideLeft {
@@ -86,5 +108,28 @@
     pointer-events: auto;
 
     @include history-list-toolbar-postcard-indicator-dots;
+  }
+}
+
+.historyListToolbarRow {
+  flex: 1 1 auto;
+  align-self: stretch;
+  width: 100%;
+  min-width: 0;
+  height: var(--mobile-factory-toolbar-row-height);
+  min-height: var(--mobile-factory-toolbar-row-height);
+  max-height: var(--mobile-factory-toolbar-row-height);
+  display: flex;
+  align-items: center;
+  border: none;
+  padding-inline: 0;
+  box-sizing: border-box;
+  @include history-list-toolbar-role-fade;
+  @include history-list-toolbar-role-keys-clear;
+
+  > * {
+    width: 100%;
+    flex: 1 1 auto;
+    min-width: 0;
   }
 }
