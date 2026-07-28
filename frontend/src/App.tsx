@@ -180,6 +180,13 @@ const App = () => {
   const cartDatePickOwnedByCardPieEditRef = useRef(false)
   /** @deprecated prefer isCartDatePickListEntryOwned(); kept in sync for cardPieEdit effect. */
   const cartDatePickOwnedByListEntryRef = useRef(false)
+  /**
+   * Cart archive: list vs calendar origin for center return icon.
+   * Survives postcardEdit closing the list (peek flags alone are not enough).
+   */
+  const archiveCartCenterReturnModeRef = useRef<'list' | 'calendar' | null>(
+    null,
+  )
   const [colorToolbar, setColorToolbar] = useState<boolean | null>(null)
   const [activePieSide, setActivePieSide] = useState<'left' | 'right'>('left')
   /** After turning off cardPieCopy: switch to left pie and keep `cardPieEdit` enabled until clicked again. */
@@ -606,6 +613,15 @@ const App = () => {
   const listRowInner = rightListArchiveBundle?.currentData?.data ?? null
 
   const syncPeekChromeForOpenedSection = useCallback((section: CardSection) => {
+    if (rightListArchiveSource === 'cart') {
+      const mode = resolveCartArchiveViewMode({
+        cartListPanelOpen: selectCartListPanelOpen(store.getState()),
+        notebookStripTab: selectNotebookStripTab(store.getState()),
+      })
+      if (mode === 'list' || mode === 'calendar') {
+        archiveCartCenterReturnModeRef.current = mode
+      }
+    }
     if (section === 'cardphoto') {
       setRightPieCardphotoPeekNoToolbar(true)
       setRightPieCardtextPeekNoToolbar(false)
@@ -643,7 +659,7 @@ const App = () => {
       setRightPieAromaPeekNoToolbar(false)
       setRightPieDatePeekNoToolbar(false)
     }
-  }, [])
+  }, [rightListArchiveSource])
 
   const handleRightListPieSectorClick = useCallback(
     (section: CardSection) => {
@@ -859,8 +875,8 @@ const App = () => {
 
   const handleRightPieCenterCartClick = useCallback(() => {
     /**
-     * Right mode + section peek: center closes peek / returns to list only —
-     * do not cycle to the next postcard.
+     * Right mode + section peek / section-edit: center closes peek / returns to
+     * list or calendar — do not cycle to the next postcard.
      */
     const wasSectionPeek =
       rightPieCardphotoPeekNoToolbar ||
@@ -868,6 +884,13 @@ const App = () => {
       rightPieEnvelopePeekNoToolbar ||
       rightPieAromaPeekNoToolbar ||
       rightPieDatePeekNoToolbar
+    const wasSectionEditReturn =
+      cardPieEditEngaged &&
+      cardPieEditHydrateScope === 'section' &&
+      rightListArchiveSource === 'cart'
+    const wasDatePickReturn =
+      cartCalendarDatePickMode && rightListArchiveSource === 'cart'
+    const returnMode = archiveCartCenterReturnModeRef.current
 
     setRightPieCardphotoPeekNoToolbar(false)
     setRightPieCardtextPeekNoToolbar(false)
@@ -879,8 +902,17 @@ const App = () => {
     dispatch(endCartCalendarDatePick())
     dispatch(setNotebookStripTab('cart'))
     dispatch(setActiveSection('date'))
-    if (wasSectionPeek) {
+    if (wasSectionPeek || wasSectionEditReturn || wasDatePickReturn) {
+      if (wasSectionEditReturn) {
+        endCardPieEditEngaged()
+        setCardPieEditHydrateScope('all')
+        setSuppressCardPieEditActiveAfterCopy(true)
+      }
       dispatch(clearArchiveEnvelopeSandbox())
+      if (returnMode === 'list') {
+        dispatch(setCartListPanelOpen(true))
+      }
+      archiveCartCenterReturnModeRef.current = null
       return
     }
 
@@ -1008,6 +1040,7 @@ const App = () => {
     cartListStatusSegment,
     cartListSelectedBySegment,
     rightListArchiveLocalId,
+    rightListArchiveSource,
     openDayPanelState?.dateKey,
     listRowInner,
     rightPieCardphotoPeekNoToolbar,
@@ -1015,6 +1048,10 @@ const App = () => {
     rightPieEnvelopePeekNoToolbar,
     rightPieAromaPeekNoToolbar,
     rightPieDatePeekNoToolbar,
+    cardPieEditEngaged,
+    cardPieEditHydrateScope,
+    cartCalendarDatePickMode,
+    endCardPieEditEngaged,
   ])
 
   const handleArchivePieCenterClick = useCallback(() => {
@@ -1040,8 +1077,8 @@ const App = () => {
 
   /**
    * Cart list / cart calendar: center cycles forward.
-   * Section peek: center shows cart or calendar — destination back to the
-   * view the pie was opened from (list panel stays open under peek hide).
+   * Section peek, section-edit, or date-pick: center shows cart or calendar —
+   * destination back to the view the pie was opened from.
    */
   const rightPieSectionPeekOpen =
     rightPieCardphotoPeekNoToolbar ||
@@ -1049,14 +1086,22 @@ const App = () => {
     rightPieEnvelopePeekNoToolbar ||
     rightPieAromaPeekNoToolbar ||
     rightPieDatePeekNoToolbar
+  const rightPieShowArchiveSourceReturn =
+    rightListArchiveSource === 'cart' &&
+    (rightPieSectionPeekOpen ||
+      (cardPieEditEngaged && cardPieEditHydrateScope === 'section') ||
+      cartCalendarDatePickMode)
   const cartArchiveViewMode = resolveCartArchiveViewMode({
     cartListPanelOpen: listPanelOpen,
     notebookStripTab,
   })
+  const archiveSourceReturnMode =
+    archiveCartCenterReturnModeRef.current ??
+    (cartArchiveViewMode === 'calendar' ? 'calendar' : 'list')
   const rightPieCenterAffordance =
     rightListArchiveSource === 'cart' && rightPieOnCenterClick != null
-      ? rightPieSectionPeekOpen
-        ? cartArchiveViewMode === 'calendar'
+      ? rightPieShowArchiveSourceReturn
+        ? archiveSourceReturnMode === 'calendar'
           ? ('calendar' as const)
           : ('cart' as const)
         : ('cycleForward' as const)
@@ -1505,6 +1550,16 @@ const App = () => {
         currentDate: now,
       })
       flushSync(() => {
+        /** Capture before list close so center keeps cart/calendar icon. */
+        if (fromCartArchive) {
+          const mode = resolveCartArchiveViewMode({
+            cartListPanelOpen: selectCartListPanelOpen(store.getState()),
+            notebookStripTab: selectNotebookStripTab(store.getState()),
+          })
+          if (mode === 'list' || mode === 'calendar') {
+            archiveCartCenterReturnModeRef.current = mode
+          }
+        }
         cartDatePickOwnedByCardPieEditRef.current = false
         claimCartDatePickListEntryOwnership()
         cartDatePickOwnedByListEntryRef.current = true
@@ -1530,6 +1585,16 @@ const App = () => {
     captureAssemblyBranchFreeze('archiveEdit')
     if (!hadFreeze) {
       dispatch(clearAllMirrorSectionBackups())
+    }
+    /** Capture before list close so center keeps cart/calendar icon. */
+    if (fromCartArchive) {
+      const mode = resolveCartArchiveViewMode({
+        cartListPanelOpen: selectCartListPanelOpen(store.getState()),
+        notebookStripTab: selectNotebookStripTab(store.getState()),
+      })
+      if (mode === 'list' || mode === 'calendar') {
+        archiveCartCenterReturnModeRef.current = mode
+      }
     }
     dispatch(setCartListPanelOpen(false))
     releaseCartDatePickListEntryOwnership()
@@ -1773,6 +1838,7 @@ const App = () => {
         currentDate: now,
       })
       flushSync(() => {
+        archiveCartCenterReturnModeRef.current = 'list'
         cartDatePickOwnedByCardPieEditRef.current = false
         claimCartDatePickListEntryOwnership()
         cartDatePickOwnedByListEntryRef.current = true
