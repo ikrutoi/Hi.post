@@ -87,15 +87,15 @@ $cart-date-edit-wave-overlay: color.change($cart-date-edit-tint, $alpha: 0.48);
     cursor: pointer;
   }
 
-  /** Рамка как у `CartListEntry` в режиме dateEdit (`$color-cart-list-entry-date-edit-border`). */
+  /** Рамка как у полосы «Дата»: `$color-date-input-border`. */
   &.cart.cartDateEditPickBorder {
     cursor: pointer;
-    border-color: $color-cart-list-entry-date-edit-border;
+    border-color: $color-date-input-border;
 
     &:hover:not(.disabled) {
       border-color: mix(
-        $color-cart-list-entry-date-edit-border,
-        hsl(210, 55%, 62%),
+        $color-date-input-border,
+        $color-date-multi,
         55%
       );
     }
@@ -123,16 +123,12 @@ $cart-date-edit-wave-overlay: color.change($cart-date-edit-tint, $alpha: 0.48);
     animation: cartDatePickWaveFadeOverlay 0.1s ease forwards;
   }
 
-  /** Полоса «Дата»: та же рамка, что у строки корзины в dateEdit (`$color-cart-list-entry-date-edit-border`). */
+  /** Полоса «Дата»: та же голубая рамка, что у date-pick корзины. */
   &.dateStripEnabledDayBorder {
-    border-color: $color-cart-list-entry-date-edit-border;
+    border-color: $color-date-input-border;
 
     &:hover:not(.disabled) {
-      border-color: mix(
-        $color-cart-list-entry-date-edit-border,
-        hsl(210, 55%, 62%),
-        55%
-      );
+      border-color: mix($color-date-input-border, $color-date-multi, 55%);
     }
   }
 
@@ -149,6 +145,20 @@ $cart-date-edit-wave-overlay: color.change($cart-date-edit-tint, $alpha: 0.48);
 
   &.rightArchiveCardPieDay:hover:not(.disabled) {
     border-color: transparent;
+    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
+  }
+
+  /**
+   * Date-pick корзины + день выбранной открытки: голубая рамка ячейки,
+   * accent слева — стандартный `$color-toggle-active` (как выбранный адрес в списке).
+   */
+  &.cart.cartDateEditPickBorder.rightArchiveCardPieDay {
+    border-color: $color-date-input-border;
+    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
+  }
+
+  &.cart.cartDateEditPickBorder.rightArchiveCardPieDay:hover:not(.disabled) {
+    border-color: mix($color-date-input-border, $color-date-multi, 55%);
     box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
   }
 }
@@ -493,11 +503,7 @@ button.navArrowWrap {
 .cell.dateStripEnabledDayBorder:hover:not(.disabled),
 .cell.dateStripEnabledDayBorder.current:hover:not(.disabled),
 .cell.dateStripEnabledDayBorder.dispatch:hover:not(.disabled) {
-  border-color: mix(
-    $color-cart-list-entry-date-edit-border,
-    hsl(210, 55%, 62%),
-    55%
-  );
+  border-color: mix($color-date-input-border, $color-date-multi, 55%);
 }
 
 /**
@@ -507,6 +513,15 @@ button.navArrowWrap {
 .cell.rightArchiveCardPieDay:hover:not(.disabled),
 .cell.rightArchiveCardPieDay.current:hover:not(.disabled) {
   border-color: transparent;
+  box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
+  cursor: pointer;
+}
+
+.cell.cart.cartDateEditPickBorder.rightArchiveCardPieDay:hover:not(.disabled),
+.cell.cart.cartDateEditPickBorder.rightArchiveCardPieDay.current:hover:not(
+    .disabled
+  ) {
+  border-color: mix($color-date-input-border, $color-date-multi, 55%);
   box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
   cursor: pointer;
 }

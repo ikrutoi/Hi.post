@@ -250,6 +250,16 @@ export const useCalendarCellController = ({
         }
       }
       if (pickedDate) {
+        const postcard = cartItems.find(
+          (item) => item.localId === cartCalendarDatePickLocalId,
+        )
+        /** Повторный клик по уже выбранной дате — no-op (без toggle/deselect). */
+        if (
+          postcard != null &&
+          sameDispatchDate(postcard.date, pickedDate)
+        ) {
+          return
+        }
         dispatch(
           cartCalendarDatePickApplied({
             localId: cartCalendarDatePickLocalId,
