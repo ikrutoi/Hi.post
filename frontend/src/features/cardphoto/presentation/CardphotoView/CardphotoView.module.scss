@@ -101,7 +101,50 @@
 }
 
 .viewDeleteBtn {
-  @include overlay.sectionViewOverlayDeleteButton;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  @include overlay.sectionViewOverlayChipPhoto;
+  @include overlay.sectionViewOverlayChipIcon;
+
+  :global([data-shell-layout='mobile']) & {
+    @include iconButton.toolbar-icon-button-size-mobile-toolbar(true);
+    width: iconButton.$toolbar-hit-size-mobile-toolbar;
+    height: iconButton.$toolbar-hit-size-mobile-toolbar;
+    min-width: iconButton.$toolbar-hit-size-mobile-toolbar;
+  }
+
+  :global([data-shell-layout='desktop']) & {
+    @include iconButton.toolbar-icon-button-size-standard-shell(true);
+    width: iconButton.$toolbar-hit-size-standard * iconButton.$toolbar-desktop-scale;
+    height: iconButton.$toolbar-hit-size-standard * iconButton.$toolbar-desktop-scale;
+  }
+}
+
+.viewOverlayActions {
+  @include overlay.sectionViewOverlayActionsPlacement;
+}
+
+/** View: in-list template — same shell as cardtext list indicator, enabled color. */
+.viewListIndicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  box-sizing: border-box;
+  pointer-events: none;
+  @include overlay.sectionViewOverlayChip(transparent, transparent, false);
+  @include overlay.sectionViewOverlayChipIcon;
+  color: $color-font-enabled-light;
+  opacity: 1;
+
+  svg {
+    display: block;
+  }
 
   :global([data-shell-layout='mobile']) & {
     @include iconButton.toolbar-icon-button-size-mobile-toolbar(true);
