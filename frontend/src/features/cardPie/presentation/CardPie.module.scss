@@ -5,10 +5,11 @@
 $pie-center-indicator-size: 1.75rem;
 /** Левый центр: лого 2.2rem + 1px белая обводка (content-box). */
 $pie-center-logo-size: 2.2rem;
-$pie-center-logo-size-pressed: 2.4rem;
 $pie-center-logo-hit-size: 3.4rem;
 $pie-center-right-hit-size: 3rem;
 $pie-center-logo-press-duration: 0.28s;
+/** Press pulse: +25% then back. */
+$pie-center-press-scale: 1.25;
 /** Жёлтое кольцо вокруг красной заливки (`cartBlocked`), доля от диаметра круга.
  * Inner red radius = (1 − 2×ratio) × outer → 0.15 ⇒ 70%. */
 $pie-center-cart-blocked-ring-ratio: 0.15;
@@ -371,17 +372,16 @@ $pie-center-cart-blocked-inner-stop: (
 @keyframes pieCenterLogoPress {
   0%,
   100% {
-    width: $pie-center-logo-size;
-    height: $pie-center-logo-size;
+    transform: scale(1);
   }
 
   50% {
-    width: $pie-center-logo-size-pressed;
-    height: $pie-center-logo-size-pressed;
+    transform: scale($pie-center-press-scale);
   }
 }
 
 .hubContainer:not(.hubContainerRight) .pieCenterIconPress {
+  transform-origin: center center;
   animation: pieCenterLogoPress $pie-center-logo-press-duration ease-in-out;
 }
 
@@ -392,7 +392,7 @@ $pie-center-cart-blocked-inner-stop: (
   }
 
   50% {
-    transform: scale(1.25);
+    transform: scale($pie-center-press-scale);
   }
 }
 

@@ -13,6 +13,7 @@ import {
   selectCartDatePickSessionActive,
   selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
+import { selectIsDateComplete } from '@date/infrastructure/selectors'
 import { endCartCalendarDatePick } from '@date/calendar/infrastructure/state'
 import { releaseCartDatePickListEntryOwnership } from '@date/calendar/application/logic/cartDatePickListEntryOwnership'
 import {
@@ -21,6 +22,9 @@ import {
 } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 import { useInitializeCalendarViewDate } from '@date/application/hooks/useInitializeCalendarViewDate'
 import { useDateSwitcherController } from '@date/switcher/application/hooks/useDateSwitcherController'
+import { Toolbar } from '@toolbar/presentation/Toolbar'
+import toolbarStyles from '@toolbar/presentation/Toolbar.module.scss'
+import type { ToolbarConfig } from '@toolbar/domain/types'
 import { useFlashEffect } from '@shared/hooks'
 import { getCurrentDate } from '@shared/utils/date'
 import { getToolbarIcon } from '@shared/utils/icons'
@@ -41,6 +45,7 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
   const { triggerFlash } = useFlashEffect()
   const { lastViewedCalendarDate } = useCalendarFacade()
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
+  const isDateComplete = useAppSelector(selectIsDateComplete)
   const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
   const cartDatePickSessionActive = useAppSelector(
     selectCartDatePickSessionActive,
@@ -171,6 +176,21 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
       </button>
     ) : null
 
+  const dateApplyToolbar = useMemo((): ToolbarConfig => {
+    return [
+      {
+        group: 'date',
+        icons: [
+          {
+            key: 'apply',
+            state: isDateComplete ? 'enabled' : 'disabled',
+          },
+        ],
+        status: 'enabled',
+      },
+    ]
+  }, [isDateComplete])
+
   return (
     <div
       className={clsx(
@@ -180,7 +200,17 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
         notebookStripTab === 'history' && styles.rootHistoryTint,
       )}
     >
-      <div className={styles.sideLeft}>{modeIcon}</div>
+      <div className={styles.sideLeft}>
+        {notebookStripTab === 'date' ? (
+          <Toolbar
+            section="date"
+            groupsOverride={dateApplyToolbar}
+            className={toolbarStyles.toolbarAromaUpperApply}
+          />
+        ) : (
+          modeIcon
+        )}
+      </div>
       <div className={styles.center}>
         <DateHeaderNavigation
           className={headerStyles.headerCenterToolbarSwitcherOnly}

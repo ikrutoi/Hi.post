@@ -33,6 +33,16 @@
       background: transparent !important;
     }
   }
+
+  /** Apply слева — как peek-секции: без белой подложки на tint. */
+  :global(button[class*='toolbarKey']) {
+    background-color: transparent !important;
+
+    &:hover,
+    &:active {
+      background-color: transparent !important;
+    }
+  }
 }
 
 .rootCartTint {
@@ -91,6 +101,21 @@
 .sideLeft {
   left: 0;
   justify-content: flex-start;
+
+  :global([class*='toolbarDate']),
+  :global([class*='toolbarAromaUpperApply']) {
+    width: auto;
+    margin-inline: 0;
+    justify-content: flex-start;
+
+    :global([class*='toolbarGroup']) {
+      justify-content: flex-start;
+    }
+
+    :global([class*='toolbarKey']) {
+      margin-inline: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
+    }
+  }
 }
 
 .sideRight {
