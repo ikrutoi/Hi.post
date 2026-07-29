@@ -23,7 +23,7 @@ const ARCHIVE_PEEK_UPPER_EDIT_TOOLBAR: ToolbarConfig = [
 
 /**
  * Верхний ряд factory toolbar в упрощённом режиме: только postcardEdit слева
- * (archive peek и сборная cardtext/cardphoto/aroma).
+ * (archive peek и сборная cardtext/cardphoto/aroma после Apply).
  */
 export const ArchivePeekUpperToolbar: React.FC = () => {
   const dispatch = useAppDispatch()

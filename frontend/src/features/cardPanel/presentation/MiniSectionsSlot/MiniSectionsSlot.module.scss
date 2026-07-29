@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as *;
 @use '@styles/mixins/miniSectionsSlotChrome' as *;
 
 .root {
@@ -14,12 +15,15 @@
     box-shadow 0.15s ease;
 }
 
+/** Left factory mode: accent on the right (points toward the active central pie). */
 .rootLeftPieMode {
   border-left-color: transparent;
+  box-shadow: #{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
 }
 
 .rootLeftCopyMode {
   border-right-color: transparent;
+  box-shadow: none;
 }
 
 .rootRightCopyMode {

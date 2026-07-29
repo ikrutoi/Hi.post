@@ -134,24 +134,6 @@ const MOBILE_LIST_TEMPLATE_PREVIEW_PIE_STATE = {
   delete: { state: 'enabled' as const },
 }
 
-/** Aroma cell preview in central CardPie: closeBig сверху справа от pie. */
-const MOBILE_AROMA_PREVIEW_PIE_TOOLBAR: ToolbarConfig = [
-  {
-    group: 'main',
-    icons: [
-      { key: 'closeBig', state: 'enabled' },
-      { key: 'empty', state: 'disabled' },
-      { key: 'empty', state: 'disabled' },
-    ],
-    status: 'enabled',
-  },
-]
-
-const MOBILE_AROMA_PREVIEW_PIE_STATE = {
-  closeBig: { state: 'enabled' as const },
-  empty: { state: 'disabled' as const },
-}
-
 export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   formRef,
   sizeCard,
@@ -449,12 +431,11 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
 
   const mobileAromaPreview = useMemo(() => {
     if (activeSection !== 'aroma') return null
-    if (rightPieAromaPeekNoToolbar) return null
     if (!viewAroma) return null
     const src = getAromaImage(viewAroma.index)
     if (!src) return null
     return { index: viewAroma.index, src }
-  }, [activeSection, rightPieAromaPeekNoToolbar, viewAroma])
+  }, [activeSection, viewAroma])
 
   const mobileCentralPieDisplay = useMemo(():
     | 'archive'
@@ -464,11 +445,12 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     | 'aromaPreview'
     | 'emptyArchive'
     | 'assembly' => {
+    /** Same as left factory edit: selected aroma cell fills the central CardPie. */
+    if (mobileAromaPreview != null) return 'aromaPreview'
     if (mobileCentralArchivePreview != null) return 'archive'
     if (mobileCardphotoListTemplatePreview != null) return 'cardphotoTemplate'
     if (mobileCardtextListChromeActive) return 'cardtextTemplate'
     if (mobileAddressListChromeActive) return 'addressTemplate'
-    if (mobileAromaPreview != null) return 'aromaPreview'
     if (
       mobileListArchiveSlotActive ||
       notebookStripSection === 'cart' ||
@@ -478,14 +460,22 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     }
     return 'assembly'
   }, [
+    mobileAromaPreview,
     mobileCentralArchivePreview,
     mobileCardphotoListTemplatePreview,
     mobileCardtextListChromeActive,
     mobileAddressListChromeActive,
-    mobileAromaPreview,
     mobileListArchiveSlotActive,
     notebookStripSection,
   ])
+
+  /** Left/assembly in central pie: right accent on the active mini (or sole plan pie). */
+  const gutterHighlightPlanPieId = useMemo(() => {
+    if (mobileCentralPieDisplay !== 'assembly') return null
+    if (selectedPlanPieId != null) return selectedPlanPieId
+    if (planPies.length === 1) return planPies[0]?.id ?? null
+    return null
+  }, [mobileCentralPieDisplay, selectedPlanPieId, planPies])
 
   const mobileCentralArchivePostcardStatus = useMemo(() => {
     if (mobileCentralArchivePreview == null) return undefined
@@ -519,17 +509,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     (mobileCentralPieDisplay === 'addressTemplate' &&
       mobileAddressListTemplatePreview != null)
 
-  const showMobileCentralAromaPreviewPieToolbar =
-    mobileCentralPieDisplay === 'aromaPreview' && mobileAromaPreview != null
-
   const handleTemplatePreviewPieToolbarAction = useCallback(
     (key: IconKey) => {
-      if (mobileCentralPieDisplay === 'aromaPreview') {
-        if (key !== 'closeBig') return
-        dispatch(clearViewAroma())
-        return false
-      }
-
       if (mobileCentralPieDisplay === 'addressTemplate') {
         const preview = mobileAddressListTemplatePreview
         if (!preview) return
@@ -939,6 +920,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                   <MobileCardPieGutterMinis
                     planPies={planPies}
                     selectedPlanPieId={selectedPlanPieId}
+                    highlightPlanPieId={gutterHighlightPlanPieId}
                     onSelectPlanPie={handleSelectPlanPie}
                   />
                   <div className={styles.mobilePieStage}>
@@ -1087,17 +1069,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                               ? MOBILE_LIST_TEMPLATE_PREVIEW_PIE_STATE
                               : undefined
                           }
-                          mergedWithCenter
-                          onActionClick={handleTemplatePreviewPieToolbarAction}
-                        />
-                      </div>
-                    ) : null}
-                    {showMobileCentralAromaPreviewPieToolbar ? (
-                      <div className={styles.mobilePieToolbar}>
-                        <Toolbar
-                          section="editorPie"
-                          groupsOverride={MOBILE_AROMA_PREVIEW_PIE_TOOLBAR}
-                          stateOverride={MOBILE_AROMA_PREVIEW_PIE_STATE}
                           mergedWithCenter
                           onActionClick={handleTemplatePreviewPieToolbarAction}
                         />

@@ -7,11 +7,20 @@ import styles from './MobileAppShell.module.scss'
 type MobileCardPieGutterMinisProps = {
   planPies: MobilePlanCardPie[]
   selectedPlanPieId: string | null
+  /** When set, only this mini shows the right accent (left/assembly in central pie). */
+  highlightPlanPieId?: string | null
   onSelectPlanPie: (id: string) => void
 }
 
 export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
-  ({ planPies, selectedPlanPieId, onSelectPlanPie }) => {
+  ({
+    planPies,
+    selectedPlanPieId,
+    highlightPlanPieId,
+    onSelectPlanPie,
+  }) => {
+    const accentPlanPieId = highlightPlanPieId ?? selectedPlanPieId
+
     return (
       <div className={styles.mobilePieGutterMiniList} aria-label="Card pie plan">
         {planPies.map(({ id, inner, sections }) => (
@@ -19,7 +28,7 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
             key={id}
             type="button"
             className={styles.mobilePieGutterMiniItem}
-            data-selected={selectedPlanPieId === id ? 'true' : undefined}
+            data-selected={accentPlanPieId === id ? 'true' : undefined}
             data-ready={isPostcardPieAllComplete(sections) ? 'true' : undefined}
             aria-pressed={selectedPlanPieId === id}
             aria-label="Open plan CardPie"
