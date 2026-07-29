@@ -79,6 +79,9 @@ export const CardPie: React.FC<CardPieProps> = ({
 }) => {
   const pieDefsUid = React.useId().replace(/:/g, '')
   const [centerPressSeq, setCenterPressSeq] = React.useState(0)
+  const [centerCompletePulseSeq, setCenterCompletePulseSeq] = React.useState(0)
+  const [centerCompletePulsing, setCenterCompletePulsing] = React.useState(false)
+  const wasAllSectionsFilledRef = React.useRef(false)
   /** Иконка affordance появляется с задержкой — круг статуса сначала «чистый». */
   const [visibleRightPieCenterAffordance, setVisibleRightPieCenterAffordance] =
     React.useState<typeof rightPieCenterAffordance>(null)
@@ -227,6 +230,26 @@ export const CardPie: React.FC<CardPieProps> = ({
     leftPieCenterClickable ||
     leftPieCenterOverviewBack ||
     leftPieCenterPlanCycle
+
+  React.useEffect(() => {
+    if (station !== 'left' || leftPieCenterDisc) {
+      wasAllSectionsFilledRef.current = allSectionsFilled
+      return
+    }
+    const becameComplete = allSectionsFilled && !wasAllSectionsFilledRef.current
+    wasAllSectionsFilledRef.current = allSectionsFilled
+    if (!becameComplete) return
+    setCenterCompletePulseSeq((n) => n + 1)
+    setCenterCompletePulsing(true)
+  }, [allSectionsFilled, leftPieCenterDisc, station])
+
+  React.useEffect(() => {
+    if (!centerCompletePulsing) return
+    const id = window.setTimeout(() => {
+      setCenterCompletePulsing(false)
+    }, 400)
+    return () => window.clearTimeout(id)
+  }, [centerCompletePulsing, centerCompletePulseSeq])
 
   const triggerCenterPress = React.useCallback(() => {
     setCenterPressSeq((seq) => seq + 1)
@@ -903,15 +926,22 @@ export const CardPie: React.FC<CardPieProps> = ({
         >
           <span
             key={
-              centerPressSeq > 0 ? `center-press-${centerPressSeq}` : undefined
+              centerCompletePulsing
+                ? `center-complete-${centerCompletePulseSeq}`
+                : centerPressSeq > 0
+                  ? `center-press-${centerPressSeq}`
+                  : undefined
             }
             className={clsx(
               styles.pieCenterIcon,
               allSectionsFilled && styles.pieCenterIconBrand,
-              centerPressSeq > 0 &&
+              centerCompletePulsing && styles.pieCenterIconCompletePulse,
+              !centerCompletePulsing &&
+                centerPressSeq > 0 &&
                 station === 'left' &&
                 styles.pieCenterIconPress,
-              centerPressSeq > 0 &&
+              !centerCompletePulsing &&
+                centerPressSeq > 0 &&
                 station === 'right' &&
                 rightCenterActionEnabled &&
                 styles.pieCenterIconPress,

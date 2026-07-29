@@ -351,6 +351,23 @@ $pie-center-cart-blocked-inner-stop: (
   color: var(--logo-color, #008aed);
 }
 
+/** Same scale pulse as list badge (listCardtext): +50% then back. */
+@keyframes pieCenterCompletePulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.5);
+  }
+}
+
+.hubContainer:not(.hubContainerRight) .pieCenterIconCompletePulse {
+  transform-origin: center center;
+  animation: pieCenterCompletePulse 0.4s ease-in-out;
+}
+
 @keyframes pieCenterLogoPress {
   0%,
   100% {
