@@ -28,6 +28,9 @@ export interface CardtextTemplatesUIState {
   templatesListLoading: boolean
   /** Подсветка строки в списке шаблонов (отдельно от assetData.id). */
   templatesListSelectedId: string | null
+  /** Upper listCardtext badge pulse after View addList / removeFromList. */
+  listCardtextBadgePulseSeq: number
+  listCardtextBadgePulsing: boolean
 }
 
 export interface CardtextSliceState
@@ -47,6 +50,8 @@ const initialCardtextTemplatesState: Pick<
   templatesListLoading: false,
   templatesList: null,
   templatesListSelectedId: null,
+  listCardtextBadgePulseSeq: 0,
+  listCardtextBadgePulsing: false,
 }
 
 export const initialCardtextState: CardtextSliceState = {
@@ -352,6 +357,15 @@ export const cardtextSlice = createSlice({
       state.isListPanelOpen = action.payload
     },
 
+    pulseListCardtextBadge(state) {
+      state.listCardtextBadgePulseSeq += 1
+      state.listCardtextBadgePulsing = true
+    },
+
+    clearListCardtextBadgePulse(state) {
+      state.listCardtextBadgePulsing = false
+    },
+
     setCardtextAddTemplateOpen(state, action: PayloadAction<boolean>) {
       state.isAddTemplateOpen = action.payload
     },
@@ -475,6 +489,8 @@ export const {
   setCardtextTemplatesListSelectedId,
   clearCardtextTemplatesListSelection,
   setCardtextListPanelOpen,
+  pulseListCardtextBadge,
+  clearListCardtextBadgePulse,
   setCardtextAddTemplateOpen,
   setCardtextEditTitleOpen,
   toggleCardtextListSortDirection,

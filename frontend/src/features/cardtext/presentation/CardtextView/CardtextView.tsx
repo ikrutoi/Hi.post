@@ -26,6 +26,8 @@ type Props = {
   onDelete?: () => void
   /** Archive peek: стандартный кадр секции (как cardphoto viewContainer). */
   sectionFrame?: boolean
+  /** View: текст совпадает с шаблоном в списке — иконка listCardtext внизу справа. */
+  showListIndicator?: boolean
 }
 
 export const CardtextView: React.FC<Props> = ({
@@ -35,6 +37,7 @@ export const CardtextView: React.FC<Props> = ({
   titleStripEditing,
   onDelete,
   sectionFrame = false,
+  showListIndicator = false,
 }) => {
   const { isMobileLayout } = useSizeFacade()
   const slateKey =
@@ -54,6 +57,7 @@ export const CardtextView: React.FC<Props> = ({
       ? value
       : [{ type: 'paragraph', align: 'left', children: [{ text: '' }] }]
   ) as Descendant[]
+  const showDelete = Boolean(onDelete) && !isMobileLayout
 
   return (
     <div
@@ -85,20 +89,29 @@ export const CardtextView: React.FC<Props> = ({
           />
         </Slate>
       </div>
-      {onDelete && !isMobileLayout ? (
-        <button
-          type="button"
-          className={styles.viewDeleteBtn}
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={(e) => {
-            e.stopPropagation()
-            onDelete()
-          }}
-          aria-label="Delete text template"
-          title="Delete template"
-        >
-          {getToolbarIcon({ key: 'delete' })}
-        </button>
+      {showListIndicator || showDelete ? (
+        <div className={styles.viewOverlayActions}>
+          {showDelete ? (
+            <button
+              type="button"
+              className={styles.viewDeleteBtn}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={(e) => {
+                e.stopPropagation()
+                onDelete?.()
+              }}
+              aria-label="Delete text template"
+              title="Delete template"
+            >
+              {getToolbarIcon({ key: 'delete' })}
+            </button>
+          ) : null}
+          {showListIndicator ? (
+            <span className={styles.viewListIndicator} aria-hidden>
+              {getToolbarIcon({ key: 'listCardtext' })}
+            </span>
+          ) : null}
+        </div>
       ) : null}
     </div>
   )

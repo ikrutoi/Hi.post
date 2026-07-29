@@ -45,6 +45,12 @@ export const selectCardtextTemplatesListItems = (
 export const selectCardtextTemplatesListLoading = (state: RootState): boolean =>
   state.cardtext.templatesListLoading === true
 
+export const selectListCardtextBadgePulseSeq = (state: RootState): number =>
+  state.cardtext.listCardtextBadgePulseSeq ?? 0
+
+export const selectListCardtextBadgePulsing = (state: RootState): boolean =>
+  Boolean(state.cardtext.listCardtextBadgePulsing)
+
 /** cardtextView: текст сессии совпадает с шаблоном в панели списка (inLine). */
 export const selectCardtextViewInQuickList = createSelector(
   [selectCardtextPlainText, selectCardtextTemplatesListItems, selectCardtextId],

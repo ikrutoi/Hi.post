@@ -50,7 +50,13 @@ import {
   selectCardtextListPanelDensity,
   selectCardtextViewInQuickList,
   selectCardtextInteractionMode,
+  selectListCardtextBadgePulseSeq,
+  selectListCardtextBadgePulsing,
 } from '@cardtext/infrastructure/selectors'
+import {
+  clearListCardtextBadgePulse,
+  pulseListCardtextBadge,
+} from '@cardtext/infrastructure/state'
 import {
   selectDateListSortDirection,
   selectHistoryListPanelDensity,
@@ -135,6 +141,12 @@ export const Toolbar = ({
   )
   const listCardphotoBadgePulsing = useAppSelector(
     selectListCardphotoBadgePulsing,
+  )
+  const listCardtextBadgePulseSeq = useAppSelector(
+    selectListCardtextBadgePulseSeq,
+  )
+  const listCardtextBadgePulsing = useAppSelector(
+    selectListCardtextBadgePulsing,
   )
   const cardtextPlainText = useAppSelector(selectCardtextPlainText)
   const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
@@ -328,6 +340,14 @@ export const Toolbar = ({
     }, 400)
     return () => window.clearTimeout(id)
   }, [dispatch, listCardphotoBadgePulsing, listCardphotoBadgePulseSeq])
+
+  useEffect(() => {
+    if (!listCardtextBadgePulsing) return
+    const id = window.setTimeout(() => {
+      dispatch(clearListCardtextBadgePulse())
+    }, 400)
+    return () => window.clearTimeout(id)
+  }, [dispatch, listCardtextBadgePulsing, listCardtextBadgePulseSeq])
 
   const sectionsWithFixedWidth = ['cardphoto']
   const toolbarStyle = sectionsWithFixedWidth.includes(section)
@@ -585,12 +605,19 @@ export const Toolbar = ({
       mobileAddressFocus.addressListBadgePulseSeq > 0
     const listCardphotoBadgePulseActive =
       key === 'listCardphoto' && listCardphotoBadgePulsing
-    const badgePulsing = addressListBadgePulsing || listCardphotoBadgePulseActive
+    const listCardtextBadgePulseActive =
+      key === 'listCardtext' && listCardtextBadgePulsing
+    const badgePulsing =
+      addressListBadgePulsing ||
+      listCardphotoBadgePulseActive ||
+      listCardtextBadgePulseActive
     const badgePulseKey = addressListBadgePulsing
       ? `badge-pulse-${mobileAddressFocus?.addressListBadgePulseSeq}`
       : listCardphotoBadgePulseActive
         ? `badge-pulse-listCardphoto-${listCardphotoBadgePulseSeq}`
-        : undefined
+        : listCardtextBadgePulseActive
+          ? `badge-pulse-listCardtext-${listCardtextBadgePulseSeq}`
+          : undefined
 
     if (
       (section === 'cardtextEditor' || section === 'cardtextCreate') &&
@@ -703,6 +730,12 @@ export const Toolbar = ({
             section === 'cardphotoView'
           ) {
             dispatch(pulseListCardphotoBadge())
+          }
+          if (
+            (key === 'addList' || key === 'removeFromList') &&
+            section === 'cardtextView'
+          ) {
+            dispatch(pulseListCardtextBadge())
           }
           const stopDefault = onActionClick?.(actionIconKey)
           if (stopDefault !== false) {
