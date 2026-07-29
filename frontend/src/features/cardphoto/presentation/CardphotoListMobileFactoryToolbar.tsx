@@ -65,7 +65,7 @@ export const CardphotoListMobileFactoryLowerToolbar: React.FC = () => {
   return null
 }
 
-/** Mobile factory: верхний ряд — apply слева, заголовок, return справа. */
+/** Mobile factory: верхний ряд — applyMedium слева, заголовок, return справа. */
 export const CardphotoListMobileFactoryUpperToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
   const title = useAppSelector(selectCardphotoTitle)
@@ -80,7 +80,7 @@ export const CardphotoListMobileFactoryUpperToolbar: React.FC = () => {
     return [
       {
         group: 'cardphoto',
-        icons: [{ key: 'apply', state: applyState }],
+        icons: [{ key: 'applyMedium', state: applyState }],
         status: 'enabled',
       },
     ]
@@ -97,6 +97,20 @@ export const CardphotoListMobileFactoryUpperToolbar: React.FC = () => {
     )
   }, [dispatch])
 
+  const handleApplyAction = useCallback(
+    (key: IconKey) => {
+      if (key !== 'applyMedium') return
+      /**
+       * Keep the list selection in View: close the list without postcard Apply.
+       * Final Apply stays on the View toolbar (`apply`).
+       * Must intercept — saga maps applyMedium → crop confirm.
+       */
+      closeList()
+      return false
+    },
+    [closeList],
+  )
+
   const handleAction = useCallback(
     (key: IconKey) => {
       if (key !== 'return') return
@@ -112,6 +126,7 @@ export const CardphotoListMobileFactoryUpperToolbar: React.FC = () => {
         section="cardphoto"
         groupsOverride={applyToolbar}
         className={toolbarStyles.toolbarAromaUpperApply}
+        onActionClick={handleApplyAction}
       />
       {centralTemplateTitle ? (
         <div className={styles.upperTitle} title={centralTemplateTitle}>
