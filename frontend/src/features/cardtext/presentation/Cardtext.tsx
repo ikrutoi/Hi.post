@@ -30,6 +30,7 @@ import {
   selectCardtextTemplatesListItems,
   selectCardtextTemplatesListLoading,
   selectCardtextViewInQuickList,
+  selectCardtextIsComplete,
 } from '@cardtext/infrastructure/selectors'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import { CARDTEXT_VIEW_TOOLBAR } from '@toolbar/domain/types/cardtext.types'
@@ -144,6 +145,7 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
     selectToolbarSectionState('cardtextView'),
   )
   const cardtextViewInQuickList = useAppSelector(selectCardtextViewInQuickList)
+  const cardtextIsComplete = useAppSelector(selectCardtextIsComplete)
 
   const {
     titleInputRef,
@@ -349,7 +351,9 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
                   style={style}
                   titleStripEditing={forceEditingTitle}
                   onDelete={isMobileLayout ? undefined : handleViewDelete}
-                  showListIndicator={cardtextViewInQuickList}
+                  showListIndicator={
+                    cardtextViewInQuickList && !cardtextIsComplete
+                  }
                 />
               </div>
             ) : (
