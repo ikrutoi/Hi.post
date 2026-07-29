@@ -277,7 +277,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     showMobileCardPieListInFactory,
   ])
 
-  const canCyclePlanPies = planPies.length > 0
+  const canCyclePlanPies = planPies.length > 1
   /**
    * Mobile: один центральный CardPie вместо пары left/right на десктопе.
    * При открытом списке корзины/истории — archive pie выбранной строки;
@@ -469,13 +469,22 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     notebookStripSection,
   ])
 
-  /** Left/assembly in central pie: right accent on the active mini (or sole plan pie). */
+  /**
+   * Multi-date minis: all accented in overview; only the cycled pie while browsing.
+   * Single plan pie: keep a sole accent.
+   */
   const gutterHighlightPlanPieId = useMemo(() => {
     if (mobileCentralPieDisplay !== 'assembly') return null
+    if (planPies.length > 1) return selectedPlanPieId
     if (selectedPlanPieId != null) return selectedPlanPieId
     if (planPies.length === 1) return planPies[0]?.id ?? null
     return null
   }, [mobileCentralPieDisplay, selectedPlanPieId, planPies])
+
+  const gutterHighlightAllPlanPies =
+    mobileCentralPieDisplay === 'assembly' &&
+    planPies.length > 1 &&
+    selectedPlanPieId == null
 
   const mobileCentralArchivePostcardStatus = useMemo(() => {
     if (mobileCentralArchivePreview == null) return undefined
@@ -921,6 +930,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                     planPies={planPies}
                     selectedPlanPieId={selectedPlanPieId}
                     highlightPlanPieId={gutterHighlightPlanPieId}
+                    highlightAllPlanPies={gutterHighlightAllPlanPies}
                     onSelectPlanPie={handleSelectPlanPie}
                   />
                   <div className={styles.mobilePieStage}>

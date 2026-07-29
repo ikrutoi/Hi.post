@@ -9,6 +9,8 @@ type MobileCardPieGutterMinisProps = {
   selectedPlanPieId: string | null
   /** When set, only this mini shows the right accent (left/assembly in central pie). */
   highlightPlanPieId?: string | null
+  /** Multi-date factory strip: accent every mini pie. */
+  highlightAllPlanPies?: boolean
   onSelectPlanPie: (id: string) => void
 }
 
@@ -17,6 +19,7 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
     planPies,
     selectedPlanPieId,
     highlightPlanPieId,
+    highlightAllPlanPies = false,
     onSelectPlanPie,
   }) => {
     const accentPlanPieId = highlightPlanPieId ?? selectedPlanPieId
@@ -28,7 +31,11 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
             key={id}
             type="button"
             className={styles.mobilePieGutterMiniItem}
-            data-selected={accentPlanPieId === id ? 'true' : undefined}
+            data-selected={
+              highlightAllPlanPies || accentPlanPieId === id
+                ? 'true'
+                : undefined
+            }
             data-ready={isPostcardPieAllComplete(sections) ? 'true' : undefined}
             aria-pressed={selectedPlanPieId === id}
             aria-label="Open plan CardPie"
