@@ -31,6 +31,9 @@ export interface CardphotoUiState {
   sessionPendingProcessedId: string | null
   /** После addList / apply: точка на cardphotoAdd → reopen create с userOriginalData. */
   originalUploadReminderActive: boolean
+  /** Upper listCardphoto badge pulse after View addList / removeFromList. */
+  listCardphotoBadgePulseSeq: number
+  listCardphotoBadgePulsing: boolean
 }
 
 const initialUiState: CardphotoUiState = {
@@ -46,6 +49,8 @@ const initialUiState: CardphotoUiState = {
   viewReturnSnapshot: null,
   sessionPendingProcessedId: null,
   originalUploadReminderActive: false,
+  listCardphotoBadgePulseSeq: 0,
+  listCardphotoBadgePulsing: false,
 }
 
 export const cardphotoUiSlice = createSlice({
@@ -136,6 +141,15 @@ export const cardphotoUiSlice = createSlice({
       state.originalUploadReminderActive = action.payload
     },
 
+    pulseListCardphotoBadge(state) {
+      state.listCardphotoBadgePulseSeq += 1
+      state.listCardphotoBadgePulsing = true
+    },
+
+    clearListCardphotoBadgePulse(state) {
+      state.listCardphotoBadgePulsing = false
+    },
+
     closeCardphotoViewRequested(_state) {},
     editCardphotoViewRequested(_state) {},
     deleteCardphotoFromViewRequested(_state) {},
@@ -163,6 +177,8 @@ export const {
   setSessionPendingProcessedId,
   clearSessionPendingProcessedId,
   setOriginalUploadReminderActive,
+  pulseListCardphotoBadge,
+  clearListCardphotoBadgePulse,
   closeCardphotoViewRequested,
   editCardphotoViewRequested,
   deleteCardphotoFromViewRequested,

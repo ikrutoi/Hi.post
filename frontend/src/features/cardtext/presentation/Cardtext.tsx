@@ -46,6 +46,7 @@ import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcard
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
 import { useArchiveEditPeekGate } from '@cardPanel/application/hooks/useArchiveEditPeekGate'
+import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { MobileInlineToolbarRow } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 
 interface CardtextProps {
@@ -137,6 +138,7 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
 
   const dispatch = useAppDispatch()
   const { isMobileLayout } = useSizeFacade()
+  const { assemblyCardtextSimplifiedPeek } = useMobileFactoryListChrome()
   const viewToolbarState = useAppSelector(
     selectToolbarSectionState('cardtextView'),
   )
@@ -226,9 +228,11 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
     },
   })
 
-  /** Плейсхолдер без сессии: не cardtextView/addList, даже если на открытке есть applied. */
+  /** После Apply в сборке — упрощённый peek: нижний ряд без иконок View. */
   const showCardtextToolbarControls =
-    factorySessionActive && !hideEmptyCreateToolbar
+    factorySessionActive &&
+    !hideEmptyCreateToolbar &&
+    !assemblyCardtextSimplifiedPeek
   const showCardtextToolbarRow = showCardtextToolbarControls
 
   useLoadCardtextTemplatesWhenUnknown(

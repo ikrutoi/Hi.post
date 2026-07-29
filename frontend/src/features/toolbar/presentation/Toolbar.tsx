@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import clsx from 'clsx'
-import { useAppSelector } from '@app/hooks'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { useToolbarFacade } from '../application/facades'
 import { useCardtextFacade } from '@cardtext/application/facades'
 import { useSizeFacade } from '@layout/application/facades'
@@ -32,7 +32,13 @@ import {
   selectIsCurrentCropApplied,
   selectCardphotoListSortMode,
   selectCardphotoListPanelDensity,
+  selectListCardphotoBadgePulseSeq,
+  selectListCardphotoBadgePulsing,
 } from '@/features/cardphoto/infrastructure/selectors'
+import {
+  clearListCardphotoBadgePulse,
+  pulseListCardphotoBadge,
+} from '@/features/cardphoto/infrastructure/state'
 import { getCardphotoListSortIconForMode } from '@cardphoto/application/helpers/cardphotoListSort'
 import {
   getHistoryListSortIconForMode,
@@ -111,6 +117,7 @@ export const Toolbar = ({
       ? { ...storeState, ...stateOverride }
       : storeState
   const { onAction } = toolbarActions
+  const dispatch = useAppDispatch()
   const { cardPieEditEngaged, exitArchiveEditToSectionPeek } =
     useRightListArchiveMini()
   const mobileAddressFocus = useEnvelopeMobileAddressFocus()
@@ -123,6 +130,12 @@ export const Toolbar = ({
     useSizeFacade()
 
   const cardphotoApplied = useAppSelector(selectIsCurrentCropApplied)
+  const listCardphotoBadgePulseSeq = useAppSelector(
+    selectListCardphotoBadgePulseSeq,
+  )
+  const listCardphotoBadgePulsing = useAppSelector(
+    selectListCardphotoBadgePulsing,
+  )
   const cardtextPlainText = useAppSelector(selectCardtextPlainText)
   const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
   const sandboxSender = useAppSelector(selectArchiveSandboxSender)
@@ -306,6 +319,15 @@ export const Toolbar = ({
       }
     }
   }, [section, groups, sectionMenuHeight, setSectionMenuHeight])
+
+  /** Same duration as addressList badge pulse (0.2s in + 0.2s out). */
+  useEffect(() => {
+    if (!listCardphotoBadgePulsing) return
+    const id = window.setTimeout(() => {
+      dispatch(clearListCardphotoBadgePulse())
+    }, 400)
+    return () => window.clearTimeout(id)
+  }, [dispatch, listCardphotoBadgePulsing, listCardphotoBadgePulseSeq])
 
   const sectionsWithFixedWidth = ['cardphoto']
   const toolbarStyle = sectionsWithFixedWidth.includes(section)
@@ -561,6 +583,14 @@ export const Toolbar = ({
       mobileAddressFocus?.addressListBadgePulseSide ===
         addressListBadgePulseSide &&
       mobileAddressFocus.addressListBadgePulseSeq > 0
+    const listCardphotoBadgePulseActive =
+      key === 'listCardphoto' && listCardphotoBadgePulsing
+    const badgePulsing = addressListBadgePulsing || listCardphotoBadgePulseActive
+    const badgePulseKey = addressListBadgePulsing
+      ? `badge-pulse-${mobileAddressFocus?.addressListBadgePulseSeq}`
+      : listCardphotoBadgePulseActive
+        ? `badge-pulse-listCardphoto-${listCardphotoBadgePulseSeq}`
+        : undefined
 
     if (
       (section === 'cardtextEditor' || section === 'cardtextCreate') &&
@@ -668,6 +698,12 @@ export const Toolbar = ({
               section === 'senderView' ? 'sender' : 'recipient',
             )
           }
+          if (
+            (key === 'addList' || key === 'removeFromList') &&
+            section === 'cardphotoView'
+          ) {
+            dispatch(pulseListCardphotoBadge())
+          }
           const stopDefault = onActionClick?.(actionIconKey)
           if (stopDefault !== false) {
             const actionPayload =
@@ -756,13 +792,9 @@ export const Toolbar = ({
             className={clsx(
               styles.toolbarBadge,
               editorPieCartAdd && styles.toolbarBadgePlus,
-              addressListBadgePulsing && styles.toolbarBadgePulse,
+              badgePulsing && styles.toolbarBadgePulse,
             )}
-            key={
-              addressListBadgePulsing
-                ? `badge-pulse-${mobileAddressFocus?.addressListBadgePulseSeq}`
-                : undefined
-            }
+            key={badgePulseKey}
           >
             <span className={styles.toolbarBadgeValue}>{badge}</span>
           </span>

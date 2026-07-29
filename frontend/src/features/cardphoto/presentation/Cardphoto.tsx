@@ -20,6 +20,7 @@ import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiv
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
 import { useArchiveEditPeekGate } from '@cardPanel/application/hooks/useArchiveEditPeekGate'
+import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { MobileInlineToolbarRow } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import { IconSectionMenuCardphoto } from '@shared/ui/icons'
 import { getToolbarIcon } from '@shared/utils/icons'
@@ -97,6 +98,7 @@ const CardphotoRightListMirror: React.FC = () => {
 const CardphotoSessionEditor: React.FC = () => {
   const dispatch = useAppDispatch()
   const { isMobileLayout } = useSizeFacade()
+  const { assemblyCardphotoSimplifiedPeek } = useMobileFactoryListChrome()
   const { activeImage, assetToolbar } = useCardphotoFacade()
   const title = useAppSelector(selectCardphotoTitle)
   const createToolbarState = useAppSelector(
@@ -137,7 +139,9 @@ const CardphotoSessionEditor: React.FC = () => {
     }
     return undefined
   }, [assetToolbar, isMobileLayout, viewToolbarState])
-  const showAssetToolbar = !!activeImage && !!assetToolbar
+  /** После Apply в сборке — упрощённый peek: нижний ряд без иконок View. */
+  const showAssetToolbar =
+    !!activeImage && !!assetToolbar && !assemblyCardphotoSimplifiedPeek
   const showTemplateTitleStrip = assetToolbar === 'cardphotoView' && !!activeImage
   const displayTitle = title.trim()
 

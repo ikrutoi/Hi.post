@@ -64,3 +64,13 @@ export const selectCardphotoViewReturnSnapshot = createSelector(
   [selectCardphotoUi],
   (ui) => ui.viewReturnSnapshot,
 )
+
+export const selectListCardphotoBadgePulseSeq = createSelector(
+  [selectCardphotoUi],
+  (ui) => ui.listCardphotoBadgePulseSeq ?? 0,
+)
+
+export const selectListCardphotoBadgePulsing = createSelector(
+  [selectCardphotoUi],
+  (ui) => Boolean(ui.listCardphotoBadgePulsing),
+)
