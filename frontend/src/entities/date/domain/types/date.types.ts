@@ -11,11 +11,18 @@ export type DispatchDateList = DispatchDate[]
 export type FirstDayOfWeekPreference = 'Sun' | 'Mon'
 
 export interface DateState {
+  /** Черновик календаря (клики по дням) — не заполняет CardPie, пока нет Apply. */
   selectedDate: SelectedDispatchDate
   selectedDates: DispatchDateList
+  /**
+   * Зафиксированный выбор после Apply — секция даты CardPie / план отправки.
+   * Пусто, пока пользователь не нажал apply.
+   */
+  appliedDates: DispatchDateList
   isMultiDateMode: boolean
   multiGroupId: string | null
   // isHistoryMode: boolean
+  /** true, когда `appliedDates.length > 0`. */
   isComplete: boolean
   firstDayOfWeek: FirstDayOfWeekPreference
   cachedSingleDate: SelectedDispatchDate

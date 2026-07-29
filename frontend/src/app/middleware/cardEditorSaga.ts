@@ -11,6 +11,8 @@ import {
   clearDate,
   hydrateDateFromSession,
   pickDispatchDate,
+  applyDispatchDates,
+  clearAppliedDates,
 } from '@date/infrastructure/state'
 import { setAroma, clear as clearAroma } from '@aroma/infrastructure/state'
 import {
@@ -249,6 +251,8 @@ export function* cardEditorSaga() {
       setDate.type,
       setSelectedDates.type,
       pickDispatchDate.type,
+      applyDispatchDates.type,
+      clearAppliedDates.type,
       hydrateDateFromSession.type,
     ],
     syncDateSet,
@@ -289,6 +293,8 @@ export function* cardEditorSaga() {
       setDate.type,
       setSelectedDates.type,
       pickDispatchDate.type,
+      applyDispatchDates.type,
+      clearAppliedDates.type,
       setMultiDateMode.type,
       hydrateDateFromSession.type,
       clearDate.type,

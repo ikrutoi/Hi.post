@@ -14,7 +14,7 @@ import {
 } from '@cardphoto/infrastructure/selectors'
 import {
   selectIsDateComplete,
-  selectMergedDispatchDates,
+  selectDraftDispatchDates,
 } from '@date/infrastructure/selectors'
 import { DispatchDate } from '@entities/date'
 import { CardSection } from '@shared/config/constants'
@@ -95,7 +95,7 @@ export const selectCardsByDateMap = createSelector(
     selectAllCards,
     selectCartItems,
     selectCardphotoPreview,
-    selectMergedDispatchDates,
+    selectDraftDispatchDates,
     (state: RootState) => state.sectionEditorMenu.activeSection,
     selectNotebookStripTab,
   ],
@@ -103,7 +103,7 @@ export const selectCardsByDateMap = createSelector(
     allCards: Card[],
     cartItems: PostcardHydrated[],
     photoPreview,
-    activeDates,
+    draftDates,
     editorMenuActiveSection,
     notebookStripTab,
   ) => {
@@ -114,7 +114,7 @@ export const selectCardsByDateMap = createSelector(
     )
 
     const isActiveEditorDate = (d: DispatchDate) =>
-      activeDates.some((a) => sameDispatchDateKey(a, d))
+      draftDates.some((a) => sameDispatchDateKey(a, d))
 
     const getEntry = (date: DispatchDate) => {
       const key = `${date.year}-${date.month}-${date.day}`
@@ -173,14 +173,18 @@ export const selectCardsByDateMap = createSelector(
         }
       }
 
+      /**
+       * Live session photo on calendar cells follows draft day clicks
+       * (Apply still gates CardPie / processed sync via appliedDates).
+       */
       if (photoPreview?.previewUrl) {
-        for (const activeDate of activeDates) {
-          const entry = getEntry(activeDate)
-          const dk = `${activeDate.year}-${activeDate.month}-${activeDate.day}`
+        for (const draftDate of draftDates) {
+          const entry = getEntry(draftDate)
+          const dk = `${draftDate.year}-${draftDate.month}-${draftDate.day}`
           entry.processed = {
             cardId: 'current_session',
             rowKey: `live-session:${dk}`,
-            date: activeDate,
+            date: draftDate,
             previewUrl: photoPreview.previewUrl,
             status: 'cart',
             isProcessed: true,
@@ -189,8 +193,8 @@ export const selectCardsByDateMap = createSelector(
         }
       }
 
-      for (const activeDate of activeDates) {
-        getEntry(activeDate)
+      for (const draftDate of draftDates) {
+        getEntry(draftDate)
       }
     }
 

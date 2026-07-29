@@ -42,9 +42,11 @@ import { POSTCARD_DISPATCH_DATE_FALLBACK } from '@entities/postcard'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
+import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { MobileInlineToolbarRow } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import { MobileDateCalendarToolbarSlider } from '@date/dateHeader/presentation/MobileDateCalendarToolbarSlider'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
+import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
 import {
   computeCartLegendStatusCounts,
   computeHistoryLegendStatusCounts,
@@ -112,6 +114,8 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
     listRowInner,
     listRowLocalId,
   } = useRightListArchiveMini()
+  const { assemblyDateSimplifiedPeek } = useMobileFactoryListChrome()
+  const appliedDispatchDates = useAppSelector(selectMergedDispatchDates)
   const isMobileFactoryChromePeek =
     rightPieDatePeekNoToolbar ||
     rightPieCardphotoPeekNoToolbar ||
@@ -119,9 +123,8 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
     rightPieEnvelopePeekNoToolbar ||
     rightPieAromaPeekNoToolbar
   /** Peek фабрики из CardPie: боковые полосы секции «Дата», не strip корзины/истории. */
-  const gutterStripSection: DateStripSection = isMobileFactoryChromePeek
-    ? 'date'
-    : section
+  const gutterStripSection: DateStripSection =
+    isMobileFactoryChromePeek || assemblyDateSimplifiedPeek ? 'date' : section
   const currentDate = useMemo(() => getCurrentDate(), [])
   const cartItems = useAppSelector(selectCartItems)
   const { flashParts, triggerFlash } = useFlashEffect()
@@ -146,7 +149,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   const { legendStatusCounts: cartLegendStatusCounts, cartUnderlyingPostcardCount } =
     useMemo(() => computeCartLegendStatusCounts(cartItems), [cartItems])
   const showMobileSliderToolbar =
-    isMobileLayout && !rightPieDatePeekNoToolbar
+    isMobileLayout && !rightPieDatePeekNoToolbar && !assemblyDateSimplifiedPeek
 
   /** Открытие/закрытие CartListPanel управляется явными действиями (toolbar/tabs/close), без авто-переоткрытия из центра. */
 
@@ -205,14 +208,25 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
 
   useAutoActivateDateSection()
 
-  const peekDispatchDate = useMemo(
-    () =>
+  const peekDispatchDate = useMemo(() => {
+    if (
       rightPieDatePeekNoToolbar &&
       (section === 'date' || section === 'cart' || section === 'history')
-        ? peekPrimaryDispatchDate(listRowInner)
-        : null,
-    [rightPieDatePeekNoToolbar, section, listRowInner, listRowLocalId],
-  )
+    ) {
+      return peekPrimaryDispatchDate(listRowInner)
+    }
+    if (assemblyDateSimplifiedPeek && appliedDispatchDates.length > 0) {
+      return appliedDispatchDates[0] ?? null
+    }
+    return null
+  }, [
+    rightPieDatePeekNoToolbar,
+    assemblyDateSimplifiedPeek,
+    appliedDispatchDates,
+    section,
+    listRowInner,
+    listRowLocalId,
+  ])
   const peekDateDisabled = useMemo(() => {
     if (listRowLocalId == null) return false
     const postcard =
@@ -268,7 +282,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   )
 
   if (
-    rightPieDatePeekNoToolbar &&
+    (rightPieDatePeekNoToolbar || assemblyDateSimplifiedPeek) &&
     (section === 'date' || section === 'cart' || section === 'history')
   ) {
     const d = peekDispatchDate

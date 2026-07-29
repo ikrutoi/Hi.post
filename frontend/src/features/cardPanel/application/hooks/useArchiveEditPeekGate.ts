@@ -20,7 +20,7 @@ import {
   selectArchiveEnvelopeSandboxLocalId,
 } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import { selectSelectedAroma } from '@aroma/infrastructure/selectors'
-import { selectSelectedDates } from '@date/infrastructure/selectors'
+import { selectAppliedDates } from '@date/infrastructure/selectors'
 
 /**
  * Пока cardPieEdit гидратит session из выбранной строки корзины/истории,
@@ -47,7 +47,7 @@ export function useArchiveEditPeekGate(section: CardPanelSection): boolean {
   const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
   const sandboxLocalId = useAppSelector(selectArchiveEnvelopeSandboxLocalId)
   const selectedAroma = useAppSelector(selectSelectedAroma)
-  const selectedDates = useAppSelector(selectSelectedDates)
+  const selectedDates = useAppSelector(selectAppliedDates)
 
   return useMemo(() => {
     if (!cardPieEditEngaged || activePieSide !== 'right') return false

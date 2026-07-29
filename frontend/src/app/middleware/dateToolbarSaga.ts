@@ -20,6 +20,10 @@ import {
   selectIsDateListPanelOpen,
   selectPostcardStatuses,
 } from '@date/calendar/infrastructure/selectors'
+import {
+  applyDispatchDates,
+} from '@date/infrastructure/state'
+import { selectCanApplyDispatchDates } from '@date/infrastructure/selectors'
 import { PostcardStatuses } from '@/entities/postcard/domain/types'
 import { storeAdapters } from '@db/adapters/storeAdapters'
 import {
@@ -106,6 +110,14 @@ function* handleDateToolbarAction(
 ): SagaIterator {
   const { section, key } = action.payload
   if (section !== 'date') return
+
+  if (key === 'apply') {
+    const canApply: boolean = yield select(selectCanApplyDispatchDates)
+    if (!canApply) return
+    yield put(applyDispatchDates())
+    return
+  }
+
   if (key === 'listDate') {
     const listOpen: boolean = yield select(selectIsDateListPanelOpen)
     const nextOpen = !listOpen

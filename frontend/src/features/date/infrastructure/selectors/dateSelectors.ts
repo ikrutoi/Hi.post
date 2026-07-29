@@ -28,6 +28,9 @@ export const selectSelectedDate = (state: RootState): SelectedDispatchDate =>
 export const selectSelectedDates = (state: RootState): DispatchDate[] =>
   state.date.selectedDates
 
+export const selectAppliedDates = (state: RootState): DispatchDate[] =>
+  state.date.appliedDates ?? []
+
 export const selectIsMultiDateMode = (state: RootState): boolean =>
   state.date.isMultiDateMode
 
@@ -120,16 +123,15 @@ export function flattenOpenDayPanelItems(
 export const selectDateListPlanRowCount = createSelector(
   [
     selectIsMultiDateMode,
-    selectSelectedDates,
-    selectSelectedDate,
+    selectAppliedDates,
     selectExcludedDispatchBranchSet,
     selectRecipientPlanBranchSlotKeys,
   ],
-  (isMulti, selectedDates, selectedDate, excluded, slotKeys) => {
+  (isMulti, appliedDates, excluded, slotKeys) => {
     const cartBranchKeys = new Set<string>()
     if (isMulti) {
       let c = 0
-      for (const d of selectedDates) {
+      for (const d of appliedDates) {
         c += countPlanRowsForDispatchDate(
           d,
           slotKeys,
@@ -140,9 +142,10 @@ export const selectDateListPlanRowCount = createSelector(
       }
       return c
     }
-    if (selectedDate) {
+    const single = appliedDates[appliedDates.length - 1] ?? null
+    if (single) {
       return countPlanRowsForDispatchDate(
-        selectedDate,
+        single,
         slotKeys,
         excluded,
         cartBranchKeys,
@@ -160,8 +163,7 @@ export const selectDateListPlanRowCount = createSelector(
 export const selectEditorPieCardPieListRowCount = createSelector(
   [
     selectIsMultiDateMode,
-    selectSelectedDates,
-    selectSelectedDate,
+    selectAppliedDates,
     selectExcludedDispatchBranchSet,
     selectRecipientPlanBranchSlotKeys,
     selectCartItems,
@@ -173,8 +175,7 @@ export const selectEditorPieCardPieListRowCount = createSelector(
   ],
   (
     isMulti,
-    selectedDates,
-    selectedDate,
+    appliedDates,
     excluded,
     slotKeys,
     cartItems,
@@ -195,7 +196,7 @@ export const selectEditorPieCardPieListRowCount = createSelector(
 
     let count = 0
     if (isMulti) {
-      for (const d of selectedDates) {
+      for (const d of appliedDates) {
         count += countPlanRowsForDispatchDate(
           d,
           slotKeys,
@@ -204,14 +205,17 @@ export const selectEditorPieCardPieListRowCount = createSelector(
           true,
         )
       }
-    } else if (selectedDate) {
-      count = countPlanRowsForDispatchDate(
-        selectedDate,
-        slotKeys,
-        excluded,
-        cartBranchKeys,
-        true,
-      )
+    } else {
+      const single = appliedDates[appliedDates.length - 1] ?? null
+      if (single) {
+        count = countPlanRowsForDispatchDate(
+          single,
+          slotKeys,
+          excluded,
+          cartBranchKeys,
+          true,
+        )
+      }
     }
 
     if (count === 0 && hasAnySectionFilled) {
@@ -242,11 +246,33 @@ export const selectDateListToolbarBadgeCount = selectDateListPlanRowCount
 
 const EMPTY_DISPATCH_DATES: DispatchDate[] = []
 
-export const selectMergedDispatchDates = createSelector(
+/** Черновик календаря (клики по дням) — подсветка ячеек. */
+export const selectDraftDispatchDates = createSelector(
   [selectSelectedDate, selectSelectedDates, selectIsMultiDateMode],
   (single, list, multi): DispatchDate[] => {
     if (!multi) return single ? [single] : EMPTY_DISPATCH_DATES
     return [...list]
+  },
+)
+
+/**
+ * Зафиксированные даты после Apply — CardPie / план / session payload.
+ * До Apply список пуст, даже если в календаре есть черновик.
+ */
+export const selectMergedDispatchDates = createSelector(
+  [selectAppliedDates],
+  (applied): DispatchDate[] =>
+    applied.length > 0 ? [...applied] : EMPTY_DISPATCH_DATES,
+)
+
+/** Apply доступен, когда черновик непустой и отличается от applied. */
+export const selectCanApplyDispatchDates = createSelector(
+  [selectDraftDispatchDates, selectAppliedDates],
+  (draft, applied) => {
+    if (draft.length === 0) return false
+    if (draft.length !== applied.length) return true
+    const draftKeys = new Set(draft.map(dispatchDateKey))
+    return applied.some((d) => !draftKeys.has(dispatchDateKey(d)))
   },
 )
 

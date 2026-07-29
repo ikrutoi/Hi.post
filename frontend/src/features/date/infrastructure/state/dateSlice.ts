@@ -11,6 +11,7 @@ import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
 const initialState: DateState = {
   selectedDate: null,
   selectedDates: [],
+  appliedDates: [],
   isMultiDateMode: true,
   multiGroupId: nanoid(),
   // isHistoryMode: false,
@@ -29,6 +30,16 @@ const sameDispatchDate = (a: DispatchDate, b: DispatchDate) =>
 const dispatchDateKey = (d: DispatchDate) =>
   `${d.year}-${d.month}-${d.day}`
 
+function cloneDates(dates: DispatchDate[]): DispatchDate[] {
+  return dates.map((d) => ({ ...d }))
+}
+
+/** Commit draft → applied (Apply / hydrate complete / archive copy). */
+function commitAppliedFromDraft(state: DateState, dates: DispatchDate[]) {
+  state.appliedDates = cloneDates(dates)
+  state.isComplete = dates.length > 0
+}
+
 /** Оставить только ветки, чья дата всё ещё в списке выбранных дней отправки. */
 function pruneExcludedDispatchBranches(state: DateState, dates: DispatchDate[]) {
   const allowed = new Set(dates.map(dispatchDateKey))
@@ -42,15 +53,20 @@ export const dateSlice = createSlice({
   name: 'date',
   initialState,
   reducers: {
+    /** Полная подстановка даты (donor / session commit) — draft + applied. */
     setDate(state, action: PayloadAction<DispatchDate>) {
       const d = action.payload
       state.selectedDate = d
       state.selectedDates = [{ ...d }]
-      state.isComplete = true
+      commitAppliedFromDraft(state, state.selectedDates)
       state.excludedDispatchBranches = []
       state.cachedMultiDates = state.selectedDates.map((x) => ({ ...x }))
     },
 
+    /**
+     * Клик по дню в календаре: только черновик.
+     * CardPie / plan очищаются до следующего `applyDispatchDates`.
+     */
     pickDispatchDate(state, action: PayloadAction<DispatchDate>) {
       const d = action.payload
       const idx = state.selectedDates.findIndex((x) => sameDispatchDate(x, d))
@@ -58,22 +74,23 @@ export const dateSlice = createSlice({
         state.selectedDates.splice(idx, 1)
         if (state.selectedDates.length === 0) {
           state.selectedDate = null
-          state.isComplete = false
           state.cachedSingleDate = null
         } else {
           state.selectedDate =
             state.selectedDates[state.selectedDates.length - 1]
-          state.isComplete = true
         }
       } else {
         state.selectedDates.push(d)
         state.selectedDate = d
-        state.isComplete = true
       }
       state.cachedMultiDates = state.selectedDates.map((x) => ({ ...x }))
+      /** Пока нет Apply — секция даты CardPie пустая. */
+      state.appliedDates = []
+      state.isComplete = false
       pruneExcludedDispatchBranches(state, state.selectedDates)
     },
 
+    /** Подстановка списка дат (archive / backup) — draft + applied. */
     setSelectedDates(state, action: PayloadAction<DispatchDate[]>) {
       const prevLen = state.selectedDates.length
       state.selectedDates = action.payload
@@ -81,11 +98,10 @@ export const dateSlice = createSlice({
         state.selectedDate = {
           ...action.payload[action.payload.length - 1],
         }
-        state.isComplete = true
       } else {
         state.selectedDate = null
-        state.isComplete = false
       }
+      commitAppliedFromDraft(state, state.selectedDates)
       state.cachedMultiDates = state.selectedDates.map((x) => ({ ...x }))
       if (action.payload.length === 0 && prevLen > 0) {
         state.cachedSingleDate = null
@@ -93,9 +109,22 @@ export const dateSlice = createSlice({
       pruneExcludedDispatchBranches(state, action.payload)
     },
 
+    /** Apply: зафиксировать черновик календаря в секцию даты CardPie. */
+    applyDispatchDates(state) {
+      commitAppliedFromDraft(state, state.selectedDates)
+      pruneExcludedDispatchBranches(state, state.appliedDates)
+    },
+
+    /** Снять applied (postcardEdit), черновик календаря оставить. */
+    clearAppliedDates(state) {
+      state.appliedDates = []
+      state.isComplete = false
+    },
+
     clearDate(state) {
       state.selectedDate = null
       state.selectedDates = []
+      state.appliedDates = []
       state.isMultiDateMode = true
       state.multiGroupId = nanoid()
       state.isComplete = false
@@ -118,7 +147,6 @@ export const dateSlice = createSlice({
         state.selectedDates.length > 0
           ? { ...state.selectedDates[state.selectedDates.length - 1] }
           : null
-      state.isComplete = state.selectedDates.length > 0
       state.isMultiDateMode = true
       state.multiGroupId = nanoid()
     },
@@ -192,9 +220,18 @@ export const dateSlice = createSlice({
             : []
 
       state.isMultiDateMode = s.isMultiDateMode ?? false
-      const hasDispatchSelection =
-        state.selectedDates.length > 0 || state.selectedDate != null
-      state.isComplete = hasDispatchSelection && Boolean(s.isComplete)
+      const rawApplied = Array.isArray(s.appliedDates) ? s.appliedDates : []
+      const appliedFiltered = rawApplied.filter((d) => !orderDisabled(d))
+      const sessionComplete = Boolean(s.isComplete)
+      if (sessionComplete) {
+        state.appliedDates =
+          appliedFiltered.length > 0
+            ? appliedFiltered
+            : cloneDates(state.selectedDates)
+      } else {
+        state.appliedDates = []
+      }
+      state.isComplete = state.appliedDates.length > 0
       state.firstDayOfWeek = s.firstDayOfWeek ?? 'Sun'
       state.cachedSingleDate =
         s.cachedSingleDate != null && !orderDisabled(s.cachedSingleDate)
@@ -270,6 +307,8 @@ export const {
   setDate,
   pickDispatchDate,
   setSelectedDates,
+  applyDispatchDates,
+  clearAppliedDates,
   clearDate,
   setMultiDateMode,
   setFirstDayOfWeek,

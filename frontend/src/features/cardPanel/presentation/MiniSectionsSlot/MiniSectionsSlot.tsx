@@ -22,7 +22,7 @@ import { selectCardphotoIsComplete } from '@cardphoto/infrastructure/selectors'
 import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
 import { selectCardphotoAppliedData } from '@cardphoto/infrastructure/selectors'
 import { selectSelectedAroma } from '@aroma/infrastructure/selectors'
-import { selectSelectedDates } from '@date/infrastructure/selectors'
+import { selectAppliedDates } from '@date/infrastructure/selectors'
 import {
   selectCardtextMiniPreviewHasRenderableContent,
   selectCardtextState,
@@ -92,7 +92,7 @@ export const MiniSectionsSlot = forwardRef<
   const mergedDispatchDates = useAppSelector(selectMergedDispatchDates)
   const cardphotoAppliedData = useAppSelector(selectCardphotoAppliedData)
   const selectedAroma = useAppSelector(selectSelectedAroma)
-  const selectedDates = useAppSelector(selectSelectedDates)
+  const selectedDates = useAppSelector(selectAppliedDates)
   const cardtextState = useAppSelector(selectCardtextState)
   const cardtextMiniPreviewRenderable = useAppSelector(
     selectCardtextMiniPreviewHasRenderableContent,

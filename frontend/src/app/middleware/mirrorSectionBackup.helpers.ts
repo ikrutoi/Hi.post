@@ -31,7 +31,7 @@ import {
 } from '@date/infrastructure/state'
 import {
   selectIsMultiDateMode,
-  selectSelectedDates,
+  selectAppliedDates,
 } from '@date/infrastructure/selectors'
 import { selectSelectedAroma } from '@aroma/infrastructure/selectors'
 import { setSectionComplete } from '@entities/cardEditor/infrastructure/state'
@@ -78,7 +78,7 @@ export function* captureMirrorSectionBackup(
       return { section: 'aroma', aroma: aroma ?? null }
     }
     case 'date': {
-      const dates = yield select(selectSelectedDates)
+      const dates = yield select(selectAppliedDates)
       const isMultiDateMode: boolean = yield select(selectIsMultiDateMode)
       return {
         section: 'date',

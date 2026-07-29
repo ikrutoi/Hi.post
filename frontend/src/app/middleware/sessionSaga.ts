@@ -986,6 +986,7 @@ export function* hydrateAppSession() {
         hydrateDateFromSession({
           selectedDate: session.date.selectedDate ?? null,
           selectedDates: session.date.selectedDates ?? [],
+          appliedDates: session.date.appliedDates ?? [],
           isMultiDateMode: session.date.isMultiDateMode ?? false,
           multiGroupId: session.date.multiGroupId ?? null,
           isComplete: session.date.isComplete ?? false,

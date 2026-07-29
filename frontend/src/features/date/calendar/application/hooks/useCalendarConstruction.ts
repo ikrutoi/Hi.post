@@ -16,7 +16,7 @@ import type {
 } from '@entities/date/domain/types'
 import type { HandleCellClickParams } from '../../../cell/domain/types'
 import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
-import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
+import { selectDraftDispatchDates } from '@date/infrastructure/selectors'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import {
   selectCartCalendarDatePickMode,
@@ -74,7 +74,7 @@ export const useCalendarConstruction = ({
       ? rightArchiveCardPieHighlightFromList
       : null
   const cardsMap = useAppSelector(selectCardsByDateMap)
-  const highlightDates = useAppSelector(selectMergedDispatchDates)
+  const highlightDates = useAppSelector(selectDraftDispatchDates)
   const { year, month } = calendarViewDate
 
   const [waveStrongKeys, setWaveStrongKeys] = useState<string[]>([])

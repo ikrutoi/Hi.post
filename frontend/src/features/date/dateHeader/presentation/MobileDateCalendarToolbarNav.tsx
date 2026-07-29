@@ -13,7 +13,7 @@ import {
   selectCartDatePickSessionActive,
   selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
-import { selectIsDateComplete } from '@date/infrastructure/selectors'
+import { selectCanApplyDispatchDates } from '@date/infrastructure/selectors'
 import { endCartCalendarDatePick } from '@date/calendar/infrastructure/state'
 import { releaseCartDatePickListEntryOwnership } from '@date/calendar/application/logic/cartDatePickListEntryOwnership'
 import {
@@ -45,7 +45,7 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
   const { triggerFlash } = useFlashEffect()
   const { lastViewedCalendarDate } = useCalendarFacade()
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
-  const isDateComplete = useAppSelector(selectIsDateComplete)
+  const canApplyDispatchDates = useAppSelector(selectCanApplyDispatchDates)
   const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
   const cartDatePickSessionActive = useAppSelector(
     selectCartDatePickSessionActive,
@@ -183,13 +183,13 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
         icons: [
           {
             key: 'apply',
-            state: isDateComplete ? 'enabled' : 'disabled',
+            state: canApplyDispatchDates ? 'enabled' : 'disabled',
           },
         ],
         status: 'enabled',
       },
     ]
-  }, [isDateComplete])
+  }, [canApplyDispatchDates])
 
   return (
     <div

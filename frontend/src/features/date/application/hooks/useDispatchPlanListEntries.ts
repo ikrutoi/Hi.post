@@ -9,8 +9,7 @@ import {
   selectCachedMultiDates,
   selectCachedSingleDate,
   selectIsMultiDateMode,
-  selectSelectedDate,
-  selectSelectedDates,
+  selectAppliedDates,
   selectExcludedDispatchBranchSet,
 } from '@date/infrastructure/selectors'
 import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
@@ -121,8 +120,11 @@ export function useDispatchPlanListEntries(
     showUndatedWhenAnySectionSelected = false,
   } = options
   const dispatch = useAppDispatch()
-  const selectedDate = useAppSelector(selectSelectedDate)
-  const selectedDates = useAppSelector(selectSelectedDates)
+  const appliedDates = useAppSelector(selectAppliedDates)
+  const appliedDate =
+    appliedDates.length > 0
+      ? (appliedDates[appliedDates.length - 1] ?? null)
+      : null
   const cachedMultiDates = useAppSelector(selectCachedMultiDates)
   const isMultiDateMode = useAppSelector(selectIsMultiDateMode)
   const cachedSingleDate = useAppSelector(selectCachedSingleDate)
@@ -369,7 +371,7 @@ export function useDispatchPlanListEntries(
           )
         })
       }
-      selectedDates.forEach((d, i) => {
+      appliedDates.forEach((d, i) => {
         recipientSlots.forEach((slot, ri) => {
           const branchKey = `${dispatchDateKeyFromDispatchDate(d)}|${slot.branchKey}`
           if (excludedDispatchBranchSet.has(branchKey)) return
@@ -394,15 +396,15 @@ export function useDispatchPlanListEntries(
     }
 
     const appendSingleBlock = (includeInactiveCachedMulti: boolean) => {
-      if (selectedDate) {
+      if (appliedDate) {
         recipientSlots.forEach((slot, ri) => {
-          const branchKey = `${dispatchDateKeyFromDispatchDate(selectedDate)}|${slot.branchKey}`
+          const branchKey = `${dispatchDateKeyFromDispatchDate(appliedDate)}|${slot.branchKey}`
           if (excludedDispatchBranchSet.has(branchKey)) return
           const cartP = cartPostcardByDispatchBranchKey.get(branchKey)
           if (hideBranchesInCart && cartP) return
           entries.push(
             row(
-              selectedDate,
+              appliedDate,
               `single-rcpt-${slot.branchKey}-${ri}`,
               branchKey,
               undefined,
@@ -459,11 +461,11 @@ export function useDispatchPlanListEntries(
     ) {
       /** План пустой (например все ветки скрыты) — fallback-строка с веткой для addCart. */
       const fallbackDispatchDate: DispatchDate | null = !isMultiDateMode
-        ? selectedDate
-        : selectedDates.length === 1
-          ? (selectedDates[0] ?? null)
-          : selectedDates.length > 1
-            ? [...selectedDates].sort(compareDispatchDateChronological)[0] ??
+        ? appliedDate
+        : appliedDates.length === 1
+          ? (appliedDates[0] ?? null)
+          : appliedDates.length > 1
+            ? [...appliedDates].sort(compareDispatchDateChronological)[0] ??
               null
             : null
       const fallbackDateLabel =
@@ -531,8 +533,8 @@ export function useDispatchPlanListEntries(
     hideBranchesInCart,
     dispatch,
     isMultiDateMode,
-    selectedDate,
-    selectedDates,
+    appliedDate,
+    appliedDates,
     cachedSingleDate,
     cachedMultiDates,
     sessionRecipientDetail,

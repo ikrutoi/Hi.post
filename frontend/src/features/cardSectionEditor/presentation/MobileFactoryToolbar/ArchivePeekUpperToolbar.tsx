@@ -7,6 +7,7 @@ import type { ToolbarConfig } from '@toolbar/domain/types'
 import { setCardtextApplyPeekChrome, setCardtextAppliedData } from '@cardtext/infrastructure/state'
 import { clearApply } from '@cardphoto/infrastructure/state'
 import { clearApplied as clearAromaApplied } from '@aroma/infrastructure/state'
+import { clearAppliedDates } from '@date/infrastructure/state'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { useCloseArchiveSectionPeek } from '../../application/hooks/useCloseArchiveSectionPeek'
 import { useMobileFactoryListChrome } from '../../application/hooks/useMobileFactoryListChrome'
@@ -23,7 +24,7 @@ const ARCHIVE_PEEK_UPPER_EDIT_TOOLBAR: ToolbarConfig = [
 
 /**
  * Верхний ряд factory toolbar в упрощённом режиме: только postcardEdit слева
- * (archive peek и сборная cardtext/cardphoto/aroma после Apply).
+ * (archive peek и сборная cardtext/cardphoto/aroma/date после Apply).
  */
 export const ArchivePeekUpperToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -33,6 +34,7 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
     assemblyCardtextSimplifiedPeek,
     assemblyCardphotoSimplifiedPeek,
     assemblyAromaSimplifiedPeek,
+    assemblyDateSimplifiedPeek,
   } = useMobileFactoryListChrome()
   const {
     requestSectionEditFromPeek,
@@ -48,8 +50,9 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
   const cardphotoTint =
     assemblyCardphotoSimplifiedPeek ||
     (isArchiveSectionPeekActive && activeSection === 'cardphoto')
-  /** Date sector peek from cart/history — blue fade even if strip tab is cart. */
-  const dateTint = rightPieDatePeekNoToolbar
+  /** Date: assembly apply-peek или archive date sector peek. */
+  const dateTint =
+    assemblyDateSimplifiedPeek || rightPieDatePeekNoToolbar
 
   const handleAction = useCallback(
     (key: IconKey) => {
@@ -69,6 +72,9 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
         } else if (assemblyAromaSimplifiedPeek) {
           /** Peek = aroma уже на открытке; postcardEdit снимает apply. */
           dispatch(clearAromaApplied())
+        } else if (assemblyDateSimplifiedPeek) {
+          /** Peek = даты уже на открытке; postcardEdit снимает apply → календарь. */
+          dispatch(clearAppliedDates())
         }
         return false
       }
@@ -77,6 +83,7 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
       assemblyAromaSimplifiedPeek,
       assemblyCardphotoSimplifiedPeek,
       assemblyCardtextSimplifiedPeek,
+      assemblyDateSimplifiedPeek,
       dispatch,
       isArchiveSectionPeekActive,
       requestSectionEditFromPeek,

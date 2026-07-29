@@ -34,13 +34,11 @@ import {
   selectIsMultiDateMode,
   selectMergedDispatchDates,
   selectRecipientBranchSlotKeys,
-  selectSelectedDate,
-  selectSelectedDates,
+  selectAppliedDates,
 } from '@date/infrastructure/selectors'
 import {
   clearDate,
   excludeDispatchBranch,
-  pickDispatchDate,
   setSelectedDates,
   toggleCartForDispatchBranch,
 } from '@date/infrastructure/state'
@@ -364,16 +362,17 @@ function* pruneDispatchDatesAfterBranchExcluded(
 
   const isMulti: boolean = yield select(selectIsMultiDateMode)
   if (isMulti) {
-    const selectedDates: DispatchDate[] = yield select(selectSelectedDates)
+    const appliedDates: DispatchDate[] = yield select(selectAppliedDates)
     yield put(
       setSelectedDates(
-        selectedDates.filter((x) => !sameDispatchDate(x, parsed.date)),
+        appliedDates.filter((x) => !sameDispatchDate(x, parsed.date)),
       ),
     )
   } else {
-    const selectedDate: DispatchDate | null = yield select(selectSelectedDate)
+    const appliedDates: DispatchDate[] = yield select(selectAppliedDates)
+    const selectedDate = appliedDates[appliedDates.length - 1] ?? null
     if (selectedDate && sameDispatchDate(selectedDate, parsed.date)) {
-      yield put(pickDispatchDate(parsed.date))
+      yield put(setSelectedDates([]))
     }
   }
 }
@@ -387,9 +386,10 @@ function* pruneRecipientSlotIfNoPlanBranchesLeft(
   const isMulti: boolean = yield select(selectIsMultiDateMode)
   let dates: DispatchDate[]
   if (isMulti) {
-    dates = yield select(selectSelectedDates)
+    dates = yield select(selectAppliedDates)
   } else {
-    const selectedDate: DispatchDate | null = yield select(selectSelectedDate)
+    const appliedDates: DispatchDate[] = yield select(selectAppliedDates)
+    const selectedDate = appliedDates[appliedDates.length - 1] ?? null
     dates = selectedDate ? [selectedDate] : []
   }
   const anyLeft = dates.some((d) => {

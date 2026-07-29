@@ -40,6 +40,7 @@ import {
   selectIsCardPieListPanelOpen,
   selectIsHistoryListPanelOpen,
 } from '@date/calendar/infrastructure/selectors'
+import { selectIsDateComplete } from '@date/infrastructure/selectors'
 import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
@@ -84,6 +85,7 @@ export function useMobileFactoryListChrome() {
   )
   const aromaIsComplete = useAppSelector(selectIsAromaComplete)
   const selectedAroma = useAppSelector(selectSelectedAroma)
+  const isDateComplete = useAppSelector(selectIsDateComplete)
   const {
     activePieSide,
     rightPieCardphotoPeekNoToolbar,
@@ -195,10 +197,22 @@ export function useMobileFactoryListChrome() {
     aromaIsComplete &&
     selectedAroma != null
 
+  /**
+   * Сборная: после Apply даты — peek даты + postcardEdit (без календаря/тулбаров).
+   */
+  const assemblyDateSimplifiedPeek =
+    isMobileLayout &&
+    activeSection === 'date' &&
+    activePieSide === 'left' &&
+    !cardPieEditEngaged &&
+    !mobileArchiveSectionPeek &&
+    isDateComplete
+
   const assemblySectionSimplifiedPeek =
     assemblyCardtextSimplifiedPeek ||
     assemblyCardphotoSimplifiedPeek ||
-    assemblyAromaSimplifiedPeek
+    assemblyAromaSimplifiedPeek ||
+    assemblyDateSimplifiedPeek
 
   const mobileSectionSimplifiedPeek =
     mobileArchiveSectionPeek || assemblySectionSimplifiedPeek
@@ -402,6 +416,7 @@ export function useMobileFactoryListChrome() {
     assemblyCardtextSimplifiedPeek,
     assemblyCardphotoSimplifiedPeek,
     assemblyAromaSimplifiedPeek,
+    assemblyDateSimplifiedPeek,
     assemblySenderSimplifiedPeek,
     assemblyRecipientSimplifiedPeek,
     assemblySectionSimplifiedPeek,
