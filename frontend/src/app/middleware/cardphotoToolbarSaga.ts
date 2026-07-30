@@ -251,6 +251,11 @@ function* handleCloseCardphotoCreateSaga(): SagaIterator {
       }
     }
 
+    const userOriginalAfter: ImageMeta | null = yield select(selectUserImage)
+    if (userOriginalAfter) {
+      yield put(setOriginalUploadReminderActive(true))
+    }
+
     yield put(clearCardphotoViewReturnSnapshot())
     yield put(setCardphotoViewEditMode(false))
     yield put(markLoaded())
@@ -265,10 +270,7 @@ function* reopenCardphotoCreateFromSavedOriginalSaga(): SagaIterator {
   try {
     const state: CardphotoState | null = yield select(selectCardphotoState)
     const userOriginal = state?.userOriginalData
-    if (!userOriginal) {
-      yield call(onDownloadClick)
-      return
-    }
+    if (!userOriginal) return
 
     const assetToolbar: ReturnType<typeof selectCardphotoAssetToolbar> =
       yield select(selectCardphotoAssetToolbar)
@@ -288,7 +290,7 @@ function* reopenCardphotoCreateFromSavedOriginalSaga(): SagaIterator {
     }
 
     const record: ImageRecord | null = yield call(
-      [storeAdapters.userImages, 'getById'],
+      [storeAdapters.userImages, 'getById'] as const,
       CURRENT_EDITOR_IMAGE_ID,
     )
     const imageMeta = hydrateSessionImageMeta(
@@ -297,7 +299,6 @@ function* reopenCardphotoCreateFromSavedOriginalSaga(): SagaIterator {
     )
     if (!imageMeta) {
       console.error('reopenCardphotoCreate: cannot hydrate original image')
-      yield call(onDownloadClick)
       return
     }
 
@@ -305,45 +306,40 @@ function* reopenCardphotoCreateFromSavedOriginalSaga(): SagaIterator {
       fuelAssetRegistry,
       {
         user: imageMeta,
-        applied: state?.appliedData ?? null,
+        applied: state?.appliedData
+          ? hydrateMeta(state.appliedData)
+          : null,
         processed: null,
         stock: null,
       },
       [],
     )
 
-    const isComplete = !!state?.appliedData
     const config: WorkingConfig | null = yield call(
       rebuildConfigFromMeta,
       imageMeta,
       true,
     )
-    if (!config) {
-      yield call(onDownloadClick)
-      return
-    }
-
-    const serializableMeta = prepareForRedux(imageMeta)
-    const serializableConfig = prepareConfigForRedux(config)
+    if (!config) return
 
     yield put(clearSessionPendingProcessedId())
     yield put(
       hydrateEditor({
-        config: serializableConfig,
-        isComplete,
-        assetData: serializableMeta,
-        userOriginalData: serializableMeta,
+        config: prepareConfigForRedux(config),
+        isComplete: !!state?.appliedData,
+        assetData: prepareForRedux(imageMeta),
+        userOriginalData: prepareForRedux(imageMeta),
         ...(state?.appliedData != null
           ? { appliedData: prepareForRedux(state.appliedData) }
           : {}),
       }),
     )
+    yield put(setOriginalUploadReminderActive(false))
     yield put(markLoaded())
     yield call(syncToolbarContext)
     yield call(syncCardphotoAddToolbarState)
   } catch (error) {
     console.error('reopenCardphotoCreateFromSavedOriginalSaga', error)
-    yield call(onDownloadClick)
   }
 }
 
@@ -398,6 +394,10 @@ function* syncCardphotoToolbarAddAndBadgeSaga(): SagaIterator {
 
 function* handleDeleteCardphotoCreateUploadSaga(): SagaIterator {
   try {
+    const snapshot: CardphotoViewReturnSnapshot | null = yield select(
+      selectCardphotoViewReturnSnapshot,
+    )
+
     yield call(
       [storeAdapters.userImages, 'deleteById'],
       CURRENT_EDITOR_IMAGE_ID,
@@ -405,8 +405,27 @@ function* handleDeleteCardphotoCreateUploadSaga(): SagaIterator {
     yield put(removeUserImage())
     yield put(clearSessionPendingProcessedId())
     yield put(setOriginalUploadReminderActive(false))
-    yield put(setAssetData(null))
-    yield put(clearCurrentConfig())
+
+    /**
+     * Delete original upload while View snapshot exists (template / processed) —
+     * return to that View instead of empty create.
+     */
+    if (snapshot?.assetData && snapshot?.assetConfig) {
+      yield call(restoreCardphotoViewFromReturnSnapshotSaga, snapshot)
+    } else {
+      const state: CardphotoState | null = yield select(selectCardphotoState)
+      const appliedMeta = state?.appliedData
+        ? hydrateMeta(state.appliedData)
+        : null
+      if (appliedMeta) {
+        yield put(setProcessedImage(prepareForRedux(appliedMeta)))
+        yield call(rebuildConfigFromMeta, appliedMeta, false)
+      } else {
+        yield put(setAssetData(null))
+        yield put(clearCurrentConfig())
+      }
+    }
+
     yield put(setCardphotoViewEditMode(false))
     yield put(clearCardphotoViewReturnSnapshot())
 
@@ -562,31 +581,29 @@ export function* handleCardphotoToolbarAction(
     ) {
       const addVisual: ReturnType<typeof readCardphotoAddToolbarVisual> =
         yield select(readCardphotoAddToolbarVisual)
+      if (!addVisual.enabled) return
 
-      if (addVisual.enabled && !addVisual.hasBadge && !addVisual.hasDot) {
-        yield put(clearCardphotoViewReturnSnapshot())
-        yield call(onDownloadClick)
+      if (addVisual.hasBadge) {
+        const opened: boolean = yield call(
+          openCardphotoViewFromPendingProcessedSaga,
+        )
+        if (opened) return
+      }
+
+      const userOriginal: ImageMeta | null = yield select(selectUserImage)
+      const originalReminderActive: boolean = yield select(
+        selectCardphotoOriginalReminderActive,
+      )
+      if (
+        userOriginal &&
+        (addVisual.hasDot || originalReminderActive)
+      ) {
+        yield call(reopenCardphotoCreateFromSavedOriginalSaga)
         return
       }
 
-      if (section === 'cardphoto' && addVisual.enabled) {
-        if (addVisual.hasBadge) {
-          const opened: boolean = yield call(
-            openCardphotoViewFromPendingProcessedSaga,
-          )
-          if (opened) return
-        }
-
-        if (addVisual.hasDot) {
-          yield call(reopenCardphotoCreateFromSavedOriginalSaga)
-          return
-        }
-      }
-
-      if (addVisual.enabled) {
-        yield put(clearCardphotoViewReturnSnapshot())
-        yield call(onDownloadClick)
-      }
+      yield put(clearCardphotoViewReturnSnapshot())
+      yield call(onDownloadClick)
     }
     return
   }

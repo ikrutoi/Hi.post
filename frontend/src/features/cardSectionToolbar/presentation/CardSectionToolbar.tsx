@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
@@ -18,11 +18,24 @@ import {
 } from '@cardphoto/infrastructure/selectors'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { CARDTEXT_EDITOR_UPPER_RETURN_TOOLBAR } from '@toolbar/domain/types/cardtext.types'
-import { CARDPHOTO_CREATE_UPPER_RETURN_TOOLBAR } from '@toolbar/domain/types/cardphoto.types'
+import {
+  CARDPHOTO_CREATE_UPPER_APPLY_TOOLBAR,
+  CARDPHOTO_CREATE_UPPER_RETURN_TOOLBAR,
+} from '@toolbar/domain/types/cardphoto.types'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
-import type { IconKey } from '@shared/config/constants'
+import type { IconKey, IconState } from '@shared/config/constants'
+import type { ToolbarConfig } from '@toolbar/domain/types'
 import styles from './CardSectionToolbar.module.scss'
+
+function readApplyMediumState(raw: unknown): IconState {
+  if (raw == null) return 'disabled'
+  if (typeof raw === 'string') return raw as IconState
+  if (typeof raw === 'object' && raw !== null && 'state' in raw) {
+    return String((raw as { state: unknown }).state) as IconState
+  }
+  return 'disabled'
+}
 
 export const CardSectionToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -39,17 +52,30 @@ export const CardSectionToolbar: React.FC = () => {
     selectCardphotoViewReturnSnapshot,
   )
   const isCardphotoViewEditMode = useAppSelector(selectIsCardphotoViewEditMode)
+  const cardphotoCreateApplyRaw = useAppSelector(
+    (s) => s.toolbar?.cardphotoCreate?.applyMedium,
+  )
+  const cardphotoCreateApplyState = readApplyMediumState(cardphotoCreateApplyRaw)
   /**
-   * Create с загруженным фото — return справа → View
-   * (cardphotoAdd с Dot / edit из View / сессия с оригиналом).
+   * Create с загруженным фото — upper: applyMedium | return (без cardphoto section).
    */
-  const showCardphotoCreateReturn =
+  const showCardphotoCreateUpper =
     activeSection === 'cardphoto' &&
     cardphotoAssetToolbar === 'cardphotoCreate' &&
     cardphotoAssetData != null &&
     (cardphotoViewReturnSnapshot != null ||
       isCardphotoViewEditMode ||
       cardphotoAssetData.source === 'original')
+  const cardphotoCreateUpperApplyToolbar = useMemo((): ToolbarConfig => {
+    return CARDPHOTO_CREATE_UPPER_APPLY_TOOLBAR.map((group) => ({
+      ...group,
+      icons: group.icons.map((icon) =>
+        icon.key === 'applyMedium'
+          ? { ...icon, state: cardphotoCreateApplyState }
+          : icon,
+      ),
+    }))
+  }, [cardphotoCreateApplyState])
   const showCalendarToolbar =
     activeSection === 'date' || activeSection === 'history'
   const calendarToolbarSection =
@@ -100,15 +126,19 @@ export const CardSectionToolbar: React.FC = () => {
       )}
     >
       {activeSection === 'cardphoto' &&
-        (showCardphotoCreateReturn ? (
+        (showCardphotoCreateUpper ? (
           <div
             className={clsx(
               styles.cardSectionToolbarAromaUpper,
               styles.cardSectionToolbarCardphotoTint,
             )}
           >
-            <div className={styles.cardSectionToolbarHeader}>
-              <Toolbar section="cardphoto" />
+            <div className={styles.cardSectionToolbarUpperApply}>
+              <Toolbar
+                section="cardphotoCreate"
+                groupsOverride={cardphotoCreateUpperApplyToolbar}
+                className={toolbarStyles.toolbarAromaUpperApply}
+              />
             </div>
             <div className={styles.cardSectionToolbarUpperReturn}>
               <Toolbar

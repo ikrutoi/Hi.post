@@ -48,11 +48,6 @@ export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
 
 export const CARDPHOTO_CREATE_TOOLBAR: ToolbarConfig = [
   {
-    group: 'crop',
-    icons: [{ key: 'applyMedium', state: 'disabled' }],
-    status: 'enabled',
-  },
-  {
     group: 'quality',
     icons: [
       { key: 'crop', state: 'enabled' },
@@ -82,7 +77,16 @@ export const CARDPHOTO_VIEW_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-/** Mobile factory: return справа в верхнем toolbar create (после cardphotoAdd с загруженным фото). */
+/** Create upper: applyMedium слева (confirm crop / applyLight path). */
+export const CARDPHOTO_CREATE_UPPER_APPLY_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'crop',
+    icons: [{ key: 'applyMedium', state: 'disabled' }],
+    status: 'enabled',
+  },
+]
+
+/** Create upper: return справа → View. */
 export const CARDPHOTO_CREATE_UPPER_RETURN_TOOLBAR: ToolbarConfig = [
   {
     group: 'close',
@@ -98,6 +102,8 @@ export const initialCardphotoToolbarState: CardphotoToolbarState = {
 
 export const initialCardphotoCreateToolbarState: CardphotoToolbarState = {
   ...Object.fromEntries(flattenIcons(CARDPHOTO_CREATE_TOOLBAR)),
+  /** Kept in state for upper toolbar; not shown in lower create row. */
+  applyMedium: { state: 'disabled', options: {} },
   config: [...CARDPHOTO_CREATE_TOOLBAR],
 }
 

@@ -52,8 +52,25 @@
 
 /**
  * Mobile factory shell forces nested toolbars to width:100%.
- * Keep return as a right-side slot (same idea as CardphotoList upperToolbar).
+ * Keep apply / return as edge slots (same idea as CardphotoList upperToolbar).
  */
+.cardSectionToolbarUpperApply {
+  flex: 0 0 auto;
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: 0;
+  min-height: 0;
+
+  > * {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 0;
+    min-height: 0;
+  }
+}
+
 .cardSectionToolbarUpperReturn {
   flex: 0 0 auto;
   margin-left: auto;

@@ -308,7 +308,7 @@
     min-height: 0;
   }
 
-  /* Left icons + return: header shrinks, return stays visible on the right. */
+  /* applyMedium left + return right: keep edge slots compact. */
   :global([class*='cardSectionToolbarAromaUpper']) {
     min-width: 0;
 
@@ -319,6 +319,7 @@
       max-width: 100%;
     }
 
+    > :global([class*='cardSectionToolbarUpperApply']),
     > :global([class*='cardSectionToolbarUpperReturn']) {
       flex: 0 0 auto;
       width: auto;

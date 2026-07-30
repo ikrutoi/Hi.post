@@ -170,6 +170,13 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
       }),
     )
 
+    /** Persist blob first — reopen from Dot depends on IDB `full.blob`. */
+    const imageRecord: ImageRecord = {
+      id: CURRENT_EDITOR_IMAGE_ID,
+      image: imageMeta,
+    }
+    yield call([storeAdapters.userImages, 'put'], imageRecord)
+
     const state: CardphotoState = yield select(selectCardphotoState)
     const isComplete = !!state.appliedData
     const config: WorkingConfig = yield call(
@@ -177,12 +184,6 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
       imageMeta,
       true,
     )
-
-    const imageRecord: ImageRecord = {
-      id: CURRENT_EDITOR_IMAGE_ID,
-      image: imageMeta,
-    }
-    yield call([storeAdapters.userImages, 'put'], imageRecord)
 
     const serializableMeta = prepareForRedux(imageMeta)
     const serializableConfig = prepareConfigForRedux(config)
