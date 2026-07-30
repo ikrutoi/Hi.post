@@ -11,6 +11,11 @@
   user-select: none;
 }
 
+.rootFill {
+  width: 100%;
+  min-width: 0;
+}
+
 .printer {
   display: flex;
   align-items: center;

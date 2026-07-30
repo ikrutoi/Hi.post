@@ -37,6 +37,7 @@
 }
 
 .cardSectionToolbarAromaUpper {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -62,6 +63,7 @@
   justify-content: flex-start;
   min-width: 0;
   min-height: 0;
+  z-index: 1;
 
   > * {
     flex: 0 0 auto !important;
@@ -69,6 +71,24 @@
     min-width: 0;
     min-height: 0;
   }
+}
+
+/** Centered over central CardPie: width = --mobile-pie-size (mobile) / sizeMiniCard (desktop). */
+.cardSectionToolbarUpperCenter {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  z-index: 0;
+  transform: translateX(-50%);
+  box-sizing: border-box;
+  width: var(--mobile-pie-size, 12.5rem);
+  max-width: calc(100% - 5.5rem);
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
 }
 
 .cardSectionToolbarUpperReturn {
@@ -79,6 +99,7 @@
   justify-content: flex-end;
   min-width: 0;
   min-height: 0;
+  z-index: 1;
 
   > * {
     flex: 0 0 auto !important;

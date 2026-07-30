@@ -110,19 +110,19 @@ const CardphotoSessionEditor: React.FC = () => {
   const isCreateCropActive = createToolbarState?.crop?.state === 'active'
   const assetToolbarGroupsOverride = useMemo(() => {
     if (assetToolbar === 'cardphotoCreate' && !isCreateCropActive) {
-      return CARDPHOTO_CREATE_TOOLBAR.map((group) =>
-        group.group === 'close'
-          ? {
-              ...group,
-              icons: [
-                {
-                  key: (isMobileLayout ? 'delete' : 'close') as 'delete' | 'close',
-                  state: 'enabled' as const,
-                },
-              ],
-            }
-          : group,
-      )
+      return [
+        ...CARDPHOTO_CREATE_TOOLBAR,
+        {
+          group: 'close' as const,
+          icons: [
+            {
+              key: (isMobileLayout ? 'delete' : 'close') as 'delete' | 'close',
+              state: 'enabled' as const,
+            },
+          ],
+          status: 'enabled' as const,
+        },
+      ]
     }
     if (assetToolbar === 'cardphotoView' && isMobileLayout) {
       return CARDPHOTO_VIEW_TOOLBAR.map((group) =>

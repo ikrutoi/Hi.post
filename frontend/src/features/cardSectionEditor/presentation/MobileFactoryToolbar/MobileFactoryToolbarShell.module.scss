@@ -331,6 +331,11 @@
         margin-inline: 0;
       }
     }
+
+    > :global([class*='cardSectionToolbarUpperCenter']) {
+      width: var(--mobile-pie-size);
+      max-width: calc(100% - 5.5rem);
+    }
   }
 
   :global([class*='envelopeToolbarRow']) {

@@ -56,11 +56,6 @@ export const CARDPHOTO_CREATE_TOOLBAR: ToolbarConfig = [
     ],
     status: 'enabled',
   },
-  {
-    group: 'close',
-    icons: [{ key: 'cropQualityIndicator', state: 'disabled' }],
-    status: 'enabled',
-  },
 ]
 
 export const CARDPHOTO_VIEW_TOOLBAR: ToolbarConfig = [

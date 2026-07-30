@@ -5,13 +5,16 @@ import styles from './CardphotoPrintQualitySlot.module.scss'
 
 type Props = {
   disabled?: boolean
+  /** Stretch meter to parent width (upper toolbar = central CardPie). */
+  fillWidth?: boolean
 }
 
 export const CardphotoPrintQualitySlot: React.FC<Props> = ({
   disabled = false,
+  fillWidth = false,
 }) => (
-  <div className={styles.root}>
-    <CropQualityMeter disabled={disabled} />
+  <div className={clsx(styles.root, fillWidth && styles.rootFill)}>
+    <CropQualityMeter disabled={disabled} fillWidth={fillWidth} />
     <span
       className={clsx(styles.printer, disabled && styles.printerDisabled)}
       aria-hidden

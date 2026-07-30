@@ -8,6 +8,8 @@ import styles from './CropQualityMeter.module.scss'
 type Props = {
   /** Кроп выключен или группа тулбара недоступна — пустая дорожка. */
   disabled?: boolean
+  /** Parent sets width (e.g. central CardPie); meter track fills it. */
+  fillWidth?: boolean
 }
 
 function clampProgress(progress: number): number {
@@ -18,7 +20,10 @@ function clampProgress(progress: number): number {
  * Индикатор качества кропа для тулбара cardphoto: полоска-метр 0–100%.
  * Цвет заливки — та же шкала, что у ручек кропа на открытке.
  */
-export const CropQualityMeter: React.FC<Props> = ({ disabled = false }) => {
+export const CropQualityMeter: React.FC<Props> = ({
+  disabled = false,
+  fillWidth = false,
+}) => {
   const reduxProgress = useAppSelector(selectCropQualityProgress)
   const [liveProgress, setLiveProgress] = useState<number | null>(null)
 
@@ -52,7 +57,11 @@ export const CropQualityMeter: React.FC<Props> = ({ disabled = false }) => {
 
   return (
     <div
-      className={clsx(styles.root, disabled && styles.rootDisabled)}
+      className={clsx(
+        styles.root,
+        fillWidth && styles.rootFill,
+        disabled && styles.rootDisabled,
+      )}
       role="meter"
       aria-label={ariaLabel}
       aria-valuemin={0}

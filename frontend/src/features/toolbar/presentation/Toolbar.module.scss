@@ -412,11 +412,27 @@
 
   .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']):not(
       [data-icon-key='cropCheck']
+    ):not([data-icon-key='imageRotateRight']):not(
+      [data-icon-key='imageRotateLeft']
     ) {
     color: $color-font-enabled-light;
 
     &:hover {
       color: $color-font-enabled;
+      background-color: #fff;
+    }
+  }
+
+  /** Momentary rotate: stay enabled-light (sticky :hover after tap must not darken). */
+  .toolbarKey[data-icon-key='imageRotateRight'].toolbarKeyEnabled,
+  .toolbarKey[data-icon-key='imageRotateLeft'].toolbarKeyEnabled {
+    color: $color-font-enabled-light;
+
+    &:hover,
+    &:active,
+    &:focus,
+    &:focus-visible {
+      color: $color-font-enabled-light;
       background-color: #fff;
     }
   }
@@ -428,7 +444,7 @@
   }
 }
 
-/* cardphotoCreate: три группы — слева apply, центр кроп, справа индикатор. */
+/* cardphotoCreate: quality слева; delete/close справа (когда кроп выкл.). */
 .toolbarCardphotoCreate {
   display: flex;
   justify-content: space-between;
@@ -439,13 +455,8 @@
   }
 
   .toolbarGroup:nth-child(2) {
-    justify-content: center;
-    flex: 1 1 auto;
-    min-width: 0;
-  }
-
-  .toolbarGroup:nth-child(3) {
     justify-content: flex-end;
+    margin-left: auto;
   }
 }
 
