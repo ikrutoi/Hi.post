@@ -4,9 +4,8 @@ import type { LayoutOrientation } from '@layout/domain/types'
 import type { CropLayer, ImageLayer, ImageMeta } from '../../domain/types'
 
 export const useCropResize = (
-  tempCrop: CropLayer,
+  cropLayer: CropLayer,
   imageLayer: ImageLayer,
-  setTempCrop: (c: CropLayer) => void,
   setLast: (c: CropLayer) => void,
   onPreviewChange: (c: CropLayer) => void,
   onCommit: (c: CropLayer) => void,
@@ -41,8 +40,28 @@ export const useCropResize = (
 
     const safeMinWidth = (minAllowedDpi * inches) / scale
 
-    const startState = { ...tempCrop, meta: { ...tempCrop.meta } }
+    const startState = { ...cropLayer, meta: { ...cropLayer.meta } }
     setLast(startState)
+
+    let raf = 0
+    let pending: CropLayer | null = null
+
+    const flushPreview = () => {
+      raf = 0
+      if (!pending) return
+      const next = pending
+      pending = null
+      const p = Math.max(
+        0,
+        Math.min(100, Number(next.meta.qualityProgress) || 0),
+      )
+      dispatchQualityUpdate(p)
+      document.documentElement.style.setProperty(
+        '--crop-handle-color',
+        getQualityColor(p),
+      )
+      onPreviewChange(next)
+    }
 
     const move = (clientX: number, clientY: number) => {
       const dx = clientX - startX
@@ -59,22 +78,28 @@ export const useCropResize = (
         safeMinWidth,
       )
 
-      const p = Math.max(
-        0,
-        Math.min(100, Number(next.meta.qualityProgress) || 0),
-      )
-      dispatchQualityUpdate(p)
-      document.documentElement.style.setProperty(
-        '--crop-handle-color',
-        getQualityColor(p),
-      )
-
-      setTempCrop(next)
       setLast(next)
-      onPreviewChange(next)
+      pending = next
+      if (!raf) raf = requestAnimationFrame(flushPreview)
     }
 
     const finish = () => {
+      if (raf) cancelAnimationFrame(raf)
+      raf = 0
+      if (pending) {
+        const next = pending
+        pending = null
+        const p = Math.max(
+          0,
+          Math.min(100, Number(next.meta.qualityProgress) || 0),
+        )
+        dispatchQualityUpdate(p)
+        document.documentElement.style.setProperty(
+          '--crop-handle-color',
+          getQualityColor(p),
+        )
+        onPreviewChange(next)
+      }
       onCommit(lastCropRef.current)
       end()
       if (detachRef) detachRef()

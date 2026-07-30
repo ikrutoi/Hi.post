@@ -1,7 +1,10 @@
-@use '@styles/config/colors' as *;
-
-.overlay {
+.dim {
   position: absolute;
-  box-shadow: 0 0 0 5000px rgba(0, 0, 0, 0.6);
+  inset: 0;
   pointer-events: none;
+}
+
+.edge {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.6);
 }

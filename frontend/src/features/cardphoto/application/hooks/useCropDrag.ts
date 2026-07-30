@@ -1,12 +1,11 @@
 import React from 'react'
-import { clampDragWithinImage, applyBounds } from '../helpers'
+import { applyBounds } from '../helpers'
 import type { LayoutOrientation } from '@layout/domain/types'
 import type { CropLayer, ImageLayer } from '../../domain/types'
 
 export const useCropDrag = (
-  tempCrop: CropLayer,
+  cropLayer: CropLayer,
   imageLayer: ImageLayer,
-  setTempCrop: (c: CropLayer) => void,
   setLast: (c: CropLayer) => void,
   onPreviewChange: (c: CropLayer) => void,
   onCommit: (c: CropLayer) => void,
@@ -19,41 +18,54 @@ export const useCropDrag = (
   return (startX: number, startY: number) => {
     begin()
 
-    const snapshot = { ...tempCrop, meta: { ...tempCrop.meta } }
+    const snapshot = { ...cropLayer, meta: { ...cropLayer.meta } }
     setLast(snapshot)
 
+    let originX = startX
+    let originY = startY
     const initialCropX = snapshot.x
     const initialCropY = snapshot.y
+
+    let raf = 0
+    let pending: CropLayer | null = null
+
+    const flushPreview = () => {
+      raf = 0
+      if (!pending) return
+      const next = pending
+      pending = null
+      onPreviewChange(next)
+    }
 
     const move = (clientX: number, clientY: number) => {
       if (!imageLayer) return
 
-      const dx = clientX - startX
-      const dy = clientY - startY
-
-      const targetX = initialCropX + dx
-      const targetY = initialCropY + dy
+      const dx = clientX - originX
+      const dy = clientY - originY
 
       const next = applyBounds(
-        { ...snapshot, x: targetX, y: targetY },
+        { ...snapshot, x: initialCropX + dx, y: initialCropY + dy },
         imageLayer,
         orientation,
       )
 
-      // getQualityProgress(next)
-
       const realDx = next.x - initialCropX
       const realDy = next.y - initialCropY
+      originX = clientX - realDx
+      originY = clientY - realDy
 
-      startX = clientX - realDx
-      startY = clientY - realDy
-
-      setTempCrop(next)
       setLast(next)
-      onPreviewChange(next)
+      pending = next
+      if (!raf) raf = requestAnimationFrame(flushPreview)
     }
 
     const finish = () => {
+      if (raf) cancelAnimationFrame(raf)
+      raf = 0
+      if (pending) {
+        onPreviewChange(pending)
+        pending = null
+      }
       onCommit(lastCropRef.current)
       end()
       detach()
@@ -69,53 +81,3 @@ export const useCropDrag = (
     const detach = attach(mouseMove, mouseUp, touchMove, touchEnd)
   }
 }
-
-// export const useCropDrag1 = (
-//   tempCrop: CropLayer,
-//   imageLayer: ImageLayer,
-//   setTempCrop: (c: CropLayer) => void,
-//   setLast: (c: CropLayer) => void,
-//   onChange: (c: CropLayer) => void,
-//   onCommit: (c: CropLayer) => void,
-//   begin: () => void,
-//   end: () => void,
-//   attach: (
-//     mouseMove: (e: MouseEvent) => void,
-//     mouseUp: (e: MouseEvent) => void,
-//     touchMove: (e: TouchEvent) => void,
-//     touchEnd: (e: TouchEvent) => void
-//   ) => () => void,
-//   lastCropRef: React.MutableRefObject<CropLayer>,
-//   orientation: LayoutOrientation
-// ) => {
-//   return (startX: number, startY: number) => {
-//     begin()
-//     const start = { ...tempCrop, meta: { ...tempCrop.meta } }
-
-//     const move = (clientX: number, clientY: number) => {
-//       if (!imageLayer) return
-//       const dx = clientX - startX
-//       const dy = clientY - startY
-//       const { x, y } = clampDragWithinImage(start, dx, dy, imageLayer)
-//       const next = applyBounds({ ...start, x, y }, imageLayer, orientation)
-//       setTempCrop(next)
-//       setLast(next)
-//       onChange(next)
-//     }
-
-//     const finish = () => {
-//       end()
-//       onCommit(lastCropRef.current)
-//       detach()
-//     }
-
-//     const mouseMove = (e: MouseEvent) => move(e.clientX, e.clientY)
-//     const mouseUp = () => finish()
-//     const touchMove = (e: TouchEvent) => {
-//       if (e.touches.length) move(e.touches[0].clientX, e.touches[0].clientY)
-//     }
-//     const touchEnd = () => finish()
-
-//     const detach = attach(mouseMove, mouseUp, touchMove, touchEnd)
-//   }
-// }

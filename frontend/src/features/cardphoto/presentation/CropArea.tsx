@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import clsx from 'clsx'
 import styles from './CropArea.module.scss'
 import {
@@ -30,15 +30,13 @@ export const CropArea: React.FC<CropAreaProps> = ({
   onPreviewChange,
   onCommit,
 }) => {
-  const [tempCrop, setTempCrop] = useState<CropLayer>(cropLayer)
   const { interactingRef, lastCropRef, begin, end, setLast } =
     useInteractionState(cropLayer)
   const { attach } = useGlobalListeners()
 
   const startDrag = useCropDrag(
-    tempCrop,
+    cropLayer,
     imageLayer,
-    setTempCrop,
     setLast,
     onPreviewChange,
     onCommit,
@@ -50,9 +48,8 @@ export const CropArea: React.FC<CropAreaProps> = ({
   )
 
   const startResize = useCropResize(
-    tempCrop,
+    cropLayer,
     imageLayer,
-    setTempCrop,
     setLast,
     onPreviewChange,
     onCommit,
@@ -66,7 +63,6 @@ export const CropArea: React.FC<CropAreaProps> = ({
 
   useEffect(() => {
     if (!interactingRef.current) {
-      setTempCrop(cropLayer)
       setLast(cropLayer)
     }
   }, [cropLayer])
@@ -80,13 +76,13 @@ export const CropArea: React.FC<CropAreaProps> = ({
     if (interactingRef.current) return
     const p = Math.max(
       0,
-      Math.min(100, tempCrop.meta.qualityProgress ?? 0),
+      Math.min(100, cropLayer.meta.qualityProgress ?? 0),
     )
     document.documentElement.style.setProperty(
       '--crop-handle-color',
       getQualityColor(p),
     )
-  }, [tempCrop.meta.qualityProgress])
+  }, [cropLayer.meta.qualityProgress])
 
   useEffect(() => {
     return () => {
@@ -98,10 +94,10 @@ export const CropArea: React.FC<CropAreaProps> = ({
     <div
       className={styles.cropArea}
       style={{
-        top: `${tempCrop.y}px`,
-        left: `${tempCrop.x}px`,
-        width: `${tempCrop.meta.width}px`,
-        height: `${tempCrop.meta.height}px`,
+        top: `${cropLayer.y}px`,
+        left: `${cropLayer.x}px`,
+        width: `${cropLayer.meta.width}px`,
+        height: `${cropLayer.meta.height}px`,
       }}
       onMouseDown={(e) => {
         e.preventDefault()
