@@ -176,7 +176,7 @@ $pie-center-cart-blocked-inner-stop: (
 }
 
 .pieDateIconBg {
-  color: $color-date-input-border;
+  color: $color-date-input;
 
   text {
     fill: currentColor;
@@ -352,7 +352,7 @@ $pie-center-cart-blocked-inner-stop: (
   color: var(--logo-color, #008aed);
 }
 
-/** Same scale pulse as list badge (listCardtext): +50% then back. */
+/** Full assembly fill: +35% then back. */
 @keyframes pieCenterCompletePulse {
   0%,
   100% {
@@ -360,7 +360,7 @@ $pie-center-cart-blocked-inner-stop: (
   }
 
   50% {
-    transform: scale(1.5);
+    transform: scale(1.35);
   }
 }
 

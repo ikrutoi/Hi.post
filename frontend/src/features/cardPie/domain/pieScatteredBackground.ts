@@ -104,22 +104,22 @@ const PIE_ENVELOPE_SCATTER_SLOTS_BASE: PieScatterSlot[] = [
 
 /** Слоты в координатах pattern date (как IconDateBkg), размер — текущий (~×1.5). */
 const PIE_DATE_SCATTER_SLOTS_BASE: PieScatterSlot[] = [
-  { x: 1580, y: 1280, fontSize: 780, rotate: -14 },
-  { x: 2360, y: 960, fontSize: 690, rotate: 10 },
-  { x: 3120, y: 1420, fontSize: 750, rotate: -8 },
-  { x: 1880, y: 1880, fontSize: 660, rotate: 16 },
-  { x: 2680, y: 1680, fontSize: 720, rotate: -11 },
-  { x: 3480, y: 1180, fontSize: 630, rotate: 7 },
-  { x: 1420, y: 2280, fontSize: 690, rotate: -18 },
-  { x: 2240, y: 2480, fontSize: 750, rotate: 12 },
-  { x: 3020, y: 2120, fontSize: 660, rotate: -6 },
-  { x: 3720, y: 1780, fontSize: 720, rotate: 9 },
-  { x: 1760, y: 2680, fontSize: 630, rotate: -15 },
-  { x: 2580, y: 2880, fontSize: 690, rotate: 11 },
-  { x: 3340, y: 2520, fontSize: 660, rotate: -9 },
-  { x: 2060, y: 1080, fontSize: 600, rotate: 13 },
-  { x: 2860, y: 1320, fontSize: 660, rotate: -12 },
-  { x: 3620, y: 2280, fontSize: 690, rotate: 5 },
+  { x: 1580, y: 1280, fontSize: 780, rotate: -32 },
+  { x: 2360, y: 960, fontSize: 690, rotate: 28 },
+  { x: 3120, y: 1420, fontSize: 750, rotate: -18 },
+  { x: 1880, y: 1880, fontSize: 660, rotate: 35 },
+  { x: 2680, y: 1680, fontSize: 720, rotate: -25 },
+  { x: 3480, y: 1180, fontSize: 630, rotate: 14 },
+  { x: 1420, y: 2280, fontSize: 690, rotate: -35 },
+  { x: 2240, y: 2480, fontSize: 750, rotate: 22 },
+  { x: 3020, y: 2120, fontSize: 660, rotate: -12 },
+  { x: 3720, y: 1780, fontSize: 720, rotate: 30 },
+  { x: 1760, y: 2680, fontSize: 630, rotate: -28 },
+  { x: 2580, y: 2880, fontSize: 690, rotate: 19 },
+  { x: 3340, y: 2520, fontSize: 660, rotate: -21 },
+  { x: 2060, y: 1080, fontSize: 600, rotate: 33 },
+  { x: 2860, y: 1320, fontSize: 660, rotate: -27 },
+  { x: 3620, y: 2280, fontSize: 690, rotate: 11 },
 ]
 
 export const PIE_ENVELOPE_SCATTER_SLOTS = mapEnvelopeScatterSlotsToPattern(

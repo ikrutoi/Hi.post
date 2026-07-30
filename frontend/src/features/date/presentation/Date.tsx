@@ -47,6 +47,8 @@ import { MobileInlineToolbarRow } from '@features/cardSectionEditor/presentation
 import { MobileDateCalendarToolbarSlider } from '@date/dateHeader/presentation/MobileDateCalendarToolbarSlider'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
+import { buildDatePreviewLines } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
+import { DatePeekMultiBackground } from './DatePeekMultiBackground'
 import {
   computeCartLegendStatusCounts,
   computeHistoryLegendStatusCounts,
@@ -285,6 +287,11 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
     (rightPieDatePeekNoToolbar || assemblyDateSimplifiedPeek) &&
     (section === 'date' || section === 'cart' || section === 'history')
   ) {
+    const peekDates =
+      assemblyDateSimplifiedPeek && appliedDispatchDates.length > 0
+        ? appliedDispatchDates
+        : listRowInner?.dates ?? []
+    const isMultiDatePeek = peekDates.length > 1
     const d = peekDispatchDate
     const monthLabel =
       d != null &&
@@ -292,9 +299,18 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
       d.month < MONTH_NAMES.length
         ? MONTH_NAMES[d.month]
         : ''
+    const dayLabels = buildDatePreviewLines(peekDates)
     const peekBody = (
       <div className={clsx(styles.form, styles.formPeek)}>
-        {d != null ? (
+        {isMultiDatePeek ? (
+          <div className={styles.peekMulti}>
+            <DatePeekMultiBackground
+              dayLabels={dayLabels}
+              seed={`date-peek-${dayLabels.join('\u0000')}`}
+            />
+            <div className={styles.peekMultiCount}>{peekDates.length}</div>
+          </div>
+        ) : d != null ? (
           <div
             className={clsx(
               styles.peekDateStack,
