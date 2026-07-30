@@ -492,11 +492,8 @@ export function* handleEditCardphotoViewSaga(): SagaIterator {
 export function* handleDeleteCardphotoFromViewSaga(): SagaIterator {
   try {
     const asset: ImageMeta | null = yield select(selectActiveImage)
-    /** Stored template: View delete must not wipe the library — clear selection only. */
-    if (
-      asset?.status === 'inLine' ||
-      asset?.status === 'outLine'
-    ) {
+    /** Quick-list template: clear selection only — library delete lives in the list UI. */
+    if (asset?.status === 'inLine') {
       yield call(handleCloseCardphotoViewSaga)
       return
     }
@@ -507,7 +504,10 @@ export function* handleDeleteCardphotoFromViewSaga(): SagaIterator {
     const userOriginal: ImageMeta | null = yield select(selectUserImage)
     yield put(setCardphotoViewEditMode(false))
 
-    if (asset?.status === 'processed' && asset.id) {
+    if (
+      (asset?.status === 'processed' || asset?.status === 'outLine') &&
+      asset.id
+    ) {
       const cartItems: PostcardHydrated[] = yield select(selectCartItems)
       const inUse = isCardphotoImageIdUsedByPostcards(cartItems, asset.id)
       if (!inUse) {
@@ -517,7 +517,7 @@ export function* handleDeleteCardphotoFromViewSaga(): SagaIterator {
         )
       }
       yield put(bumpCardphotoInlineTemplateList())
-      if (asset.id === sessionPendingId) {
+      if (asset.status === 'processed' || asset.id === sessionPendingId) {
         yield put(clearSessionPendingProcessedId())
       }
     }

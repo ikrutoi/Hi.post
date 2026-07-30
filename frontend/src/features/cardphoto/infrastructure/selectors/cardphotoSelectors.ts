@@ -210,18 +210,15 @@ export const selectCardphotoViewTemplateInList = createSelector(
 )
 
 /**
- * View dismiss: stored template → close (clear selection only);
- * orphan processed → delete (remove record + clear).
+ * View dismiss: quick-list template (inLine) → close (clear selection only);
+ * not in quick list (processed / outLine) → delete (remove record + clear).
  */
 export const selectCardphotoViewDismissIconKey = createSelector(
   [selectCardphotoAssetToolbar, selectCardphotoAssetData],
   (assetToolbar, assetData): 'close' | 'delete' | null => {
     if (assetToolbar !== 'cardphotoView' || !assetData) return null
-    if (assetData.status === 'processed') return 'delete'
-    if (assetData.status === 'inLine' || assetData.status === 'outLine') {
-      return 'close'
-    }
-    return 'close'
+    if (assetData.status === 'inLine') return 'close'
+    return 'delete'
   },
 )
 

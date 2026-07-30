@@ -44,7 +44,7 @@ export const CardphotoView: React.FC<Props> = ({
   const showViewOverlay = assetToolbar === 'cardphotoView' && !!activeImage
   const viewDismissKey =
     viewDismissIconKey ??
-    (activeImage?.status === 'processed' ? 'delete' : 'close')
+    (activeImage?.status === 'inLine' ? 'close' : 'delete')
   const canDismissView =
     activeImage?.status === 'inLine' ||
     activeImage?.status === 'outLine' ||
@@ -62,7 +62,7 @@ export const CardphotoView: React.FC<Props> = ({
     ? 'Delete image'
     : viewDismissKey === 'close'
       ? 'Clear selection'
-      : 'Delete temporary image'
+      : 'Delete image'
   const overlayTitle = showCreateOverlay
     ? 'Delete'
     : viewDismissKey === 'close'

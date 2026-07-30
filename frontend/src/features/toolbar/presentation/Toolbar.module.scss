@@ -414,7 +414,7 @@
       [data-icon-key='cropCheck']
     ):not([data-icon-key='imageRotateRight']):not(
       [data-icon-key='imageRotateLeft']
-    ) {
+    ):not([data-icon-key='addList']):not([data-icon-key='removeFromList']) {
     color: $color-font-enabled-light;
 
     &:hover {
@@ -423,9 +423,11 @@
     }
   }
 
-  /** Momentary rotate: stay enabled-light (sticky :hover after tap must not darken). */
+  /** Momentary / toggle icons: stay enabled-light (sticky :hover after tap must not darken). */
   .toolbarKey[data-icon-key='imageRotateRight'].toolbarKeyEnabled,
-  .toolbarKey[data-icon-key='imageRotateLeft'].toolbarKeyEnabled {
+  .toolbarKey[data-icon-key='imageRotateLeft'].toolbarKeyEnabled,
+  .toolbarKey[data-icon-key='addList'].toolbarKeyEnabled,
+  .toolbarKey[data-icon-key='removeFromList'].toolbarKeyEnabled {
     color: $color-font-enabled-light;
 
     &:hover,
