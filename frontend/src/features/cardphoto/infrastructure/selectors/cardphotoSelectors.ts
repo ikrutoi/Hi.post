@@ -209,6 +209,22 @@ export const selectCardphotoViewTemplateInList = createSelector(
     !!assetData.id,
 )
 
+/**
+ * View dismiss: stored template → close (clear selection only);
+ * orphan processed → delete (remove record + clear).
+ */
+export const selectCardphotoViewDismissIconKey = createSelector(
+  [selectCardphotoAssetToolbar, selectCardphotoAssetData],
+  (assetToolbar, assetData): 'close' | 'delete' | null => {
+    if (assetToolbar !== 'cardphotoView' || !assetData) return null
+    if (assetData.status === 'processed') return 'delete'
+    if (assetData.status === 'inLine' || assetData.status === 'outLine') {
+      return 'close'
+    }
+    return 'close'
+  },
+)
+
 export const selectCardphotoListHighlightTemplateId = createSelector(
   [selectCardphotoViewTemplateInList, selectCardphotoAssetData],
   (inList, assetData): string | null =>

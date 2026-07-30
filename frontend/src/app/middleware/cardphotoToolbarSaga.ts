@@ -76,7 +76,6 @@ import {
   handleApplyAction,
   handlePromoteProcessedToInlineSaga,
   handleDemoteInlineTemplateSaga,
-  demoteCardphotoTemplateToOutLineByIdSaga,
   deactivateCropIfActive,
 } from './cardphotoHandlers'
 import { closeCardPieListPanelAndSyncIconsSaga } from './exclusiveListPanelsSaga'
@@ -493,32 +492,32 @@ export function* handleEditCardphotoViewSaga(): SagaIterator {
 export function* handleDeleteCardphotoFromViewSaga(): SagaIterator {
   try {
     const asset: ImageMeta | null = yield select(selectActiveImage)
+    /** Stored template: View delete must not wipe the library — clear selection only. */
+    if (
+      asset?.status === 'inLine' ||
+      asset?.status === 'outLine'
+    ) {
+      yield call(handleCloseCardphotoViewSaga)
+      return
+    }
+
     const sessionPendingId: string | null = yield select(
       selectCardphotoSessionPendingProcessedId,
     )
     const userOriginal: ImageMeta | null = yield select(selectUserImage)
     yield put(setCardphotoViewEditMode(false))
 
-    if (
-      (asset?.status === 'inLine' ||
-        asset?.status === 'outLine' ||
-        asset?.status === 'processed') &&
-      asset.id
-    ) {
+    if (asset?.status === 'processed' && asset.id) {
       const cartItems: PostcardHydrated[] = yield select(selectCartItems)
       const inUse = isCardphotoImageIdUsedByPostcards(cartItems, asset.id)
-      if (inUse) {
-        if (asset.status === 'inLine') {
-          yield call(demoteCardphotoTemplateToOutLineByIdSaga, asset.id)
-        }
-      } else {
+      if (!inUse) {
         yield call(
           [storeAdapters.cardphotoImages, 'deleteById'] as const,
           asset.id,
         )
       }
       yield put(bumpCardphotoInlineTemplateList())
-      if (asset.status === 'processed' || asset.id === sessionPendingId) {
+      if (asset.id === sessionPendingId) {
         yield put(clearSessionPendingProcessedId())
       }
     }

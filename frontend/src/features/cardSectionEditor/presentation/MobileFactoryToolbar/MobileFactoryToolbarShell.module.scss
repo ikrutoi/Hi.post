@@ -8,7 +8,11 @@
   box-sizing: border-box;
   border: none;
   border-radius: 0.5rem;
-  background-color: #fff;
+  /**
+   * Match section gutter (not flat #fff). Fade edges are transparent — a white
+   * shell showed as L/R bottom corner caps on colored sections (cardphoto pink).
+   */
+  background-color: var(--mobile-section-surface-bg, #fff);
   display: flex;
   flex-direction: column;
   /* visible: addressList badge pulse may paint past the upper row edge */

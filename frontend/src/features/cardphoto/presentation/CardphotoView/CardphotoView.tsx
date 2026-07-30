@@ -5,6 +5,7 @@ import {
   selectActiveImage,
   selectCardphotoAssetToolbar,
   selectCardphotoIsComplete,
+  selectCardphotoViewDismissIconKey,
   selectCardphotoViewTemplateInList,
 } from '@cardphoto/infrastructure/selectors'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
@@ -30,6 +31,7 @@ export const CardphotoView: React.FC<Props> = ({
   const cardphotoViewTemplateInList = useAppSelector(
     selectCardphotoViewTemplateInList,
   )
+  const viewDismissIconKey = useAppSelector(selectCardphotoViewDismissIconKey)
   const cardphotoIsComplete = useAppSelector(selectCardphotoIsComplete)
   const createToolbarState = useAppSelector(
     selectToolbarSectionState('cardphotoCreate'),
@@ -40,18 +42,32 @@ export const CardphotoView: React.FC<Props> = ({
   const showCreateOverlay =
     assetToolbar === 'cardphotoCreate' && !!activeImage
   const showViewOverlay = assetToolbar === 'cardphotoView' && !!activeImage
-  const canDeleteViewTemplate =
+  const viewDismissKey =
+    viewDismissIconKey ??
+    (activeImage?.status === 'processed' ? 'delete' : 'close')
+  const canDismissView =
     activeImage?.status === 'inLine' ||
     activeImage?.status === 'outLine' ||
     activeImage?.status === 'processed'
   const showDeleteOverlay =
     !isMobileLayout &&
     !!onDelete &&
-    ((showViewOverlay && canDeleteViewTemplate) ||
+    ((showViewOverlay && canDismissView) ||
       (showCreateOverlay && !isCreateCropActive))
   /** View: in-list template — hide after Apply (applied on postcard). */
   const showListIndicator =
     cardphotoViewTemplateInList && !cardphotoIsComplete
+  const overlayIconKey = showCreateOverlay ? 'delete' : viewDismissKey
+  const overlayAriaLabel = showCreateOverlay
+    ? 'Delete image'
+    : viewDismissKey === 'close'
+      ? 'Clear selection'
+      : 'Delete temporary image'
+  const overlayTitle = showCreateOverlay
+    ? 'Delete'
+    : viewDismissKey === 'close'
+      ? 'Clear'
+      : 'Delete'
 
   return (
     <div
@@ -80,12 +96,10 @@ export const CardphotoView: React.FC<Props> = ({
                 e.stopPropagation()
                 onDelete?.()
               }}
-              aria-label={
-                showCreateOverlay ? 'Delete image' : 'Delete image template'
-              }
-              title={showCreateOverlay ? 'Delete' : 'Delete template'}
+              aria-label={overlayAriaLabel}
+              title={overlayTitle}
             >
-              {getToolbarIcon({ key: 'delete' })}
+              {getToolbarIcon({ key: overlayIconKey })}
             </button>
           ) : null}
           {showListIndicator ? (

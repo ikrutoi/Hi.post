@@ -11,6 +11,7 @@ import {
 } from '@cardphoto/infrastructure/state'
 import {
   selectCardphotoTitle,
+  selectCardphotoViewDismissIconKey,
 } from '@cardphoto/infrastructure/selectors'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { CARDPHOTO_CREATE_TOOLBAR, CARDPHOTO_VIEW_TOOLBAR } from '@toolbar/domain/types/cardphoto.types'
@@ -107,6 +108,7 @@ const CardphotoSessionEditor: React.FC = () => {
   const viewToolbarState = useAppSelector(
     selectToolbarSectionState('cardphotoView'),
   )
+  const viewDismissIconKey = useAppSelector(selectCardphotoViewDismissIconKey)
   const isCreateCropActive = createToolbarState?.crop?.state === 'active'
   const assetToolbarGroupsOverride = useMemo(() => {
     if (assetToolbar === 'cardphotoCreate' && !isCreateCropActive) {
@@ -124,21 +126,33 @@ const CardphotoSessionEditor: React.FC = () => {
         },
       ]
     }
-    if (assetToolbar === 'cardphotoView' && isMobileLayout) {
+    if (assetToolbar === 'cardphotoView' && viewDismissIconKey === 'delete') {
       return CARDPHOTO_VIEW_TOOLBAR.map((group) =>
         group.group === 'close'
-          ? { ...group, icons: [{ key: 'delete' as const, state: 'enabled' as const }] }
+          ? {
+              ...group,
+              icons: [{ key: 'delete' as const, state: 'enabled' as const }],
+            }
           : group,
       )
     }
     return undefined
-  }, [assetToolbar, isCreateCropActive, isMobileLayout])
+  }, [
+    assetToolbar,
+    isCreateCropActive,
+    isMobileLayout,
+    viewDismissIconKey,
+  ])
   const assetToolbarStateOverride = useMemo(() => {
-    if (assetToolbar === 'cardphotoView' && isMobileLayout && viewToolbarState?.close) {
+    if (
+      assetToolbar === 'cardphotoView' &&
+      viewDismissIconKey === 'delete' &&
+      viewToolbarState?.close
+    ) {
       return { delete: viewToolbarState.close }
     }
     return undefined
-  }, [assetToolbar, isMobileLayout, viewToolbarState])
+  }, [assetToolbar, viewDismissIconKey, viewToolbarState])
   /** После Apply в сборке — упрощённый peek: нижний ряд без иконок View. */
   const showAssetToolbar =
     !!activeImage && !!assetToolbar && !assemblyCardphotoSimplifiedPeek
@@ -162,15 +176,21 @@ const CardphotoSessionEditor: React.FC = () => {
     imageStatus: activeImage?.status,
   })
 
-  const handleDelete = useCallback(() => {
+  const handleDismissView = useCallback(() => {
     if (assetToolbar === 'cardphotoCreate') {
       dispatch(
         toolbarAction({ section: 'cardphotoCreate', key: 'delete' } as const),
       )
       return
     }
+    if (viewDismissIconKey === 'close') {
+      dispatch(
+        toolbarAction({ section: 'cardphotoView', key: 'close' } as const),
+      )
+      return
+    }
     dispatch(deleteCardphotoFromViewRequested())
-  }, [dispatch, assetToolbar])
+  }, [dispatch, assetToolbar, viewDismissIconKey])
 
   return (
     <div className={styles.cardphoto}>
@@ -267,7 +287,7 @@ const CardphotoSessionEditor: React.FC = () => {
               </div>
             ))}
           <CardphotoView
-            onDelete={handleDelete}
+            onDelete={handleDismissView}
             titleStripEditing={forceEditingTitle}
           />
         </div>
