@@ -44,8 +44,31 @@
   align-self: stretch;
   width: 100%;
   height: 100%;
+  min-width: 0;
   min-height: 0;
   box-sizing: border-box;
+  gap: 0.5rem;
+}
+
+/**
+ * Mobile factory shell forces nested toolbars to width:100%.
+ * Keep return as a right-side slot (same idea as CardphotoList upperToolbar).
+ */
+.cardSectionToolbarUpperReturn {
+  flex: 0 0 auto;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+  min-height: 0;
+
+  > * {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 0;
+    min-height: 0;
+  }
 }
 
 /** Aroma section only — not shared with cardtext editor upper row. */

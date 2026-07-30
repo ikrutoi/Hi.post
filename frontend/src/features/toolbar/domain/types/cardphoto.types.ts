@@ -82,6 +82,15 @@ export const CARDPHOTO_VIEW_TOOLBAR: ToolbarConfig = [
   },
 ]
 
+/** Mobile factory: return справа в верхнем toolbar create (после cardphotoAdd с загруженным фото). */
+export const CARDPHOTO_CREATE_UPPER_RETURN_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'close',
+    icons: [{ key: 'return', state: 'enabled' }],
+    status: 'enabled',
+  },
+]
+
 export const initialCardphotoToolbarState: CardphotoToolbarState = {
   ...Object.fromEntries(flattenIcons(CARDPHOTO_TOOLBAR)),
   config: [...CARDPHOTO_TOOLBAR],

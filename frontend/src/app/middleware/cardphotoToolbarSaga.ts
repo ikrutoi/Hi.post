@@ -238,8 +238,17 @@ function* handleCloseCardphotoCreateSaga(): SagaIterator {
     if (snapshot?.assetData && snapshot?.assetConfig) {
       yield call(restoreCardphotoViewFromReturnSnapshotSaga, snapshot)
     } else {
-      yield put(setAssetData(null))
-      yield put(clearCurrentConfig())
+      const state: CardphotoState | null = yield select(selectCardphotoState)
+      const appliedMeta = state?.appliedData
+        ? hydrateMeta(state.appliedData)
+        : null
+      if (appliedMeta) {
+        yield put(setProcessedImage(prepareForRedux(appliedMeta)))
+        yield call(rebuildConfigFromMeta, appliedMeta, false)
+      } else {
+        yield put(setAssetData(null))
+        yield put(clearCurrentConfig())
+      }
     }
 
     yield put(clearCardphotoViewReturnSnapshot())

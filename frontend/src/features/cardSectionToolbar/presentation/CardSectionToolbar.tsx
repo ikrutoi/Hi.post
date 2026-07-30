@@ -10,8 +10,15 @@ import { EnvelopeInnerToolbar } from '@envelope/presentation/EnvelopeInnerToolba
 import { MobileDateCalendarToolbarNav } from '@date/dateHeader/presentation/MobileDateCalendarToolbarNav'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { selectIsCardtextEditorComposerVisible } from '@cardtext/infrastructure/selectors'
+import {
+  selectCardphotoAssetData,
+  selectCardphotoAssetToolbar,
+  selectCardphotoViewReturnSnapshot,
+  selectIsCardphotoViewEditMode,
+} from '@cardphoto/infrastructure/selectors'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { CARDTEXT_EDITOR_UPPER_RETURN_TOOLBAR } from '@toolbar/domain/types/cardtext.types'
+import { CARDPHOTO_CREATE_UPPER_RETURN_TOOLBAR } from '@toolbar/domain/types/cardphoto.types'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
 import type { IconKey } from '@shared/config/constants'
@@ -26,6 +33,23 @@ export const CardSectionToolbar: React.FC = () => {
   const showCardtextEditorComposer = useAppSelector(
     selectIsCardtextEditorComposerVisible,
   )
+  const cardphotoAssetToolbar = useAppSelector(selectCardphotoAssetToolbar)
+  const cardphotoAssetData = useAppSelector(selectCardphotoAssetData)
+  const cardphotoViewReturnSnapshot = useAppSelector(
+    selectCardphotoViewReturnSnapshot,
+  )
+  const isCardphotoViewEditMode = useAppSelector(selectIsCardphotoViewEditMode)
+  /**
+   * Create с загруженным фото — return справа → View
+   * (cardphotoAdd с Dot / edit из View / сессия с оригиналом).
+   */
+  const showCardphotoCreateReturn =
+    activeSection === 'cardphoto' &&
+    cardphotoAssetToolbar === 'cardphotoCreate' &&
+    cardphotoAssetData != null &&
+    (cardphotoViewReturnSnapshot != null ||
+      isCardphotoViewEditMode ||
+      cardphotoAssetData.source === 'original')
   const showCalendarToolbar =
     activeSection === 'date' || activeSection === 'history'
   const calendarToolbarSection =
@@ -52,6 +76,17 @@ export const CardSectionToolbar: React.FC = () => {
     [dispatch],
   )
 
+  const handleCardphotoCreateReturn = useCallback(
+    (key: IconKey) => {
+      if (key !== 'return') return
+      dispatch(
+        toolbarAction({ section: 'cardphotoCreate', key: 'close' } as const),
+      )
+      return false
+    },
+    [dispatch],
+  )
+
   if (activeSection === 'envelope' && !isMobileLayout) {
     return null
   }
@@ -64,15 +99,35 @@ export const CardSectionToolbar: React.FC = () => {
         cardPieCopyStripExpanded && styles.cardSectionToolbarDisabled,
       )}
     >
-      {activeSection === 'cardphoto' && (
-        <div
-          className={clsx(
-            isMobileLayout && styles.cardSectionToolbarCardphotoTint,
-          )}
-        >
-          <Toolbar section="cardphoto" />
-        </div>
-      )}
+      {activeSection === 'cardphoto' &&
+        (showCardphotoCreateReturn ? (
+          <div
+            className={clsx(
+              styles.cardSectionToolbarAromaUpper,
+              styles.cardSectionToolbarCardphotoTint,
+            )}
+          >
+            <div className={styles.cardSectionToolbarHeader}>
+              <Toolbar section="cardphoto" />
+            </div>
+            <div className={styles.cardSectionToolbarUpperReturn}>
+              <Toolbar
+                section="cardphotoCreate"
+                groupsOverride={CARDPHOTO_CREATE_UPPER_RETURN_TOOLBAR}
+                className={toolbarStyles.toolbarAromaUpperReturn}
+                onActionClick={handleCardphotoCreateReturn}
+              />
+            </div>
+          </div>
+        ) : (
+          <div
+            className={clsx(
+              isMobileLayout && styles.cardSectionToolbarCardphotoTint,
+            )}
+          >
+            <Toolbar section="cardphoto" />
+          </div>
+        ))}
       {showMobileCalendarModeToolbar && (
         <Toolbar section={calendarToolbarSection} />
       )}
@@ -89,12 +144,14 @@ export const CardSectionToolbar: React.FC = () => {
             <div className={styles.cardSectionToolbarHeader}>
               <Toolbar section="cardtext" />
             </div>
-            <Toolbar
-              section="cardtextCreate"
-              groupsOverride={CARDTEXT_EDITOR_UPPER_RETURN_TOOLBAR}
-              className={toolbarStyles.toolbarAromaUpperReturn}
-              onActionClick={handleCardtextEditorReturn}
-            />
+            <div className={styles.cardSectionToolbarUpperReturn}>
+              <Toolbar
+                section="cardtextCreate"
+                groupsOverride={CARDTEXT_EDITOR_UPPER_RETURN_TOOLBAR}
+                className={toolbarStyles.toolbarAromaUpperReturn}
+                onActionClick={handleCardtextEditorReturn}
+              />
+            </div>
           </div>
         ) : (
           <div
