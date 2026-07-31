@@ -40,6 +40,7 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
   const {
     requestSectionEditFromPeek,
     rightPieDatePeekNoToolbar,
+    rightPieEnvelopePeekNoToolbar,
   } = useRightListArchiveMini()
 
   const aromaTint =
@@ -54,6 +55,8 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
   /** Date: assembly apply-peek или archive date sector peek. */
   const dateTint =
     assemblyDateSimplifiedPeek || rightPieDatePeekNoToolbar
+  /** History/list-row envelope peek (cart uses EnvelopeInnerToolbar). */
+  const envelopeTint = rightPieEnvelopePeekNoToolbar
 
   const handleAction = useCallback(
     (key: IconKey) => {
@@ -99,6 +102,7 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
         cardtextTint && styles.upperRowCardtext,
         cardphotoTint && styles.upperRowCardphoto,
         dateTint && styles.upperRowDate,
+        envelopeTint && styles.upperRowEnvelope,
       )}
     >
       {showArchivePeekEditToolbar ? (

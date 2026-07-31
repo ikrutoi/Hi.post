@@ -1076,9 +1076,8 @@ const App = () => {
     rightListArchiveSource != null ? handleArchivePieCenterClick : undefined
 
   /**
-   * Cart list / cart calendar: center cycles forward.
-   * Section peek, section-edit, or date-pick: center shows cart or calendar —
-   * destination back to the view the pie was opened from.
+   * Cart / History list or calendar: center cycles forward.
+   * Cart section peek / section-edit / date-pick: cart or calendar return icon.
    */
   const rightPieSectionPeekOpen =
     rightPieCardphotoPeekNoToolbar ||
@@ -1099,7 +1098,9 @@ const App = () => {
     archiveCartCenterReturnModeRef.current ??
     (cartArchiveViewMode === 'calendar' ? 'calendar' : 'list')
   const rightPieCenterAffordance =
-    rightListArchiveSource === 'cart' && rightPieOnCenterClick != null
+    (rightListArchiveSource === 'cart' ||
+      rightListArchiveSource === 'history') &&
+    rightPieOnCenterClick != null
       ? rightPieShowArchiveSourceReturn
         ? archiveSourceReturnMode === 'calendar'
           ? ('calendar' as const)

@@ -17,6 +17,7 @@ import {
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { useMobileScenarioToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
+import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import { ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR } from '@toolbar/domain/types/addressView.types'
 import { useEnvelopeMobileAddressFocus } from './EnvelopeMobileAddressFocusContext'
@@ -34,7 +35,17 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
   const {
     assemblySenderSimplifiedPeek,
     assemblyRecipientSimplifiedPeek,
+    archiveCartEnvelopeSimplifiedPeek,
   } = useMobileFactoryListChrome()
+  const { rightPieEnvelopePeekNoToolbar } = useRightListArchiveMini()
+  /**
+   * History list-row envelope peek: tools are off, but keep the complete tint
+   * band in the factory lower row (same as other section peeks).
+   */
+  const historyEnvelopeListPeek =
+    isMobile &&
+    rightPieEnvelopePeekNoToolbar &&
+    !archiveCartEnvelopeSimplifiedPeek
   const bothFormsApplied =
     assemblySenderSimplifiedPeek && assemblyRecipientSimplifiedPeek
   const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
@@ -198,9 +209,20 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
           />
         ) : null}
       </div>
+    ) : historyEnvelopeListPeek ? (
+      <div
+        className={clsx(
+          styles.envelopeAddressViewToolbarRow,
+          styles.envelopeAddressViewToolbarRowComplete,
+        )}
+        data-envelope-address-view-toolbar
+        aria-hidden
+      />
     ) : null
 
-  useMobileScenarioToolbar(isMobile && enabled ? mobileContent : null)
+  useMobileScenarioToolbar(
+    isMobile && (enabled || historyEnvelopeListPeek) ? mobileContent : null,
+  )
 
   return null
 }
