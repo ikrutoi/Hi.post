@@ -35,6 +35,7 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
     assemblyCardphotoSimplifiedPeek,
     assemblyAromaSimplifiedPeek,
     assemblyDateSimplifiedPeek,
+    showArchivePeekEditToolbar,
   } = useMobileFactoryListChrome()
   const {
     requestSectionEditFromPeek,
@@ -100,13 +101,15 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
         dateTint && styles.upperRowDate,
       )}
     >
-      <div className={styles.sideLeft}>
-        <Toolbar
-          section="date"
-          groupsOverride={ARCHIVE_PEEK_UPPER_EDIT_TOOLBAR}
-          onActionClick={handleAction}
-        />
-      </div>
+      {showArchivePeekEditToolbar ? (
+        <div className={styles.sideLeft}>
+          <Toolbar
+            section="date"
+            groupsOverride={ARCHIVE_PEEK_UPPER_EDIT_TOOLBAR}
+            onActionClick={handleAction}
+          />
+        </div>
+      ) : null}
       <div className={styles.upperSpacer} aria-hidden />
     </div>
   )

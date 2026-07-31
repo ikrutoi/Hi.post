@@ -214,6 +214,19 @@ export function useMobileFactoryListChrome() {
     assemblyAromaSimplifiedPeek ||
     assemblyDateSimplifiedPeek
 
+  /**
+   * postcardEdit / cardPieEdit in upper peek: left assembly apply-peek, or
+   * right archive peek only for cart statuses. History non-cart peeks stay empty.
+   */
+  const archivePeekPostcardIsCart =
+    mirrorListArchiveSource === 'cart' ||
+    listRowPostcardStatus === 'cart' ||
+    listRowPostcardStatus === 'cartBlocked'
+
+  const showArchivePeekEditToolbar =
+    assemblySectionSimplifiedPeek ||
+    (mobileArchiveSectionPeek && archivePeekPostcardIsCart)
+
   const mobileSectionSimplifiedPeek =
     mobileArchiveSectionPeek || assemblySectionSimplifiedPeek
 
@@ -421,6 +434,7 @@ export function useMobileFactoryListChrome() {
     assemblyRecipientSimplifiedPeek,
     assemblySectionSimplifiedPeek,
     archiveCartEnvelopeSimplifiedPeek,
+    showArchivePeekEditToolbar,
     cardPieEditEngaged,
   }
 }
