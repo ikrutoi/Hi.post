@@ -2,16 +2,9 @@
 @use '@styles/config/mobileNotebookTabColors' as notebookTab;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
-/** Same edge-fade as date section cart mode (section surface yellow). */
+/** Same edge-fade as date section cart mode (blend into section gutter). */
 @mixin cart-list-toolbar-role-fade {
-  background-color: transparent;
-  background-image: linear-gradient(
-    90deg,
-    transparent 0%,
-    notebookTab.$mobile-notebook-cart-toolbar-fade 14%,
-    notebookTab.$mobile-notebook-cart-toolbar-fade 86%,
-    transparent 100%
-  );
+  @include notebookTab.mobile-notebook-cart-toolbar-role-fade;
 }
 
 @mixin cart-list-toolbar-role-keys-clear {

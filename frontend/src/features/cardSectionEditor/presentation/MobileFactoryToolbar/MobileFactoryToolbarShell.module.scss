@@ -9,10 +9,11 @@
   border: none;
   border-radius: 0.5rem;
   /**
-   * Match section gutter (not flat #fff). Fade edges are transparent — a white
-   * shell showed as L/R bottom corner caps on colored sections (cardphoto pink).
+   * Transparent: role-fade edges must show the real section gutter
+   * (solid or vertical cart gradient). A flat shell fill caused a hard
+   * L/R color seam against the frame.
    */
-  background-color: var(--mobile-section-surface-bg, #fff);
+  background-color: transparent;
   display: flex;
   flex-direction: column;
   /* visible: addressList badge pulse may paint past the upper row edge */

@@ -138,7 +138,17 @@ $mobile-date-calendar-chrome-gap: 0.125rem;
   }
 
   .dateToolbarRowCart {
-    @include date-toolbar-role-fade(notebookTab.$mobile-notebook-cart-toolbar-fade);
+    @include notebookTab.mobile-notebook-cart-toolbar-role-fade;
+
+    :global(button[class*='toolbarKey']),
+    :global(button[class*='navArrow']) {
+      background-color: transparent !important;
+
+      &:hover,
+      &:active {
+        background-color: transparent !important;
+      }
+    }
   }
 
   .dateToolbarRowHistory {

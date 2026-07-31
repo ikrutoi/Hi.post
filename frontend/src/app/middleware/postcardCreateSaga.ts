@@ -1,12 +1,20 @@
 import type { SagaIterator } from 'redux-saga'
 import { PayloadAction } from '@reduxjs/toolkit'
-import { call, put, select } from 'redux-saga/effects'
+import { call, delay, put, select } from 'redux-saga/effects'
 import { postcardLocalDataChanged } from '@features/sync/store/postcardSync.actions'
 import { clearCardPieWorkspaceAfterCartAdd } from './editorPieHandlers'
 import { buildCartCalendarCommands } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 import { updateLastViewedCalendarDate } from '@date/calendar/infrastructure/state'
+import { store } from '@app/state/store'
 import { postcardsAdapter, storeAdapters } from '@db/adapters/storeAdapters'
-import { addItem } from '@cart/infrastructure/state'
+import {
+  addItem,
+  setCartListSelectedLocalId,
+  setCartListStatusSegment,
+} from '@cart/infrastructure/state'
+import { selectCartItems } from '@cart/infrastructure/selectors'
+import { cartListStatusSegmentForLocalId } from '@date/calendar/application/logic/cartStripDayPostcardSelection'
+import { applyRightListArchiveToolbarVisuals } from '@toolbar/application/syncRightListArchiveToolbarVisuals'
 import {
   setRecipientsPendingIds,
   syncEnvelopeFormsFromAppliedRequested,
@@ -422,16 +430,38 @@ function* maybeClearCardPieWorkspaceAfterSingleAdd(
   yield* clearCardPieWorkspaceAfterCartAdd()
 }
 
-/** После «в корзину» из Card pie: закладка Cart + центральная секция «Дата» (как клик по cart в sidebar). */
-function* focusCartNotebookOnDateSection(date: DispatchDate): SagaIterator {
+/**
+ * После «в корзину» из Card pie: закладка Cart + календарь на месяц отправки
+ * и фокус центрального CardPie на добавленной (или уже существующей) открытке.
+ */
+function* focusCartNotebookOnAddedPostcard(
+  date: DispatchDate,
+  localId: number,
+): SagaIterator {
   for (const command of buildCartCalendarCommands()) {
     yield put(command)
   }
+  /**
+   * `setNotebookStripTab('cart')` may fork strip-default selection (first/nearest).
+   * Yield once so that settles, then force the postcard we just added.
+   */
+  yield delay(0)
+
+  const cartItems: PostcardHydrated[] = yield select(selectCartItems)
+  const segment = cartListStatusSegmentForLocalId(cartItems, localId)
+  yield put(setCartListStatusSegment(segment))
+  yield put(setCartListSelectedLocalId(localId))
   yield put(
     updateLastViewedCalendarDate({
       year: date.year,
       month: date.month,
     }),
+  )
+  yield call(
+    applyRightListArchiveToolbarVisuals,
+    store.dispatch,
+    store.getState,
+    'cart',
   )
 }
 
@@ -591,7 +621,14 @@ export function* handleToggleCartForDispatchBranch(
   if (existingCartDedupeKeys.has(cartKey)) {
     yield* removeCardPiePlanBranchAfterCart(branchKey)
     yield* maybeClearCardPieWorkspaceAfterSingleAdd(clearEditorAfterAdd)
-    yield* focusCartNotebookOnDateSection(date)
+    const existing = allRows.find(
+      (row) =>
+        (row.status === 'cart' || row.status === 'cartBlocked') &&
+        buildCartDuplicateKey(row.card) === cartKey,
+    )
+    if (existing != null) {
+      yield* focusCartNotebookOnAddedPostcard(date, existing.localId)
+    }
     yield call(refreshRightSidebarBadgesFromPostcards)
     return false
   }
@@ -636,7 +673,7 @@ export function* handleToggleCartForDispatchBranch(
   yield* cacheCartListPreviewForCard(finalCard)
   yield* removeCardPiePlanBranchAfterCart(branchKey)
   yield* maybeClearCardPieWorkspaceAfterSingleAdd(clearEditorAfterAdd)
-  yield* focusCartNotebookOnDateSection(date)
+  yield* focusCartNotebookOnAddedPostcard(date, postcardLocalId)
   yield call(refreshRightSidebarBadgesFromPostcards)
   yield put(postcardLocalDataChanged())
   return true
