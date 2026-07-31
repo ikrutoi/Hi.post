@@ -53,9 +53,9 @@ export interface CardPieProps {
   /**
    * Правый пирог (корзина / история): affordance в центре —
    * `cycleForward` — листание;
-   * `cart` / `calendar` — закрыть peek и вернуть список / календарь корзины.
+   * `cart` / `history` / `calendar` — закрыть peek и вернуть список / календарь.
    */
-  rightPieCenterAffordance?: 'cycleForward' | 'cart' | 'calendar' | null
+  rightPieCenterAffordance?: 'cycleForward' | 'cart' | 'history' | 'calendar' | null
   /** Правый пирог: серый центр без индикатора статуса (пустой archive preview). */
   rightPieCenterEmpty?: boolean
 }

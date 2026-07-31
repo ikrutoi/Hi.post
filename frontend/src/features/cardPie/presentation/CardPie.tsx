@@ -6,6 +6,7 @@ import {
   IconUsers,
   IconLogo,
   IconCart,
+  IconHistoryV2,
   IconSectionMenuCardphoto,
   IconSectionMenuCardtext,
   IconSectionMenuEnvelopeV2,
@@ -891,13 +892,15 @@ export const CardPie: React.FC<CardPieProps> = ({
               ? 'Следующая открытка'
               : station === 'right' && rightPieCenterAffordance === 'cart'
                 ? 'Вернуться к списку корзины'
-                : station === 'right' && rightPieCenterAffordance === 'calendar'
-                  ? 'Вернуться к календарю корзины'
-                  : leftPieCenterPlanCycle
-                    ? 'Переключить вид плана'
-                    : leftPieCenterOverviewBack
-                      ? 'Показать общий вид плана'
-                      : 'Hidragonfly.com'
+                : station === 'right' && rightPieCenterAffordance === 'history'
+                  ? 'Вернуться к списку истории'
+                  : station === 'right' && rightPieCenterAffordance === 'calendar'
+                    ? 'Вернуться к календарю'
+                    : leftPieCenterPlanCycle
+                      ? 'Переключить вид плана'
+                      : leftPieCenterOverviewBack
+                        ? 'Показать общий вид плана'
+                        : 'Hidragonfly.com'
           }
           onPointerDown={(e) => {
             e.stopPropagation()
@@ -967,6 +970,14 @@ export const CardPie: React.FC<CardPieProps> = ({
                   />
                 ) : visibleRightPieCenterAffordance === 'cart' ? (
                   <IconCart
+                    className={clsx(
+                      styles.pieCenterAffordanceIcon,
+                      styles.pieCenterAffordanceIconStroke,
+                    )}
+                    aria-hidden
+                  />
+                ) : visibleRightPieCenterAffordance === 'history' ? (
+                  <IconHistoryV2
                     className={clsx(
                       styles.pieCenterAffordanceIcon,
                       styles.pieCenterAffordanceIconStroke,

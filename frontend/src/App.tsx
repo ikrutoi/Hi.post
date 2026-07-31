@@ -121,7 +121,7 @@ import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { applyRightListArchiveToolbarVisuals } from '@toolbar/application/syncRightListArchiveToolbarVisuals'
 import { notebookSessionRestored } from '@date/calendar/application/orchestration/notebookOrchestration.events'
-import { resolveCartArchiveViewMode } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
+import { resolveCartArchiveViewMode, resolveHistoryArchiveViewMode } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 import { SECTION_EDITOR_MENU_ICON_KEYS } from '@features/toolbar/domain/types/sectionEditorMenu.types'
 import { primaryDispatchDateFromPieInner } from '@features/cardPie/domain/primaryDispatchDateFromPieInner'
 import {
@@ -621,6 +621,15 @@ const App = () => {
       if (mode === 'list' || mode === 'calendar') {
         archiveCartCenterReturnModeRef.current = mode
       }
+    } else if (rightListArchiveSource === 'history') {
+      const mode = resolveHistoryArchiveViewMode({
+        historyListPanelOpen: selectIsHistoryListPanelOpen(store.getState()),
+        notebookStripTab: selectNotebookStripTab(store.getState()),
+        activeSection: null,
+      })
+      if (mode === 'list' || mode === 'calendar') {
+        archiveCartCenterReturnModeRef.current = mode
+      }
     }
     if (section === 'cardphoto') {
       setRightPieCardphotoPeekNoToolbar(true)
@@ -757,8 +766,8 @@ const App = () => {
 
   const handleRightPieCenterHistoryClick = useCallback(() => {
     /**
-     * Right mode + section peek: center closes peek / returns to list only —
-     * do not cycle to the next postcard.
+     * Right mode + section peek: center closes peek / returns to list or
+     * calendar — do not cycle to the next postcard.
      */
     const wasSectionPeek =
       rightPieCardphotoPeekNoToolbar ||
@@ -766,6 +775,7 @@ const App = () => {
       rightPieEnvelopePeekNoToolbar ||
       rightPieAromaPeekNoToolbar ||
       rightPieDatePeekNoToolbar
+    const returnMode = archiveCartCenterReturnModeRef.current
 
     setRightPieCardphotoPeekNoToolbar(false)
     setRightPieCardtextPeekNoToolbar(false)
@@ -776,6 +786,10 @@ const App = () => {
       dispatch(clearArchiveEnvelopeSandbox())
       dispatch(setNotebookStripTab('history'))
       dispatch(setActiveSection('date'))
+      if (returnMode === 'list') {
+        dispatch(setHistoryListPanelOpen(true))
+      }
+      archiveCartCenterReturnModeRef.current = null
       return
     }
 
@@ -1077,7 +1091,8 @@ const App = () => {
 
   /**
    * Cart / History list or calendar: center cycles forward.
-   * Cart section peek / section-edit / date-pick: cart or calendar return icon.
+   * Section peek (and cart section-edit / date-pick): return icon for the
+   * view the pie was opened from (list → cart/history, calendar → calendar).
    */
   const rightPieSectionPeekOpen =
     rightPieCardphotoPeekNoToolbar ||
@@ -1086,17 +1101,30 @@ const App = () => {
     rightPieAromaPeekNoToolbar ||
     rightPieDatePeekNoToolbar
   const rightPieShowArchiveSourceReturn =
-    rightListArchiveSource === 'cart' &&
+    (rightListArchiveSource === 'cart' ||
+      rightListArchiveSource === 'history') &&
     (rightPieSectionPeekOpen ||
-      (cardPieEditEngaged && cardPieEditHydrateScope === 'section') ||
-      cartCalendarDatePickMode)
+      (rightListArchiveSource === 'cart' &&
+        ((cardPieEditEngaged && cardPieEditHydrateScope === 'section') ||
+          cartCalendarDatePickMode)))
   const cartArchiveViewMode = resolveCartArchiveViewMode({
     cartListPanelOpen: listPanelOpen,
     notebookStripTab,
   })
+  const historyArchiveViewMode = resolveHistoryArchiveViewMode({
+    historyListPanelOpen,
+    notebookStripTab,
+    activeSection,
+  })
   const archiveSourceReturnMode =
     archiveCartCenterReturnModeRef.current ??
-    (cartArchiveViewMode === 'calendar' ? 'calendar' : 'list')
+    (rightListArchiveSource === 'history'
+      ? historyArchiveViewMode === 'calendar'
+        ? 'calendar'
+        : 'list'
+      : cartArchiveViewMode === 'calendar'
+        ? 'calendar'
+        : 'list')
   const rightPieCenterAffordance =
     (rightListArchiveSource === 'cart' ||
       rightListArchiveSource === 'history') &&
@@ -1104,7 +1132,9 @@ const App = () => {
       ? rightPieShowArchiveSourceReturn
         ? archiveSourceReturnMode === 'calendar'
           ? ('calendar' as const)
-          : ('cart' as const)
+          : rightListArchiveSource === 'history'
+            ? ('history' as const)
+            : ('cart' as const)
         : ('cycleForward' as const)
       : null
 
