@@ -21,6 +21,7 @@ import { HistoryListMobileFactoryUpperToolbar } from '@date/presentation/History
 import { CartListMobileFactoryUpperToolbar } from '@cart/presentation/CartListMobileFactoryToolbar'
 import { EnvelopeInnerToolbar } from '@envelope/presentation/EnvelopeInnerToolbar'
 import { ArchivePeekUpperToolbar } from './ArchivePeekUpperToolbar'
+import { ArchivePeekLowerToolbar } from './ArchivePeekLowerToolbar'
 import { MobileDateCalendarToolbarNav } from '@date/dateHeader/presentation/MobileDateCalendarToolbarNav'
 import { useMobileScenarioToolbarSnapshot } from './MobileScenarioToolbarContext'
 import styles from './MobileFactoryToolbarShell.module.scss'
@@ -44,6 +45,7 @@ export const MobileFactoryToolbarShell: React.FC = () => {
   const {
     hideUpperToolbar,
     mobileSectionSimplifiedPeek,
+    mobileArchiveSectionPeek,
     archiveCartEnvelopeSimplifiedPeek,
     showMobileCardphotoListFactoryChrome,
     showMobileCardtextListFactoryChrome,
@@ -68,6 +70,10 @@ export const MobileFactoryToolbarShell: React.FC = () => {
     !envelopeAddressCreateMode &&
     !showMobileAddressListFactoryChrome
 
+  /** Archive (cart/history) section peek: lower band with copy affordance. */
+  const showArchivePeekLowerToolbar =
+    isMobileLayout && mobileArchiveSectionPeek
+
   const showUpperContent = !hideUpperToolbar
   const showMobileListFactoryUpper =
     showMobileCardphotoListFactoryChrome ||
@@ -82,7 +88,9 @@ export const MobileFactoryToolbarShell: React.FC = () => {
   const showMobileDateCalendarNavRow =
     suppressMobileCalendarUpperRow && showUpperContent
   const showLowerRow =
-    scenarioToolbar != null || showMobileListFactoryUpper
+    showArchivePeekLowerToolbar ||
+    scenarioToolbar != null ||
+    showMobileListFactoryUpper
   const showShell =
     showPeekEmptyToolbarShell ||
     showSectionUpperToolbar ||
@@ -141,7 +149,11 @@ export const MobileFactoryToolbarShell: React.FC = () => {
         className={styles.rowLower}
         aria-hidden={!showLowerRow ? true : undefined}
       >
-        {showLowerRow ? scenarioToolbar : null}
+        {showArchivePeekLowerToolbar ? (
+          <ArchivePeekLowerToolbar />
+        ) : showLowerRow ? (
+          scenarioToolbar
+        ) : null}
       </div>
     </div>
   )

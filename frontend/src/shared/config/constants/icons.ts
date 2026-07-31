@@ -111,6 +111,7 @@ export const ICON_KEYS = [
   'cardPieFavorite',
   'postcardEdit',
   'postcardFavorite',
+  'copy',
   'cardPieCopy',
   'cardPie',
   'addressCheck',

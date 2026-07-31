@@ -103,6 +103,7 @@ import {
   IconClose,
   IconCloseBig,
   IconReturn,
+  IconCopy,
   IconCrop,
   IconCropCheck,
   IconCropFull,
@@ -416,6 +417,8 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconCardPieEdit />
     case 'postcardFavorite':
       return <IconPostcardFavorite />
+    case 'copy':
+      return <IconCopy />
     case 'cardPieCopy':
       return <IconCardPieCopy />
     case 'cardPie':
