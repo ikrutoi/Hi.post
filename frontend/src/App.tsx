@@ -766,8 +766,8 @@ const App = () => {
 
   const handleRightPieCenterHistoryClick = useCallback(() => {
     /**
-     * Right mode + section peek: center closes peek / returns to list or
-     * calendar — do not cycle to the next postcard.
+     * Right mode + section peek / section-edit: center closes peek / returns to
+     * list or calendar — do not cycle to the next postcard.
      */
     const wasSectionPeek =
       rightPieCardphotoPeekNoToolbar ||
@@ -775,6 +775,10 @@ const App = () => {
       rightPieEnvelopePeekNoToolbar ||
       rightPieAromaPeekNoToolbar ||
       rightPieDatePeekNoToolbar
+    const wasSectionEditReturn =
+      cardPieEditEngaged &&
+      cardPieEditHydrateScope === 'section' &&
+      rightListArchiveSource === 'history'
     const returnMode = archiveCartCenterReturnModeRef.current
 
     setRightPieCardphotoPeekNoToolbar(false)
@@ -782,7 +786,12 @@ const App = () => {
     setRightPieEnvelopePeekNoToolbar(false)
     setRightPieAromaPeekNoToolbar(false)
     setRightPieDatePeekNoToolbar(false)
-    if (wasSectionPeek) {
+    if (wasSectionPeek || wasSectionEditReturn) {
+      if (wasSectionEditReturn) {
+        endCardPieEditEngaged()
+        setCardPieEditHydrateScope('all')
+        setSuppressCardPieEditActiveAfterCopy(true)
+      }
       dispatch(clearArchiveEnvelopeSandbox())
       dispatch(setNotebookStripTab('history'))
       dispatch(setActiveSection('date'))
@@ -885,6 +894,10 @@ const App = () => {
     rightPieEnvelopePeekNoToolbar,
     rightPieAromaPeekNoToolbar,
     rightPieDatePeekNoToolbar,
+    cardPieEditEngaged,
+    cardPieEditHydrateScope,
+    rightListArchiveSource,
+    endCardPieEditEngaged,
   ])
 
   const handleRightPieCenterCartClick = useCallback(() => {
@@ -1091,7 +1104,7 @@ const App = () => {
 
   /**
    * Cart / History list or calendar: center cycles forward.
-   * Section peek (and cart section-edit / date-pick): return icon for the
+   * Section peek (and section-edit / cart date-pick): return icon for the
    * view the pie was opened from (list → cart/history, calendar → calendar).
    */
   const rightPieSectionPeekOpen =
@@ -1104,9 +1117,8 @@ const App = () => {
     (rightListArchiveSource === 'cart' ||
       rightListArchiveSource === 'history') &&
     (rightPieSectionPeekOpen ||
-      (rightListArchiveSource === 'cart' &&
-        ((cardPieEditEngaged && cardPieEditHydrateScope === 'section') ||
-          cartCalendarDatePickMode)))
+      (cardPieEditEngaged && cardPieEditHydrateScope === 'section') ||
+      (rightListArchiveSource === 'cart' && cartCalendarDatePickMode))
   const cartArchiveViewMode = resolveCartArchiveViewMode({
     cartListPanelOpen: listPanelOpen,
     notebookStripTab,
@@ -1523,6 +1535,30 @@ const App = () => {
     setRightPieDatePeekNoToolbar(false)
   }, [])
 
+  /** Capture list/calendar return before peek chrome drops and lists close. */
+  const captureArchiveCenterReturnMode = useCallback(() => {
+    if (rightListArchiveSource === 'history') {
+      const mode = resolveHistoryArchiveViewMode({
+        historyListPanelOpen: selectIsHistoryListPanelOpen(store.getState()),
+        notebookStripTab: selectNotebookStripTab(store.getState()),
+        activeSection: null,
+      })
+      if (mode === 'list' || mode === 'calendar') {
+        archiveCartCenterReturnModeRef.current = mode
+      }
+      return
+    }
+    if (rightListArchiveSource === 'cart') {
+      const mode = resolveCartArchiveViewMode({
+        cartListPanelOpen: selectCartListPanelOpen(store.getState()),
+        notebookStripTab: selectNotebookStripTab(store.getState()),
+      })
+      if (mode === 'list' || mode === 'calendar') {
+        archiveCartCenterReturnModeRef.current = mode
+      }
+    }
+  }, [rightListArchiveSource])
+
   /** Полный edit: все секции + active cardPieEdit (кнопка editLight на CardPie). */
   const enterCardPieEditFactoryMode = useCallback(() => {
     const targetSection = resolveCardPieEditTargetSection()
@@ -1532,7 +1568,13 @@ const App = () => {
     if (!hadFreeze) {
       dispatch(clearAllMirrorSectionBackups())
     }
+    captureArchiveCenterReturnMode()
+    /**
+     * Close cart + history lists with peek clear. Otherwise history-list
+     * chrome remounts under postcardEdit and a ghost click opens history calendar.
+     */
     dispatch(setCartListPanelOpen(false))
+    dispatch(setHistoryListPanelOpen(false))
     releaseCartDatePickListEntryOwnership()
     cartDatePickOwnedByListEntryRef.current = false
     dispatch(endCartCalendarDatePick())
@@ -1544,6 +1586,7 @@ const App = () => {
     setActivePieSide('right')
     clearRightPiePeekChrome()
   }, [
+    captureArchiveCenterReturnMode,
     captureAssemblyBranchFreeze,
     clearRightPiePeekChrome,
     dispatch,
@@ -1567,46 +1610,44 @@ const App = () => {
       status === 'cartBlocked'
 
     /**
-     * Date peek on a cart / cartBlocked postcard: open calendar date-pick
-     * (same as list dateEdit). Factory section-edit races with list chrome
-     * and never hydrates blocked dates.
-     *
-     * Close the cart list in the same flush as begin-pick + clear-peek:
-     * otherwise the blocked list under peek remounts when peek chrome drops.
+     * Date peek on a cart / cartBlocked postcard: open the Date-strip calendar
+     * (not cart date-pick) at the month/year from the postcard date section.
+     * List dateEdit on cartBlocked still uses cart pick separately.
      */
-    if (targetSection === 'date' && fromCartArchive && lid != null) {
-      const segment = status === 'cartBlocked' ? 'cartBlocked' : 'cart'
-      const now = getCurrentDate()
-      const pickView = resolveCartDatePickCalendarViewDate({
-        currentDate: now,
-      })
+    if (targetSection === 'date' && fromCartArchive) {
+      const sectionViewDate = primaryDispatchDateFromPieInner(listRowInner)
+      const hadFreeze = selectAssemblyBranchFreeze(store.getState()) != null
+      captureAssemblyBranchFreeze('archiveEdit')
+      if (!hadFreeze) {
+        dispatch(clearAllMirrorSectionBackups())
+      }
       flushSync(() => {
-        /** Capture before list close so center keeps cart/calendar icon. */
-        if (fromCartArchive) {
-          const mode = resolveCartArchiveViewMode({
-            cartListPanelOpen: selectCartListPanelOpen(store.getState()),
-            notebookStripTab: selectNotebookStripTab(store.getState()),
-          })
-          if (mode === 'list' || mode === 'calendar') {
-            archiveCartCenterReturnModeRef.current = mode
-          }
-        }
-        cartDatePickOwnedByCardPieEditRef.current = false
-        claimCartDatePickListEntryOwnership()
-        cartDatePickOwnedByListEntryRef.current = true
-        endCardPieEditEngaged()
-        dispatch(beginCartCalendarDatePick({ localId: lid }))
+        captureArchiveCenterReturnMode()
         dispatch(setCartListPanelOpen(false))
-        dispatch(setNotebookStripTab('cart'))
+        dispatch(setHistoryListPanelOpen(false))
+        releaseCartDatePickListEntryOwnership()
+        cartDatePickOwnedByListEntryRef.current = false
+        cartDatePickOwnedByCardPieEditRef.current = false
+        dispatch(endCartCalendarDatePick())
+        dispatch(setNotebookStripTab('date'))
         dispatch(setActiveSection('date'))
-        dispatch(setCartListStatusSegment(segment))
-        if (selectCartListSelectedLocalId(state) !== lid) {
+        if (lid != null && selectCartListSelectedLocalId(state) !== lid) {
           dispatch(setCartListSelectedLocalId(lid))
         }
+        if (sectionViewDate != null) {
+          dispatch(
+            updateLastViewedCalendarDate({
+              year: sectionViewDate.year,
+              month: sectionViewDate.month,
+            }),
+          )
+        }
+        setCardPieEditHydrateScope('section')
         setSuppressCardPieEditActiveAfterCopy(true)
+        setCardPieEditEngaged(true)
+        dispatch(setArchiveFactoryEditActive(true))
         setActivePieSide('right')
         dispatch(closeDayPanel())
-        dispatch(updateLastViewedCalendarDate(pickView))
         clearRightPiePeekChrome()
       })
       return
@@ -1617,32 +1658,31 @@ const App = () => {
     if (!hadFreeze) {
       dispatch(clearAllMirrorSectionBackups())
     }
-    /** Capture before list close so center keeps cart/calendar icon. */
-    if (fromCartArchive) {
-      const mode = resolveCartArchiveViewMode({
-        cartListPanelOpen: selectCartListPanelOpen(store.getState()),
-        notebookStripTab: selectNotebookStripTab(store.getState()),
-      })
-      if (mode === 'list' || mode === 'calendar') {
-        archiveCartCenterReturnModeRef.current = mode
-      }
-    }
-    dispatch(setCartListPanelOpen(false))
-    releaseCartDatePickListEntryOwnership()
-    cartDatePickOwnedByListEntryRef.current = false
-    dispatch(endCartCalendarDatePick())
-    dispatch(setActiveSection(targetSection))
-    setCardPieEditHydrateScope('section')
-    setSuppressCardPieEditActiveAfterCopy(true)
-    setCardPieEditEngaged(true)
-    dispatch(setArchiveFactoryEditActive(true))
-    setActivePieSide('right')
-    clearRightPiePeekChrome()
+    /**
+     * Same flush as date-pick: close lists + clear peek together so history-list
+     * upper chrome (calendar icon under postcardEdit) cannot catch a ghost click.
+     */
+    flushSync(() => {
+      captureArchiveCenterReturnMode()
+      dispatch(setCartListPanelOpen(false))
+      dispatch(setHistoryListPanelOpen(false))
+      releaseCartDatePickListEntryOwnership()
+      cartDatePickOwnedByListEntryRef.current = false
+      dispatch(endCartCalendarDatePick())
+      dispatch(setActiveSection(targetSection))
+      setCardPieEditHydrateScope('section')
+      setSuppressCardPieEditActiveAfterCopy(true)
+      setCardPieEditEngaged(true)
+      dispatch(setArchiveFactoryEditActive(true))
+      setActivePieSide('right')
+      clearRightPiePeekChrome()
+    })
   }, [
+    captureArchiveCenterReturnMode,
     captureAssemblyBranchFreeze,
     clearRightPiePeekChrome,
     dispatch,
-    endCardPieEditEngaged,
+    listRowInner,
     resolveCardPieEditTargetSection,
     rightArchivePiePostcardStatus,
     rightListArchiveLocalId,

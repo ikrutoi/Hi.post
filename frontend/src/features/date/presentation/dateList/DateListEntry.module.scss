@@ -1,5 +1,6 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
+@use '@styles/mixins/listEntrySelectionAccent' as selectionAccent;
 
 .root {
   position: relative;
@@ -48,11 +49,17 @@
   }
 
   &[data-selected='true'] {
+    @include selectionAccent.list-entry-selection-accent(
+      $gap-color: darken($color-date-input, 4%),
+      $bar-color: $color-date-multi
+    );
     background-color: darken($color-date-input, 4%);
-    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-date-multi;
 
     &[data-inactive='true'] {
-      box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 mix($color-date-multi, $color-font-disabled, 40%);
+      @include selectionAccent.list-entry-selection-accent(
+        $gap-color: darken($color-date-input, 4%),
+        $bar-color: mix($color-date-multi, $color-font-disabled, 40%)
+      );
     }
   }
 

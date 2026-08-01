@@ -1,6 +1,7 @@
 @use 'sass:color';
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
+@use '@styles/mixins/listEntrySelectionAccent' as selectionAccent;
 
 $cell-border-radius: 0.35rem;
 
@@ -135,17 +136,17 @@ $cart-date-edit-wave-overlay: color.change($cart-date-edit-tint, $alpha: 0.48);
   /**
    * День даты отправки открытки, для которой открыт правый CardPie
    * (список корзины, список истории, панель дня в «Истории»).
-   * Слева полоска 2px, как у выбранной строки списка.
+   * Слева полоска выделения (общий миксин, без зазора — фон ячейки разный).
    */
   &.rightArchiveCardPieDay {
     z-index: 2;
     border-color: transparent;
-    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
+    @include selectionAccent.list-entry-selection-accent($gap: 0);
   }
 
   &.rightArchiveCardPieDay:hover:not(.disabled) {
     border-color: transparent;
-    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
+    @include selectionAccent.list-entry-selection-accent($gap: 0);
   }
 
   /**
@@ -154,12 +155,12 @@ $cart-date-edit-wave-overlay: color.change($cart-date-edit-tint, $alpha: 0.48);
    */
   &.cart.cartDateEditPickBorder.rightArchiveCardPieDay {
     border-color: $color-date-input-border;
-    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
+    @include selectionAccent.list-entry-selection-accent($gap: 0);
   }
 
   &.cart.cartDateEditPickBorder.rightArchiveCardPieDay:hover:not(.disabled) {
     border-color: mix($color-date-input-border, $color-date-multi, 55%);
-    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
+    @include selectionAccent.list-entry-selection-accent($gap: 0);
   }
 }
 
@@ -513,7 +514,7 @@ button.navArrowWrap {
 .cell.rightArchiveCardPieDay:hover:not(.disabled),
 .cell.rightArchiveCardPieDay.current:hover:not(.disabled) {
   border-color: transparent;
-  box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
+  @include selectionAccent.list-entry-selection-accent($gap: 0);
   cursor: pointer;
 }
 
@@ -522,7 +523,7 @@ button.navArrowWrap {
     .disabled
   ) {
   border-color: mix($color-date-input-border, $color-date-multi, 55%);
-  box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
+  @include selectionAccent.list-entry-selection-accent($gap: 0);
   cursor: pointer;
 }
 

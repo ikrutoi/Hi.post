@@ -1,5 +1,6 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
+@use '@styles/mixins/listEntrySelectionAccent' as selectionAccent;
 
 .tile {
   position: relative;
@@ -30,12 +31,9 @@
 
 .tileSelected,
 .tileSelected:hover {
-  overflow: visible;
+  @include selectionAccent.list-entry-selection-accent;
   background-color: #fff;
   border-color: $color-aroma-input-border;
-  box-shadow:
-    -1px 0 0 0 #fff,
-    calc(-1px - #{$list-entry-accent-bar-width}) 0 0 0 $color-toggle-active;
 }
 
 .tileSelected:hover {

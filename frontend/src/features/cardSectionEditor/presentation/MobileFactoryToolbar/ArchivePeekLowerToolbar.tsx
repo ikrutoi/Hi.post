@@ -6,7 +6,11 @@ import type { IconKey } from '@shared/config/constants'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import type { CardPanelSection } from '@cardPanel/domain/types'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
-import { applyArchiveSectionToEditorRequested } from '@cardPanel/infrastructure/state'
+import {
+  applyArchiveSectionToEditorRequested,
+  revertMirrorSectionCopyRequested,
+} from '@cardPanel/infrastructure/state'
+import { selectMirrorSectionBackup } from '@cardPanel/infrastructure/selectors/mirrorSectionBackupSelectors'
 import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
 import { getCurrentDate } from '@shared/utils/date'
 import { useCloseArchiveSectionPeek } from '../../application/hooks/useCloseArchiveSectionPeek'
@@ -23,12 +27,19 @@ const ARCHIVE_PEEK_COPYABLE_SECTIONS = new Set<CardPanelSection>([
 
 /**
  * Нижний ряд factory toolbar в archive peek (Корзина / История):
- * tint секции + copy слева — копирует секцию в фабрику сборки.
- * Date: disabled, если все даты секции уже нельзя выбрать в календаре заказа.
+ * tint + copy (enabled/disabled only — без active после apply).
+ * Тоггл: 1-й клик → apply + backup фабрики; 2-й → revert из backup.
  */
 export const ArchivePeekLowerToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
   const activeSection = useAppSelector(selectActiveSection)
+  const sectionBackup = useAppSelector((state) =>
+    activeSection != null &&
+    ARCHIVE_PEEK_COPYABLE_SECTIONS.has(activeSection as CardPanelSection)
+      ? selectMirrorSectionBackup(state, activeSection as CardPanelSection)
+      : undefined,
+  )
+  const isSectionCopied = sectionBackup != null
   const { isArchiveSectionPeekActive } = useCloseArchiveSectionPeek()
   const {
     rightPieDatePeekNoToolbar,
@@ -45,7 +56,8 @@ export const ArchivePeekLowerToolbar: React.FC = () => {
 
   /**
    * Как в секции «Дата»: нельзя выбрать дни раньше порога заказа.
-   * Если все даты peek-секции уже недоступны — copy disabled.
+   * Если все даты peek-секции уже недоступны — новый copy disabled
+   * (revert по backup всё ещё доступен).
    */
   const dateCopyBlocked =
     activeSection === 'date' &&
@@ -54,11 +66,14 @@ export const ArchivePeekLowerToolbar: React.FC = () => {
         isDispatchDateDisabledForOrder(d, getCurrentDate()),
       ))
 
-  const canCopy =
+  const canApplyCopy =
     sourceLocalId != null &&
     activeSection != null &&
     ARCHIVE_PEEK_COPYABLE_SECTIONS.has(activeSection as CardPanelSection) &&
     !dateCopyBlocked
+
+  /** Interact: apply when allowed, or revert when backup exists. */
+  const canInteract = isSectionCopied || canApplyCopy
 
   const aromaTint =
     isArchiveSectionPeekActive && activeSection === 'aroma'
@@ -76,29 +91,49 @@ export const ArchivePeekLowerToolbar: React.FC = () => {
         icons: [
           {
             key: 'copy',
-            state: canCopy ? 'enabled' : 'disabled',
+            /** Без `active` — визуально не отличаем после первого клика. */
+            state: canInteract ? 'enabled' : 'disabled',
           },
         ],
-        status: canCopy ? 'enabled' : 'disabled',
+        status: canInteract ? 'enabled' : 'disabled',
       },
     ]
-  }, [canCopy])
+  }, [canInteract])
 
   const handleAction = useCallback(
     (key: IconKey) => {
       if (key !== 'copy') return
-      if (!canCopy || activeSection == null || sourceLocalId == null) {
+      if (
+        activeSection == null ||
+        !ARCHIVE_PEEK_COPYABLE_SECTIONS.has(activeSection as CardPanelSection)
+      ) {
+        return false
+      }
+      const section = activeSection as CardPanelSection
+
+      if (isSectionCopied) {
+        dispatch(revertMirrorSectionCopyRequested({ section }))
+        return false
+      }
+
+      if (!canApplyCopy || sourceLocalId == null) {
         return false
       }
       dispatch(
         applyArchiveSectionToEditorRequested({
-          section: activeSection as CardPanelSection,
+          section,
           sourceLocalId,
         }),
       )
       return false
     },
-    [activeSection, canCopy, dispatch, sourceLocalId],
+    [
+      activeSection,
+      canApplyCopy,
+      dispatch,
+      isSectionCopied,
+      sourceLocalId,
+    ],
   )
 
   return (

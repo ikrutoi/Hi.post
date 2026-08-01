@@ -1,6 +1,7 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
+@use '@styles/mixins/listEntrySelectionAccent' as selectionAccent;
 
 /* Density 1 — default row; density 2 — compact row height, type/icons unchanged. */
 $entry-row-height: 2.28rem;
@@ -35,12 +36,16 @@ $entry-row-height-compact: 2.28rem;
   }
 
   &[data-selected='true'] {
+    @include selectionAccent.list-entry-selection-accent(
+      $gap-color: darken($color-envelope-recipient-input, 2%)
+    );
     background-color: darken($color-envelope-recipient-input, 2%);
-    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
   }
 
   &[data-selected='true'][data-focused='true'] {
-    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
+    @include selectionAccent.list-entry-selection-accent(
+      $gap-color: darken($color-envelope-recipient-input, 2%)
+    );
     border-color: $color-envelope-recipient-border;
   }
 

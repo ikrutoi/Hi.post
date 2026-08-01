@@ -1,0 +1,38 @@
+@use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as *;
+
+/**
+ * Боковая полоска выделения (списки, мини-пай): gap + accent bar.
+ * По умолчанию: 1px зазор, 3px полоска `$color-toggle-active`.
+ *
+ * @param $side      `left` | `right`
+ * @param $gap-color цвет зазора (фон строки / оболочки)
+ * @param $bar-color цвет полоски
+ * @param $gap       ширина зазора (`0` — только полоска)
+ * @param $width     толщина полоски
+ */
+@mixin list-entry-selection-accent(
+  $side: left,
+  $gap-color: #fff,
+  $bar-color: $color-toggle-active,
+  $gap: $list-entry-selection-accent-gap,
+  $width: $list-entry-selection-accent-width
+) {
+  overflow: visible;
+
+  @if $gap == 0 or $gap == 0px {
+    @if $side == right {
+      box-shadow: #{$width} 0 0 0 $bar-color;
+    } @else {
+      box-shadow: -#{$width} 0 0 0 $bar-color;
+    }
+  } @else if $side == right {
+    box-shadow:
+      #{$gap} 0 0 0 $gap-color,
+      calc(#{$gap} + #{$width}) 0 0 0 $bar-color;
+  } @else {
+    box-shadow:
+      -#{$gap} 0 0 0 $gap-color,
+      calc(-#{$gap} - #{$width}) 0 0 0 $bar-color;
+  }
+}

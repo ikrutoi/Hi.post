@@ -3,6 +3,7 @@
 @use '@styles/config/uiLayout' as *;
 @use '@styles/config/mobileNotebookTabColors' as notebookTab;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
+@use '@styles/mixins/listEntrySelectionAccent' as selectionAccent;
 
 $mobile-header-cart-tab-top: notebookTab.$mobile-notebook-cart-tab-top;
 $mobile-header-cart-tab-bottom: notebookTab.$mobile-notebook-cart-tab-bottom;
@@ -469,7 +470,7 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   align-items: stretch;
   gap: var(--mobile-section-inset);
   // Резерв справа под акцентную полосу выбранного мини-пая.
-  padding-right: #{$list-entry-accent-bar-width};
+  padding-right: $list-entry-selection-accent-reserve;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -533,10 +534,12 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   }
 }
 
-// Выбранный мини-пай: только акцентная полоса справа (без обводки по периметру).
+// Выбранный мини-пай: акцентная полоса справа (общий миксин).
 .mobilePieGutterMiniItem[data-selected='true'] {
-  overflow: visible;
-  box-shadow: #{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
+  @include selectionAccent.list-entry-selection-accent(
+    $side: right,
+    $gap-color: $color-app-inner
+  );
 }
 
 // Centered on screen; minis sit in the left slot via absolute positioning.

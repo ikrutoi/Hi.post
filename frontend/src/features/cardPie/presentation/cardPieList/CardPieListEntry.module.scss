@@ -1,6 +1,7 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
+@use '@styles/mixins/listEntrySelectionAccent' as selectionAccent;
 
 $list-entry-row-height: 3rem;
 $list-entry-thumb-size: 2.75rem;
@@ -197,11 +198,17 @@ $list-entry-row-linked-border: $color-cart-list-border;
   }
 
   &[data-selected='true'] {
-    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-date-multi;
+    @include selectionAccent.list-entry-selection-accent(
+      $gap-color: darken($list-entry-surface, 3%),
+      $bar-color: $color-date-multi
+    );
     @include list-entry-row-surface(darken($list-entry-surface, 3%));
 
     &[data-inactive='true'] {
-      box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 mix($color-date-multi, $color-font-disabled, 40%);
+      @include selectionAccent.list-entry-selection-accent(
+        $gap-color: darken($list-entry-surface, 3%),
+        $bar-color: mix($color-date-multi, $color-font-disabled, 40%)
+      );
     }
   }
 
@@ -225,7 +232,10 @@ $list-entry-row-linked-border: $color-cart-list-border;
   }
 
   &[data-in-cart='true'][data-selected='true']:not([data-inactive='true']) {
-    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-date-multi;
+    @include selectionAccent.list-entry-selection-accent(
+      $gap-color: darken($list-entry-row-linked-surface, 3%),
+      $bar-color: $color-date-multi
+    );
     @include list-entry-row-surface(
       darken($list-entry-row-linked-surface, 3%)
     );

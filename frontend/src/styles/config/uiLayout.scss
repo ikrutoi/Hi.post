@@ -23,7 +23,13 @@ $toolbar-badge-min-width-wide: 1.125rem; // 18px
 $toolbar-badge-padding-x-wide: 0.3125rem; // 5px
 $toolbar-badge-position-offset: -0.25rem; // -4px
 
-$list-entry-accent-bar-width: 0.125rem; // 2px selection strip
+$list-entry-accent-bar-width: 0.125rem; // 2px — legacy; prefer selection-accent tokens
+/** Selection accent strip (cart list, mini pie, list rows). */
+$list-entry-selection-accent-width: 3px;
+$list-entry-selection-accent-gap: 1px;
+$list-entry-selection-accent-reserve: calc(
+  #{$list-entry-selection-accent-gap} + #{$list-entry-selection-accent-width}
+);
 $list-entry-focus-outline-width: 0.125rem; // 2px
 $list-entry-focus-outline-offset: 0.0625rem; // 1px
 $list-entry-border-adjust: 0.125rem; // 2px — top+bottom 1px borders in min-height calcs
