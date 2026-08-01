@@ -31,7 +31,7 @@ import { useFlashEffect } from '@shared/hooks'
 import { NotebookPeekShell } from './NotebookPeekShell'
 import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegend'
 import { Toggle } from '@shared/ui/Toggle/Toggle'
-import { IconHistory } from '@shared/ui/icons'
+import { IconHistory, IconPostcardNext } from '@shared/ui/icons'
 import styles from './Date.module.scss'
 import type {
   CalendarViewDate,
@@ -46,7 +46,14 @@ import { useMobileFactoryListChrome } from '@features/cardSectionEditor/applicat
 import { MobileInlineToolbarRow } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import { MobileDateCalendarToolbarSlider } from '@date/dateHeader/presentation/MobileDateCalendarToolbarSlider'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
-import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
+import {
+  selectDraftDispatchDates,
+  selectMergedDispatchDates,
+} from '@date/infrastructure/selectors'
+import {
+  nextUniqueSelectedCalendarMonth,
+  uniqueSelectedCalendarMonths,
+} from '@date/application/helpers/selectedDatesMonthCycle'
 import { buildDatePreviewLines } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import { DatePeekMultiBackground } from './DatePeekMultiBackground'
 import {
@@ -118,6 +125,14 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   } = useRightListArchiveMini()
   const { assemblyDateSimplifiedPeek } = useMobileFactoryListChrome()
   const appliedDispatchDates = useAppSelector(selectMergedDispatchDates)
+  const draftDispatchDates = useAppSelector(selectDraftDispatchDates)
+  const selectedDaysCount = draftDispatchDates.length
+  const showSelectedDaysCount = selectedDaysCount > 1
+  const selectedCalendarMonths = useMemo(
+    () => uniqueSelectedCalendarMonths(draftDispatchDates),
+    [draftDispatchDates],
+  )
+  const canCycleSelectedMonths = selectedCalendarMonths.length > 1
   const isMobileFactoryChromePeek =
     rightPieDatePeekNoToolbar ||
     rightPieCardphotoPeekNoToolbar ||
@@ -248,6 +263,27 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   )
   const calendarViewDate: CalendarViewDate =
     lastViewedCalendarDate ?? fallbackCalendarViewDate
+
+  const handleCycleSelectedMonths = useCallback(() => {
+    if (!canCycleSelectedMonths) return
+    const next = nextUniqueSelectedCalendarMonth(
+      selectedCalendarMonths,
+      calendarViewDate,
+    )
+    if (next == null) return
+    if (
+      next.year === calendarViewDate.year &&
+      next.month === calendarViewDate.month
+    ) {
+      return
+    }
+    setCalendarViewDate(next)
+  }, [
+    canCycleSelectedMonths,
+    selectedCalendarMonths,
+    calendarViewDate,
+    setCalendarViewDate,
+  ])
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -407,14 +443,42 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
               </div>
             </div>
           ) : (
-            <div className={styles.dateBottomToggleIndicators}>
-              <PostcardStatusLegend
-                spot="calendar"
-                isHistoryEmpty={false}
-                calendarDispatchDimmed={section === 'date'}
-                calendarCartStripLegendOnly={section === 'date'}
-              />
-            </div>
+            <>
+              <button
+                type="button"
+                className={styles.dateBottomPostcardNextGroup}
+                onClick={handleCycleSelectedMonths}
+                disabled={!canCycleSelectedMonths}
+                aria-label={
+                  canCycleSelectedMonths
+                    ? 'Next month with selected dates'
+                    : 'Selected dates'
+                }
+              >
+                <IconPostcardNext
+                  className={clsx(
+                    styles.dateBottomPostcardNext,
+                    canCycleSelectedMonths
+                      ? styles.dateBottomPostcardNextEnabled
+                      : styles.dateBottomPostcardNextDisabled,
+                  )}
+                  aria-hidden
+                />
+                {showSelectedDaysCount ? (
+                  <span className={styles.dateBottomPostcardNextCount}>
+                    {selectedDaysCount}
+                  </span>
+                ) : null}
+              </button>
+              <div className={styles.dateBottomToggleIndicators}>
+                <PostcardStatusLegend
+                  spot="calendar"
+                  isHistoryEmpty={false}
+                  calendarDispatchDimmed={section === 'date'}
+                  calendarCartStripLegendOnly={section === 'date'}
+                />
+              </div>
+            </>
           )}
           {section === 'date' ? (
             <div

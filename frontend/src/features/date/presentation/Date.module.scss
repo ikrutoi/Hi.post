@@ -499,6 +499,73 @@ $mobile-date-calendar-chrome-gap: 0.125rem;
     color 0.2s ease;
 }
 
+/** Режим «Дата»: postcardNext + счётчик выбранных дней.
+ * Слева как глиф иконки в футере корзины: shell 0.35rem + padding `.item` 0.25rem.
+ * Счётчик — те же токены, что `.count` в PostcardStatusLegend (historyList). */
+.dateBottomPostcardNextGroup {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 0.35rem;
+  margin-left: 0.6rem;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  line-height: inherit;
+  cursor: pointer;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+
+  &:disabled {
+    cursor: default;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.dateBottomPostcardNext {
+  display: block;
+  flex-shrink: 0;
+  height: 1.25rem;
+  width: 1.25rem;
+  aspect-ratio: 1;
+
+  :global([data-shell-layout='mobile']) & {
+    height: 1.15rem;
+    width: 1.15rem;
+  }
+}
+
+.dateBottomPostcardNextEnabled {
+  color: $color-font-enabled-light;
+}
+
+.dateBottomPostcardNextDisabled {
+  color: $color-font-disabled;
+}
+
+.dateBottomPostcardNextCount {
+  flex-shrink: 0;
+  display: inline-block;
+  min-width: 2.25ch;
+  margin-left: 0.05rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  text-align: start;
+  user-select: none;
+  color: $color-font-enabled-light;
+}
+
 .dateBottomToggleGroupHistoryActive .dateBottomToggleIcon {
   opacity: 1;
 }
