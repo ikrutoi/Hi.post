@@ -130,7 +130,11 @@
     pointer-events: auto;
   }
 
-  :global([class*='toolbarDate']) {
+  :global([class*='toolbarDate']),
+  :global([class*='toolbarCardtext']),
+  :global([class*='toolbarCardphoto']),
+  :global([class*='toolbarAroma']),
+  :global([class*='toolbarEnvelope']) {
     width: auto;
     margin-inline: 0;
     justify-content: flex-start;

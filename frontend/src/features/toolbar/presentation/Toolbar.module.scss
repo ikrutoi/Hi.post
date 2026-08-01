@@ -981,18 +981,39 @@
 /* cardphoto / cardtext: hover — затемнение иконки, белая подложка */
 .toolbarCardphoto,
 .toolbarCardtext {
-  .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
+  .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']):not(
+      [data-icon-key='postcardEdit']
+    ) {
     color: $color-font-enabled-light;
 
-    &:hover {
-      color: $color-font-enabled;
-      background-color: #fff;
+    @include iconButton.toolbar-key-hover-fine-pointer {
+      &:hover {
+        color: $color-font-enabled;
+        background-color: #fff;
+      }
+    }
+  }
+
+  /**
+   * Apply → peek: postcardEdit mounts under the pointer; keep enabled-light
+   * (no darken). Same as date/cart peek chrome.
+   */
+  .toolbarKey[data-icon-key='postcardEdit'].toolbarKeyEnabled {
+    color: $color-font-enabled-light;
+
+    @include iconButton.toolbar-key-hover-fine-pointer {
+      &:hover {
+        color: $color-font-enabled-light;
+        background-color: #fff;
+      }
     }
   }
 
   .toolbarKey.toolbarKeyActive:not([data-icon-key='apply']) {
-    &:hover {
-      background-color: #fff;
+    @include iconButton.toolbar-key-hover-fine-pointer {
+      &:hover {
+        background-color: #fff;
+      }
     }
   }
 }

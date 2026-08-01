@@ -92,16 +92,25 @@ $list-entry-bg-hover: #fafafa;
   cursor: pointer;
   color: $color-font-enabled-light;
   line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 
   &[aria-checked='true'] {
     color: $color-font-enabled-light;
     --icon-checkbox-check: #{$color-font-active};
   }
 
+  &:focus,
+  &:active {
+    outline: none;
+    background-color: transparent;
+  }
+
   &:focus-visible {
     outline: $list-entry-focus-outline-width solid
       mix($list-entry-surface, $color-app-sidebar-icon-active, 55%);
     outline-offset: $list-entry-focus-outline-offset;
+    background-color: transparent;
   }
 }
 
