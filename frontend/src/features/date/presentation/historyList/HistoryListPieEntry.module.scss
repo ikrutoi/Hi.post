@@ -1,5 +1,6 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
+@use '@styles/mixins/listEntrySelectionAccent' as selectionAccent;
 
 .root {
   position: relative;
@@ -16,20 +17,28 @@
   background-color: transparent;
   overflow: hidden;
   user-select: none;
-  transition: outline-color 0.15s ease;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: box-shadow 0.15s ease;
 
   &[data-selected='true'] {
-    overflow: visible;
-    outline: 3px solid $color-toggle-active;
-    outline-offset: 2px;
+    @include selectionAccent.list-entry-selection-accent;
   }
 
   &[data-selected='true'][data-inactive='true'] {
-    outline-color: mix($color-toggle-active, $color-font-disabled, 40%);
+    @include selectionAccent.list-entry-selection-accent(
+      $bar-color: mix($color-toggle-active, $color-font-disabled, 40%)
+    );
   }
 
   &[data-clickable='true'] {
     cursor: pointer;
+
+    &:focus,
+    &:active,
+    &:focus-visible {
+      background-color: transparent;
+    }
 
     &:focus {
       outline: none;
@@ -64,6 +73,11 @@
     height: 100%;
     inset: 0;
     right: unset;
+  }
+
+  /** Список истории: без брендового голубого центра (#008aed). */
+  :global([class*='pieCenterDiscBrand']) {
+    background-color: $color-app-header;
   }
 
   :global([class*='pieOutlineOverlay']) {
