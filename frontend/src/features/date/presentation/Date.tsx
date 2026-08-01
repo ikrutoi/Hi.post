@@ -132,7 +132,6 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
     () => uniqueSelectedCalendarMonths(draftDispatchDates),
     [draftDispatchDates],
   )
-  const canCycleSelectedMonths = selectedCalendarMonths.length > 1
   const isMobileFactoryChromePeek =
     rightPieDatePeekNoToolbar ||
     rightPieCardphotoPeekNoToolbar ||
@@ -264,8 +263,19 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   const calendarViewDate: CalendarViewDate =
     lastViewedCalendarDate ?? fallbackCalendarViewDate
 
+  /** Enabled, если есть куда перейти: другой месяц+год с выбранными датами
+   * (в т.ч. одна дата вне текущего вида). */
+  const canNavigateSelectedMonths = useMemo(
+    () =>
+      nextUniqueSelectedCalendarMonth(
+        selectedCalendarMonths,
+        calendarViewDate,
+      ) != null,
+    [selectedCalendarMonths, calendarViewDate],
+  )
+
   const handleCycleSelectedMonths = useCallback(() => {
-    if (!canCycleSelectedMonths) return
+    if (!canNavigateSelectedMonths) return
     const next = nextUniqueSelectedCalendarMonth(
       selectedCalendarMonths,
       calendarViewDate,
@@ -279,7 +289,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
     }
     setCalendarViewDate(next)
   }, [
-    canCycleSelectedMonths,
+    canNavigateSelectedMonths,
     selectedCalendarMonths,
     calendarViewDate,
     setCalendarViewDate,
@@ -448,9 +458,9 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
                 type="button"
                 className={styles.dateBottomPostcardNextGroup}
                 onClick={handleCycleSelectedMonths}
-                disabled={!canCycleSelectedMonths}
+                disabled={!canNavigateSelectedMonths}
                 aria-label={
-                  canCycleSelectedMonths
+                  canNavigateSelectedMonths
                     ? 'Next month with selected dates'
                     : 'Selected dates'
                 }
@@ -458,7 +468,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
                 <IconPostcardNext
                   className={clsx(
                     styles.dateBottomPostcardNext,
-                    canCycleSelectedMonths
+                    canNavigateSelectedMonths
                       ? styles.dateBottomPostcardNextEnabled
                       : styles.dateBottomPostcardNextDisabled,
                   )}
