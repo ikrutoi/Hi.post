@@ -227,8 +227,14 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const mobileListArchiveSlotActive =
     cartListPanelOpen || historyListPanelOpen
 
-  const { planPies, selectedPlanPie, selectedPlanPieId, selectPlanPie, cyclePlanPie } =
-    useMobilePlanCardPies()
+  const {
+    planPies,
+    selectedPlanPie,
+    selectedPlanPieId,
+    assemblyOverviewPie,
+    selectPlanPie,
+    cyclePlanPie,
+  } = useMobilePlanCardPies()
   const {
     mirrorTargetLocalId,
     mirrorListArchiveSource,
@@ -1050,12 +1056,12 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                         <CardPie
                           fillContainer
                           station="left"
-                          {...(selectedPlanPie != null
-                            ? {
-                                pieInner: selectedPlanPie.inner,
-                                pieSections: selectedPlanPie.sections,
-                              }
-                            : { isProcessed: true })}
+                          pieInner={
+                            (selectedPlanPie ?? assemblyOverviewPie).inner
+                          }
+                          pieSections={
+                            (selectedPlanPie ?? assemblyOverviewPie).sections
+                          }
                           onLeftPieSectorClick={handleLeftPieSectorClick}
                           onLeftPieCenterClick={handleLeftPieCenterPress}
                           leftPieCenterPlanCycle={canCyclePlanPies}

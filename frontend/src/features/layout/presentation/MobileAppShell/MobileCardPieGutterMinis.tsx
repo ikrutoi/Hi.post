@@ -7,7 +7,12 @@ import styles from './MobileAppShell.module.scss'
 type MobileCardPieGutterMinisProps = {
   planPies: MobilePlanCardPie[]
   selectedPlanPieId: string | null
-  /** When set, only this mini shows the right accent (left/assembly in central pie). */
+  /**
+   * Accent control for gutter minis:
+   * - omit / `undefined` → use `selectedPlanPieId`
+   * - `null` → no accent (archive / right central pie)
+   * - id → accent that mini only
+   */
   highlightPlanPieId?: string | null
   /** Multi-date factory strip: accent every mini pie. */
   highlightAllPlanPies?: boolean
@@ -22,7 +27,9 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
     highlightAllPlanPies = false,
     onSelectPlanPie,
   }) => {
-    const accentPlanPieId = highlightPlanPieId ?? selectedPlanPieId
+    /** `null` must not fall through to `selectedPlanPieId` (archive mode clears accent). */
+    const accentPlanPieId =
+      highlightPlanPieId !== undefined ? highlightPlanPieId : selectedPlanPieId
 
     return (
       <div className={styles.mobilePieGutterMiniList} aria-label="Card pie plan">
@@ -32,7 +39,8 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
             type="button"
             className={styles.mobilePieGutterMiniItem}
             data-selected={
-              highlightAllPlanPies || accentPlanPieId === id
+              highlightAllPlanPies ||
+              (accentPlanPieId != null && accentPlanPieId === id)
                 ? 'true'
                 : undefined
             }

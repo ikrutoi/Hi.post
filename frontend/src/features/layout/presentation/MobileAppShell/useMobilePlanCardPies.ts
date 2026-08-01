@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAppSelector } from '@app/hooks'
 import { selectActiveCardFullData } from '@features/cardPie/infrastructure/selectors'
+import { selectAppliedDates } from '@date/infrastructure/selectors'
 import {
   buildCardPieInnerDataForPlanEntry,
   cardPieInnerFromEditorActiveData,
@@ -73,12 +74,14 @@ export function useMobilePlanCardPies() {
     selectMirrorSectionBackup(s, 'cardtext'),
   )
   const assemblyFreeze = useAppSelector(selectAssemblyBranchFreeze)
+  const appliedDates = useAppSelector(selectAppliedDates)
   const { activePieSide } = useRightListArchiveMini()
   const [selectedPlanPieId, setSelectedPlanPieId] = useState<string | null>(
     null,
   )
+  const prevAppliedDatesKeyRef = useRef('')
 
-  const planPies = useMemo((): MobilePlanCardPie[] => {
+  const assemblyBase = useMemo(() => {
     const useFreeze = assemblyFreeze != null
     let baseInner =
       (useFreeze
@@ -118,10 +121,34 @@ export function useMobilePlanCardPies() {
         }
       }
     }
-    const ctx = { envelopeRecipients, recipientEntries }
     const envelopeComplete = useFreeze
       ? Boolean(assemblyFreeze.sections.envelope)
       : Boolean(envelopeRecord?.isComplete)
+    return { baseInner, envelopeComplete, useFreeze }
+  }, [
+    activeEditorData,
+    activePieSide,
+    assemblyFreeze,
+    cardtextMirrorBackup,
+    envelopeRecord?.isComplete,
+  ])
+
+  /**
+   * All gutter minis selected (overview): full session dates → counter in date sector.
+   * Injected pie keeps the same isReady source as plan rows (no isProcessed flicker).
+   */
+  const assemblyOverviewPie = useMemo(
+    () =>
+      buildDefaultMobilePlanPie(
+        assemblyBase.baseInner,
+        assemblyBase.envelopeComplete,
+      ),
+    [assemblyBase],
+  )
+
+  const planPies = useMemo((): MobilePlanCardPie[] => {
+    const { baseInner, envelopeComplete, useFreeze } = assemblyBase
+    const ctx = { envelopeRecipients, recipientEntries }
 
     /**
      * Dual-mode: while freeze is active, do not merge live session recipient
@@ -150,14 +177,11 @@ export function useMobilePlanCardPies() {
 
     if (mapped.length > 0) return mapped
 
-    return [buildDefaultMobilePlanPie(baseInner, envelopeComplete)]
+    return [assemblyOverviewPie]
   }, [
-    activeEditorData,
-    activePieSide,
-    assemblyFreeze,
-    cardtextMirrorBackup,
+    assemblyBase,
+    assemblyOverviewPie,
     entries,
-    envelopeRecord?.isComplete,
     envelopeRecipients,
     recipientEntries,
     recipientState,
@@ -178,6 +202,22 @@ export function useMobilePlanCardPies() {
     if (notebookDateTabPeekClearTick === 0) return
     setSelectedPlanPieId(null)
   }, [notebookDateTabPeekClearTick])
+
+  /**
+   * After Apply with 2+ dates: select all gutter minis (overview).
+   * Central CardPie then uses session `dates` → counter mode in the date sector.
+   * A single mini stay on its one-day pieInner until the user cycles again.
+   */
+  useEffect(() => {
+    const key = appliedDates
+      .map((d) => `${d.year}-${d.month}-${d.day}`)
+      .join('|')
+    if (key === prevAppliedDatesKeyRef.current) return
+    prevAppliedDatesKeyRef.current = key
+    if (appliedDates.length > 1) {
+      setSelectedPlanPieId(null)
+    }
+  }, [appliedDates])
 
   const cyclePlanPie = useCallback((): string | null => {
     if (planPies.length === 0) return null
@@ -206,6 +246,8 @@ export function useMobilePlanCardPies() {
     planPies,
     selectedPlanPie,
     selectedPlanPieId,
+    /** Central pie when no single gutter mini is selected. */
+    assemblyOverviewPie,
     selectPlanPie: setSelectedPlanPieId,
     cyclePlanPie,
   }
