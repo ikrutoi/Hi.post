@@ -20,7 +20,10 @@ import {
   captureMirrorSectionBackup,
   restoreMirrorSectionBackup,
 } from './mirrorSectionBackup.helpers'
-import { canApplyMirrorSection } from '@cardPanel/application/helpers/mirrorSectionEditorSync'
+import {
+  canApplyMirrorSection,
+  selectableMirrorDispatchDates,
+} from '@cardPanel/application/helpers/mirrorSectionEditorSync'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import {
   buildCardPieInnerDataFromPostcard,
@@ -167,7 +170,10 @@ function* applyArchiveSectionFromPostcard(
     }
     case 'date': {
       const inner = buildCardPieInnerDataFromPostcard(postcard)
-      const dates = inner.dates
+      const dates = selectableMirrorDispatchDates(
+        inner.dates,
+        postcard.status,
+      )
       if (dates.length === 0) return
       yield put(setMultiDateMode(dates.length > 1))
       yield put(setSelectedDates(dates))

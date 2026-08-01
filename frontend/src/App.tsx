@@ -83,9 +83,16 @@ import { CardtextRightSlot } from '@cardtext/presentation/CardtextRightSlot'
 import { CardphotoRightSlot } from '@cardphoto/presentation/CardphotoRightSlot'
 import { selectListArchiveCardPieBundle } from '@features/cardPie/infrastructure/selectors/cardPieSelectors'
 import { selectActiveCardFullData } from '@features/cardPie/infrastructure/selectors/cardPieSelectors'
+import {
+  buildCardPieInnerDataFromPostcard,
+  buildPieSectionFlagsFromPostcard,
+} from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors'
 import { RightListArchiveMiniProvider } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { resolveCardPieDualMode } from '@cardPanel/application/helpers/resolveCardPieDualMode'
+import { listMirrorSectionsEligibleForApply } from '@cardPanel/application/helpers/mirrorSectionEditorSync'
+import type { CardPanelSection } from '@cardPanel/domain/types'
+import { selectMirrorSectionBackupSections } from '@cardPanel/infrastructure/selectors/mirrorSectionBackupSelectors'
 import {
   applyArchiveSectionToEditorRequested,
   applyAllMirrorSectionsCopyRequested,
@@ -167,6 +174,14 @@ function MarkStampYearDevButtons() {
 }
 
 /** Merges the mini-sections strip with the left or right CardPie under one chrome frame. */
+const CARD_PIE_COPY_ALL_SECTIONS: CardPanelSection[] = [
+  'cardphoto',
+  'cardtext',
+  'envelope',
+  'aroma',
+  'date',
+]
+
 const App = () => {
   const CALENDAR_STRIP_TAB_SESSION_KEY = 'hi.post.calendarStripTab'
   const appRef = useRef<HTMLDivElement>(null)
@@ -1932,11 +1947,46 @@ const App = () => {
 
   const handlePostcardPieCartToolbarAction = useCallback(
     (key: string) => {
-      if (key === 'cardPieCopy') {
-        dispatch(setCardPieCopyStripExpanded(!cardPieCopyStripExpanded))
+      if (key !== 'cardPieCopy') return false
+      const lid = rightListArchiveLocalId
+      if (lid == null) return false
+
+      const state = store.getState()
+      const postcard = selectCartItems(state).find((p) => p.localId === lid)
+      if (postcard == null) return false
+
+      const mirrorInner = buildCardPieInnerDataFromPostcard(postcard)
+      const mirrorFlags = buildPieSectionFlagsFromPostcard(postcard)
+      const eligible = listMirrorSectionsEligibleForApply(
+        CARD_PIE_COPY_ALL_SECTIONS,
+        mirrorInner,
+        mirrorFlags,
+        postcard.status,
+      )
+      const backed = selectMirrorSectionBackupSections(state)
+      /**
+       * Toggle like peek `copy`: if every eligible section already has a
+       * factory backup from mirror-copy, revert; otherwise apply all.
+       */
+      const shouldRevert =
+        eligible.length > 0 && eligible.every((section) => backed.includes(section))
+
+      if (shouldRevert) {
+        dispatch(revertAllMirrorSectionsCopyRequested())
+      } else {
+        dispatch(
+          applyAllMirrorSectionsCopyRequested({
+            sourceLocalId: lid,
+          }),
+        )
       }
+      /** Strip expand was the old copy UX — keep closed for full-copy toggle. */
+      if (selectCardPieCopyStripExpanded(state)) {
+        dispatch(setCardPieCopyStripExpanded(false))
+      }
+      return false
     },
-    [dispatch, cardPieCopyStripExpanded],
+    [dispatch, rightListArchiveLocalId],
   )
   const handleEditorPieToolbarPassthrough = useCallback((key: string) => {
     if (key !== 'editLight' && key !== 'cardPie') return
@@ -1951,13 +2001,8 @@ const App = () => {
     },
     [enterCardPieEditFactoryMode],
   )
-  const postcardPieCartToolbarStateOverride = useMemo(
-    () =>
-      ({
-        ...(showTopCardStripFullSpan ? { cardPieCopy: 'active' as const } : {}),
-      }) satisfies Record<string, string>,
-    [showTopCardStripFullSpan],
-  )
+  /** Без `active` — cardPieCopy visually stays enabled only (toggle by action). */
+  const postcardPieCartToolbarStateOverride = undefined
 
   if (!authInitialized) {
     return <div className={styles.authBoot} aria-busy="true" />
@@ -2279,7 +2324,10 @@ const App = () => {
                         {rightListArchiveSource === 'history' &&
                           !showRightPostcardPieCartToolbar && (
                           <div className={styles.appMainContentRightPieToolbar}>
-                            <Toolbar section="postcardPieHistory" />
+                            <Toolbar
+                              section="postcardPieHistory"
+                              onActionClick={handlePostcardPieCartToolbarAction}
+                            />
                           </div>
                         )}
                       </div>
@@ -2341,7 +2389,12 @@ const App = () => {
                               <div
                                 className={styles.appMainContentRightPieToolbar}
                               >
-                                <Toolbar section="postcardPieHistory" />
+                                <Toolbar
+                                  section="postcardPieHistory"
+                                  onActionClick={
+                                    handlePostcardPieCartToolbarAction
+                                  }
+                                />
                               </div>
                             )}
                           </>

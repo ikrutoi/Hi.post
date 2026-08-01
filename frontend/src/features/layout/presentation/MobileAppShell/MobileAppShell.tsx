@@ -1104,7 +1104,11 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                     ) : null}
                     {showMobileCentralPostcardPieHistoryToolbar ? (
                       <div className={styles.mobilePieToolbar}>
-                        <Toolbar section="postcardPieHistory" mergedWithCenter />
+                        <Toolbar
+                          section="postcardPieHistory"
+                          onActionClick={onPostcardPieCartToolbarAction}
+                          mergedWithCenter
+                        />
                       </div>
                     ) : null}
                   </div>

@@ -3,9 +3,9 @@
 
 /** Shared center disc for left (logo) and right (status) CardPie. */
 $pie-center-indicator-size: 1.75rem;
-/** Левый центр: лого 2.2rem + 1px белая обводка (content-box). */
-$pie-center-logo-size: 2.2rem;
-$pie-center-logo-hit-size: 3.4rem;
+/** Левый / центральный archive: видимый круг + hit-area. */
+$pie-center-logo-size: 2.6rem;
+$pie-center-logo-hit-size: 3.6rem;
 $pie-center-right-hit-size: 3rem;
 $pie-center-logo-press-duration: 0.28s;
 /** Press pulse: +25% then back. */

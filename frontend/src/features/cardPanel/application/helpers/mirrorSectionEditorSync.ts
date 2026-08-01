@@ -29,6 +29,22 @@ export function isMirrorArchiveDateDisabledForOrder(
   return dates.every((d) => isDispatchDateDisabledForOrder(d, currentDate))
 }
 
+/**
+ * Даты секции, которые ещё можно выбрать в календаре заказа.
+ * Для cart / cartBlocked отбрасываем просроченные; иначе — все.
+ */
+export function selectableMirrorDispatchDates(
+  dates: DispatchDate[],
+  postcardStatus: PostcardStatus | undefined,
+  currentDate: OrderCalendarCurrentDate = getCurrentDate(),
+): DispatchDate[] {
+  if (dates.length === 0) return []
+  if (postcardStatus !== 'cart' && postcardStatus !== 'cartBlocked') {
+    return dates
+  }
+  return dates.filter((d) => !isDispatchDateDisabledForOrder(d, currentDate))
+}
+
 export function canApplyMirrorSection(
   section: CardPanelSection,
   mirrorInner: CardPieInnerData | null,
@@ -158,7 +174,13 @@ export function isMirrorSectionAppliedToEditor(
         (mirrorInner.aroma?.index ?? null) === (editor.selectedAroma?.index ?? null)
       )
     case 'date':
-      return sameDates(mirrorInner.dates ?? [], editor.selectedDates)
+      return sameDates(
+        selectableMirrorDispatchDates(
+          mirrorInner.dates ?? [],
+          sourcePostcard?.status,
+        ),
+        editor.selectedDates,
+      )
     default:
       return false
   }
