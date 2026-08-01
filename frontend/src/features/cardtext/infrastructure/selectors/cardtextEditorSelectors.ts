@@ -1,15 +1,17 @@
 import { RootState } from '@app/state'
 import {
+  CARDTEXT_APPLIED_DISPLAY_STATUSES,
+  cardtextHasRenderableContent,
+  cardtextValueForReadOnlyPreview,
   createInitialCardtextContent,
   defaultCardtextStyle,
   initialCardtextValue,
-  type CardtextValue,
-  type CardtextStyle,
   type CardtextContent,
-  type CardtextStatus,
   type CardtextCreateDraft,
   type CardtextEditorSessionSnapshot,
-  CARDTEXT_APPLIED_DISPLAY_STATUSES,
+  type CardtextStatus,
+  type CardtextStyle,
+  type CardtextValue,
 } from '../../domain/editor/editor.types'
 
 import { createSelector } from '@reduxjs/toolkit'
@@ -21,20 +23,17 @@ import {
   deriveCardtextInteractionMode,
   type CardtextInteractionMode,
 } from '../../domain/cardtextInteractionMode'
-import { cardtextHasRenderableContent } from '../../domain/editor/editor.types'
 
 const fallbackCardtextSessionContent: CardtextContent =
   createInitialCardtextContent()
 
 const DEFAULT_CARDTEXT_LINES = fallbackCardtextSessionContent.cardtextLines
 
-function cardtextValueHasUserText(value: CardtextValue | undefined | null): boolean {
-  if (value == null || value.length === 0) return false
-  return value.some((block) =>
-    (block.children ?? []).some(
-      (c) => String((c as { text?: string }).text ?? '').trim() !== '',
-    ),
-  )
+/** Как archive/mirror: plainText или вложенный Slate, не только плоские children. */
+function cardtextBranchHasDisplayText(
+  ct: CardtextContent | null | undefined,
+): boolean {
+  return cardtextHasRenderableContent(ct)
 }
 
 /** Ветка для отображения в фабрике/мини: как в пироге — сначала applied, если в asset ещё нет текста. */
@@ -42,8 +41,8 @@ function displayCardtextBranch(
   asset: CardtextContent | null | undefined,
   applied: CardtextContent | null | undefined,
 ): CardtextContent | null {
-  if (asset != null && cardtextValueHasUserText(asset.value)) return asset
-  if (applied != null && cardtextValueHasUserText(applied.value)) return applied
+  if (asset != null && cardtextBranchHasDisplayText(asset)) return asset
+  if (applied != null && cardtextBranchHasDisplayText(applied)) return applied
   return asset ?? applied ?? null
 }
 
@@ -52,8 +51,8 @@ function pickCardtextMiniCommittedSnapshot(
   applied: CardtextContent | null | undefined,
   preset: CardtextContent | null | undefined,
 ): CardtextContent | null {
-  if (applied != null && cardtextValueHasUserText(applied.value)) return applied
-  if (preset != null && cardtextValueHasUserText(preset.value)) return preset
+  if (applied != null && cardtextBranchHasDisplayText(applied)) return applied
+  if (preset != null && cardtextBranchHasDisplayText(preset)) return preset
   return null
 }
 
@@ -84,10 +83,7 @@ export const selectCardtextSource = (
   if (state.cardtext.isDraftEngaged === true) return 'draft'
   const { assetData, appliedData } = state.cardtext
   if (assetData == null) {
-    if (
-      appliedData != null &&
-      cardtextValueHasUserText(appliedData.value)
-    ) {
+    if (appliedData != null && cardtextBranchHasDisplayText(appliedData)) {
       return 'view'
     }
     return 'draft'
@@ -306,13 +302,13 @@ export const selectCardtextDisplayForMiniStrip = createSelector(
 
     if (miniShowsAppliedOnly) {
       branch =
-        applied != null && cardtextValueHasUserText(applied.value) ? applied : null
+        applied != null && cardtextBranchHasDisplayText(applied) ? applied : null
     } else {
       const draftLike =
         isViewEditMode || (asset != null && asset.status === 'draft')
       const hasCommittedSnapshot =
-        (applied != null && cardtextValueHasUserText(applied.value)) ||
-        (preset != null && cardtextValueHasUserText(preset.value))
+        (applied != null && cardtextBranchHasDisplayText(applied)) ||
+        (preset != null && cardtextBranchHasDisplayText(preset))
 
       if (draftLike && hasCommittedSnapshot) {
         branch = pickCardtextMiniCommittedSnapshot(applied, preset)
@@ -334,7 +330,8 @@ export const selectCardtextDisplayForMiniStrip = createSelector(
       ...createInitialCardtextContent(),
       id: branch.id,
       status: branch.status,
-      value: cloneCardtextValue(branch.value),
+      /** plainText / nested Slate → flat value (same as archive peek / mirror mini). */
+      value: cloneCardtextValue(cardtextValueForReadOnlyPreview(branch)),
       plainText: branch.plainText,
       style: { ...branch.style },
       title: branch.title ?? '',

@@ -272,7 +272,12 @@ export const MiniSectionsSlot = forwardRef<
                     )
                   const isEmpty = mirrorMinisFromRightPie
                     ? section === 'cardtext'
-                      ? !cardtextHasRenderableContent(mirrorInner?.cardtext)
+                      ? /**
+                         * Archive mirror OR factory session after cardPieCopy —
+                         * otherwise mini stays empty until click leaves mirror.
+                         */
+                        !cardtextHasRenderableContent(mirrorInner?.cardtext) &&
+                        !cardtextMiniPreviewRenderable
                       : section === 'date'
                         ? isMirrorDateDisabledForCopy ||
                           !Boolean(mirrorSectionFlags?.[section])

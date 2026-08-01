@@ -41,6 +41,7 @@ import {
   setStatus as setCardtextStatus,
 } from '@cardtext/infrastructure/state'
 import { selectCardtextIsComplete } from '@cardtext/infrastructure/selectors'
+import { cardtextValueForReadOnlyPreview } from '@cardtext/domain/editor/editor.types'
 import { restoreSender } from '@envelope/sender/infrastructure/state'
 import { restoreRecipient } from '@envelope/recipient/infrastructure/state'
 import { selectIsEnvelopeReady } from '@envelope/infrastructure/selectors'
@@ -106,7 +107,17 @@ function* applyArchiveSectionFromPostcard(
     }
     case 'cardtext': {
       const inner = buildCardPieInnerDataFromPostcard(postcard)
-      const branch = inner.cardtext
+      const raw = inner.cardtext
+      /**
+       * Archive/mirror can store text in plainText / nested Slate while `value`
+       * looks empty to factory selectors (shallow children only). Materialize
+       * the same preview value peek/minis already use, so left pie + strip show
+       * the copy.
+       */
+      const branch = {
+        ...raw,
+        value: cardtextValueForReadOnlyPreview(raw),
+      }
       yield put(restoreCardtextSession(branch))
       yield put(setCardtextViewEditMode(false))
       /**
