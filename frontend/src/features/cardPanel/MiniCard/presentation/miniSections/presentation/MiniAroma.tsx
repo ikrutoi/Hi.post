@@ -1,7 +1,7 @@
 import React from 'react'
 import { useAppSelector } from '@app/hooks'
 import { selectSelectedAroma } from '@aroma/infrastructure/selectors'
-import { AROMA_IMAGES } from '@entities/aroma/domain/types'
+import { AROMA_IMAGES_THUMB } from '@entities/aroma/domain/types'
 import styles from './MiniAroma.module.scss'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import clsx from 'clsx'
@@ -21,7 +21,7 @@ export const MiniAroma: React.FC<MiniAromaProps> = () => {
 
   if (centerStripListMirrorEnabled && mirrorInner?.aroma) {
     const idx = mirrorInner.aroma.index
-    const imageAroma = idx != null ? AROMA_IMAGES[idx] : undefined
+    const imageAroma = idx != null ? AROMA_IMAGES_THUMB[idx] : undefined
     if (!imageAroma) return null
     return (
       <div
@@ -40,7 +40,7 @@ export const MiniAroma: React.FC<MiniAromaProps> = () => {
 
   if (!selectedAroma) return null
 
-  const imageAroma = AROMA_IMAGES[selectedAroma.index]
+  const imageAroma = AROMA_IMAGES_THUMB[selectedAroma.index]
 
   if (!imageAroma) return null
 

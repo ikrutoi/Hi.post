@@ -1,6 +1,6 @@
 import React from 'react'
 import clsx from 'clsx'
-import { AROMA_IMAGES } from '@entities/aroma/domain/types'
+import { AROMA_IMAGES_THUMB } from '@entities/aroma/domain/types'
 import { MONTH_NAMES } from '@entities/date/constants'
 import {
   IconUsers,
@@ -161,7 +161,7 @@ export const CardPie: React.FC<CardPieProps> = ({
   const aromaIndex = cardData?.aroma?.index
   const aromaImageUrl =
     sections.aroma && aromaIndex != null
-      ? (AROMA_IMAGES[aromaIndex] ?? null)
+      ? (AROMA_IMAGES_THUMB[aromaIndex] ?? null)
       : null
   const recipient = cardData?.recipient ? cardData?.recipient : null
   const recipientCount: number =

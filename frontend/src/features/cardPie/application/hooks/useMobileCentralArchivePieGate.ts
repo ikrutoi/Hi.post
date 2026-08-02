@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useAppSelector } from '@app/hooks'
 import { useListCardPreviewUrl } from '@entities/card/application/hooks/useListCardPreviewUrl'
 import {
-  AROMA_IMAGES,
+  AROMA_IMAGES_THUMB,
   type AromaSlot,
 } from '@entities/aroma/domain/types'
 import { selectListArchiveCardPieBundle } from '@features/cardPie/infrastructure/selectors/cardPieSelectors'
@@ -42,7 +42,7 @@ let aromaImagesWarmStarted = false
 function warmAromaImages(): void {
   if (aromaImagesWarmStarted) return
   aromaImagesWarmStarted = true
-  for (const url of Object.values(AROMA_IMAGES)) {
+  for (const url of Object.values(AROMA_IMAGES_THUMB)) {
     if (!url) continue
     const img = new Image()
     img.decoding = 'async'
@@ -113,7 +113,7 @@ export function useMobileCentralArchivePieGate(
   const needsAroma = Boolean(bundle?.sections.aroma && aromaIndex != null)
   const aromaUrl =
     needsAroma && aromaIndex != null
-      ? (AROMA_IMAGES[aromaIndex as AromaSlot] ?? null)
+      ? (AROMA_IMAGES_THUMB[aromaIndex as AromaSlot] ?? null)
       : null
 
   const [minHoldElapsed, setMinHoldElapsed] = useState(localId == null)
