@@ -227,7 +227,10 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   const peekDispatchDate = useMemo(() => {
     if (
       rightPieDatePeekNoToolbar &&
-      (section === 'date' || section === 'cart' || section === 'history')
+      (section === 'date' ||
+        section === 'cart' ||
+        section === 'history' ||
+        section === 'unblocked')
     ) {
       return peekPrimaryDispatchDate(listRowInner)
     }
@@ -331,7 +334,10 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
 
   if (
     (rightPieDatePeekNoToolbar || assemblyDateSimplifiedPeek) &&
-    (section === 'date' || section === 'cart' || section === 'history')
+    (section === 'date' ||
+      section === 'cart' ||
+      section === 'history' ||
+      section === 'unblocked')
   ) {
     const peekDates =
       assemblyDateSimplifiedPeek && appliedDispatchDates.length > 0
@@ -484,13 +490,17 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
                 <PostcardStatusLegend
                   spot="calendar"
                   isHistoryEmpty={false}
-                  calendarDispatchDimmed={section === 'date'}
-                  calendarCartStripLegendOnly={section === 'date'}
+                  calendarDispatchDimmed={
+                    section === 'date' || section === 'unblocked'
+                  }
+                  calendarCartStripLegendOnly={
+                    section === 'date' || section === 'unblocked'
+                  }
                 />
               </div>
             </>
           )}
-          {section === 'date' ? (
+          {section === 'date' || section === 'unblocked' ? (
             <div
               className={clsx(
                 styles.dateBottomToggleGroup,

@@ -43,7 +43,8 @@ export const CalendarNotebookTabs: React.FC<Props> = ({
       factorySidebarSection !== 'date' &&
       factorySidebarSection !== 'history' &&
       section !== 'cart' &&
-      section !== 'history')
+      section !== 'history' &&
+      section !== 'unblocked')
 
   const goDate = useCallback(() => {
     dispatch(notebookTabDateClicked())
@@ -57,8 +58,14 @@ export const CalendarNotebookTabs: React.FC<Props> = ({
     dispatch(notebookTabHistoryClicked())
   }, [dispatch])
 
+  /**
+   * `unblocked`: chrome календаря как date, но закладка Cart остаётся active —
+   * режим принадлежит корзине, не сборке.
+   */
   const tab1Active = !stripTabsNoneActive && section === 'date'
-  const tab2Active = !stripTabsNoneActive && section === 'cart'
+  const tab2Active =
+    !stripTabsNoneActive &&
+    (section === 'cart' || section === 'unblocked')
   const tab3Active = !stripTabsNoneActive && section === 'history'
 
   return (

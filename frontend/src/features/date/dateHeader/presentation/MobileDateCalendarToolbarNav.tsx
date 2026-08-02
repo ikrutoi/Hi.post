@@ -176,6 +176,10 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
       </button>
     ) : null
 
+  /** `unblocked` — chrome как date (Apply), контекст корзины. */
+  const showDateApplyChrome =
+    notebookStripTab === 'date' || notebookStripTab === 'unblocked'
+
   const dateApplyToolbar = useMemo((): ToolbarConfig => {
     return [
       {
@@ -195,13 +199,13 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
     <div
       className={clsx(
         styles.root,
-        notebookStripTab === 'date' && styles.rootDateTint,
+        showDateApplyChrome && styles.rootDateTint,
         notebookStripTab === 'cart' && styles.rootCartTint,
         notebookStripTab === 'history' && styles.rootHistoryTint,
       )}
     >
       <div className={styles.sideLeft}>
-        {notebookStripTab === 'date' ? (
+        {showDateApplyChrome ? (
           <Toolbar
             section="date"
             groupsOverride={dateApplyToolbar}

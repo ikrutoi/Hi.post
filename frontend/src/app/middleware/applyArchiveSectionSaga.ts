@@ -48,7 +48,11 @@ import { selectIsEnvelopeReady } from '@envelope/infrastructure/selectors'
 import { syncEnvelopeFormsFromAppliedRequested } from '@envelope/infrastructure/state'
 import { processEnvelopeVisuals } from './envelopeProcessSaga'
 import { setAroma, clearApplied as clearAromaApplied } from '@aroma/infrastructure/state'
-import { setMultiDateMode, setSelectedDates } from '@date/infrastructure/state'
+import {
+  clearDate,
+  setMultiDateMode,
+  setSelectedDates,
+} from '@date/infrastructure/state'
 import { setSectionComplete } from '@entities/cardEditor/infrastructure/state'
 import type { CardPanelSection } from '@cardPanel/domain/types'
 import type { RootState } from '@app/state'
@@ -185,7 +189,14 @@ function* applyArchiveSectionFromPostcard(
         inner.dates,
         postcard.status,
       )
-      if (dates.length === 0) return
+      /**
+       * cartBlocked: нет доступных дат — сбросить черновик сборки, иначе
+       * календарь откроется на месяце незаапрувленной даты из assembly.
+       */
+      if (dates.length === 0) {
+        yield put(clearDate())
+        break
+      }
       yield put(setMultiDateMode(dates.length > 1))
       yield put(setSelectedDates(dates))
       break

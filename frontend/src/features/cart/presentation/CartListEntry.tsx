@@ -20,6 +20,8 @@ import {
   updateLastViewedCalendarDate,
 } from '@date/calendar/infrastructure/state'
 import { HistoryListPieEntry } from '@date/presentation/historyList/HistoryListPieEntry'
+import { applyRightListArchiveToolbarVisuals } from '@toolbar/application/syncRightListArchiveToolbarVisuals'
+import { store } from '@app/state/store'
 import { getCurrentDate } from '@shared/utils/date'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { parseListEntryRecipientDetail } from '@shared/utils/listEntryRecipientDetail'
@@ -102,8 +104,8 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
       if (next) {
         if (postcardLocalId == null) return
         const now = getCurrentDate()
-        if (notebookStripTab !== 'cart') {
-          dispatch(setNotebookStripTab('cart'))
+        if (notebookStripTab !== 'unblocked') {
+          dispatch(setNotebookStripTab('unblocked'))
         }
         dispatch(setNotebookStripDateOverCart(false))
         const pickView = resolveCartDatePickCalendarViewDate({
@@ -118,6 +120,7 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
         }
         claimCartDatePickListEntryOwnership()
         dispatch(beginCartCalendarDatePick({ localId: postcardLocalId }))
+        applyRightListArchiveToolbarVisuals(dispatch, store.getState, 'cart')
         onDateEditActivate?.()
       } else {
         releaseCartDatePickListEntryOwnership()

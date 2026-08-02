@@ -24,9 +24,19 @@ export const selectLastStripMonthCycleStep = (state: RootState) =>
 export const computeNotebookStripTabFromState = (
   state: RootState,
 ): DateStripSection => {
+  const currentTab = state.calendar.notebookStripTab
+
   /** Mobile: закладки хедера задают strip явно; списки корзины/истории strip не трогают. */
   if (selectIsMobileLayout(state)) {
-    return state.calendar.notebookStripTab
+    return currentTab
+  }
+
+  /**
+   * `unblocked` — отдельный режим (не assembly `date`). Не схлопывать в `date`
+   * при `activeSection === 'date'` / sync после closeDayPanel — иначе гаснет cart.
+   */
+  if (currentTab === 'unblocked') {
+    return 'unblocked'
   }
 
   const activeSection = state.sectionEditorMenu.activeSection
@@ -36,7 +46,7 @@ export const computeNotebookStripTabFromState = (
   if (state.cart.isActive) return 'cart'
   if (
     activeSection === 'date' &&
-    state.calendar.notebookStripTab === 'cart' &&
+    currentTab === 'cart' &&
     !state.calendar.notebookStripDateOverCart
   ) {
     return 'cart'

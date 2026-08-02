@@ -272,11 +272,19 @@ const calendarSlice = createSlice({
 
     setNotebookStripTab(state, action: PayloadAction<DateStripSection>) {
       state.notebookStripTab = action.payload
-      if (action.payload === 'cart' || action.payload === 'history') {
+      if (
+        action.payload === 'cart' ||
+        action.payload === 'history' ||
+        action.payload === 'unblocked'
+      ) {
         state.notebookStripDateOverCart = false
         state.notebookStripDateOverHistory = false
       }
-      if (action.payload !== 'cart') {
+      /**
+       * `cart` и `unblocked` держат date-pick session.
+       * Уход на date/history сбрасывает pick.
+       */
+      if (action.payload !== 'cart' && action.payload !== 'unblocked') {
         state.cartCalendarDatePickMode = false
         state.cartCalendarDatePickLocalId = null
         state.cartDatePickSessionActive = false

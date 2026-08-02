@@ -25,6 +25,7 @@ import {
   resolveCartArchiveViewMode,
   resolveHistoryArchiveViewMode,
 } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
+import { isCartOwnedNotebookStrip } from '@date/calendar/application/logic/calendarStripSection'
 import {
   setCardPieListPanelOpen,
   setHistoryListPanelOpen,
@@ -305,7 +306,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         ? { localId: historyListSelectedLocalId, source: 'history' }
         : null
     }
-    if (notebookStripSection === 'cart') {
+    if (isCartOwnedNotebookStrip(notebookStripSection)) {
       return cartListSelectedLocalId != null
         ? { localId: cartListSelectedLocalId, source: 'cart' }
         : null
@@ -465,7 +466,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     if (mobileAddressListChromeActive) return 'addressTemplate'
     if (
       mobileListArchiveSlotActive ||
-      notebookStripSection === 'cart' ||
+      isCartOwnedNotebookStrip(notebookStripSection) ||
       notebookStripSection === 'history'
     ) {
       return 'emptyArchive'
@@ -649,7 +650,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       const exitingListArchiveSlot =
         selectCartListPanelOpen(state) || selectIsHistoryListPanelOpen(state)
       const exitingHeaderCartHistoryStrip =
-        notebookStripTab === 'cart' || notebookStripTab === 'history'
+        isCartOwnedNotebookStrip(notebookStripTab) ||
+        notebookStripTab === 'history'
       const cardphotoListOpen = selectIsListPanelOpen(state)
       const cardtextListOpen = selectIsCardtextListPanelOpen(state)
       const addressListOpen =
@@ -786,7 +788,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       if (selectIsHistoryListPanelOpen(state)) {
         dispatch(setHistoryListPanelOpen(false))
       }
-      if (notebookStripTab === 'cart') {
+      if (isCartOwnedNotebookStrip(notebookStripTab)) {
         dispatch(setNotebookStripDateOverCart(true))
         dispatch(setNotebookStripTab('date'))
       } else if (notebookStripTab === 'history') {
@@ -866,7 +868,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     historyListPanelOpen || notebookStripSection === 'history'
 
   const cartStripActive =
-    cartListPanelOpen || notebookStripSection === 'cart'
+    cartListPanelOpen || isCartOwnedNotebookStrip(notebookStripSection)
 
   const cartArchiveViewMode = resolveCartArchiveViewMode({
     cartListPanelOpen,
@@ -1194,7 +1196,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                             )}
                             aria-label="Cart postcards"
                             aria-pressed={
-                              cartListPanelOpen || notebookStripSection === 'cart'
+                              cartListPanelOpen ||
+                              isCartOwnedNotebookStrip(notebookStripSection)
                             }
                             onClick={handleCartSlotClick}
                           >

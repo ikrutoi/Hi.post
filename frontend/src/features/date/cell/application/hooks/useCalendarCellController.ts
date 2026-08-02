@@ -3,7 +3,10 @@ import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { setCartListSelectedLocalId, setCartListStatusSegment } from '@cart/infrastructure/state'
 import { useDateFacade } from '../../../application/facades'
 import { useCalendarFacade } from '../../../calendar/application/facades'
-import { isHistoryCalendarStrip } from '../../../calendar/application/logic/calendarStripSection'
+import {
+  isCartDatePickStrip,
+  isHistoryCalendarStrip,
+} from '../../../calendar/application/logic/calendarStripSection'
 import {
   closeDayPanel,
   openDayPanel,
@@ -227,7 +230,7 @@ export const useCalendarCellController = ({
      * Режим pick не сбрасывается — можно сразу выбрать другую дату.
      */
     if (
-      notebookStripTab === 'cart' &&
+      isCartDatePickStrip(notebookStripTab) &&
       cartCalendarDatePickMode &&
       cartCalendarDatePickLocalId != null &&
       !isDisabledDate &&
@@ -295,9 +298,12 @@ export const useCalendarCellController = ({
         activeSection,
         notebookStripTab,
       )
-      /** В закладке корзины календарь только для навигации по дням — не трогаем dispatch-дату редактора / CardPie / список CardPiePanel. */
+      /**
+       * Корзина / unblocked: не пишем в assembly selectedDate —
+       * только date-pick на открытку (выше) или навигация по дням.
+       */
       const applyDispatchDateSelection =
-        !isHistorySection && notebookStripTab !== 'cart'
+        !isHistorySection && !isCartDatePickStrip(notebookStripTab)
 
       if (applyDispatchDateSelection) {
         chooseDate(dispatchDate)
@@ -362,7 +368,7 @@ export const useCalendarCellController = ({
           notebookStripTab,
         )
         const applyDispatchDateSelection =
-          !isHistorySection && notebookStripTab !== 'cart'
+          !isHistorySection && !isCartDatePickStrip(notebookStripTab)
 
         if (applyDispatchDateSelection) {
           chooseDate(dispatchDate)

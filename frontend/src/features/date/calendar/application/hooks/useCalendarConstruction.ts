@@ -87,7 +87,12 @@ export const useCalendarConstruction = ({
   const cartDatePickWaveArmedRef = useRef(false)
 
   const enabledKeysGridOrderForCartWave = useMemo(() => {
-    if (activeSection !== 'date' || notebookStripTab !== 'cart') return []
+    if (
+      activeSection !== 'date' ||
+      (notebookStripTab !== 'cart' && notebookStripTab !== 'unblocked')
+    ) {
+      return []
+    }
     return collectCartDatePickWaveEnabledKeysInGridOrder({
       calendarViewDate: { year, month },
       firstDayOfWeek,
@@ -98,8 +103,10 @@ export const useCalendarConstruction = ({
   enabledKeysWaveRef.current = enabledKeysGridOrderForCartWave
 
   useEffect(() => {
-    const isCartStrip = activeSection === 'date' && notebookStripTab === 'cart'
-    const eligible = Boolean(isCartStrip && cartCalendarDatePickMode)
+    const isCartDatePickChrome =
+      activeSection === 'date' &&
+      (notebookStripTab === 'cart' || notebookStripTab === 'unblocked')
+    const eligible = Boolean(isCartDatePickChrome && cartCalendarDatePickMode)
 
     if (!eligible) {
       cartDatePickWaveArmedRef.current = false

@@ -60,8 +60,12 @@ function* syncListPanelToolbarIcons(): SagaIterator {
   const notebookStripDateOverHistory: boolean = yield select(
     (s: RootState) => s.calendar.notebookStripDateOverHistory,
   )
-  /** Календарь или список корзины: иконка active; режим «Дата» — без подсветки. */
-  const cartSidebarHighlightActive = notebookStripTab === 'cart'
+  /**
+   * Календарь/список корзины и `unblocked` (смена даты cartBlocked):
+   * иконка cart active; режим assembly «Дата» — без подсветки.
+   */
+  const cartSidebarHighlightActive =
+    notebookStripTab === 'cart' || notebookStripTab === 'unblocked'
   yield put(
     updateToolbarIcon({
       section: 'rightSidebar',
