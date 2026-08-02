@@ -7,7 +7,13 @@ import type { AromaItem } from '@entities/aroma/domain/types'
 import type { DispatchDate } from '@entities/date/domain/types'
 
 export type MirrorSectionBackup =
-  | { section: 'cardphoto'; meta: ImageMeta | null }
+  | {
+      section: 'cardphoto'
+      /** Session Apply — drives pie/assembly completeness. */
+      appliedData: ImageMeta | null
+      /** View/create preview without Apply — must not be promoted on restore. */
+      assetData: ImageMeta | null
+    }
   | { section: 'cardtext'; session: CardtextEditorSessionSnapshot }
   | { section: 'envelope'; sender: SenderState; recipient: RecipientState }
   | { section: 'aroma'; aroma: AromaItem | null }

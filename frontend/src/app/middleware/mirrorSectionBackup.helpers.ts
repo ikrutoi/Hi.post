@@ -3,7 +3,13 @@ import { call, put, select } from 'redux-saga/effects'
 import type { CardPanelSection } from '@cardPanel/domain/types'
 import type { MirrorSectionBackup } from '@cardPanel/domain/types/mirrorSectionBackup.types'
 import { prepareForRedux } from '@app/middleware/cardphotoHelpers'
-import { applyFinal, clearApply, markLoaded } from '@cardphoto/infrastructure/state'
+import {
+  applyFinal,
+  clearApply,
+  markLoaded,
+  resetCardphoto,
+  setAssetData,
+} from '@cardphoto/infrastructure/state'
 import { rebuildConfigFromMeta } from '@app/middleware/cardphotoProcessSaga'
 import type { ImageMeta } from '@cardphoto/domain/types'
 import {
@@ -55,10 +61,11 @@ export function* captureMirrorSectionBackup(
     case 'cardphoto': {
       const applied: ImageMeta | null = yield select(selectCardphotoAppliedData)
       const asset: ImageMeta | null = yield select(selectCardphotoAssetData)
-      const meta = applied ?? asset
       return {
         section: 'cardphoto',
-        meta: meta != null ? (prepareForRedux(meta) as ImageMeta) : null,
+        appliedData:
+          applied != null ? (prepareForRedux(applied) as ImageMeta) : null,
+        assetData: asset != null ? (prepareForRedux(asset) as ImageMeta) : null,
       }
     }
     case 'cardtext': {
@@ -105,13 +112,24 @@ export function* restoreMirrorSectionBackup(
 ): SagaIterator {
   switch (backup.section) {
     case 'cardphoto': {
-      if (backup.meta != null) {
-        const serializable = prepareForRedux(backup.meta) as ImageMeta
+      if (backup.appliedData != null) {
+        const serializable = prepareForRedux(backup.appliedData) as ImageMeta
         yield put(applyFinal(serializable))
         yield call(rebuildConfigFromMeta, serializable, false)
         yield put(markLoaded())
-      } else {
+      } else if (backup.assetData != null) {
+        /**
+         * Pre-copy View without Apply: restore preview only.
+         * Do not applyFinal — that would promote View into assembly.
+         */
+        const serializable = prepareForRedux(backup.assetData) as ImageMeta
         yield put(clearApply())
+        yield put(setAssetData(serializable))
+        yield call(rebuildConfigFromMeta, serializable, false)
+        yield put(markLoaded())
+      } else {
+        /** Empty factory before copy — clear leftover asset from applyFinal. */
+        yield put(resetCardphoto())
       }
       {
         const complete: boolean = yield select(selectCardphotoIsComplete)
