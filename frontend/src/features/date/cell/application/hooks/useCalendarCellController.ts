@@ -11,6 +11,7 @@ import {
   closeDayPanel,
   openDayPanel,
   setCardPieListPanelOpen,
+  setCartDatePickDraftDate,
   setHistoryListPanelOpen,
   setHistoryListSelectedLocalId,
   updateLastViewedCalendarDate,
@@ -18,6 +19,7 @@ import {
 import {
   selectCartCalendarDatePickLocalId,
   selectCartCalendarDatePickMode,
+  selectCartDatePickDraftDate,
   selectHistoryListSelectedLocalId,
   selectIsCardPieListPanelOpen,
   selectIsDateListPanelOpen,
@@ -80,6 +82,7 @@ export const useCalendarCellController = ({
   const cartCalendarDatePickLocalId = useAppSelector(
     selectCartCalendarDatePickLocalId,
   )
+  const cartDatePickDraftDate = useAppSelector(selectCartDatePickDraftDate)
   const listSelectedLocalId = useAppSelector(selectCartListSelectedLocalId)
   const cartListStatusSegment = useAppSelector(selectCartListStatusSegment)
   const historyListSelectedLocalId = useAppSelector(
@@ -225,9 +228,9 @@ export const useCalendarCellController = ({
     triggerMonthNav,
   }: HandleCellClickParams) => {
     /**
-     * Полоса «Корзина» + dateEdit / cardPieEdit: клик по доступному дню применяет новую дату
-     * к открытке `localId` и переводит сегмент списка на `cart` (см. `cartCalendarDatePickSaga`).
-     * Режим pick не сбрасывается — можно сразу выбрать другую дату.
+     * Полоса «Корзина» / `unblocked` + dateEdit / cardPieEdit:
+     * - `unblocked` — только черновик до Apply (без записи в открытку);
+     * - `cart` — клик сразу применяет дату к открытке `localId` (см. saga).
      */
     if (
       isCartDatePickStrip(notebookStripTab) &&
@@ -253,6 +256,16 @@ export const useCalendarCellController = ({
         }
       }
       if (pickedDate) {
+        if (notebookStripTab === 'unblocked') {
+          if (
+            cartDatePickDraftDate != null &&
+            sameDispatchDate(cartDatePickDraftDate, pickedDate)
+          ) {
+            return
+          }
+          dispatch(setCartDatePickDraftDate(pickedDate))
+          return
+        }
         const postcard = cartItems.find(
           (item) => item.localId === cartCalendarDatePickLocalId,
         )

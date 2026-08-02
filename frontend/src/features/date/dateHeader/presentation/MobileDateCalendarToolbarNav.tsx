@@ -9,6 +9,7 @@ import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { useCalendarFacade } from '@date/calendar/application/facades'
 import {
+  selectCanApplyUnblockedCartDatePick,
   selectCartCalendarDatePickMode,
   selectCartDatePickSessionActive,
   selectNotebookStripTab,
@@ -45,7 +46,14 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
   const { triggerFlash } = useFlashEffect()
   const { lastViewedCalendarDate } = useCalendarFacade()
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
-  const canApplyDispatchDates = useAppSelector(selectCanApplyDispatchDates)
+  const canApplyAssemblyDates = useAppSelector(selectCanApplyDispatchDates)
+  const canApplyUnblockedCartDatePick = useAppSelector(
+    selectCanApplyUnblockedCartDatePick,
+  )
+  const canApplyDispatchDates =
+    notebookStripTab === 'unblocked'
+      ? canApplyUnblockedCartDatePick
+      : canApplyAssemblyDates
   const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
   const cartDatePickSessionActive = useAppSelector(
     selectCartDatePickSessionActive,

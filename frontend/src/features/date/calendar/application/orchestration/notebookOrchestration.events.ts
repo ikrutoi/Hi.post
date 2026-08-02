@@ -39,9 +39,10 @@ export const archiveCalendarViewEntered = createAction<'cart' | 'history'>(
 )
 
 /**
- * Пользователь выбрал день в календаре в режиме `cartCalendarDatePickMode`:
- * сага обновляет дату открытки `localId` и переводит сегмент списка на `cart`.
- * Режим pick остаётся включённым (повторный выбор), пока пользователь не выйдет из edit.
+ * Применить дату к открытке `localId` (полоса `cart`: клик по дню;
+ * `unblocked`: только после Apply по черновику).
+ * Сага обновляет дату и переводит сегмент списка на `cart`.
+ * Режим pick остаётся включённым, пока пользователь не выйдет из edit.
  */
 export const cartCalendarDatePickApplied = createAction<{
   localId: number

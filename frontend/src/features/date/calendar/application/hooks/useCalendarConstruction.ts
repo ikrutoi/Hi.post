@@ -20,6 +20,7 @@ import { selectDraftDispatchDates } from '@date/infrastructure/selectors'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import {
   selectCartCalendarDatePickMode,
+  selectCartDatePickDraftDate,
   selectComputedNotebookStripTab,
   selectHistoryListSelectedLocalId,
   selectNotebookStripTab,
@@ -75,7 +76,13 @@ export const useCalendarConstruction = ({
       ? rightArchiveCardPieHighlightFromList
       : null
   const cardsMap = useAppSelector(selectCardsByDateMap)
-  const highlightDates = useAppSelector(selectDraftDispatchDates)
+  const draftDispatchDates = useAppSelector(selectDraftDispatchDates)
+  const cartDatePickDraftDate = useAppSelector(selectCartDatePickDraftDate)
+  /** `unblocked`: подсветка черновика до Apply; иначе assembly draft. */
+  const highlightDates =
+    notebookStripTab === 'unblocked' && cartDatePickDraftDate != null
+      ? [cartDatePickDraftDate]
+      : draftDispatchDates
   const { year, month } = calendarViewDate
 
   const [waveStrongKeys, setWaveStrongKeys] = useState<string[]>([])

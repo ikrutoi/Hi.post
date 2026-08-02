@@ -1,9 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import { getCurrentDate } from '@shared/utils/date'
-import type { CalendarViewDate } from '@entities/date/domain/types'
+import type {
+  CalendarViewDate,
+  DaysOfWeek,
+  DispatchDate,
+} from '@entities/date/domain/types'
 import type { CardCalendarIndex } from '@entities/card/domain/types'
-import type { DaysOfWeek } from '@entities/date/domain/types'
 import {
   PostcardStatus,
   PostcardStatuses,
@@ -67,6 +70,11 @@ type CalendarState = {
    */
   cartCalendarDatePickLocalId: number | null
   /**
+   * `unblocked`: черновик новой даты до Apply. Без Apply / при выходе сбрасывается —
+   * открытка и CardPie остаются на старой (blocked) дате.
+   */
+  cartDatePickDraftDate: DispatchDate | null
+  /**
    * Sticky session for date-pick: keeps cart/history list chrome hidden even if
    * `cartCalendarDatePickMode` is transiently cleared (panel open / sagas).
    */
@@ -122,6 +130,7 @@ const initialState: CalendarState = {
   notebookStripDateOverHistory: false,
   cartCalendarDatePickMode: false,
   cartCalendarDatePickLocalId: null,
+  cartDatePickDraftDate: null,
   cartDatePickSessionActive: false,
   dateListPanelOpen: false,
   cardPieListPanelOpen: false,
@@ -287,6 +296,7 @@ const calendarSlice = createSlice({
       if (action.payload !== 'cart' && action.payload !== 'unblocked') {
         state.cartCalendarDatePickMode = false
         state.cartCalendarDatePickLocalId = null
+        state.cartDatePickDraftDate = null
         state.cartDatePickSessionActive = false
       }
     },
@@ -303,6 +313,7 @@ const calendarSlice = createSlice({
       state.cartCalendarDatePickMode = action.payload
       if (!action.payload) {
         state.cartCalendarDatePickLocalId = null
+        state.cartDatePickDraftDate = null
         /**
          * Keep `cartDatePickSessionActive` — only `endCartCalendarDatePick`
          * drops the session so list chrome can return.
@@ -319,6 +330,14 @@ const calendarSlice = createSlice({
       state.cartCalendarDatePickLocalId = action.payload
     },
 
+    setCartDatePickDraftDate(
+      state,
+      action: PayloadAction<DispatchDate | null>,
+    ) {
+      state.cartDatePickDraftDate =
+        action.payload == null ? null : { ...action.payload }
+    },
+
     /** Start date-pick and pin list chrome hidden for the session. */
     beginCartCalendarDatePick(
       state,
@@ -326,6 +345,7 @@ const calendarSlice = createSlice({
     ) {
       state.cartCalendarDatePickMode = true
       state.cartCalendarDatePickLocalId = action.payload.localId
+      state.cartDatePickDraftDate = null
       state.cartDatePickSessionActive = true
     },
 
@@ -333,6 +353,7 @@ const calendarSlice = createSlice({
     endCartCalendarDatePick(state) {
       state.cartCalendarDatePickMode = false
       state.cartCalendarDatePickLocalId = null
+      state.cartDatePickDraftDate = null
       state.cartDatePickSessionActive = false
     },
 
@@ -432,6 +453,7 @@ export const {
   setNotebookStripDateOverHistory,
   setCartCalendarDatePickMode,
   setCartCalendarDatePickLocalId,
+  setCartDatePickDraftDate,
   beginCartCalendarDatePick,
   endCartCalendarDatePick,
   bumpNotebookDateTabPeekClearTick,

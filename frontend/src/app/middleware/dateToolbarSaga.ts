@@ -24,6 +24,13 @@ import {
   applyDispatchDates,
 } from '@date/infrastructure/state'
 import { selectCanApplyDispatchDates } from '@date/infrastructure/selectors'
+import {
+  selectCanApplyUnblockedCartDatePick,
+  selectCartCalendarDatePickLocalId,
+  selectCartDatePickDraftDate,
+  selectNotebookStripTab,
+} from '@date/calendar/infrastructure/selectors'
+import { cartCalendarDatePickApplied } from '@date/calendar/application/orchestration/notebookOrchestration.events'
 import { PostcardStatuses } from '@/entities/postcard/domain/types'
 import { storeAdapters } from '@db/adapters/storeAdapters'
 import {
@@ -112,6 +119,28 @@ function* handleDateToolbarAction(
   if (section !== 'date') return
 
   if (key === 'apply') {
+    const notebookStripTab: ReturnType<typeof selectNotebookStripTab> =
+      yield select(selectNotebookStripTab)
+    if (notebookStripTab === 'unblocked') {
+      const canApplyUnblocked: boolean = yield select(
+        selectCanApplyUnblockedCartDatePick,
+      )
+      if (!canApplyUnblocked) return
+      const localId: ReturnType<typeof selectCartCalendarDatePickLocalId> =
+        yield select(selectCartCalendarDatePickLocalId)
+      const draft: ReturnType<typeof selectCartDatePickDraftDate> = yield select(
+        selectCartDatePickDraftDate,
+      )
+      if (localId == null || draft == null) return
+      yield put(
+        cartCalendarDatePickApplied({
+          localId,
+          date: draft,
+        }),
+      )
+      /** Черновик оставляем — подсветка выбранного дня; Apply снова недоступен, пока день ≠ дате открытки. */
+      return
+    }
     const canApply: boolean = yield select(selectCanApplyDispatchDates)
     if (!canApply) return
     yield put(applyDispatchDates())

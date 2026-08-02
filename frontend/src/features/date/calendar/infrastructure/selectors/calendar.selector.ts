@@ -80,8 +80,38 @@ export const selectCartCalendarDatePickLocalId = (
   state: RootState,
 ): number | null => state.calendar.cartCalendarDatePickLocalId
 
+export const selectCartDatePickDraftDate = (
+  state: RootState,
+): DispatchDate | null => state.calendar.cartDatePickDraftDate
+
 export const selectCartDatePickSessionActive = (state: RootState): boolean =>
   state.calendar.cartDatePickSessionActive
+
+function sameDispatchDate(a: DispatchDate, b: DispatchDate): boolean {
+  return a.year === b.year && a.month === b.month && a.day === b.day
+}
+
+/**
+ * `unblocked`: Apply доступен, когда черновик дня отличается от даты открытки.
+ * Без Apply черновик не пишется в открытку / CardPie.
+ */
+export const selectCanApplyUnblockedCartDatePick = createSelector(
+  [
+    selectNotebookStripTab,
+    selectCartCalendarDatePickMode,
+    selectCartCalendarDatePickLocalId,
+    selectCartDatePickDraftDate,
+    selectCartItems,
+  ],
+  (tab, mode, localId, draft, items): boolean => {
+    if (tab !== 'unblocked' || !mode || localId == null || draft == null) {
+      return false
+    }
+    const postcard = items.find((p) => p.localId === localId)
+    if (postcard == null) return false
+    return !sameDispatchDate(postcard.date, draft)
+  },
+)
 
 export const selectNotebookDateTabPeekClearTick = (state: RootState): number =>
   state.calendar.notebookDateTabPeekClearTick
