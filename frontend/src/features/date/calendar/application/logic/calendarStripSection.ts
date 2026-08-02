@@ -56,6 +56,15 @@ export function resolveCardPreviewSection(
   notebookStripTab: DateStripSection,
 ): CardSection | 'cart' | null {
   if (isHistoryCalendarStrip(activeSection, notebookStripTab)) return 'history'
-  if (isCartCalendarStrip(activeSection, notebookStripTab)) return 'cart'
+  /**
+   * `cart` и `unblocked`: превью дня из корзины (в т.ч. cartBlocked + индикатор
+   * blocked) — не assembly-date, пока листаем месяц до выбора новой даты.
+   */
+  if (
+    activeSection === 'date' &&
+    isCartOwnedNotebookStrip(notebookStripTab)
+  ) {
+    return 'cart'
+  }
   return activeSection
 }

@@ -206,7 +206,9 @@ export const selectRightListArchiveCardPieHighlightDispatchDate = createSelector
         ? cartListSelectedLocalId
         : historyListPanelOpen && historyListSelectedLocalId != null
           ? historyListSelectedLocalId
-          : notebookStripTab === 'cart' && cartListSelectedLocalId != null
+          : (notebookStripTab === 'cart' ||
+                notebookStripTab === 'unblocked') &&
+              cartListSelectedLocalId != null
             ? cartListSelectedLocalId
             : notebookStripTab === 'history' &&
                 historyListSelectedLocalId != null

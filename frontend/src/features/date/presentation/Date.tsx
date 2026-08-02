@@ -13,7 +13,10 @@ import {
   setCartCalendarDatePickMode,
   setHistoryListPanelOpen,
 } from '@date/calendar/infrastructure/state'
-import { selectIsHistoryListPanelOpen } from '@date/calendar/infrastructure/selectors'
+import {
+  selectIsHistoryListPanelOpen,
+  selectRightListArchiveCardPieHighlightDispatchDate,
+} from '@date/calendar/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { getCurrentDate } from '@shared/utils/date'
 import { DateHeader } from '../dateHeader/presentation/DateHeader'
@@ -267,19 +270,53 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   const calendarViewDate: CalendarViewDate =
     lastViewedCalendarDate ?? fallbackCalendarViewDate
 
-  /** Enabled, если есть куда перейти: другой месяц+год с выбранными датами
-   * (в т.ч. одна дата вне текущего вида). */
-  const canNavigateSelectedMonths = useMemo(
-    () =>
+  /** `unblocked`: месяц/год открытки из центрального CardPie (просроченная дата). */
+  const archivePostcardDispatchDate = useAppSelector(
+    selectRightListArchiveCardPieHighlightDispatchDate,
+  )
+  const unblockedPostcardMonth = useMemo((): CalendarViewDate | null => {
+    if (section !== 'unblocked' || archivePostcardDispatchDate == null) {
+      return null
+    }
+    return {
+      year: archivePostcardDispatchDate.year,
+      month: archivePostcardDispatchDate.month,
+    }
+  }, [section, archivePostcardDispatchDate])
+
+  /**
+   * Enabled, если есть куда перейти:
+   * - `unblocked` — вид ≠ месяц/год открытки в CardPie;
+   * - иначе — другой месяц+год с выбранными датами (в т.ч. одна дата вне текущего вида).
+   */
+  const canNavigateSelectedMonths = useMemo(() => {
+    if (section === 'unblocked') {
+      if (unblockedPostcardMonth == null) return false
+      return (
+        unblockedPostcardMonth.year !== calendarViewDate.year ||
+        unblockedPostcardMonth.month !== calendarViewDate.month
+      )
+    }
+    return (
       nextUniqueSelectedCalendarMonth(
         selectedCalendarMonths,
         calendarViewDate,
-      ) != null,
-    [selectedCalendarMonths, calendarViewDate],
-  )
+      ) != null
+    )
+  }, [
+    section,
+    unblockedPostcardMonth,
+    selectedCalendarMonths,
+    calendarViewDate,
+  ])
 
   const handleCycleSelectedMonths = useCallback(() => {
     if (!canNavigateSelectedMonths) return
+    if (section === 'unblocked') {
+      if (unblockedPostcardMonth == null) return
+      setCalendarViewDate(unblockedPostcardMonth)
+      return
+    }
     const next = nextUniqueSelectedCalendarMonth(
       selectedCalendarMonths,
       calendarViewDate,
@@ -294,6 +331,8 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
     setCalendarViewDate(next)
   }, [
     canNavigateSelectedMonths,
+    section,
+    unblockedPostcardMonth,
     selectedCalendarMonths,
     calendarViewDate,
     setCalendarViewDate,
@@ -467,9 +506,13 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
                 onClick={handleCycleSelectedMonths}
                 disabled={!canNavigateSelectedMonths}
                 aria-label={
-                  canNavigateSelectedMonths
-                    ? 'Next month with selected dates'
-                    : 'Selected dates'
+                  section === 'unblocked'
+                    ? canNavigateSelectedMonths
+                      ? 'Go to postcard month'
+                      : 'Postcard month'
+                    : canNavigateSelectedMonths
+                      ? 'Next month with selected dates'
+                      : 'Selected dates'
                 }
               >
                 <IconPostcardNext

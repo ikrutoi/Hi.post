@@ -28,7 +28,7 @@ import {
 import { selectCartListSelectedLocalId } from '@cart/infrastructure/selectors/cartSelectors'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import {
-  isCartCalendarStrip,
+  isCartOwnedNotebookStrip,
   isHistoryCalendarStrip,
 } from '../logic/calendarStripSection'
 import {
@@ -64,7 +64,8 @@ export const useCalendarConstruction = ({
     selectRightListArchiveCardPieHighlightDispatchDate,
   )
   const hasArchiveStripSelection =
-    (isCartCalendarStrip(activeSection, computedNotebookStripTab) &&
+    (activeSection === 'date' &&
+      isCartOwnedNotebookStrip(computedNotebookStripTab) &&
       cartListSelectedLocalId != null) ||
     (isHistoryCalendarStrip(activeSection, computedNotebookStripTab) &&
       historyListSelectedLocalId != null)

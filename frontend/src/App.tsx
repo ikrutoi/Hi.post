@@ -2003,6 +2003,7 @@ const App = () => {
         claimCartDatePickListEntryOwnership()
         cartDatePickOwnedByListEntryRef.current = true
         endCardPieEditEngaged()
+        dispatch(clearDate())
         dispatch(beginCartCalendarDatePick({ localId: lid }))
         /** Close list so blocked segment cannot remount over the calendar. */
         dispatch(setCartListPanelOpen(false))

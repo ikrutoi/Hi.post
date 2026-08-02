@@ -12,6 +12,7 @@ import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/fa
 import { shouldAdjacentSessionPlaceholderNavSwap } from './adjacentSessionPlaceholderNavSwap'
 import {
   isCartCalendarStrip,
+  isCartDatePickStrip,
   isDateCalendarStrip,
   isHistoryCalendarStrip,
   resolveCardPreviewSection,
@@ -62,6 +63,7 @@ export const buildMonthCells = ({
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
   const cartCalendarStrip = isCartCalendarStrip(activeSection, notebookStripTab)
+  const cartDatePickStrip = isCartDatePickStrip(notebookStripTab)
   const dateCalendarStrip = isDateCalendarStrip(activeSection, notebookStripTab)
   const historyCalendarStrip = isHistoryCalendarStrip(
     activeSection,
@@ -148,9 +150,14 @@ export const buildMonthCells = ({
       calendarDayHasCards(dayData) &&
       !isSelectedDate
 
+    /** `cart` и `unblocked` date-pick: рамка/волна на доступных днях. */
     const cartDateEditPickBorder =
-      cartCalendarStrip && cartCalendarDatePickMode && !isDisabled
+      activeSection === 'date' &&
+      cartDatePickStrip &&
+      cartCalendarDatePickMode &&
+      !isDisabled
 
+    /** Chrome date / unblocked: обводка доступных дней (не полоса «Корзина»). */
     const dateStripEnabledDayBorder =
       activeSection === 'date' && !cartCalendarStrip && !isDisabled
 

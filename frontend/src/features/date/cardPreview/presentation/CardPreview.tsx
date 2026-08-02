@@ -93,11 +93,25 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   const isCartCalendar = section === 'cart'
   const isHistoryLike = isHistory || isCartCalendar
   /**
+   * `unblocked`: только открытка из центрального CardPie; остальные cart на днях скрыты.
+   */
+  const isUnblockedDatePick = notebookStripTab === 'unblocked'
+  const cartForPreview =
+    isUnblockedDatePick && cartListSelectedLocalId != null
+      ? cart.filter(
+          (item) =>
+            postcardLocalIdFromCalendarCardItem(item, cartItems) ===
+            cartListSelectedLocalId,
+        )
+      : isUnblockedDatePick
+        ? []
+        : cart
+  /**
    * Порядок для миниатюры: в «Дата» сначала конвейер, корзина в конце (жёлтый индикатор по `cart` отдельно).
    * В «Истории» — прежний порядок; в полосе корзины — только `cart`.
    */
   const pipelineCards = isCartCalendar
-    ? [...cart]
+    ? [...cartForPreview]
     : isHistory
       ? [...cart, ...ready, ...sent, ...delivered, ...error]
       : [...ready, ...sent, ...delivered, ...error, ...cart]
@@ -166,10 +180,12 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
     !isHistoryLike && isSelectedDate && noSessionCardphotoImage
       ? workingSlotForSelectedDay ?? null
       : isCartCalendar
-        ? cartThumbnailForSelectedPostcard ??
-          firstPipelineWithPreview ??
-          firstPipeline ??
-          null
+        ? isUnblockedDatePick
+          ? cartThumbnailForSelectedPostcard
+          : cartThumbnailForSelectedPostcard ??
+            firstPipelineWithPreview ??
+            firstPipeline ??
+            null
         : isHistory
           ? historyThumbnailForSelectedPostcard ??
             firstPipelineWithPreview ??
@@ -259,7 +275,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   const calendarStatusIndicators = isHistory
     ? historyCalendarDayStatusIndicators(data)
     : isCartCalendar
-      ? cartCalendarDayStatusIndicators(cart)
+      ? cartCalendarDayStatusIndicators(cartForPreview)
       : []
 
   const activeCalendarIndicatorStatus =
