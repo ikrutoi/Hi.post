@@ -1,11 +1,13 @@
 import img100_11 from '../../assets/300_11.png'
 import img301_11 from '../../assets/301_11.png'
-import img302_11 from '../../assets/302_11.png'
 import img303_11 from '../../assets/303_11.png'
 import img306_11 from '../../assets/306_11.png'
-import img307_11 from '../../assets/307_11.png'
 import img311_11 from '../../assets/311_11.png'
 import img314_11 from '../../assets/314_11.png'
+import imgNl116 from '../../assets/nl_116.png'
+import imgNl116Thumb from '../../assets/nl_116_thumb.png'
+import imgNl302 from '../../assets/nl_302.png'
+import imgNl302Thumb from '../../assets/nl_302_thumb.png'
 import imgNl305 from '../../assets/nl_305.png'
 import imgNl305Thumb from '../../assets/nl_305_thumb.png'
 
@@ -20,8 +22,8 @@ export const AROMA_IMAGES: Record<AromaSlot, string> = {
   0: img100_11,
   1: img314_11,
   2: img303_11,
-  3: img302_11,
-  4: img307_11,
+  3: imgNl302,
+  4: imgNl116,
   5: img306_11,
   6: imgNl305,
   7: img301_11,
@@ -36,8 +38,8 @@ export const AROMA_IMAGES_THUMB: Record<AromaSlot, string> = {
   0: img100_11,
   1: img314_11,
   2: img303_11,
-  3: img302_11,
-  4: img307_11,
+  3: imgNl302Thumb,
+  4: imgNl116Thumb,
   5: img306_11,
   6: imgNl305Thumb,
   7: img301_11,
