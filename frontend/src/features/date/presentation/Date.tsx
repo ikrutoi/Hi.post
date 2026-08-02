@@ -72,7 +72,8 @@ const DateSectionShell: React.FC<{
       <MobileInlineToolbarRow
         className={clsx(
           styles.dateToolbarRow,
-          stripSection === 'date' && styles.dateToolbarRowDate,
+          (stripSection === 'date' || stripSection === 'unblocked') &&
+            styles.dateToolbarRowDate,
           stripSection === 'cart' && styles.dateToolbarRowCart,
           stripSection === 'history' && styles.dateToolbarRowHistory,
         )}

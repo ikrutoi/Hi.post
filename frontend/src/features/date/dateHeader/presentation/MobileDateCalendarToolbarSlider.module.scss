@@ -27,6 +27,22 @@
   &:hover {
     color: $color-font-enabled-light-hover;
   }
+
+  /**
+   * date / unblocked: ряд с role-fade — стрелки без белой подложки
+   * (см. `.dateToolbarRowDate` → `date-toolbar-role-fade`).
+   */
+  :global([data-mobile-date-strip='date']) &,
+  :global([data-mobile-date-strip='unblocked']) & {
+    background-color: transparent;
+
+    &:hover,
+    &:active,
+    &:focus,
+    &:focus-visible {
+      background-color: transparent;
+    }
+  }
 }
 
 .navArrowIcon {

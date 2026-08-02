@@ -133,6 +133,7 @@ $mobile-date-calendar-chrome-gap: 0.125rem;
     max-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
   }
 
+  /** Assembly date и cartBlocked `unblocked` — один chrome (градиент + прозрачные стрелки). */
   .dateToolbarRowDate {
     @include date-toolbar-role-fade;
   }
