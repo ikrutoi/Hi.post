@@ -588,6 +588,27 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   }
 }
 
+/** Fade out / fade in archive CardPie при смене открытки. */
+.mobileArchivePieReveal {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition-property: opacity;
+  transition-timing-function: ease;
+  will-change: opacity;
+}
+
+.mobileArchivePieRevealOpaque {
+  opacity: 1;
+}
+
+.mobileArchivePieRevealBlank {
+  position: absolute;
+  inset: 0;
+  background-color: #fff;
+  pointer-events: none;
+}
+
 // CardPie cardtext sector empty placeholder in central pie preview.
 $mobile-central-pie-cardtext-empty-icon-width: 40%;
 

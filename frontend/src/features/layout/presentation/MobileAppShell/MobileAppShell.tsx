@@ -87,6 +87,7 @@ import { IconCardPie, IconCart, IconHistoryV2, IconLogo, IconSectionMenuCardtext
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { useEditorPieAddCartHandler } from '@features/cardPie/application/hooks/useEditorPieAddCartHandler'
+import { useMobileCentralArchivePieGate } from '@features/cardPie/application/hooks/useMobileCentralArchivePieGate'
 import { MobileCardPieGutterMinis } from './MobileCardPieGutterMinis'
 import { MobileDateListSlotActionsProvider } from './MobileDateListSlotActionsContext'
 import { useMobilePlanCardPies } from './useMobilePlanCardPies'
@@ -336,6 +337,11 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     notebookStripSection,
   ])
 
+  const mobileCentralArchivePieGate = useMobileCentralArchivePieGate(
+    mobileCentralArchivePreview?.localId ?? null,
+    mobileCentralArchivePreview?.source ?? null,
+  )
+
   const mobileCardphotoListTemplatePreview = useMemo(() => {
     if (!cardphotoListPanelOpen || activeSection !== 'cardphoto') return null
     if (rightPieCardphotoPeekNoToolbar) return null
@@ -498,6 +504,13 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       (postcard) => postcard.localId === mobileCentralArchivePreview.localId,
     )?.status
   }, [cartItems, mobileCentralArchivePreview])
+
+  const mobileCentralMountedArchivePostcardStatus = useMemo(() => {
+    const mountedLocalId = mobileCentralArchivePieGate.mountedLocalId
+    if (mountedLocalId == null) return undefined
+    return cartItems.find((postcard) => postcard.localId === mountedLocalId)
+      ?.status
+  }, [cartItems, mobileCentralArchivePieGate.mountedLocalId])
 
   const isCartArchivePiePostcardStatus =
     mobileCentralArchivePostcardStatus === 'cart' ||
@@ -946,19 +959,54 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                   >
                       {mobileCentralPieDisplay === 'archive' &&
                       mobileCentralArchivePreview != null ? (
-                        <CardPie
-                          fillContainer
-                          station="right"
-                          isProcessed={false}
-                          status={mobileCentralArchivePostcardStatus}
-                          id={String(mobileCentralArchivePreview.localId)}
-                          rightListSource={mobileCentralArchivePreview.source}
-                          onListArchiveSectorClick={
-                            handleRightListArchivePieSectorClick
-                          }
-                          onRightPieCenterClick={onArchivePieCenterClick}
-                          rightPieCenterAffordance={rightPieCenterAffordance}
-                        />
+                        <div
+                          className={clsx(
+                            styles.mobileArchivePieReveal,
+                            mobileCentralArchivePieGate.contentOpaque &&
+                              styles.mobileArchivePieRevealOpaque,
+                          )}
+                          style={{
+                            transitionDuration: `${mobileCentralArchivePieGate.fadeMs}ms`,
+                          }}
+                        >
+                          {mobileCentralArchivePieGate.mountedLocalId !=
+                            null &&
+                          mobileCentralArchivePieGate.mountedSource !=
+                            null ? (
+                            <CardPie
+                              key={
+                                mobileCentralArchivePieGate.revealToken ??
+                                String(
+                                  mobileCentralArchivePieGate.mountedLocalId,
+                                )
+                              }
+                              fillContainer
+                              station="right"
+                              isProcessed={false}
+                              status={
+                                mobileCentralMountedArchivePostcardStatus
+                              }
+                              id={String(
+                                mobileCentralArchivePieGate.mountedLocalId,
+                              )}
+                              rightListSource={
+                                mobileCentralArchivePieGate.mountedSource
+                              }
+                              onListArchiveSectorClick={
+                                handleRightListArchivePieSectorClick
+                              }
+                              onRightPieCenterClick={onArchivePieCenterClick}
+                              rightPieCenterAffordance={
+                                rightPieCenterAffordance
+                              }
+                            />
+                          ) : (
+                            <div
+                              className={styles.mobileArchivePieRevealBlank}
+                              aria-hidden
+                            />
+                          )}
+                        </div>
                       ) : mobileCentralPieDisplay === 'cardphotoTemplate' &&
                         mobileCardphotoListTemplatePreview != null ? (
                         <div
