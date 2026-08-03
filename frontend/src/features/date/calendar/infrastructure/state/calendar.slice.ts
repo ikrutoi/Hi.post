@@ -70,7 +70,7 @@ type CalendarState = {
    */
   cartCalendarDatePickLocalId: number | null
   /**
-   * `unblocked`: черновик новой даты до Apply. Без Apply / при выходе сбрасывается —
+   * `cartdate`: черновик новой даты до Apply. Без Apply / при выходе сбрасывается —
    * открытка и CardPie остаются на старой (blocked) дате.
    */
   cartDatePickDraftDate: DispatchDate | null
@@ -284,16 +284,16 @@ const calendarSlice = createSlice({
       if (
         action.payload === 'cart' ||
         action.payload === 'history' ||
-        action.payload === 'unblocked'
+        action.payload === 'cartdate'
       ) {
         state.notebookStripDateOverCart = false
         state.notebookStripDateOverHistory = false
       }
       /**
-       * `cart` и `unblocked` держат date-pick session.
+       * `cart` и `cartdate` держат date-pick session.
        * Уход на date/history сбрасывает pick.
        */
-      if (action.payload !== 'cart' && action.payload !== 'unblocked') {
+      if (action.payload !== 'cart' && action.payload !== 'cartdate') {
         state.cartCalendarDatePickMode = false
         state.cartCalendarDatePickLocalId = null
         state.cartDatePickDraftDate = null

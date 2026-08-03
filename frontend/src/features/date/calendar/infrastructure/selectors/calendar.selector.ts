@@ -11,6 +11,7 @@ import { selectIsMobileLayout } from '@layout/infrastructure/selectors'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { selectCartListSelectedLocalId, selectCartListPanelOpen } from '@cart/infrastructure/selectors/cartSelectors'
 import { getHistoryOpenDayPanelPrimaryPostcardLocalId } from '../historyOpenDayPanelPrimaryPostcard'
+import { resolveCartdateBranch } from '@date/calendar/application/logic/calendarStripSection'
 import type { DayPanelPayload } from '../state/calendar.slice'
 import type { PanelDensity2Size } from '@shared/ui/icons'
 
@@ -32,11 +33,11 @@ export const computeNotebookStripTabFromState = (
   }
 
   /**
-   * `unblocked` — отдельный режим (не assembly `date`). Не схлопывать в `date`
+   * `cartdate` — отдельный режим (не assembly `date`). Не схлопывать в `date`
    * при `activeSection === 'date'` / sync после closeDayPanel — иначе гаснет cart.
    */
-  if (currentTab === 'unblocked') {
-    return 'unblocked'
+  if (currentTab === 'cartdate') {
+    return 'cartdate'
   }
 
   const activeSection = state.sectionEditorMenu.activeSection
@@ -92,10 +93,10 @@ function sameDispatchDate(a: DispatchDate, b: DispatchDate): boolean {
 }
 
 /**
- * `unblocked`: Apply доступен, когда черновик дня отличается от даты открытки.
+ * `cartdate`: Apply доступен, когда черновик дня отличается от даты открытки.
  * Без Apply черновик не пишется в открытку / CardPie.
  */
-export const selectCanApplyUnblockedCartDatePick = createSelector(
+export const selectCanApplyCartdatePick = createSelector(
   [
     selectNotebookStripTab,
     selectCartCalendarDatePickMode,
@@ -104,12 +105,35 @@ export const selectCanApplyUnblockedCartDatePick = createSelector(
     selectCartItems,
   ],
   (tab, mode, localId, draft, items): boolean => {
-    if (tab !== 'unblocked' || !mode || localId == null || draft == null) {
+    if (tab !== 'cartdate' || !mode || localId == null || draft == null) {
       return false
     }
     const postcard = items.find((p) => p.localId === localId)
     if (postcard == null) return false
     return !sameDispatchDate(postcard.date, draft)
+  },
+)
+
+/** @deprecated Use `selectCanApplyCartdatePick`. */
+export const selectCanApplyUnblockedCartDatePick = selectCanApplyCartdatePick
+
+/**
+ * Ветка `cartdate`: `cart` | `cartBlocked` | null вне режима.
+ */
+export const selectCartdateBranch = createSelector(
+  [
+    selectNotebookStripTab,
+    selectCartCalendarDatePickLocalId,
+    selectCartItems,
+  ],
+  (tab, localId, items) => {
+    if (tab !== 'cartdate' || localId == null) return null
+    const postcard = items.find((p) => p.localId === localId)
+    if (postcard == null) return null
+    return resolveCartdateBranch({
+      status: postcard.status,
+      dates: [postcard.date],
+    })
   },
 )
 
@@ -237,7 +261,7 @@ export const selectRightListArchiveCardPieHighlightDispatchDate = createSelector
         : historyListPanelOpen && historyListSelectedLocalId != null
           ? historyListSelectedLocalId
           : (notebookStripTab === 'cart' ||
-                notebookStripTab === 'unblocked') &&
+                notebookStripTab === 'cartdate') &&
               cartListSelectedLocalId != null
             ? cartListSelectedLocalId
             : notebookStripTab === 'history' &&

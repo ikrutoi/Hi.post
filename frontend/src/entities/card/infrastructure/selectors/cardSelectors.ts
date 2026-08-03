@@ -20,7 +20,11 @@ import { DispatchDate } from '@entities/date'
 import { CardSection } from '@shared/config/constants'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { isHistoryCalendarStrip } from '@date/calendar/application/logic/calendarStripSection'
-import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
+import {
+  selectCartCalendarDatePickLocalId,
+  selectCartDatePickDraftDate,
+  selectNotebookStripTab,
+} from '@date/calendar/infrastructure/selectors'
 import type { PostcardHydrated } from '@entities/postcard'
 import { cardListPreviewUrlFromCard } from '@entities/card/domain/helpers'
 
@@ -98,6 +102,8 @@ export const selectCardsByDateMap = createSelector(
     selectDraftDispatchDates,
     (state: RootState) => state.sectionEditorMenu.activeSection,
     selectNotebookStripTab,
+    selectCartDatePickDraftDate,
+    selectCartCalendarDatePickLocalId,
   ],
   (
     allCards: Card[],
@@ -106,6 +112,8 @@ export const selectCardsByDateMap = createSelector(
     draftDates,
     editorMenuActiveSection,
     notebookStripTab,
+    cartDatePickDraftDate,
+    cartDatePickLocalId,
   ) => {
     const map: Record<string, CardCalendarIndex> = {}
     const showOnlyPersistedPostcards = isHistoryCalendarStrip(
@@ -136,23 +144,36 @@ export const selectCardsByDateMap = createSelector(
       if (p.status === 'processed') continue
       const item = postcardToCalendarItem(p, postcardListSlot)
       postcardListSlot += 1
-      const entry = getEntry(item.date)
+      /**
+       * `cartdate`: до Apply превью выбранной открытки на дне черновика,
+       * со старой даты снимаем (клик по новой ячейке переносит миниатюру).
+       */
+      const placeOnDraft =
+        notebookStripTab === 'cartdate' &&
+        cartDatePickDraftDate != null &&
+        cartDatePickLocalId != null &&
+        p.localId === cartDatePickLocalId
+      const placeDate = placeOnDraft ? cartDatePickDraftDate : item.date
+      const placedItem = placeOnDraft
+        ? { ...item, date: { ...cartDatePickDraftDate } }
+        : item
+      const entry = getEntry(placeDate)
       switch (p.status) {
         case 'cart':
         case 'cartBlocked':
-          entry.cart.push(item)
+          entry.cart.push(placedItem)
           break
         case 'ready':
-          entry.ready.push(item)
+          entry.ready.push(placedItem)
           break
         case 'sent':
-          entry.sent.push(item)
+          entry.sent.push(placedItem)
           break
         case 'delivered':
-          entry.delivered.push(item)
+          entry.delivered.push(placedItem)
           break
         case 'error':
-          entry.error.push(item)
+          entry.error.push(placedItem)
           break
       }
     }

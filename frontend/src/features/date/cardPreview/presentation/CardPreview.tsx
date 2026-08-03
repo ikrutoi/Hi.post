@@ -23,6 +23,7 @@ import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/
 import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
 import { isDateCalendarStrip } from '@date/calendar/application/logic/calendarStripSection'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
+import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { applyRightListArchiveToolbarVisuals } from '@toolbar/application/syncRightListArchiveToolbarVisuals'
 import { CardPreviewItem } from './CardPreviewItem'
 import styles from './CardPreview.module.scss'
@@ -82,6 +83,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const { activeSection } = useSectionMenuFacade()
+  const { cardPieEditEngaged } = useRightListArchiveMini()
   const dateCalendarStrip = isDateCalendarStrip(activeSection, notebookStripTab)
   /** Полоса «Дата»: выбор dispatch-даты без подсветки ячейки и тени CardPie. */
   const showDispatchDateSelectionHighlight =
@@ -93,19 +95,37 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   const isCartCalendar = section === 'cart'
   const isHistoryLike = isHistory || isCartCalendar
   /**
-   * `unblocked`: только открытка из центрального CardPie; остальные cart на днях скрыты.
+   * `cartdate`: только открытка из центрального CardPie; остальные cart на днях скрыты.
    */
-  const isUnblockedDatePick = notebookStripTab === 'unblocked'
+  const isCartdateStrip = notebookStripTab === 'cartdate'
   const cartForPreview =
-    isUnblockedDatePick && cartListSelectedLocalId != null
+    isCartdateStrip && cartListSelectedLocalId != null
       ? cart.filter(
           (item) =>
             postcardLocalIdFromCalendarCardItem(item, cartItems) ===
             cartListSelectedLocalId,
         )
-      : isUnblockedDatePick
+      : isCartdateStrip
         ? []
         : cart
+  /**
+   * postcardEdit даты корзинной открытки на полосе «Дата»: session cardphoto
+   * сброшен, а pipeline-статусы на date-strip скрыты — без этого в ячейке
+   * плейсхолдер вместо превью открытки из CardPie.
+   */
+  const selectedCartThumbnailOnDay =
+    cartListSelectedLocalId != null
+      ? cart.find(
+          (item) =>
+            postcardLocalIdFromCalendarCardItem(item, cartItems) ===
+            cartListSelectedLocalId,
+        ) ?? null
+      : null
+  const preferArchiveCartPreviewOnDateStrip =
+    cardPieEditEngaged &&
+    !isCartCalendar &&
+    !isHistory &&
+    selectedCartThumbnailOnDay != null
   /**
    * Порядок для миниатюры: в «Дата» сначала конвейер, корзина в конце (жёлтый индикатор по `cart` отдельно).
    * В «Истории» — прежний порядок; в полосе корзины — только `cart`.
@@ -177,35 +197,41 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   const noSessionCardphotoImage = !photoPreview?.previewUrl
 
   const primaryItem: CalendarCardItem | null =
-    !isHistoryLike && isSelectedDate && noSessionCardphotoImage
-      ? workingSlotForSelectedDay ?? null
-      : isCartCalendar
-        ? isUnblockedDatePick
-          ? cartThumbnailForSelectedPostcard
-          : cartThumbnailForSelectedPostcard ??
-            firstPipelineWithPreview ??
-            firstPipeline ??
-            null
-        : isHistory
-          ? historyThumbnailForSelectedPostcard ??
-            firstPipelineWithPreview ??
-            firstPipeline ??
-            null
-          : workingSlotForSelectedDay ??
-            firstPipelineWithPreview ??
-            firstPipeline ??
-            processed ??
-            null
+    preferArchiveCartPreviewOnDateStrip
+      ? selectedCartThumbnailOnDay
+      : !isHistoryLike && isSelectedDate && noSessionCardphotoImage
+        ? workingSlotForSelectedDay ?? null
+        : isCartCalendar
+          ? isCartdateStrip
+            ? cartThumbnailForSelectedPostcard
+            : cartThumbnailForSelectedPostcard ??
+              firstPipelineWithPreview ??
+              firstPipeline ??
+              null
+          : isHistory
+            ? historyThumbnailForSelectedPostcard ??
+              firstPipelineWithPreview ??
+              firstPipeline ??
+              null
+            : workingSlotForSelectedDay ??
+              firstPipelineWithPreview ??
+              firstPipeline ??
+              processed ??
+              null
 
   /** В режиме «Дата» миниатюру не берём из корзины и из конвейера `ready`…`error`. */
   const primaryItemForDisplay =
-    !isHistoryLike &&
-    !isCartCalendar &&
-    primaryItem &&
-    !primaryItem.isProcessed &&
-    POSTCARD_STATUSES_HIDDEN_ON_DATE_CALENDAR_THUMBNAIL.has(primaryItem.status)
-      ? null
-      : primaryItem
+    preferArchiveCartPreviewOnDateStrip
+      ? primaryItem
+      : !isHistoryLike &&
+          !isCartCalendar &&
+          primaryItem &&
+          !primaryItem.isProcessed &&
+          POSTCARD_STATUSES_HIDDEN_ON_DATE_CALENDAR_THUMBNAIL.has(
+            primaryItem.status,
+          )
+        ? null
+        : primaryItem
 
   const pendingRecipientCount = recipientsPendingIds.length
 
@@ -253,17 +279,20 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
     badgeCount > 0 && (isHistoryLike || isSelectedDate)
 
   const showEmptySessionPlaceholder =
+    !preferArchiveCartPreviewOnDateStrip &&
     !isHistoryLike &&
     isSelectedDate &&
     !primaryItemForDisplay &&
     !photoPreview?.previewUrl
 
-  const isActiveCardPiePostcard = isCartCalendar
-    ? cartThumbnailForSelectedPostcard != null
-    : isHistory
-      ? historyThumbnailForSelectedPostcard != null
-      : showDispatchDateSelectionHighlight &&
-        (primaryItemForDisplay != null || showEmptySessionPlaceholder)
+  const isActiveCardPiePostcard = preferArchiveCartPreviewOnDateStrip
+    ? true
+    : isCartCalendar
+      ? cartThumbnailForSelectedPostcard != null
+      : isHistory
+        ? historyThumbnailForSelectedPostcard != null
+        : showDispatchDateSelectionHighlight &&
+          (primaryItemForDisplay != null || showEmptySessionPlaceholder)
 
   /** Полоса «Корзина»: пустая disabled-ячейка — серый фон без белой вспышки после смены даты. */
   const showDisabledCartEmptyFill =
@@ -276,7 +305,9 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
     ? historyCalendarDayStatusIndicators(data)
     : isCartCalendar
       ? cartCalendarDayStatusIndicators(cartForPreview)
-      : []
+      : preferArchiveCartPreviewOnDateStrip && selectedCartThumbnailOnDay != null
+        ? cartCalendarDayStatusIndicators([selectedCartThumbnailOnDay])
+        : []
 
   const activeCalendarIndicatorStatus =
     isActiveCardPiePostcard &&

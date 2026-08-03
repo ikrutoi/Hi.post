@@ -25,6 +25,7 @@ import {
   selectableMirrorDispatchDates,
 } from '@cardPanel/application/helpers/mirrorSectionEditorSync'
 import { selectCartItems } from '@cart/infrastructure/selectors'
+import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
 import {
   buildCardPieInnerDataFromPostcard,
   buildPieSectionFlagsFromPostcard,
@@ -184,6 +185,16 @@ function* applyArchiveSectionFromPostcard(
       break
     }
     case 'date': {
+      /**
+       * `cartdate`: дата открытки живёт в cartDatePickDraft / postcard —
+       * не писать в assembly selectedDates (иначе смешивается со сборкой).
+       */
+      const notebookStripTab: ReturnType<typeof selectNotebookStripTab> =
+        yield select(selectNotebookStripTab)
+      if (notebookStripTab === 'cartdate') {
+        yield put(clearDate())
+        break
+      }
       const inner = buildCardPieInnerDataFromPostcard(postcard)
       const dates = selectableMirrorDispatchDates(
         inner.dates,

@@ -75,7 +75,7 @@ const DateSectionShell: React.FC<{
       <MobileInlineToolbarRow
         className={clsx(
           styles.dateToolbarRow,
-          (stripSection === 'date' || stripSection === 'unblocked') &&
+          (stripSection === 'date' || stripSection === 'cartdate') &&
             styles.dateToolbarRowDate,
           stripSection === 'cart' && styles.dateToolbarRowCart,
           stripSection === 'history' && styles.dateToolbarRowHistory,
@@ -111,7 +111,7 @@ function peekPrimaryDispatchDate(
   return null
 }
 
-export type { DateStripSection } from './dateStripSection.types'
+export type { DateStripSection, CartdateBranch } from './dateStripSection.types'
 
 export const Date: React.FC<{ section: DateStripSection }> = ({
   section,
@@ -234,7 +234,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
       (section === 'date' ||
         section === 'cart' ||
         section === 'history' ||
-        section === 'unblocked')
+        section === 'cartdate')
     ) {
       return peekPrimaryDispatchDate(listRowInner)
     }
@@ -270,12 +270,12 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   const calendarViewDate: CalendarViewDate =
     lastViewedCalendarDate ?? fallbackCalendarViewDate
 
-  /** `unblocked`: месяц/год открытки из центрального CardPie (просроченная дата). */
+  /** `cartdate`: месяц/год открытки из центрального CardPie (просроченная дата). */
   const archivePostcardDispatchDate = useAppSelector(
     selectRightListArchiveCardPieHighlightDispatchDate,
   )
-  const unblockedPostcardMonth = useMemo((): CalendarViewDate | null => {
-    if (section !== 'unblocked' || archivePostcardDispatchDate == null) {
+  const cartdatePostcardMonth = useMemo((): CalendarViewDate | null => {
+    if (section !== 'cartdate' || archivePostcardDispatchDate == null) {
       return null
     }
     return {
@@ -286,15 +286,15 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
 
   /**
    * Enabled, если есть куда перейти:
-   * - `unblocked` — вид ≠ месяц/год открытки в CardPie;
+   * - `cartdate` — вид ≠ месяц/год открытки в CardPie;
    * - иначе — другой месяц+год с выбранными датами (в т.ч. одна дата вне текущего вида).
    */
   const canNavigateSelectedMonths = useMemo(() => {
-    if (section === 'unblocked') {
-      if (unblockedPostcardMonth == null) return false
+    if (section === 'cartdate') {
+      if (cartdatePostcardMonth == null) return false
       return (
-        unblockedPostcardMonth.year !== calendarViewDate.year ||
-        unblockedPostcardMonth.month !== calendarViewDate.month
+        cartdatePostcardMonth.year !== calendarViewDate.year ||
+        cartdatePostcardMonth.month !== calendarViewDate.month
       )
     }
     return (
@@ -305,16 +305,16 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
     )
   }, [
     section,
-    unblockedPostcardMonth,
+    cartdatePostcardMonth,
     selectedCalendarMonths,
     calendarViewDate,
   ])
 
   const handleCycleSelectedMonths = useCallback(() => {
     if (!canNavigateSelectedMonths) return
-    if (section === 'unblocked') {
-      if (unblockedPostcardMonth == null) return
-      setCalendarViewDate(unblockedPostcardMonth)
+    if (section === 'cartdate') {
+      if (cartdatePostcardMonth == null) return
+      setCalendarViewDate(cartdatePostcardMonth)
       return
     }
     const next = nextUniqueSelectedCalendarMonth(
@@ -332,7 +332,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   }, [
     canNavigateSelectedMonths,
     section,
-    unblockedPostcardMonth,
+    cartdatePostcardMonth,
     selectedCalendarMonths,
     calendarViewDate,
     setCalendarViewDate,
@@ -377,7 +377,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
     (section === 'date' ||
       section === 'cart' ||
       section === 'history' ||
-      section === 'unblocked')
+      section === 'cartdate')
   ) {
     const peekDates =
       assemblyDateSimplifiedPeek && appliedDispatchDates.length > 0
@@ -506,7 +506,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
                 onClick={handleCycleSelectedMonths}
                 disabled={!canNavigateSelectedMonths}
                 aria-label={
-                  section === 'unblocked'
+                  section === 'cartdate'
                     ? canNavigateSelectedMonths
                       ? 'Go to postcard month'
                       : 'Postcard month'
@@ -535,16 +535,16 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
                   spot="calendar"
                   isHistoryEmpty={false}
                   calendarDispatchDimmed={
-                    section === 'date' || section === 'unblocked'
+                    section === 'date' || section === 'cartdate'
                   }
                   calendarCartStripLegendOnly={
-                    section === 'date' || section === 'unblocked'
+                    section === 'date' || section === 'cartdate'
                   }
                 />
               </div>
             </>
           )}
-          {section === 'date' || section === 'unblocked' ? (
+          {section === 'date' || section === 'cartdate' ? (
             <div
               className={clsx(
                 styles.dateBottomToggleGroup,

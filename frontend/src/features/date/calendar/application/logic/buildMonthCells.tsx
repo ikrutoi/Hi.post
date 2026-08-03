@@ -150,14 +150,14 @@ export const buildMonthCells = ({
       calendarDayHasCards(dayData) &&
       !isSelectedDate
 
-    /** `cart` и `unblocked` date-pick: рамка/волна на доступных днях. */
+    /** `cart` и `cartdate` date-pick: рамка/волна на доступных днях. */
     const cartDateEditPickBorder =
       activeSection === 'date' &&
       cartDatePickStrip &&
       cartCalendarDatePickMode &&
       !isDisabled
 
-    /** Chrome date / unblocked: обводка доступных дней (не полоса «Корзина»). */
+    /** Chrome date / cartdate: обводка доступных дней (не полоса «Корзина»). */
     const dateStripEnabledDayBorder =
       activeSection === 'date' && !cartCalendarStrip && !isDisabled
 

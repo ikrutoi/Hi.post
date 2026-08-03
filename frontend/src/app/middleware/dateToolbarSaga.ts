@@ -25,7 +25,7 @@ import {
 } from '@date/infrastructure/state'
 import { selectCanApplyDispatchDates } from '@date/infrastructure/selectors'
 import {
-  selectCanApplyUnblockedCartDatePick,
+  selectCanApplyCartdatePick,
   selectCartCalendarDatePickLocalId,
   selectCartDatePickDraftDate,
   selectNotebookStripTab,
@@ -121,11 +121,9 @@ function* handleDateToolbarAction(
   if (key === 'apply') {
     const notebookStripTab: ReturnType<typeof selectNotebookStripTab> =
       yield select(selectNotebookStripTab)
-    if (notebookStripTab === 'unblocked') {
-      const canApplyUnblocked: boolean = yield select(
-        selectCanApplyUnblockedCartDatePick,
-      )
-      if (!canApplyUnblocked) return
+    if (notebookStripTab === 'cartdate') {
+      const canApplyCartdate: boolean = yield select(selectCanApplyCartdatePick)
+      if (!canApplyCartdate) return
       const localId: ReturnType<typeof selectCartCalendarDatePickLocalId> =
         yield select(selectCartCalendarDatePickLocalId)
       const draft: ReturnType<typeof selectCartDatePickDraftDate> = yield select(

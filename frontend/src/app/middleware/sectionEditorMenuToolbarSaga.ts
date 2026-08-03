@@ -46,10 +46,10 @@ function* applySectionEditorMenuToolbarVisuals(): SagaIterator {
     yield call(syncSectionMenuVisualsAllEnabled)
   } else if (
     activeKey === 'date' &&
-    (notebookStripTab === 'cart' || notebookStripTab === 'unblocked')
+    (notebookStripTab === 'cart' || notebookStripTab === 'cartdate')
   ) {
     /**
-     * Полоса корзины / unblocked: календарь при `activeSection === 'date'` —
+     * Полоса корзины / cartdate: календарь при `activeSection === 'date'` —
      * пункт «Дата» в меню без active (контекст корзины).
      */
     yield call(syncSectionMenuVisualsAllEnabled)
@@ -78,7 +78,7 @@ export function* handleSectionEditorMenuToolbarAction(
       selectNotebookStripTab,
     )) as DateStripSection
     if (
-      (stripTab === 'cart' || stripTab === 'unblocked') &&
+      (stripTab === 'cart' || stripTab === 'cartdate') &&
       (SECTION_EDITOR_FACTORY_KEYS as readonly string[]).includes(key)
     ) {
       yield put(setNotebookStripDateOverCart(true))

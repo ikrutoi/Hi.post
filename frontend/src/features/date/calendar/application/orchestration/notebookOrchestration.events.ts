@@ -40,7 +40,7 @@ export const archiveCalendarViewEntered = createAction<'cart' | 'history'>(
 
 /**
  * Применить дату к открытке `localId` (полоса `cart`: клик по дню;
- * `unblocked`: только после Apply по черновику).
+ * `cartdate`: только после Apply по черновику).
  * Сага обновляет дату и переводит сегмент списка на `cart`.
  * Режим pick остаётся включённым, пока пользователь не выйдет из edit.
  */

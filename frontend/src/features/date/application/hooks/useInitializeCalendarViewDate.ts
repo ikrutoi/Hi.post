@@ -3,10 +3,12 @@ import { useAppSelector } from '@app/hooks'
 import {
   selectCartCalendarDatePickMode,
   selectCartDatePickSessionActive,
+  selectCartdateBranch,
   selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { selectCartListSelectedLocalId } from '@cart/infrastructure/selectors/cartSelectors'
+import { resolveCartdateBranch } from '@date/calendar/application/logic/calendarStripSection'
 import { useDateFacade } from '../facades'
 import { useCalendarFacade } from '../../calendar/application/facades'
 import { getInitialCalendarDate, getCurrentDate } from '@shared/utils/date'
@@ -17,6 +19,7 @@ import type { RootState } from '@app/state'
 export const useInitializeCalendarViewDate = () => {
   const { selectedDate } = useDateFacade()
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
+  const cartdateBranch = useAppSelector(selectCartdateBranch)
   const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
   const cartDatePickSessionActive = useAppSelector(
     selectCartDatePickSessionActive,
@@ -34,19 +37,29 @@ export const useInitializeCalendarViewDate = () => {
   useEffect(() => {
     if (!initialized.current) {
       const now = getCurrentDate()
-      const archivePostcardStatus =
+      const archivePostcard =
         cartListSelectedLocalId != null
-          ? cartItems.find((p) => p.localId === cartListSelectedLocalId)?.status
+          ? cartItems.find((p) => p.localId === cartListSelectedLocalId)
           : undefined
+      const branchFromPostcard =
+        archivePostcard != null
+          ? resolveCartdateBranch({
+              status: archivePostcard.status,
+              dates: [archivePostcard.date],
+              currentDate: now,
+            })
+          : null
       /**
-       * unblocked / cart date-pick: календарь с нуля (сегодня + lead).
-       * Не брать selectedDate сборки — там может быть незаапрувленный октябрь и т.п.
+       * `cartdate` ветка `cartBlocked`: календарь с нуля (сегодня + lead).
+       * Ветка `cart`: месяц открытки (lastViewed / App уже выставил).
        */
       const freshBlockedCalendar =
-        notebookStripTab === 'unblocked' ||
-        cartCalendarDatePickMode ||
-        cartDatePickSessionActive ||
-        (archiveFactoryEditActive && archivePostcardStatus === 'cartBlocked')
+        cartdateBranch === 'cartBlocked' ||
+        ((notebookStripTab === 'cartdate' ||
+          cartCalendarDatePickMode ||
+          cartDatePickSessionActive ||
+          archiveFactoryEditActive) &&
+          branchFromPostcard === 'cartBlocked')
 
       /**
        * Корзина/история (просмотр): не перебивать lastViewed датой сборки.
@@ -65,7 +78,7 @@ export const useInitializeCalendarViewDate = () => {
           month: lastViewedCalendarDate.month,
         }
       } else {
-        /** Сборка: месяц выбранной (в т.ч. ещё не Apply) даты. */
+        /** Сборка / cartdate cart: месяц выбранной даты или lastViewed. */
         initial = getInitialCalendarDate(selectedDate, lastViewedCalendarDate)
       }
       setCalendarViewDate(initial)

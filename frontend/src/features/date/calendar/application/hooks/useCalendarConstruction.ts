@@ -64,6 +64,7 @@ export const useCalendarConstruction = ({
   const rightArchiveCardPieHighlightFromList = useAppSelector(
     selectRightListArchiveCardPieHighlightDispatchDate,
   )
+  const cartDatePickDraftDate = useAppSelector(selectCartDatePickDraftDate)
   const hasArchiveStripSelection =
     (activeSection === 'date' &&
       isCartOwnedNotebookStrip(computedNotebookStripTab) &&
@@ -73,14 +74,15 @@ export const useCalendarConstruction = ({
   /** Рамка даты archive CardPie — правый режим или полоса корзины/истории с выбранной открыткой. */
   const rightArchiveCardPieHighlightDate =
     activePieSide === 'right' || hasArchiveStripSelection
-      ? rightArchiveCardPieHighlightFromList
+      ? notebookStripTab === 'cartdate' && cartDatePickDraftDate != null
+        ? cartDatePickDraftDate
+        : rightArchiveCardPieHighlightFromList
       : null
   const cardsMap = useAppSelector(selectCardsByDateMap)
   const draftDispatchDates = useAppSelector(selectDraftDispatchDates)
-  const cartDatePickDraftDate = useAppSelector(selectCartDatePickDraftDate)
-  /** `unblocked`: подсветка черновика до Apply; иначе assembly draft. */
+  /** `cartdate`: подсветка черновика до Apply; иначе assembly draft. */
   const highlightDates =
-    notebookStripTab === 'unblocked' && cartDatePickDraftDate != null
+    notebookStripTab === 'cartdate' && cartDatePickDraftDate != null
       ? [cartDatePickDraftDate]
       : draftDispatchDates
   const { year, month } = calendarViewDate
@@ -97,7 +99,7 @@ export const useCalendarConstruction = ({
   const enabledKeysGridOrderForCartWave = useMemo(() => {
     if (
       activeSection !== 'date' ||
-      (notebookStripTab !== 'cart' && notebookStripTab !== 'unblocked')
+      (notebookStripTab !== 'cart' && notebookStripTab !== 'cartdate')
     ) {
       return []
     }
@@ -113,7 +115,7 @@ export const useCalendarConstruction = ({
   useEffect(() => {
     const isCartDatePickChrome =
       activeSection === 'date' &&
-      (notebookStripTab === 'cart' || notebookStripTab === 'unblocked')
+      (notebookStripTab === 'cart' || notebookStripTab === 'cartdate')
     const eligible = Boolean(isCartDatePickChrome && cartCalendarDatePickMode)
 
     if (!eligible) {

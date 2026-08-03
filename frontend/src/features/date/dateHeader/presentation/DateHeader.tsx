@@ -13,7 +13,7 @@ import { getToolbarIcon } from '@shared/utils/icons'
 
 interface DateHeaderProps {
   /** Active Date strip: dispatch date, history archive, or cart list + calendar. */
-  dateSection: 'date' | 'history' | 'cart' | 'unblocked'
+  dateSection: 'date' | 'history' | 'cart' | 'cartdate'
   currentDate: {
     year: number
     month: number
@@ -55,7 +55,7 @@ export const DateHeader: React.FC<DateHeaderProps> = ({
       ? 'Calendar: history archive mode'
       : dateSection === 'cart'
         ? 'Calendar: cart mode'
-        : dateSection === 'unblocked'
+        : dateSection === 'cartdate'
           ? 'Calendar: unblock cartBlocked dispatch date'
           : 'Calendar: dispatch dates mode'
 
@@ -65,7 +65,7 @@ export const DateHeader: React.FC<DateHeaderProps> = ({
         <div
           className={clsx(
             styles.dateSectionMode,
-            (dateSection === 'date' || dateSection === 'unblocked') &&
+            (dateSection === 'date' || dateSection === 'cartdate') &&
               styles.dateSectionModeDispatch,
             dateSection === 'cart' && styles.dateSectionModeCart,
             dateSection === 'history' && styles.dateSectionModeHistory,

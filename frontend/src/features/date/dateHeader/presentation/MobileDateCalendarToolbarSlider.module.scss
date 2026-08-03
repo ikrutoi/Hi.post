@@ -29,11 +29,11 @@
   }
 
   /**
-   * date / unblocked: ряд с role-fade — стрелки без белой подложки
+   * date / cartdate: ряд с role-fade — стрелки без белой подложки
    * (см. `.dateToolbarRowDate` → `date-toolbar-role-fade`).
    */
   :global([data-mobile-date-strip='date']) &,
-  :global([data-mobile-date-strip='unblocked']) & {
+  :global([data-mobile-date-strip='cartdate']) & {
     background-color: transparent;
 
     &:hover,

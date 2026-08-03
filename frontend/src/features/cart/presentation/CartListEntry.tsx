@@ -104,8 +104,8 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
       if (next) {
         if (postcardLocalId == null) return
         const now = getCurrentDate()
-        if (notebookStripTab !== 'unblocked') {
-          dispatch(setNotebookStripTab('unblocked'))
+        if (notebookStripTab !== 'cartdate') {
+          dispatch(setNotebookStripTab('cartdate'))
         }
         dispatch(setNotebookStripDateOverCart(false))
         const pickView = resolveCartDatePickCalendarViewDate({

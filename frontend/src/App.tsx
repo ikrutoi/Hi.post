@@ -501,7 +501,7 @@ const App = () => {
         if (historyListSelectedLocalId != null) return historyListSelectedLocalId
         return null
       }
-      if (notebookStripTab === 'cart' || notebookStripTab === 'unblocked') {
+      if (notebookStripTab === 'cart' || notebookStripTab === 'cartdate') {
         if (listSelectedLocalId != null) return listSelectedLocalId
         return null
       }
@@ -512,7 +512,7 @@ const App = () => {
       listSelectedLocalId != null &&
       (listPanelOpen ||
         notebookStripTab === 'cart' ||
-        notebookStripTab === 'unblocked')
+        notebookStripTab === 'cartdate')
     ) {
       return listSelectedLocalId
     }
@@ -555,7 +555,7 @@ const App = () => {
         if (historyListSelectedLocalId != null) return 'history'
         return null
       }
-      if (notebookStripTab === 'cart' || notebookStripTab === 'unblocked') {
+      if (notebookStripTab === 'cart' || notebookStripTab === 'cartdate') {
         if (listSelectedLocalId != null) return 'cart'
         return null
       }
@@ -566,7 +566,7 @@ const App = () => {
       return 'cart'
     }
     if (
-      (notebookStripTab === 'cart' || notebookStripTab === 'unblocked') &&
+      (notebookStripTab === 'cart' || notebookStripTab === 'cartdate') &&
       listSelectedLocalId != null
     ) {
       return 'cart'
@@ -1109,7 +1109,7 @@ const App = () => {
   const handleArchivePieCenterClick = useCallback(() => {
     if (
       notebookStripTab === 'cart' ||
-      notebookStripTab === 'unblocked' ||
+      notebookStripTab === 'cartdate' ||
       rightListArchiveSource === 'cart'
     ) {
       handleRightPieCenterCartClick()
@@ -1447,6 +1447,13 @@ const App = () => {
     ) {
       return
     }
+    /**
+     * `cartdate`: дату открытки не гидратируем в assembly —
+     * только draft pick / Apply в корзину.
+     */
+    if (activeSection === 'date' && notebookStripTab === 'cartdate') {
+      return
+    }
     dispatch(
       applyArchiveSectionToEditorRequested({
         section: activeSection as
@@ -1466,6 +1473,7 @@ const App = () => {
     cardPieEditHydrateScope,
     rightListArchiveLocalId,
     activeSection,
+    notebookStripTab,
     dispatch,
   ])
 
@@ -1508,7 +1516,7 @@ const App = () => {
       activePieSide === 'right' &&
       rightListArchiveLocalId != null &&
       activeSection === 'date' &&
-      (notebookStripTab === 'cart' || notebookStripTab === 'unblocked') &&
+      (notebookStripTab === 'cart' || notebookStripTab === 'cartdate') &&
       rightListArchiveSource === 'cart'
 
     if (shouldPickFromCardPieEdit) {
@@ -1529,8 +1537,8 @@ const App = () => {
           ))
       ) {
         dispatch(clearDate())
-        if (notebookStripTab !== 'unblocked') {
-          dispatch(setNotebookStripTab('unblocked'))
+        if (notebookStripTab !== 'cartdate') {
+          dispatch(setNotebookStripTab('cartdate'))
         }
         applyRightListArchiveToolbarVisuals(dispatch, store.getState, 'cart')
         dispatch(
@@ -1697,30 +1705,25 @@ const App = () => {
         dispatch(setHistoryListPanelOpen(false))
         releaseCartDatePickListEntryOwnership()
         cartDatePickOwnedByListEntryRef.current = false
-        if (freshBlockedCalendar) {
-          /**
-           * Режим `unblocked`: chrome как date, контекст корзины (date-pick
-           * на cartBlocked). Не assembly-date и не strip cart.
-           */
-          dispatch(clearDate())
-          dispatch(setNotebookStripTab('unblocked'))
-          dispatch(setNotebookStripDateOverCart(false))
-          if (lid != null) {
-            cartDatePickOwnedByCardPieEditRef.current = true
-            dispatch(beginCartCalendarDatePick({ localId: lid }))
-            applyRightListArchiveToolbarVisuals(
-              dispatch,
-              store.getState,
-              'cart',
-            )
-          } else {
-            cartDatePickOwnedByCardPieEditRef.current = false
-            dispatch(endCartCalendarDatePick())
-          }
+        /**
+         * Режим `cartdate`: chrome как date, контекст корзины.
+         * Ветка `cartBlocked` — календарь с нуля + clearDate;
+         * ветка `cart` — месяц открытки (calendarView выше).
+         */
+        dispatch(clearDate())
+        dispatch(setNotebookStripTab('cartdate'))
+        dispatch(setNotebookStripDateOverCart(false))
+        if (lid != null) {
+          cartDatePickOwnedByCardPieEditRef.current = true
+          dispatch(beginCartCalendarDatePick({ localId: lid }))
+          applyRightListArchiveToolbarVisuals(
+            dispatch,
+            store.getState,
+            'cart',
+          )
         } else {
           cartDatePickOwnedByCardPieEditRef.current = false
           dispatch(endCartCalendarDatePick())
-          dispatch(setNotebookStripTab('date'))
         }
         dispatch(setActiveSection('date'))
         if (lid != null && selectCartListSelectedLocalId(state) !== lid) {
@@ -1884,7 +1887,7 @@ const App = () => {
       (listSelectedLocalId != null &&
         (listPanelOpen ||
           notebookStripTab === 'cart' ||
-          notebookStripTab === 'unblocked')) ||
+          notebookStripTab === 'cartdate')) ||
       (historyListSelectedLocalId != null &&
         (historyListPanelOpen || notebookStripTab === 'history'))
     if (archiveRowSelected && activePieSide !== 'right') {
@@ -2007,7 +2010,7 @@ const App = () => {
         dispatch(beginCartCalendarDatePick({ localId: lid }))
         /** Close list so blocked segment cannot remount over the calendar. */
         dispatch(setCartListPanelOpen(false))
-        dispatch(setNotebookStripTab('unblocked'))
+        dispatch(setNotebookStripTab('cartdate'))
         dispatch(setActiveSection('date'))
         dispatch(setCartListStatusSegment('cartBlocked'))
         dispatch(setCartListSelectedLocalId(lid))

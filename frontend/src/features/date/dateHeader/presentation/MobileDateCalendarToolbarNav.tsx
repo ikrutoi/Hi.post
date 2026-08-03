@@ -9,7 +9,7 @@ import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { useCalendarFacade } from '@date/calendar/application/facades'
 import {
-  selectCanApplyUnblockedCartDatePick,
+  selectCanApplyCartdatePick,
   selectCartCalendarDatePickMode,
   selectCartDatePickSessionActive,
   selectNotebookStripTab,
@@ -47,12 +47,10 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
   const { lastViewedCalendarDate } = useCalendarFacade()
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const canApplyAssemblyDates = useAppSelector(selectCanApplyDispatchDates)
-  const canApplyUnblockedCartDatePick = useAppSelector(
-    selectCanApplyUnblockedCartDatePick,
-  )
+  const canApplyCartdatePick = useAppSelector(selectCanApplyCartdatePick)
   const canApplyDispatchDates =
-    notebookStripTab === 'unblocked'
-      ? canApplyUnblockedCartDatePick
+    notebookStripTab === 'cartdate'
+      ? canApplyCartdatePick
       : canApplyAssemblyDates
   const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
   const cartDatePickSessionActive = useAppSelector(
@@ -184,9 +182,9 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
       </button>
     ) : null
 
-  /** `unblocked` — chrome как date (Apply), контекст корзины. */
+  /** `cartdate` — chrome как date (Apply), контекст корзины. */
   const showDateApplyChrome =
-    notebookStripTab === 'date' || notebookStripTab === 'unblocked'
+    notebookStripTab === 'date' || notebookStripTab === 'cartdate'
 
   const dateApplyToolbar = useMemo((): ToolbarConfig => {
     return [

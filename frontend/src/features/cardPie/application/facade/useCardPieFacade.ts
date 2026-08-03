@@ -20,7 +20,7 @@ import {
   selectArchiveEnvelopeSandboxLocalId,
   selectArchiveSandboxEnvelopeComplete,
 } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
-import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
+import { selectNotebookStripTab, selectCartdateBranch } from '@date/calendar/infrastructure/selectors'
 import type { CardPieSectionFlags } from '../../infrastructure/postcardCardPieViewModel'
 
 const EMPTY_CART_PIE_SECTIONS = {
@@ -85,14 +85,18 @@ export const useCardPieFacade = (
   const { cardPieEditEngaged, cardPieEditHydrateScope } =
     useRightListArchiveMini()
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
+  const cartdateBranch = useAppSelector(selectCartdateBranch)
   /** Правая колонка: пирог по открытке из списка (корзина / история), `id` — `String(localId)`. */
   const isListArchivePie = !isProcessed && Boolean(id)
   /**
-   * `unblocked`: до выбора новой даты сектор date пустой (просроченная дата
-   * остаётся только превью в календаре с индикатором blocked).
+   * `cartdate` + ветка `cartBlocked`: до выбора новой даты сектор date пустой
+   * (просроченная дата остаётся только превью в календаре с индикатором blocked).
+   * Ветка `cart`: дата на CardPie остаётся видимой.
    */
-  const blankDateForUnblockedPick =
-    isListArchivePie && notebookStripTab === 'unblocked'
+  const blankDateForCartdatePick =
+    isListArchivePie &&
+    notebookStripTab === 'cartdate' &&
+    cartdateBranch === 'cartBlocked'
 
   const listArchiveBundle = useAppSelector((state) =>
     isListArchivePie
@@ -115,7 +119,7 @@ export const useCardPieFacade = (
       : null
 
   const currentData =
-    blankDateForUnblockedPick && currentDataRaw?.data != null
+    blankDateForCartdatePick && currentDataRaw?.data != null
       ? {
           ...currentDataRaw,
           data: {
@@ -161,12 +165,12 @@ export const useCardPieFacade = (
       ? assemblyFreeze.sections
       : editorProgress.sections
 
-  const sections = blankDateForUnblockedPick
+  const sections = blankDateForCartdatePick
     ? { ...sectionsResolved, date: false }
     : sectionsResolved
 
   const isAllComplete = isListArchivePie
-    ? blankDateForUnblockedPick || cardPieEditEngaged
+    ? blankDateForCartdatePick || cardPieEditEngaged
       ? Boolean(
           sections.cardphoto &&
             sections.cardtext &&

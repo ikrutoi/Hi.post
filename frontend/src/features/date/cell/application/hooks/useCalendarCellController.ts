@@ -228,8 +228,8 @@ export const useCalendarCellController = ({
     triggerMonthNav,
   }: HandleCellClickParams) => {
     /**
-     * Полоса «Корзина» / `unblocked` + dateEdit / cardPieEdit:
-     * - `unblocked` — только черновик до Apply (без записи в открытку);
+     * Полоса «Корзина» / `cartdate` + dateEdit / cardPieEdit:
+     * - `cartdate` — только черновик до Apply (без записи в открытку);
      * - `cart` — клик сразу применяет дату к открытке `localId` (см. saga).
      */
     if (
@@ -256,7 +256,7 @@ export const useCalendarCellController = ({
         }
       }
       if (pickedDate) {
-        if (notebookStripTab === 'unblocked') {
+        if (notebookStripTab === 'cartdate') {
           if (
             cartDatePickDraftDate != null &&
             sameDispatchDate(cartDatePickDraftDate, pickedDate)
@@ -312,7 +312,7 @@ export const useCalendarCellController = ({
         notebookStripTab,
       )
       /**
-       * Корзина / unblocked: не пишем в assembly selectedDate —
+       * Корзина / cartdate: не пишем в assembly selectedDate —
        * только date-pick на открытку (выше) или навигация по дням.
        */
       const applyDispatchDateSelection =

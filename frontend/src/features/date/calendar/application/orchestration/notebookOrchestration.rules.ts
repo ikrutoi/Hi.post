@@ -29,7 +29,7 @@ export function resolveCartArchiveViewMode(input: {
   if (input.cartListPanelOpen) return 'list'
   if (
     input.notebookStripTab === 'cart' ||
-    input.notebookStripTab === 'unblocked'
+    input.notebookStripTab === 'cartdate'
   ) {
     return 'calendar'
   }
@@ -238,7 +238,7 @@ export const buildMobileHistorySlotCloseCommands = (): UnknownAction[] => [
 export const buildDisableCartOrHistoryNotebookOnSectionMenuCopyExitCommands = (
   notebookStripTab: DateStripSection,
 ): UnknownAction[] => {
-  if (notebookStripTab === 'cart' || notebookStripTab === 'unblocked') {
+  if (notebookStripTab === 'cart' || notebookStripTab === 'cartdate') {
     return [
       setNotebookStripDateOverCart(true),
       updateToolbarIcon({
