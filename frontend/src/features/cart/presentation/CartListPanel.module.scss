@@ -14,8 +14,8 @@ $list-panel-compact-header-band: calc(
   0.15rem + #{iconButton.$toolbar-hit-size-card-pie-list-header} + 0.2rem + 0.15rem
 );
 $list-panel-scroll-inset: 0.35rem;
-/** 1px зазор: последняя строка списка не заходит под верхний бордер футера. */
-$list-panel-list-footer-gap: 1px;
+/** Зазор списка: сверху под шапкой и снизу над chip общей цены. */
+$list-panel-list-footer-gap: 0.35rem;
 /** Как левый padding списка (`.list` / `list-panel-scroll-padding`). */
 $cart-list-panel-inline-inset: 0.5rem;
 /** Высота chip суммы — как ширина cart/history в mobilePieRightSlot (off). */
@@ -49,7 +49,9 @@ $cart-list-panel-inline-end-inset: calc(
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding-top: $list-panel-stacked-band;
+  padding-top: calc(
+    #{$list-panel-stacked-band} + #{$list-panel-list-footer-gap}
+  );
   padding-bottom: $list-panel-footer-band;
   background-color: #fff;
   border: 1px solid $color-app-strip;
@@ -69,10 +71,10 @@ $cart-list-panel-inline-end-inset: calc(
     );
 
     &.panelFactoryChrome {
-      padding-top: 0;
+      padding-top: $list-panel-list-footer-gap;
 
       &.panelEmptyNoToolbar {
-        padding-top: 0;
+        padding-top: $list-panel-list-footer-gap;
       }
 
       .panelScrollTrack {
@@ -91,13 +93,18 @@ $cart-list-panel-inline-end-inset: calc(
 }
 
 .panelEmptyNoToolbar {
-  padding-top: $list-panel-compact-header-band;
+  padding-top: calc(
+    #{$list-panel-compact-header-band} + #{$list-panel-list-footer-gap}
+  );
   padding-bottom: calc(
     #{$list-panel-compact-header-band} + #{$list-panel-list-footer-gap}
   );
 
   .panelScrollTrack {
-    top: calc(#{$list-panel-compact-header-band} - #{$list-panel-scroll-inset});
+    top: calc(
+      #{$list-panel-compact-header-band} + #{$list-panel-list-footer-gap} -
+        #{$list-panel-scroll-inset}
+    );
     bottom: calc(
       #{$list-panel-compact-header-band} - #{$list-panel-scroll-inset} +
         #{$list-panel-list-footer-gap}
@@ -304,7 +311,10 @@ $cart-list-panel-inline-end-inset: calc(
 
 .panelScrollTrack {
   position: absolute;
-  top: calc(#{$list-panel-stacked-band} - #{$list-panel-scroll-inset});
+  top: calc(
+    #{$list-panel-stacked-band} + #{$list-panel-list-footer-gap} -
+      #{$list-panel-scroll-inset}
+  );
   bottom: calc(
     #{$cart-list-panel-inline-inset} + #{$cart-list-footer-amount-h} -
       #{$list-panel-scroll-inset} + #{$list-panel-list-footer-gap}

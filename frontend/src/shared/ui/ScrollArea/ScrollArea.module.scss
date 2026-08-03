@@ -33,13 +33,14 @@
   bottom: 0;
   width: 8px;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   pointer-events: auto;
 }
 
 .scrollbarThumb {
   position: absolute;
   top: 0;
+  right: 0;
   width: 6px;
   border-top-left-radius: 999px;
   border-bottom-left-radius: 999px;
@@ -55,8 +56,20 @@
   }
 }
 
+.scrollbarThumbSelection {
+  background-color: $color-scroll-thumb-selection;
+
+  &:hover {
+    background-color: $color-scroll-thumb-selection-hover;
+  }
+}
+
 .scrollbarTrack:hover .scrollbarThumb {
   background-color: $color-scroll-thumb-hover;
+}
+
+.scrollbarTrack:hover .scrollbarThumbSelection {
+  background-color: $color-scroll-thumb-selection-hover;
 }
 
 .scrollbarHidden {

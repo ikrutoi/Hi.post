@@ -384,7 +384,7 @@ export const CartListPanel: React.FC<Props> = ({
         />
       ) : null}
       <div className={styles.panelScrollTrack} aria-hidden />
-      <ScrollArea className={styles.listScrollArea}>
+      <ScrollArea className={styles.listScrollArea} selectionAccentThumb>
         <div
           key={listContentKey}
           className={styles.list}

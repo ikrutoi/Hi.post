@@ -167,6 +167,9 @@ $color-app-sidebar-icon: #44423f;
 // $color-app-sidebar-icon: #55524f;
 $color-app-sidebar-icon-active: #a16a45;
 $color-app-sidebar-icon-hover: #e3dedb;
+/** Скролл списков корзина/история — как toolbar-иконки в статусе disabled. */
+$color-scroll-thumb-selection: $color-font-disabled;
+$color-scroll-thumb-selection-hover: $color-font-enabled-light;
 
 // Registered user passport avatar: 24 hue sectors, colors generated in iconUserRegisteredColors.ts
 $user-registered-sector-count: 24;

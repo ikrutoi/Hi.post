@@ -14,6 +14,11 @@ type ScrollAreaProps = {
   className?: string
   contentClassName?: string
   scrollbarPortalTarget?: React.RefObject<HTMLElement | null>
+  /**
+   * Thumb tone like toolbar icons in `disabled` status
+   * (`$color-font-disabled`) — cart & history lists.
+   */
+  selectionAccentThumb?: boolean
 }
 
 export const ScrollArea: React.FC<ScrollAreaProps> = ({
@@ -21,6 +26,7 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
   className,
   contentClassName,
   scrollbarPortalTarget,
+  selectionAccentThumb = false,
 }) => {
   const contentRef = useRef<HTMLDivElement | null>(null)
   const trackRef = useRef<HTMLDivElement | null>(null)
@@ -142,6 +148,7 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
       <div
         className={clsx(
           styles.scrollbarThumb,
+          selectionAccentThumb && styles.scrollbarThumbSelection,
           !showThumb && styles.scrollbarHidden,
         )}
         style={{
