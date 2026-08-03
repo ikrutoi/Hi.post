@@ -469,8 +469,12 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   justify-content: flex-start;
   align-items: stretch;
   gap: var(--mobile-section-inset);
-  // Резерв справа под акцентную полосу выбранного мини-пая.
-  padding-right: $list-entry-selection-accent-reserve;
+  /**
+   * Резерв слева под акцентную полосу: padding + отрицательный margin,
+   * чтобы мини-пай не смещался вправо, а полоска не клипалась overflow.
+   */
+  padding-left: $list-entry-selection-accent-reserve;
+  margin-left: calc(0px - #{$list-entry-selection-accent-reserve});
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -534,10 +538,10 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   }
 }
 
-// Выбранный мини-пай: акцентная полоса справа (общий миксин).
+// Выбранный мини-пай: акцентная полоса слева (общий миксин).
 .mobilePieGutterMiniItem[data-selected='true'] {
   @include selectionAccent.list-entry-selection-accent(
-    $side: right,
+    $side: left,
     $gap-color: $color-app-inner
   );
 }
