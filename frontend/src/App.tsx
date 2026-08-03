@@ -218,6 +218,11 @@ const App = () => {
   const [cardPieEditEngaged, setCardPieEditEngaged] = useState(false)
   const cardPieEditEngagedRef = useRef(false)
   cardPieEditEngagedRef.current = cardPieEditEngaged
+  /**
+   * postcardEdit (`hydrateScope: 'section'`): секция, для которой открыт edit.
+   * Смена activeSection на другую не должна гидратить её в session-редактор.
+   */
+  const postcardEditSectionRef = useRef<CardSection | null>(null)
 
   const dispatch = useAppDispatch()
 
@@ -234,6 +239,7 @@ const App = () => {
         dispatch(setCartCalendarDatePickMode(false))
       }
     }
+    postcardEditSectionRef.current = null
     setCardPieEditEngaged(false)
   }, [dispatch])
 
@@ -274,6 +280,8 @@ const App = () => {
   const [cardPieEditHydrateScope, setCardPieEditHydrateScope] = useState<
     'all' | 'section'
   >('all')
+  const cardPieEditHydrateScopeRef = useRef(cardPieEditHydrateScope)
+  cardPieEditHydrateScopeRef.current = cardPieEditHydrateScope
   const [rightPieCardphotoPeekNoToolbar, setRightPieCardphotoPeekNoToolbar] =
     useState(false)
   const [rightPieCardtextPeekNoToolbar, setRightPieCardtextPeekNoToolbar] =
@@ -695,14 +703,51 @@ const App = () => {
     }
   }, [rightListArchiveSource])
 
+  /**
+   * Выйти из postcardEdit (`section`) в упрощённый peek — не продолжать edit
+   * на соседних секциях CardPie / mini.
+   */
+  const exitSectionPostcardEditToPeek = useCallback(
+    (section: CardSection) => {
+      if (
+        !cardPieEditEngagedRef.current ||
+        cardPieEditHydrateScopeRef.current !== 'section'
+      ) {
+        return false
+      }
+      endCardPieEditEngaged()
+      setCardPieEditHydrateScope('all')
+      setSuppressCardPieEditActiveAfterCopy(true)
+      dispatch(endCartCalendarDatePick())
+      syncPeekChromeForOpenedSection(section)
+      return true
+    },
+    [dispatch, endCardPieEditEngaged, syncPeekChromeForOpenedSection],
+  )
+
+  const activateArchiveSectionPeek = useCallback(
+    (section: CardSection) => {
+      exitSectionPostcardEditToPeek(section)
+      syncPeekChromeForOpenedSection(section)
+    },
+    [exitSectionPostcardEditToPeek, syncPeekChromeForOpenedSection],
+  )
+
   const handleRightListPieSectorClick = useCallback(
     (section: CardSection) => {
       const copyStripFullSpan =
         cardPieCopyStripExpanded && rightListArchiveLocalId != null
+      /**
+       * Полный factory-edit (`editLight`, hydrateScope `all`): клик по сектору
+       * остаётся в редактировании.
+       * postcardEdit (`section`, напр. cartdate): клик по другой секции —
+       * выход в упрощённый peek с иконкой редактирования, не «заражать» edit.
+       */
       const fullFactoryFromRightPie =
         activePieSide === 'right' &&
         !copyStripFullSpan &&
-        cardPieEditEngaged
+        cardPieEditEngaged &&
+        cardPieEditHydrateScope === 'all'
       const cartEnvelopeSandboxEdit =
         section === 'envelope' &&
         rightListArchiveLocalId != null &&
@@ -717,6 +762,7 @@ const App = () => {
         setRightPieDatePeekNoToolbar(false)
       } else {
         flushSync(() => {
+          exitSectionPostcardEditToPeek(section)
           dispatch(setActiveSection(section))
           /**
            * Keep right/cart chrome (peek hides list). Do not close cart or
@@ -780,7 +826,9 @@ const App = () => {
       activePieSide,
       cardPieCopyStripExpanded,
       cardPieEditEngaged,
+      cardPieEditHydrateScope,
       captureAssemblyBranchFreeze,
+      exitSectionPostcardEditToPeek,
       rightListArchiveLocalId,
       rightListArchiveSource,
       rightArchivePiePostcardStatus,
@@ -1435,7 +1483,7 @@ const App = () => {
     dispatch,
   ])
 
-  /** postcardEdit из peek: только активная секция (и при смене сектора / строки). */
+  /** postcardEdit из peek: только закреплённая секция (не при смене сектора). */
   useEffect(() => {
     if (!cardPieEditEngaged || rightListArchiveLocalId == null) return
     if (cardPieEditHydrateScope !== 'section') return
@@ -1445,6 +1493,19 @@ const App = () => {
         activeSection,
       )
     ) {
+      return
+    }
+    const pinned = postcardEditSectionRef.current
+    /**
+     * Смена сектора CardPie / mini во время postcardEdit: выйти в peek,
+     * не гидратить новую секцию в session-редактор (иначе «edit заражает всех»).
+     */
+    if (pinned != null && activeSection !== pinned) {
+      endCardPieEditEngaged()
+      setCardPieEditHydrateScope('all')
+      setSuppressCardPieEditActiveAfterCopy(true)
+      dispatch(endCartCalendarDatePick())
+      syncPeekChromeForOpenedSection(activeSection as CardSection)
       return
     }
     /**
@@ -1475,6 +1536,8 @@ const App = () => {
     activeSection,
     notebookStripTab,
     dispatch,
+    endCardPieEditEngaged,
+    syncPeekChromeForOpenedSection,
   ])
 
   useEffect(() => {
@@ -1644,6 +1707,7 @@ const App = () => {
     cartDatePickOwnedByListEntryRef.current = false
     dispatch(endCartCalendarDatePick())
     dispatch(setActiveSection(targetSection))
+    postcardEditSectionRef.current = null
     setCardPieEditHydrateScope('all')
     setSuppressCardPieEditActiveAfterCopy(false)
     setCardPieEditEngaged(true)
@@ -1732,6 +1796,7 @@ const App = () => {
         if (calendarView != null) {
           dispatch(updateLastViewedCalendarDate(calendarView))
         }
+        postcardEditSectionRef.current = 'date'
         setCardPieEditHydrateScope('section')
         setSuppressCardPieEditActiveAfterCopy(true)
         setCardPieEditEngaged(true)
@@ -1760,6 +1825,7 @@ const App = () => {
       cartDatePickOwnedByListEntryRef.current = false
       dispatch(endCartCalendarDatePick())
       dispatch(setActiveSection(targetSection))
+      postcardEditSectionRef.current = targetSection
       setCardPieEditHydrateScope('section')
       setSuppressCardPieEditActiveAfterCopy(true)
       setCardPieEditEngaged(true)
@@ -2223,7 +2289,7 @@ const App = () => {
                         handlePanelMiniSectionsToolbarAction
                       }
                       onActivateSectionPeekNoToolbar={
-                        syncPeekChromeForOpenedSection
+                        activateArchiveSectionPeek
                       }
                     />
                   </div>
@@ -2306,7 +2372,7 @@ const App = () => {
                         handlePanelMiniSectionsToolbarAction
                       }
                       onActivateSectionPeekNoToolbar={
-                        syncPeekChromeForOpenedSection
+                        activateArchiveSectionPeek
                       }
                     />
                     <div
@@ -2363,7 +2429,7 @@ const App = () => {
                       embedded
                       cardPieCopyStripActive={showTopCardStripFullSpan}
                       onActivateSectionPeekNoToolbar={
-                        syncPeekChromeForOpenedSection
+                        activateArchiveSectionPeek
                       }
                     />
                   </div>
