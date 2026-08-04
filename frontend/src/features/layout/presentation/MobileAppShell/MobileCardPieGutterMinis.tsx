@@ -146,14 +146,14 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
         </div>
         <div
           ref={trackRef}
-          className={styles.mobilePieGutterMiniScrollTrack}
+          className={clsx(
+            styles.mobilePieGutterMiniScrollTrack,
+            !showThumb && styles.mobilePieGutterMiniScrollTrackHidden,
+          )}
           aria-hidden
         >
           <div
-            className={clsx(
-              styles.mobilePieGutterMiniScrollThumb,
-              !showThumb && styles.mobilePieGutterMiniScrollThumbHidden,
-            )}
+            className={styles.mobilePieGutterMiniScrollThumb}
             style={{
               height: thumbHeight,
               transform: `translateY(${thumbTop}px)`,

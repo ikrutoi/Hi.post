@@ -15,8 +15,8 @@ type ScrollAreaProps = {
   contentClassName?: string
   scrollbarPortalTarget?: React.RefObject<HTMLElement | null>
   /**
-   * Thumb tone like toolbar icons in `disabled` status
-   * (`$color-font-disabled`) — cart & history lists.
+   * Cart / history: full-height disabled-color track with toggle-active
+   * (selection accent) thumb inside — same scheme as gutter mini pies.
    */
   selectionAccentThumb?: boolean
 }
@@ -142,7 +142,11 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
   const trackElement = (
     <div
       ref={trackRef}
-      className={styles.scrollbarTrack}
+      className={clsx(
+        styles.scrollbarTrack,
+        selectionAccentThumb && styles.scrollbarTrackSelection,
+        !showThumb && styles.scrollbarHidden,
+      )}
       data-scrollarea-track
     >
       <div

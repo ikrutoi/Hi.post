@@ -505,6 +505,7 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
 /**
  * Правый бордер-трек 3px (`$color-font-disabled`).
  * Коричневый thumb внутри — цвет выделения мини-паев (`$color-toggle-active`).
+ * Серый фон только когда скролл нужен (есть overflow).
  */
 .mobilePieGutterMiniScrollTrack {
   position: absolute;
@@ -519,6 +520,10 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   z-index: 1;
 }
 
+.mobilePieGutterMiniScrollTrackHidden {
+  opacity: 0;
+}
+
 .mobilePieGutterMiniScrollThumb {
   position: absolute;
   top: 0;
@@ -527,10 +532,6 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   background-color: $color-toggle-active;
   border-radius: inherit;
   will-change: transform;
-}
-
-.mobilePieGutterMiniScrollThumbHidden {
-  opacity: 0;
 }
 
 .mobilePieGutterMiniItem {

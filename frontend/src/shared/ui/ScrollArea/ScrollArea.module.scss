@@ -56,20 +56,36 @@
   }
 }
 
+/**
+ * Cart / history: полный серый трек + коричневый thumb внутри
+ * (`$color-font-disabled` / `$color-toggle-active`).
+ * Ширина как у обычного ScrollArea (8px). Серый — только при overflow.
+ */
+.scrollbarTrackSelection:not(.scrollbarHidden) {
+  width: 8px;
+  background-color: $color-font-disabled;
+  border-radius: 999px;
+}
+
+.scrollbarTrackSelection.scrollbarHidden {
+  width: 8px;
+  background-color: transparent;
+}
+
 .scrollbarThumbSelection {
-  background-color: $color-scroll-thumb-selection;
+  left: 0;
+  right: 0;
+  width: 100%;
+  border-radius: inherit;
+  background-color: $color-toggle-active;
 
   &:hover {
-    background-color: $color-scroll-thumb-selection-hover;
+    background-color: $color-toggle-active;
   }
 }
 
-.scrollbarTrack:hover .scrollbarThumb {
+.scrollbarTrack:hover .scrollbarThumb:not(.scrollbarThumbSelection) {
   background-color: $color-scroll-thumb-hover;
-}
-
-.scrollbarTrack:hover .scrollbarThumbSelection {
-  background-color: $color-scroll-thumb-selection-hover;
 }
 
 .scrollbarHidden {
