@@ -59,16 +59,16 @@
 /**
  * Cart / history: полный серый трек + коричневый thumb внутри
  * (`$color-font-disabled` / `$color-toggle-active`).
- * Ширина как у обычного ScrollArea (8px). Серый — только при overflow.
+ * Ширина 6px. Серый — только при overflow.
  */
 .scrollbarTrackSelection:not(.scrollbarHidden) {
-  width: 8px;
+  width: 6px;
   background-color: $color-font-disabled;
   border-radius: 999px;
 }
 
 .scrollbarTrackSelection.scrollbarHidden {
-  width: 8px;
+  width: 6px;
   background-color: transparent;
 }
 
