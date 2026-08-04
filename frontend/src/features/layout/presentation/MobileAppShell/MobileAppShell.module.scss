@@ -456,31 +456,43 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   min-height: var(--mobile-pie-size);
 }
 
-.mobilePieGutterMiniList {
+.mobilePieGutterMiniShell {
   position: absolute;
   top: 0;
   left: 0;
   flex-shrink: 0;
-  width: var(--mobile-pie-gutter-col-width);
+  /**
+   * +5px справа (2px gap + 3px track), чтобы ширина мини-паев
+   * осталась как у `--mobile-pie-gutter-col-width`.
+   */
+  width: calc(var(--mobile-pie-gutter-col-width) + 2px + 3px);
   height: var(--mobile-pie-size);
   z-index: 2;
+  /**
+   * Сдвиг влево под акцентную полосу (резерв — padding-left у списка,
+   * иначе overflow клипает box-shadow выделения).
+   */
+  margin-left: calc(0px - #{$list-entry-selection-accent-reserve});
+  box-sizing: border-box;
+  pointer-events: auto;
+}
+
+.mobilePieGutterMiniList {
+  height: 100%;
+  min-height: 0;
+  /** Резерв слева под акцент; справа — 2px до трека + 3px под трек. */
+  padding-left: $list-entry-selection-accent-reserve;
+  padding-right: calc(2px + 3px);
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: stretch;
   gap: var(--mobile-section-inset);
-  /**
-   * Резерв слева под акцентную полосу: padding + отрицательный margin,
-   * чтобы мини-пай не смещался вправо, а полоска не клипалась overflow.
-   */
-  padding-left: $list-entry-selection-accent-reserve;
-  margin-left: calc(0px - #{$list-entry-selection-accent-reserve});
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  pointer-events: auto;
   box-sizing: border-box;
   border-radius: var(--mobile-pie-gutter-mini-radius);
   background-color: $color-app-inner;
@@ -488,6 +500,37 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+/**
+ * Правый бордер-трек 3px (`$color-font-disabled`).
+ * Коричневый thumb внутри — цвет выделения мини-паев (`$color-toggle-active`).
+ */
+.mobilePieGutterMiniScrollTrack {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: $color-font-disabled;
+  border-radius: 0 var(--mobile-pie-gutter-mini-radius)
+    var(--mobile-pie-gutter-mini-radius) 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.mobilePieGutterMiniScrollThumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: $color-toggle-active;
+  border-radius: inherit;
+  will-change: transform;
+}
+
+.mobilePieGutterMiniScrollThumbHidden {
+  opacity: 0;
 }
 
 .mobilePieGutterMiniItem {
