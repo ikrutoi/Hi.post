@@ -1,3 +1,4 @@
+@use 'sass:math';
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
@@ -169,82 +170,153 @@ $list-panel-footer-stack-height: calc(
   line-height: 1.4;
 }
 
+/** Как month/year в календаре (toolbar): активный сегмент шире, скос ~30°. */
+$auth-mode-inactive-share: 0.5;
+$auth-mode-active-share: 0.6;
+$auth-mode-inactive-w: 50%;
+$auth-mode-active-w: 60%;
+$auth-mode-switch-height: 2.08rem;
+$auth-mode-skew-deg: 30deg;
+$auth-mode-skew-offset: $auth-mode-switch-height * math.tan($auth-mode-skew-deg);
+/** Доля ширины неактивного сегмента, перекрытая активным (10% свитчера / 50%). */
+$auth-mode-overlap-in-inactive: math.div(
+  $auth-mode-active-share - $auth-mode-inactive-share,
+  $auth-mode-inactive-share
+);
+/** Правый край видимой зоны левого неактивного = (100% − active) / inactive. */
+$auth-mode-left-inactive-end: math.div(
+  1 - $auth-mode-active-share,
+  $auth-mode-inactive-share
+);
+
 .authModeSwitch {
+  container-type: inline-size;
+  container-name: auth-mode-switch;
   position: relative;
-  display: flex;
-  align-items: stretch;
   width: 100%;
-  height: 1.8rem;
-  border-radius: 2rem;
+  height: $auth-mode-switch-height;
+  border-radius: 4px;
+  overflow: hidden;
   background-color: #fff;
-  border: 1px solid $color-section-light;
-  gap: 0.2rem;
-  transition: border-color 0.2s ease;
-
-  &:hover {
-    border-color: $color-section-dark;
-  }
-}
-
-.authModeThumb {
-  position: absolute;
-  top: calc(50% + 0.18rem);
-  width: 50%;
-  height: 2.08rem;
-  margin-top: -1.04rem;
-  border-radius: 1.04rem;
-  background-color: $color-disabled-light;
-  border: 1px solid $color-hover;
-  pointer-events: none;
-  z-index: 1;
-  transform: translateY(-3px) scale(1);
-  transition:
-    left 0.25s cubic-bezier(0.33, 1, 0.68, 1),
-    transform 0.25s ease;
-}
-
-.authModeThumbSignIn {
-  left: -0.1rem;
-}
-
-.authModeThumbRegister {
-  left: calc(50% + 0.06rem);
+  box-sizing: border-box;
 }
 
 .authModeSegment {
-  flex: 1 1 50%;
-  min-width: 0;
-  align-self: stretch;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 0.4rem;
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  z-index: 0;
+  height: auto;
+  width: $auth-mode-inactive-w;
+  padding: 0;
+  margin: 0;
   box-sizing: border-box;
-  border: none;
-  border-radius: 1.5rem;
-  background-color: transparent;
-  color: $color-font-enabled-light;
+  border: 1px solid $color-hover;
   font: inherit;
-  font-weight: 600;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
   cursor: pointer;
-  transition: color 0.2s ease;
-  z-index: 2;
-  position: relative;
+  overflow: hidden;
+  touch-action: manipulation;
+  color: $color-font-enabled-light;
+  background-color: #fff;
+  transition:
+    width 0.15s ease,
+    top 0.15s ease,
+    bottom 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
 
   &:hover {
     color: $color-font-enabled-light-hover;
   }
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.authModeSegmentSignIn {
+  left: 0;
+  border-radius: 4px 0 0 4px;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    calc(100% - #{$auth-mode-skew-offset}) 100%,
+    0 100%
+  );
+
+  /**
+   * Неактивный слева: обрезаем всё, что попадает под активный правый сегмент
+   * (по его наклонному краю), чтобы текст не просвечивал.
+   */
+  &:not(.authModeSegmentActive) {
+    clip-path: polygon(
+      0 0,
+      calc(
+          #{math.percentage($auth-mode-left-inactive-end)} + #{$auth-mode-skew-offset}
+        )
+        0,
+      #{math.percentage($auth-mode-left-inactive-end)} 100%,
+      0 100%
+    );
+  }
+}
+
+.authModeSegmentRegister {
+  right: 0;
+  left: auto;
+  border-radius: 0 4px 4px 0;
+  clip-path: polygon(
+    #{$auth-mode-skew-offset} 0,
+    100% 0,
+    100% 100%,
+    0 100%
+  );
+
+  &:not(.authModeSegmentActive) {
+    clip-path: polygon(
+      #{math.percentage($auth-mode-overlap-in-inactive)} 0,
+      100% 0,
+      100% 100%,
+      calc(
+          #{math.percentage($auth-mode-overlap-in-inactive)} - #{$auth-mode-skew-offset}
+        )
+        100%
+    );
+  }
 }
 
 .authModeSegmentActive {
+  z-index: 1;
+  top: 0;
+  bottom: 0;
+  width: $auth-mode-active-w;
   color: $color-font-enabled;
+  background-color: $color-hover;
+  border-color: transparent;
 
   .authModeSegmentValue {
     font-size: 0.9rem;
   }
 }
 
+/**
+ * Текст всегда в своей половине свитчера (50%/50%),
+ * даже когда фон активной вкладки расширяется до 60%.
+ */
 .authModeSegmentValue {
+  position: absolute;
+  /** Компенсация inset неактивной вкладки (2px) — текст по центру всего свитчера. */
+  top: -2px;
+  bottom: -2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50cqw;
+  padding: 0 0.75rem;
+  box-sizing: border-box;
   font-size: 0.8rem;
   font-weight: 700;
   line-height: 1.1;
@@ -252,7 +324,20 @@ $list-panel-footer-stack-height: calc(
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 100%;
+  transition: font-size 0.15s ease;
+}
+
+.authModeSegmentActive .authModeSegmentValue {
+  top: 0;
+  bottom: 0;
+}
+
+.authModeSegmentSignIn .authModeSegmentValue {
+  left: 0;
+}
+
+.authModeSegmentRegister .authModeSegmentValue {
+  right: 0;
 }
 
 .menu {

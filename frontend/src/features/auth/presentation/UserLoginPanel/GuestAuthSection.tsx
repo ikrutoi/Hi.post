@@ -26,15 +26,6 @@ export const GuestAuthSection: React.FC<GuestAuthSectionProps> = ({
       role="tablist"
       aria-label="Account access"
     >
-      <div
-        className={clsx(
-          styles.authModeThumb,
-          mode === 'signIn'
-            ? styles.authModeThumbSignIn
-            : styles.authModeThumbRegister,
-        )}
-        aria-hidden
-      />
       <button
         type="button"
         role="tab"
@@ -44,6 +35,7 @@ export const GuestAuthSection: React.FC<GuestAuthSectionProps> = ({
           mode === 'signIn' && styles.authModeSegmentActive,
         )}
         aria-selected={mode === 'signIn'}
+        aria-pressed={mode === 'signIn'}
         onClick={() => onModeChange('signIn')}
       >
         <span className={styles.authModeSegmentValue}>Sign in</span>
@@ -57,6 +49,7 @@ export const GuestAuthSection: React.FC<GuestAuthSectionProps> = ({
           mode === 'register' && styles.authModeSegmentActive,
         )}
         aria-selected={mode === 'register'}
+        aria-pressed={mode === 'register'}
         onClick={() => onModeChange('register')}
       >
         <span className={styles.authModeSegmentValue}>Create account</span>
