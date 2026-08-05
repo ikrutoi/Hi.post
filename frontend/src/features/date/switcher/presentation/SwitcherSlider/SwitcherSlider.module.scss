@@ -13,8 +13,32 @@ $switcher-cart-skew-offset: calc(
   (#{$list-panel-header-chip-height} + 2px) * #{math.tan($switcher-cart-skew-deg)}
 );
 $switcher-cart-corner-radius: $list-panel-header-chip-radius;
+$switcher-cart-inactive-share: 0.5;
+$switcher-cart-active-share: 0.65;
 $switcher-cart-inactive-w: 50%;
-$switcher-cart-active-w: 70%;
+$switcher-cart-active-w: 65%;
+/** Видимая неактивная зона свитчера = 100% − active (35%) / ширина сегмента (50%). */
+$switcher-cart-overlap-in-inactive: math.div(
+  $switcher-cart-active-share - $switcher-cart-inactive-share,
+  $switcher-cart-inactive-share
+);
+$switcher-cart-left-inactive-end: math.div(
+  1 - $switcher-cart-active-share,
+  $switcher-cart-inactive-share
+);
+/** Видимая доля свитчера у неактивной (100% − 65% = 35cqw). */
+$switcher-cart-visible-inactive-cqw: (1 - $switcher-cart-active-share) * 100;
+/**
+ * Размеры как у подписей дней недели в календаре:
+ * первый день (кликабельный) 1rem / остальные 0.78rem.
+ */
+$switcher-cart-font-active: 1rem;
+$switcher-cart-font-inactive: 0.78rem;
+/**
+ * Фон неактивной. Между `$color-disabled` и `$color-enabled` разница
+ * почти незаметна — берём следующий шаг шкалы (`$color-hover`).
+ */
+$switcher-cart-inactive-bg: $color-hover;
 
 .segmented {
   position: relative;
@@ -105,7 +129,12 @@ $switcher-cart-active-w: 70%;
 }
 
 /** Mobile / toolbar: стиль кнопок корзина / заблокированные. */
+$switcher-cart-move-duration: 0.25s;
+$switcher-cart-move-ease: cubic-bezier(0.33, 1, 0.68, 1);
+
 .segmentedCart {
+  container-type: inline-size;
+  container-name: date-switcher-cart;
   position: relative;
   width: var(--mobile-pie-size, 12.5rem);
   min-width: 0;
@@ -120,13 +149,14 @@ $switcher-cart-active-w: 70%;
   position: absolute;
   top: 2px;
   bottom: 2px;
+  z-index: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   height: auto;
   width: $switcher-cart-inactive-w;
   box-sizing: border-box;
-  padding: 0 0.75rem;
+  padding: 0;
   margin: 0;
   border: none;
   font: inherit;
@@ -135,13 +165,14 @@ $switcher-cart-active-w: 70%;
   cursor: pointer;
   overflow: hidden;
   transition:
-    width 0.15s ease,
-    top 0.15s ease,
-    bottom 0.15s ease,
-    background-color 0.15s ease;
+    width $switcher-cart-move-duration $switcher-cart-move-ease,
+    top $switcher-cart-move-duration $switcher-cart-move-ease,
+    bottom $switcher-cart-move-duration $switcher-cart-move-ease,
+    clip-path $switcher-cart-move-duration $switcher-cart-move-ease,
+    background-color $switcher-cart-move-duration ease;
   touch-action: manipulation;
   color: $color-font-enabled;
-  background-color: $color-app-substrate-border;
+  background-color: $switcher-cart-inactive-bg;
 
   &[aria-pressed='true'] {
     z-index: 1;
@@ -152,7 +183,7 @@ $switcher-cart-active-w: 70%;
   }
 
   &:not([aria-pressed='true']) .cartSegmentValue {
-    font-size: 0.85rem;
+    font-size: $switcher-cart-font-inactive;
   }
 
   &:focus-visible {
@@ -164,12 +195,54 @@ $switcher-cart-active-w: 70%;
   left: 0;
   border-top-left-radius: $switcher-cart-corner-radius;
   border-bottom-left-radius: $switcher-cart-corner-radius;
+  /** Активный: скос на всю ширину сегмента (длинная сторона — верх = 100%). */
   clip-path: polygon(
     0 0,
     100% 0,
     calc(100% - #{$switcher-cart-skew-offset}) 100%,
     0 100%
   );
+
+  .cartSegmentValue {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    max-width: none;
+    text-align: center;
+    transition:
+      width $switcher-cart-move-duration $switcher-cart-move-ease,
+      font-size $switcher-cart-move-duration ease;
+  }
+
+  /**
+   * Неактивный: clip до края активной; текст по длинной (верхней) стороне.
+   * Тот же 4-точечный polygon — clip-path интерполируется.
+   */
+  &:not([aria-pressed='true']) {
+    clip-path: polygon(
+      0 0,
+      calc(
+          #{math.percentage($switcher-cart-left-inactive-end)} + #{$switcher-cart-skew-offset}
+        )
+        0,
+      #{math.percentage($switcher-cart-left-inactive-end)} 100%,
+      0 100%
+    );
+
+    .cartSegmentValue {
+      width: calc(
+        #{$switcher-cart-visible-inactive-cqw}cqw + #{$switcher-cart-skew-offset}
+      );
+    }
+  }
 }
 
 .cartSegmentYear {
@@ -177,6 +250,7 @@ $switcher-cart-active-w: 70%;
   left: auto;
   border-top-right-radius: $switcher-cart-corner-radius;
   border-bottom-right-radius: $switcher-cart-corner-radius;
+  /** Активный: длинная сторона — низ = 100%. */
   clip-path: polygon(
     #{$switcher-cart-skew-offset} 0,
     100% 0,
@@ -184,23 +258,52 @@ $switcher-cart-active-w: 70%;
     0 100%
   );
 
-  /** Неактивный год — текст ближе к правому краю. */
+  .cartSegmentValue {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    max-width: none;
+    text-align: center;
+    transition:
+      width $switcher-cart-move-duration $switcher-cart-move-ease,
+      font-size $switcher-cart-move-duration ease;
+  }
+
   &:not([aria-pressed='true']) {
-    justify-content: flex-end;
-    padding-right: 1rem;
-    padding-left: 0.75rem;
+    clip-path: polygon(
+      #{math.percentage($switcher-cart-overlap-in-inactive)} 0,
+      100% 0,
+      100% 100%,
+      calc(
+          #{math.percentage($switcher-cart-overlap-in-inactive)} - #{$switcher-cart-skew-offset}
+        )
+        100%
+    );
+
+    .cartSegmentValue {
+      width: calc(
+        #{$switcher-cart-visible-inactive-cqw}cqw + #{$switcher-cart-skew-offset}
+      );
+    }
   }
 }
 
 .cartSegmentValue {
-  @include list-panel-header-chip-text;
+  font-size: $switcher-cart-font-active;
   font-weight: 700;
+  line-height: 1.1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
   pointer-events: none;
-  position: relative;
   z-index: 1;
-  transition: font-size 0.15s ease;
 }
