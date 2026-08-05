@@ -462,10 +462,10 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   left: 0;
   flex-shrink: 0;
   /**
-   * +5px справа (2px gap + 3px track), чтобы ширина мини-паев
+   * +6px справа (2px gap + 4px track), чтобы ширина мини-паев
    * осталась как у `--mobile-pie-gutter-col-width`.
    */
-  width: calc(var(--mobile-pie-gutter-col-width) + 2px + 3px);
+  width: calc(var(--mobile-pie-gutter-col-width) + 2px + 4px);
   height: var(--mobile-pie-size);
   z-index: 2;
   /**
@@ -480,9 +480,9 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
 .mobilePieGutterMiniList {
   height: 100%;
   min-height: 0;
-  /** Резерв слева под акцент; справа — 2px до трека + 3px под трек. */
+  /** Резерв слева под акцент; справа — 2px до трека + 4px под трек. */
   padding-left: $list-entry-selection-accent-reserve;
-  padding-right: calc(2px + 3px);
+  padding-right: calc(2px + 4px);
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -503,7 +503,7 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
 }
 
 /**
- * Правый бордер-трек 3px (`$color-font-disabled`).
+ * Правый бордер-трек 4px (`$color-font-disabled`).
  * Коричневый thumb внутри — цвет выделения мини-паев (`$color-toggle-active`).
  * Серый фон только когда скролл нужен (есть overflow).
  */
@@ -512,10 +512,9 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   top: 0;
   right: 0;
   bottom: 0;
-  width: 3px;
+  width: 4px;
   background-color: $color-font-disabled;
-  border-radius: 0 var(--mobile-pie-gutter-mini-radius)
-    var(--mobile-pie-gutter-mini-radius) 0;
+  border-radius: 999px;
   pointer-events: none;
   z-index: 1;
 }
