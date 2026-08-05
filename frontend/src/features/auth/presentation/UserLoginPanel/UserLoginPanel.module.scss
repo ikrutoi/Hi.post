@@ -172,13 +172,13 @@ $list-panel-footer-stack-height: calc(
 
 /** Как month/year в календаре (toolbar): активный сегмент шире, скос ~30°. */
 $auth-mode-inactive-share: 0.5;
-$auth-mode-active-share: 0.6;
+$auth-mode-active-share: 0.65;
 $auth-mode-inactive-w: 50%;
-$auth-mode-active-w: 60%;
+$auth-mode-active-w: 65%;
 $auth-mode-switch-height: 2.08rem;
 $auth-mode-skew-deg: 30deg;
 $auth-mode-skew-offset: $auth-mode-switch-height * math.tan($auth-mode-skew-deg);
-/** Доля ширины неактивного сегмента, перекрытая активным (10% свитчера / 50%). */
+/** Доля ширины неактивного сегмента, перекрытая активным (15% свитчера / 50%). */
 $auth-mode-overlap-in-inactive: math.div(
   $auth-mode-active-share - $auth-mode-inactive-share,
   $auth-mode-inactive-share
@@ -190,8 +190,6 @@ $auth-mode-left-inactive-end: math.div(
 );
 
 .authModeSwitch {
-  container-type: inline-size;
-  container-name: auth-mode-switch;
   position: relative;
   width: 100%;
   height: $auth-mode-switch-height;
@@ -206,9 +204,12 @@ $auth-mode-left-inactive-end: math.div(
   top: 2px;
   bottom: 2px;
   z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: auto;
   width: $auth-mode-inactive-w;
-  padding: 0;
+  padding: 0 0.75rem;
   margin: 0;
   box-sizing: border-box;
   border: 1px solid $color-hover;
@@ -252,6 +253,7 @@ $auth-mode-left-inactive-end: math.div(
    * (по его наклонному краю), чтобы текст не просвечивал.
    */
   &:not(.authModeSegmentActive) {
+    padding: 0;
     clip-path: polygon(
       0 0,
       calc(
@@ -261,6 +263,20 @@ $auth-mode-left-inactive-end: math.div(
       #{math.percentage($auth-mode-left-inactive-end)} 100%,
       0 100%
     );
+
+    .authModeSegmentValue {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      /** Ширина видимой зоны — текст по её центру, не всего 50%-сегмента. */
+      width: math.percentage($auth-mode-left-inactive-end);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 0.5rem;
+      box-sizing: border-box;
+    }
   }
 }
 
@@ -276,6 +292,7 @@ $auth-mode-left-inactive-end: math.div(
   );
 
   &:not(.authModeSegmentActive) {
+    padding: 0;
     clip-path: polygon(
       #{math.percentage($auth-mode-overlap-in-inactive)} 0,
       100% 0,
@@ -285,6 +302,19 @@ $auth-mode-left-inactive-end: math.div(
         )
         100%
     );
+
+    .authModeSegmentValue {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: math.percentage(1 - $auth-mode-overlap-in-inactive);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 0.5rem;
+      box-sizing: border-box;
+    }
   }
 }
 
@@ -303,20 +333,12 @@ $auth-mode-left-inactive-end: math.div(
 }
 
 /**
- * Текст всегда в своей половине свитчера (50%/50%),
- * даже когда фон активной вкладки расширяется до 60%.
+ * Текст центрируется в сегменте и смещается вместе с его шириной
+ * (50% неактивный / 65% активный).
  */
 .authModeSegmentValue {
-  position: absolute;
-  /** Компенсация inset неактивной вкладки (2px) — текст по центру всего свитчера. */
-  top: -2px;
-  bottom: -2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 50cqw;
-  padding: 0 0.75rem;
-  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
   font-size: 0.8rem;
   font-weight: 700;
   line-height: 1.1;
@@ -325,19 +347,6 @@ $auth-mode-left-inactive-end: math.div(
   overflow: hidden;
   text-overflow: ellipsis;
   transition: font-size 0.15s ease;
-}
-
-.authModeSegmentActive .authModeSegmentValue {
-  top: 0;
-  bottom: 0;
-}
-
-.authModeSegmentSignIn .authModeSegmentValue {
-  left: 0;
-}
-
-.authModeSegmentRegister .authModeSegmentValue {
-  right: 0;
 }
 
 .menu {

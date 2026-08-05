@@ -8,8 +8,10 @@ $switcher-thumb-move-duration: 0.25s;
 
 /** Как сегменты корзина / заблокированные в CartHeaderSegments. */
 $switcher-cart-skew-deg: 30deg;
-$switcher-cart-skew-offset: $list-panel-header-chip-height *
-  math.tan($switcher-cart-skew-deg);
+$switcher-cart-active-height: calc(#{$list-panel-header-chip-height} + 2px);
+$switcher-cart-skew-offset: calc(
+  (#{$list-panel-header-chip-height} + 2px) * #{math.tan($switcher-cart-skew-deg)}
+);
 $switcher-cart-corner-radius: $list-panel-header-chip-radius;
 $switcher-cart-inactive-w: 50%;
 $switcher-cart-active-w: 70%;
@@ -108,19 +110,20 @@ $switcher-cart-active-w: 70%;
   width: var(--mobile-pie-size, 12.5rem);
   min-width: 0;
   max-width: 100%;
-  height: $list-panel-header-chip-height;
+  height: $switcher-cart-active-height;
   border-radius: $switcher-cart-corner-radius;
   overflow: hidden;
-  background-color: #fff;
+  background-color: transparent;
 }
 
 .cartSegment {
   position: absolute;
-  top: 0;
+  top: 2px;
+  bottom: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: $list-panel-header-chip-height;
+  height: auto;
   width: $switcher-cart-inactive-w;
   box-sizing: border-box;
   padding: 0 0.75rem;
@@ -133,6 +136,8 @@ $switcher-cart-active-w: 70%;
   overflow: hidden;
   transition:
     width 0.15s ease,
+    top 0.15s ease,
+    bottom 0.15s ease,
     background-color 0.15s ease;
   touch-action: manipulation;
   color: $color-font-enabled;
@@ -140,6 +145,8 @@ $switcher-cart-active-w: 70%;
 
   &[aria-pressed='true'] {
     z-index: 1;
+    top: 0;
+    bottom: 0;
     width: $switcher-cart-active-w;
     background-color: $color-preview-indicator-cart;
   }
