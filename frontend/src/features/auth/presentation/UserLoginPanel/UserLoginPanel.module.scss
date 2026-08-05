@@ -476,7 +476,7 @@ $auth-mode-left-inactive-end: math.div(
   box-sizing: border-box;
   width: auto;
   height: 100%;
-  min-width: 1.2rem;
+  min-width: 0;
   padding: 0;
   border: none;
   background: transparent;
@@ -484,10 +484,14 @@ $auth-mode-left-inactive-end: math.div(
   cursor: pointer;
   transition: color 0.15s ease;
 
+  /**
+   * Glyph не квадратный (viewBox 1540×1282) — только высота, как у иконок
+   * верхнего factory toolbar (`$toolbar-icon-size-mobile-toolbar`).
+   */
   svg {
     flex-shrink: 0;
-    width: 1.2rem;
-    height: 1.2rem;
+    width: auto;
+    height: iconButton.$toolbar-icon-size-mobile-toolbar;
     display: block;
   }
 

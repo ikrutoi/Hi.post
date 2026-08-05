@@ -76,9 +76,20 @@ $auth-password-toggle-hit-size: 1.7rem;
   color: $color-font-enabled-light;
   cursor: pointer;
   transform: translateY(-50%);
+  -webkit-tap-highlight-color: transparent;
+  appearance: none;
 
   &:hover {
     color: $color-font-enabled;
+    background: transparent;
+  }
+
+  &:focus,
+  &:focus-visible,
+  &:active {
+    outline: none;
+    background: transparent;
+    box-shadow: none;
   }
 }
 
