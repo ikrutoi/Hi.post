@@ -845,6 +845,11 @@ $mobile-central-pie-envelope-empty-icon-width: 40%;
   }
 }
 
+/**
+ * Как 2 иконки правого тулбара CardPie (`space-around`):
+ * высота пая делится пополам, кнопка по центру каждой половины
+ * (центры на H/4 и 3H/4).
+ */
 .mobilePieRightSlot {
   position: absolute;
   top: 0;
@@ -852,18 +857,16 @@ $mobile-central-pie-envelope-empty-icon-width: 40%;
   width: var(--mobile-right-sidebar-logo-size);
   height: var(--mobile-pie-size);
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-end;
-  gap: var(--mobile-section-inset);
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  align-items: center;
+  justify-items: end;
   overflow: visible;
   pointer-events: none;
 }
 
 .mobilePieRightSlotItem {
-  flex: 0 0 auto;
-  align-self: flex-end;
+  justify-self: end;
   width: 100%;
   height: var(--mobile-pie-gutter-mini-side);
   box-sizing: border-box;
@@ -879,9 +882,8 @@ $mobile-central-pie-envelope-empty-icon-width: 40%;
 .mobilePieRightSlotCartShell {
   container-type: inline-size;
   container-name: mobile-cart-shell;
-  position: absolute;
-  right: 0;
-  top: 0;
+  position: relative;
+  justify-self: end;
   width: 100%;
   height: var(--mobile-pie-gutter-mini-side);
   pointer-events: none;
@@ -1070,7 +1072,7 @@ $mobile-central-pie-envelope-empty-icon-width: 40%;
 
 .mobilePieRightSlotItemHistory {
   position: relative;
-  margin: calc(var(--mobile-pie-gutter-mini-side) + var(--mobile-section-inset)) 0 0;
+  margin: 0;
   padding: 0;
   font: inherit;
   color: inherit;
