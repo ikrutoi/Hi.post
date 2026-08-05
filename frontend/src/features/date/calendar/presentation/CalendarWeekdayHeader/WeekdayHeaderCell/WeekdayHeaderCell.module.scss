@@ -43,7 +43,7 @@
   border: none;
   border-radius: 1.5rem;
   color: $color-font-enabled-light-hover;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 700;
   line-height: 1.1;
   text-transform: uppercase;
@@ -54,7 +54,7 @@
     height: calc(var(--mobile-date-calendar-chrome-row-height, 2rem) - 2px);
     max-height: calc(var(--mobile-date-calendar-chrome-row-height, 2rem) - 2px);
     padding: 0 0.5rem;
-    font-size: 1rem;
+    font-size: 0.95rem;
     border-radius: 1.25rem;
     box-sizing: border-box;
   }

@@ -30,10 +30,9 @@ $switcher-cart-left-inactive-end: math.div(
 $switcher-cart-visible-inactive-cqw: (1 - $switcher-cart-active-share) * 100;
 $switcher-cart-active-cqw: $switcher-cart-active-share * 100;
 /**
- * Размеры как у подписей дней недели в календаре:
- * первый день (кликабельный) 1rem / остальные 0.78rem.
+ * Активный / неактивный размер подписи сегмента.
  */
-$switcher-cart-font-active: 1rem;
+$switcher-cart-font-active: 0.95rem;
 $switcher-cart-font-inactive: 0.78rem;
 /**
  * Фон неактивной. Между `$color-disabled` и `$color-enabled` разница
@@ -130,7 +129,7 @@ $switcher-cart-inactive-bg: $color-hover;
 }
 
 /** Mobile / toolbar: стиль кнопок корзина / заблокированные. */
-$switcher-cart-move-duration: 0.28s;
+$switcher-cart-move-duration: 0.2s;
 $switcher-cart-move-ease: cubic-bezier(0.33, 1, 0.68, 1);
 $switcher-cart-label-inactive-w: calc(
   #{$switcher-cart-visible-inactive-cqw}cqw + #{$switcher-cart-skew-offset}
