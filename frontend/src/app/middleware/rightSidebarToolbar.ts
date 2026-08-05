@@ -64,7 +64,8 @@ export function* handleRightSidebarToolbarAction(
       updateToolbarIcon({
         section: 'rightSidebar',
         key: 'userLogin',
-        value: nextOpen ? 'active' : 'enabled',
+        /** Не active — гостевая иконка остаётся в enabled-цвете. */
+        value: 'enabled',
       }),
     )
     if (nextOpen) {

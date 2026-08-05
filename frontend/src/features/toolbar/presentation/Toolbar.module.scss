@@ -1532,6 +1532,20 @@
     }
   }
 
+  /**
+   * Аккаунт: active и enabled — один цвет (enabled-light),
+   * чтобы открытая панель не делала иконку чёрной/active.
+   */
+  .toolbarKey[data-icon-key='userLogin'].toolbarKeyEnabled,
+  .toolbarKey[data-icon-key='userLogin'].toolbarKeyActive {
+    color: $color-font-enabled-light;
+
+    &:hover {
+      color: $color-font-enabled-light;
+      background-color: $color-app-strip;
+    }
+  }
+
   .toolbarKey[data-icon-key='cart'] {
     margin-top: 0.75rem;
   }

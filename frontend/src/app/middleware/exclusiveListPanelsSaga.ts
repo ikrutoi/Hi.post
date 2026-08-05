@@ -25,7 +25,6 @@ import { setCardPieToolbarActiveState } from './cardPieToolbarSync'
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import { setUserLoginPanelOpen } from '@features/auth/infrastructure/state/auth.slice'
-import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
 
 /** Закрыть CardPiePanel и вернуть иконку cardPie в enabled (если список уже открыт в slice). */
 export function* closeCardPieListPanelAndSyncIconsSaga(): SagaIterator {
@@ -85,12 +84,15 @@ function* syncListPanelToolbarIcons(): SagaIterator {
     }),
   )
 
-  const userLoginOpen: boolean = yield select(selectUserLoginPanelOpen)
   yield put(
     updateToolbarIcon({
       section: 'rightSidebar',
       key: 'userLogin',
-      value: userLoginOpen ? 'active' : 'enabled',
+      /**
+       * Аккаунт: не переключаем в active при открытой панели —
+       * иконка остаётся в цвете enabled (гость / не вошёл).
+       */
+      value: 'enabled',
     }),
   )
 

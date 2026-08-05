@@ -336,6 +336,12 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
       margin: 0;
       padding: 0;
       background-color: transparent;
+      color: $color-font-enabled-light;
+
+      &[class*='toolbarKeyEnabled'],
+      &[class*='toolbarKeyActive'] {
+        color: $color-font-enabled-light;
+      }
 
       :global([class*='toolbarUserChromeGlyph']) {
         display: block;

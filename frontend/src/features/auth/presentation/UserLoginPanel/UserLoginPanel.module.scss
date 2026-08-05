@@ -1,16 +1,18 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
 
-$list-panel-compact-header-band: 2.35rem;
+/** Хедер / футер панели — как ряд factory toolbar (~2.5rem). */
+$list-panel-chrome-height: 2.5rem;
+$list-panel-compact-header-band: $list-panel-chrome-height;
 $list-panel-stacked-band: 3.75rem;
 $list-panel-stacked-band-section-toolbar: 4.25rem;
-$list-panel-compact-header-band-section-toolbar: 2.35rem;
-$list-panel-header-lead-row: 1.75rem;
+$list-panel-compact-header-band-section-toolbar: $list-panel-chrome-height;
 $list-panel-passport-id-row: 2rem;
 $list-panel-scroll-inset: 0.35rem;
 $list-panel-list-footer-gap: 1px;
 $list-panel-footer-stack-height: calc(
-  #{$list-panel-passport-id-row} + #{$list-panel-header-lead-row} +
+  #{$list-panel-passport-id-row} + #{$list-panel-chrome-height} +
     #{$list-panel-list-footer-gap}
 );
 
@@ -23,9 +25,34 @@ $list-panel-footer-stack-height: calc(
   padding-top: $list-panel-stacked-band;
   padding-bottom: $list-panel-footer-stack-height;
   background-color: #fff;
-  border: 1px solid $color-app-strip;
+  /** Общий бордер и внутренние горизонтальные линии — один цвет. */
+  --user-panel-chrome-border: #{$color-app-strip};
+  border: 1px solid var(--user-panel-chrome-border);
   border-radius: 0.75rem;
   font-size: 0.875rem;
+
+  :global([class*='headerDivider']) {
+    border-top-color: var(--user-panel-chrome-border);
+  }
+
+  /**
+   * Compact header (divider, без toolbar): ровно `$list-panel-chrome-height`,
+   * без стандартных inset'ов ListPanelStackedHeader (0.15rem).
+   */
+  :global(
+      [class*='headerCardPieListArchive'][class*='headerSectionToolbar'][class*='headerCompactWithDivider']
+    ) {
+    top: 0;
+    min-height: $list-panel-chrome-height;
+    padding-bottom: 0;
+  }
+
+  :global(
+      [class*='headerCardPieListArchive'][class*='headerCompactWithDivider']
+        [class*='headerTopRow']
+    ) {
+    min-height: $list-panel-chrome-height;
+  }
 
   :global([data-shell-layout='mobile']) & {
     flex: 1 1 auto;
@@ -34,7 +61,8 @@ $list-panel-footer-stack-height: calc(
     overflow: hidden;
     background-color: #fff;
     border-radius: 0.5rem;
-    border-color: $color-section-light;
+    --user-panel-chrome-border: #{$color-section-light};
+    border-color: var(--user-panel-chrome-border);
     box-shadow: none;
   }
 
@@ -100,11 +128,24 @@ $list-panel-footer-stack-height: calc(
   min-width: 0;
   display: flex;
   justify-content: flex-start;
+  box-sizing: border-box;
+  /**
+   * headerTopCenterSlot — absolute на всю ширину ряда; без отступа
+   * текст «Sign in» / имя заезжает под lead user и close.
+   */
+  padding-inline: calc(
+    #{iconButton.$toolbar-hit-size-card-pie-list-header} + 0.3rem + 0.35rem
+  );
+}
+
+/** Лого в шапке: enabled-light, не почти чёрный `$color-font-enabled`. */
+.panel :global([class*='headerLead']) {
+  color: $color-font-enabled-light;
 }
 
 .headerUserName {
   min-width: 0;
-  font-size: 0.8125rem;
+  font-size: 0.9rem;
   font-weight: 500;
   color: $color-font-enabled-light;
   line-height: 1.3;
@@ -197,10 +238,14 @@ $list-panel-footer-stack-height: calc(
 
 .authModeSegmentActive {
   color: $color-font-enabled;
+
+  .authModeSegmentValue {
+    font-size: 0.9rem;
+  }
 }
 
 .authModeSegmentValue {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 700;
   line-height: 1.1;
   pointer-events: none;
@@ -322,10 +367,10 @@ $list-panel-footer-stack-height: calc(
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: $list-panel-header-lead-row;
+  height: $list-panel-chrome-height;
   padding: 0 0.35rem;
   box-sizing: border-box;
-  border-top: 1px solid $color-cardphoto-input-border;
+  border-top: 1px solid var(--user-panel-chrome-border);
   background-color: #fff;
 }
 
