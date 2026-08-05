@@ -28,17 +28,33 @@ $list-panel-footer-band: calc(
     #{$list-panel-list-footer-gap}
 );
 $cart-list-header-skew-deg: 30deg;
-$cart-list-header-skew-offset: $list-panel-header-chip-height *
-  math.tan($cart-list-header-skew-deg);
+$cart-list-header-active-height: calc(#{$list-panel-header-chip-height} + 2px);
+$cart-list-header-skew-offset: calc(
+  (#{$list-panel-header-chip-height} + 2px) * #{math.tan($cart-list-header-skew-deg)}
+);
 $cart-list-header-corner-radius: $list-panel-header-chip-radius;
-/** Неактивный сегмент — половина контейнера; активный — 70%. */
+/** Как month/year в календаре: активная 65%, неактивная 50%. */
+$cart-list-header-segment-inactive-share: 0.5;
+$cart-list-header-segment-active-share: 0.65;
 $cart-list-header-segment-inactive-w: 50%;
-$cart-list-header-segment-active-w: 70%;
+$cart-list-header-segment-active-w: 65%;
+$cart-list-header-visible-inactive-cqw: (
+    1 - $cart-list-header-segment-active-share
+  ) *
+  100;
+$cart-list-header-active-cqw: $cart-list-header-segment-active-share * 100;
+$cart-list-header-label-inactive-w: calc(
+  #{$cart-list-header-visible-inactive-cqw}cqw + #{$cart-list-header-skew-offset}
+);
+$cart-list-header-label-active-w: #{$cart-list-header-active-cqw}cqw;
+$cart-list-header-font-active: 1rem;
+$cart-list-header-font-inactive: 0.78rem;
+$cart-list-header-move-duration: 0.28s;
+$cart-list-header-move-ease: cubic-bezier(0.33, 1, 0.68, 1);
 $cart-list-header-segments-header-w: 30%;
 $cart-list-header-segments-header-w-container: 30cqw;
 $cart-list-header-segments-header-w-mobile: 40%;
 $cart-list-header-segments-header-w-container-mobile: 40cqw;
-$cart-list-header-segment-count-inset: 1.5rem;
 /** Как правый padding списка: `0.25rem + scroll-gutter` из `list-panel-scroll-padding`. */
 $cart-list-panel-inline-end-inset: calc(
   0.25rem + #{$list-panel-scroll-gutter}
@@ -113,12 +129,14 @@ $cart-list-panel-inline-end-inset: calc(
 }
 
 .cartHeaderSegments {
+  container-type: inline-size;
+  container-name: cart-header-segments;
   position: relative;
   flex: 0 0 $cart-list-header-segments-header-w;
   width: $cart-list-header-segments-header-w;
   min-width: $cart-list-header-segments-header-w;
-  height: $list-panel-header-chip-height;
-  background-color: #fff;
+  height: $cart-list-header-active-height;
+  background-color: transparent;
 
   @supports (width: 1cqw) {
     flex-basis: $cart-list-header-segments-header-w-container;
@@ -143,7 +161,7 @@ $cart-list-panel-inline-end-inset: calc(
   flex: 0 0 auto;
   width: 100%;
   min-width: 0;
-  height: $list-panel-header-chip-height;
+  height: $cart-list-header-active-height;
   border-radius: $cart-list-header-corner-radius;
   overflow: hidden;
 
@@ -162,13 +180,15 @@ $cart-list-panel-inline-end-inset: calc(
 
 .cartHeaderSegmentButton {
   position: absolute;
-  top: 0;
+  top: 2px;
+  bottom: 2px;
+  z-index: 0;
   display: flex;
   flex-shrink: 0;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   width: $cart-list-header-segment-inactive-w;
-  height: $list-panel-header-chip-height;
+  height: auto;
   box-sizing: border-box;
   padding: 0;
   margin: 0;
@@ -179,15 +199,20 @@ $cart-list-panel-inline-end-inset: calc(
   -webkit-tap-highlight-color: transparent;
   background-color: transparent;
   border: none;
+  overflow: hidden;
   transform: none;
   transition:
-    left 0.15s ease,
-    right 0.15s ease,
-    width 0.15s ease;
+    width $cart-list-header-move-duration $cart-list-header-move-ease,
+    top $cart-list-header-move-duration $cart-list-header-move-ease,
+    bottom $cart-list-header-move-duration $cart-list-header-move-ease,
+    clip-path $cart-list-header-move-duration $cart-list-header-move-ease;
   touch-action: manipulation;
 
   &[aria-pressed='true'] {
     z-index: 1;
+    top: 0;
+    bottom: 0;
+    width: $cart-list-header-segment-active-w;
   }
 
   &:focus-visible {
@@ -197,42 +222,46 @@ $cart-list-panel-inline-end-inset: calc(
 
 .cartHeaderSegmentCount {
   position: absolute;
-  top: 50%;
+  top: 0;
+  bottom: 0;
   z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
   color: $color-font-enabled-light-hover;
   font-family: sans-serif;
-  font-size: $cart-list-amount-font-size;
+  font-size: $cart-list-header-font-active;
   font-weight: 700;
   line-height: 1;
   font-variant-numeric: tabular-nums;
   pointer-events: none;
-  transform: translate(-50%, -50%);
-
-  :global([data-shell-layout='mobile']) & {
-    font-size: $cart-list-amount-font-size-mobile;
-  }
-}
-
-.cartHeaderSegmentCountCart {
-  left: $cart-list-header-segment-count-inset;
-  transform: translateY(-50%);
-}
-
-.cartHeaderSegmentCountBlocked {
-  left: auto;
-  right: $cart-list-header-segment-count-inset;
-  transform: translateY(-50%);
+  white-space: nowrap;
+  max-width: none;
+  text-align: center;
+  transition:
+    width $cart-list-header-move-duration $cart-list-header-move-ease,
+    font-size $cart-list-header-move-duration $cart-list-header-move-ease;
 }
 
 .cart {
   left: 0;
-  overflow: hidden;
   border-top-left-radius: $cart-list-header-corner-radius;
   border-bottom-left-radius: $cart-list-header-corner-radius;
   background-color: transparent;
+  clip-path: polygon(
+    0 0,
+    #{$cart-list-header-active-cqw}cqw 0,
+    calc(#{$cart-list-header-active-cqw}cqw - #{$cart-list-header-skew-offset})
+      100%,
+    0 100%
+  );
 
-  &[aria-pressed='true'] {
-    width: $cart-list-header-segment-active-w;
+  .cartHeaderSegmentCount {
+    left: 0;
+    width: $cart-list-header-label-active-w;
   }
 
   &::before {
@@ -244,21 +273,41 @@ $cart-list-panel-inline-end-inset: calc(
     background-color: $color-preview-indicator-cart;
     clip-path: polygon(
       0 0,
-      100% 0,
-      calc(100% - #{$cart-list-header-skew-offset}) 100%,
+      #{$cart-list-header-active-cqw}cqw 0,
+      calc(#{$cart-list-header-active-cqw}cqw - #{$cart-list-header-skew-offset})
+        100%,
       0 100%
     );
     pointer-events: none;
+    transition: clip-path $cart-list-header-move-duration
+      $cart-list-header-move-ease;
+  }
+
+  &:not([aria-pressed='true']) {
+    clip-path: polygon(
+      0 0,
+      #{$cart-list-header-label-inactive-w} 0,
+      #{$cart-list-header-label-inactive-w} 100%,
+      0 100%
+    );
+
+    .cartHeaderSegmentCount {
+      width: $cart-list-header-label-inactive-w;
+      font-size: $cart-list-header-font-inactive;
+    }
+
+    &::before {
+      clip-path: polygon(
+        0 0,
+        #{$cart-list-header-label-inactive-w} 0,
+        #{$cart-list-header-label-inactive-w} 100%,
+        0 100%
+      );
+    }
   }
 
   :global([data-shell-layout='mobile']) & {
     background-color: $color-preview-indicator-cart;
-    clip-path: polygon(
-      0 0,
-      100% 0,
-      calc(100% - #{$cart-list-header-skew-offset}) 100%,
-      0 100%
-    );
 
     &::before {
       display: none;
@@ -269,13 +318,19 @@ $cart-list-panel-inline-end-inset: calc(
 .cartBlocked {
   right: 0;
   left: auto;
-  overflow: hidden;
   border-top-right-radius: $cart-list-header-corner-radius;
   border-bottom-right-radius: $cart-list-header-corner-radius;
   background-color: transparent;
+  clip-path: polygon(
+    #{$cart-list-header-skew-offset} 0,
+    100% 0,
+    100% 100%,
+    0 100%
+  );
 
-  &[aria-pressed='true'] {
-    width: $cart-list-header-segment-active-w;
+  .cartHeaderSegmentCount {
+    right: 0;
+    width: $cart-list-header-label-active-w;
   }
 
   &::before {
@@ -292,16 +347,35 @@ $cart-list-panel-inline-end-inset: calc(
       0 100%
     );
     pointer-events: none;
+    transition: clip-path $cart-list-header-move-duration
+      $cart-list-header-move-ease;
+  }
+
+  &:not([aria-pressed='true']) {
+    clip-path: polygon(
+      calc(100% - #{$cart-list-header-label-inactive-w}) 0,
+      100% 0,
+      100% 100%,
+      calc(100% - #{$cart-list-header-label-inactive-w}) 100%
+    );
+
+    .cartHeaderSegmentCount {
+      width: $cart-list-header-label-inactive-w;
+      font-size: $cart-list-header-font-inactive;
+    }
+
+    &::before {
+      clip-path: polygon(
+        calc(100% - #{$cart-list-header-label-inactive-w}) 0,
+        100% 0,
+        100% 100%,
+        calc(100% - #{$cart-list-header-label-inactive-w}) 100%
+      );
+    }
   }
 
   :global([data-shell-layout='mobile']) & {
     background-color: $color-preview-indicator-error;
-    clip-path: polygon(
-      #{$cart-list-header-skew-offset} 0,
-      100% 0,
-      100% 100%,
-      0 100%
-    );
 
     &::before {
       display: none;

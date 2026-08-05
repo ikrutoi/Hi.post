@@ -54,18 +54,13 @@ export const CartHeaderSegments: React.FC<{
         }
         aria-pressed={listSegment === 'cart'}
         onClick={handleSelectCartSegment}
-      />
-      {cartSegmentCounts.cart > 0 ? (
-        <span
-          className={clsx(
-            styles.cartHeaderSegmentCount,
-            styles.cartHeaderSegmentCountCart,
-          )}
-          aria-hidden
-        >
-          {cartSegmentCounts.cart}
-        </span>
-      ) : null}
+      >
+        {cartSegmentCounts.cart > 0 ? (
+          <span className={styles.cartHeaderSegmentCount} aria-hidden>
+            {cartSegmentCounts.cart}
+          </span>
+        ) : null}
+      </button>
       <button
         type="button"
         className={clsx(styles.cartHeaderSegmentButton, styles.cartBlocked)}
@@ -76,18 +71,13 @@ export const CartHeaderSegments: React.FC<{
         }
         aria-pressed={listSegment === 'cartBlocked'}
         onClick={() => dispatch(setCartListStatusSegment('cartBlocked'))}
-      />
-      {cartSegmentCounts.cartBlocked > 0 ? (
-        <span
-          className={clsx(
-            styles.cartHeaderSegmentCount,
-            styles.cartHeaderSegmentCountBlocked,
-          )}
-          aria-hidden
-        >
-          {cartSegmentCounts.cartBlocked}
-        </span>
-      ) : null}
+      >
+        {cartSegmentCounts.cartBlocked > 0 ? (
+          <span className={styles.cartHeaderSegmentCount} aria-hidden>
+            {cartSegmentCounts.cartBlocked}
+          </span>
+        ) : null}
+      </button>
     </div>
   )
 }
