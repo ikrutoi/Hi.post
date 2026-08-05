@@ -28,6 +28,7 @@ $switcher-cart-left-inactive-end: math.div(
 );
 /** Видимая доля свитчера у неактивной (100% − 65% = 35cqw). */
 $switcher-cart-visible-inactive-cqw: (1 - $switcher-cart-active-share) * 100;
+$switcher-cart-active-cqw: $switcher-cart-active-share * 100;
 /**
  * Размеры как у подписей дней недели в календаре:
  * первый день (кликабельный) 1rem / остальные 0.78rem.
@@ -129,8 +130,12 @@ $switcher-cart-inactive-bg: $color-hover;
 }
 
 /** Mobile / toolbar: стиль кнопок корзина / заблокированные. */
-$switcher-cart-move-duration: 0.25s;
+$switcher-cart-move-duration: 0.28s;
 $switcher-cart-move-ease: cubic-bezier(0.33, 1, 0.68, 1);
+$switcher-cart-label-inactive-w: calc(
+  #{$switcher-cart-visible-inactive-cqw}cqw + #{$switcher-cart-skew-offset}
+);
+$switcher-cart-label-active-w: #{$switcher-cart-active-cqw}cqw;
 
 .segmentedCart {
   container-type: inline-size;
@@ -169,7 +174,7 @@ $switcher-cart-move-ease: cubic-bezier(0.33, 1, 0.68, 1);
     top $switcher-cart-move-duration $switcher-cart-move-ease,
     bottom $switcher-cart-move-duration $switcher-cart-move-ease,
     clip-path $switcher-cart-move-duration $switcher-cart-move-ease,
-    background-color $switcher-cart-move-duration ease;
+    background-color $switcher-cart-move-duration $switcher-cart-move-ease;
   touch-action: manipulation;
   color: $color-font-enabled;
   background-color: $switcher-cart-inactive-bg;
@@ -195,11 +200,14 @@ $switcher-cart-move-ease: cubic-bezier(0.33, 1, 0.68, 1);
   left: 0;
   border-top-left-radius: $switcher-cart-corner-radius;
   border-bottom-left-radius: $switcher-cart-corner-radius;
-  /** Активный: скос на всю ширину сегмента (длинная сторона — верх = 100%). */
+  /**
+   * Clip в cqw (координаты контейнера) — не скачет при анимации width сегмента.
+   * Активный: скос; неактивный: прямой край, длина 35cqw + skew.
+   */
   clip-path: polygon(
     0 0,
-    100% 0,
-    calc(100% - #{$switcher-cart-skew-offset}) 100%,
+    #{$switcher-cart-active-cqw}cqw 0,
+    calc(#{$switcher-cart-active-cqw}cqw - #{$switcher-cart-skew-offset}) 100%,
     0 100%
   );
 
@@ -208,7 +216,7 @@ $switcher-cart-move-ease: cubic-bezier(0.33, 1, 0.68, 1);
     left: 0;
     top: 0;
     bottom: 0;
-    width: 100%;
+    width: $switcher-cart-label-active-w;
     margin: 0;
     padding: 0;
     display: flex;
@@ -219,28 +227,19 @@ $switcher-cart-move-ease: cubic-bezier(0.33, 1, 0.68, 1);
     text-align: center;
     transition:
       width $switcher-cart-move-duration $switcher-cart-move-ease,
-      font-size $switcher-cart-move-duration ease;
+      font-size $switcher-cart-move-duration $switcher-cart-move-ease;
   }
 
-  /**
-   * Неактивный: clip до края активной; текст по длинной (верхней) стороне.
-   * Тот же 4-точечный polygon — clip-path интерполируется.
-   */
   &:not([aria-pressed='true']) {
     clip-path: polygon(
       0 0,
-      calc(
-          #{math.percentage($switcher-cart-left-inactive-end)} + #{$switcher-cart-skew-offset}
-        )
-        0,
-      #{math.percentage($switcher-cart-left-inactive-end)} 100%,
+      #{$switcher-cart-label-inactive-w} 0,
+      #{$switcher-cart-label-inactive-w} 100%,
       0 100%
     );
 
     .cartSegmentValue {
-      width: calc(
-        #{$switcher-cart-visible-inactive-cqw}cqw + #{$switcher-cart-skew-offset}
-      );
+      width: $switcher-cart-label-inactive-w;
     }
   }
 }
@@ -250,7 +249,7 @@ $switcher-cart-move-ease: cubic-bezier(0.33, 1, 0.68, 1);
   left: auto;
   border-top-right-radius: $switcher-cart-corner-radius;
   border-bottom-right-radius: $switcher-cart-corner-radius;
-  /** Активный: длинная сторона — низ = 100%. */
+  /** Активный: скос слева; длина сегмента анимируется отдельно. */
   clip-path: polygon(
     #{$switcher-cart-skew-offset} 0,
     100% 0,
@@ -263,7 +262,7 @@ $switcher-cart-move-ease: cubic-bezier(0.33, 1, 0.68, 1);
     right: 0;
     top: 0;
     bottom: 0;
-    width: 100%;
+    width: $switcher-cart-label-active-w;
     margin: 0;
     padding: 0;
     display: flex;
@@ -274,24 +273,19 @@ $switcher-cart-move-ease: cubic-bezier(0.33, 1, 0.68, 1);
     text-align: center;
     transition:
       width $switcher-cart-move-duration $switcher-cart-move-ease,
-      font-size $switcher-cart-move-duration ease;
+      font-size $switcher-cart-move-duration $switcher-cart-move-ease;
   }
 
   &:not([aria-pressed='true']) {
     clip-path: polygon(
-      #{math.percentage($switcher-cart-overlap-in-inactive)} 0,
+      calc(100% - #{$switcher-cart-label-inactive-w}) 0,
       100% 0,
       100% 100%,
-      calc(
-          #{math.percentage($switcher-cart-overlap-in-inactive)} - #{$switcher-cart-skew-offset}
-        )
-        100%
+      calc(100% - #{$switcher-cart-label-inactive-w}) 100%
     );
 
     .cartSegmentValue {
-      width: calc(
-        #{$switcher-cart-visible-inactive-cqw}cqw + #{$switcher-cart-skew-offset}
-      );
+      width: $switcher-cart-label-inactive-w;
     }
   }
 }
