@@ -881,12 +881,12 @@
 .toolbarSenderCreate,
 .toolbarRecipientCreate {
   .toolbarKey {
-    background-color: #fff;
+    background-color: transparent;
   }
 
   .toolbarKey[data-icon-key='listDelete'].toolbarKeyEnabled:hover,
   .toolbarKey[data-icon-key='listClose'].toolbarKeyEnabled:hover {
-    background-color: #fff;
+    background-color: transparent;
   }
 
   [data-icon-key='applyMedium'].toolbarKeyEnabled,
@@ -903,7 +903,7 @@
   [data-icon-key='applyMediumCheck'].toolbarKeyEnabled:hover,
   [data-icon-key='applyMediumCheck'].toolbarKeySelected:hover,
   [data-icon-key='applyMediumCheck'].toolbarKeyActive:hover {
-    background-color: #fff;
+    background-color: transparent;
   }
 }
 
@@ -1767,12 +1767,12 @@
     color: $color-font-enabled-light;
 
     &:hover {
-      background-color: #fff;
+      background-color: transparent;
     }
   }
 
   .toolbarKey.toolbarKeyActive:hover {
-    background-color: #fff;
+    background-color: transparent;
   }
 }
 

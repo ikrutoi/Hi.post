@@ -339,7 +339,11 @@ $envelope-address-view-row-height: 1.625rem;
     min-height: var(--mobile-factory-toolbar-row-height, 2.25rem);
     margin: 0.35rem 0.5rem 0.65rem;
     padding: 0.1rem 0.35rem 0.15rem;
-    background-color: #fff;
+    /**
+     * Не белая плашка: фон как у create-карточки роли
+     * (sender / recipient), иначе на светлом sender тулбар «пропадает».
+     */
+    background-color: transparent;
     border-radius: 0.5rem;
     box-sizing: border-box;
     overflow: hidden;
