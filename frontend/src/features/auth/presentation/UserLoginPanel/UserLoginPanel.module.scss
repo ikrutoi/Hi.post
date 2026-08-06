@@ -9,13 +9,8 @@ $list-panel-compact-header-band: $list-panel-chrome-height;
 $list-panel-stacked-band: 3.75rem;
 $list-panel-stacked-band-section-toolbar: 4.25rem;
 $list-panel-compact-header-band-section-toolbar: $list-panel-chrome-height;
-$list-panel-passport-id-row: 2rem;
 $list-panel-scroll-inset: 0.35rem;
-$list-panel-list-footer-gap: 1px;
-$list-panel-footer-stack-height: calc(
-  #{$list-panel-passport-id-row} + #{$list-panel-chrome-height} +
-    #{$list-panel-list-footer-gap}
-);
+$list-panel-footer-stack-height: $list-panel-chrome-height;
 
 .panel {
   position: relative;
@@ -428,28 +423,6 @@ $auth-mode-left-inactive-end: math.div(
   display: flex;
   flex-direction: column;
   @include list-panel-footer-width;
-}
-
-.passportIdBand {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: $list-panel-passport-id-row;
-  padding: 0.45rem 0.35rem 0.35rem;
-  box-sizing: border-box;
-  background-color: #fff;
-}
-
-.passportId {
-  margin: 0;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  line-height: 1.2;
-  color: $color-font-enabled-light;
-  text-align: center;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.04em;
 }
 
 .footer {

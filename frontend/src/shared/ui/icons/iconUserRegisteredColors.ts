@@ -1,4 +1,4 @@
-/** Element ids from IconUserRegistered SVG (`el-1` … `el-24`). */
+/** Shared passport cell ids (`el-1` … `el-24`) for all emblem form variants. */
 export const ICON_USER_REGISTERED_ELEMENT_IDS = [
   '1',
   '2',
@@ -28,6 +28,43 @@ export const ICON_USER_REGISTERED_ELEMENT_IDS = [
 
 export type IconUserRegisteredElementId =
   (typeof ICON_USER_REGISTERED_ELEMENT_IDS)[number]
+
+/** Emblem geometry variants — colors stay fixed; form is user preference. */
+export const USER_REGISTERED_EMBLEM_FORMS = ['triangles', 'waves'] as const
+
+export type UserRegisteredEmblemForm =
+  (typeof USER_REGISTERED_EMBLEM_FORMS)[number]
+
+export const DEFAULT_USER_REGISTERED_EMBLEM_FORM: UserRegisteredEmblemForm =
+  'triangles'
+
+export function isUserRegisteredEmblemForm(
+  value: unknown,
+): value is UserRegisteredEmblemForm {
+  return (
+    typeof value === 'string' &&
+    (USER_REGISTERED_EMBLEM_FORMS as readonly string[]).includes(value)
+  )
+}
+
+export function resolveUserRegisteredEmblemForm(
+  form?: UserRegisteredEmblemForm | null,
+): UserRegisteredEmblemForm {
+  return isUserRegisteredEmblemForm(form)
+    ? form
+    : DEFAULT_USER_REGISTERED_EMBLEM_FORM
+}
+
+/** Cycle triangles → waves → … (extend `USER_REGISTERED_EMBLEM_FORMS` for more). */
+export function nextUserRegisteredEmblemForm(
+  form?: UserRegisteredEmblemForm | null,
+): UserRegisteredEmblemForm {
+  const current = resolveUserRegisteredEmblemForm(form)
+  const index = USER_REGISTERED_EMBLEM_FORMS.indexOf(current)
+  return USER_REGISTERED_EMBLEM_FORMS[
+    (index + 1) % USER_REGISTERED_EMBLEM_FORMS.length
+  ]
+}
 
 /** Fill color per mosaic cell. */
 export type IconUserRegisteredElementColors = Record<

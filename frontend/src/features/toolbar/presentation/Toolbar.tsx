@@ -780,6 +780,7 @@ export const Toolbar = ({
           <UserLoginToolbarIcon
             userId={authUser.id}
             passportColors={authUser.passportColors}
+            passportEmblemForm={authUser.passportEmblemForm}
           />
         ) : effectiveIconKey === 'apply' ? (
           <IconApplyBold style={{ color: applyIconColor }} />
