@@ -56,6 +56,7 @@ import {
 import { openCardtextEditorFromView } from '@cardtext/application/helpers'
 import { CardtextView } from '@cardtext/presentation/CardtextView/CardtextView'
 import {
+  clearAddressListPreviewSnapshot,
   closeAddressList,
   requestClearMobileAddressFocus,
   setRecipientsPendingIds,
@@ -562,10 +563,18 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         }
 
         if (key === 'edit') {
+          // Avoid restore-on-close wiping the template we just selected for edit.
+          dispatch(clearAddressListPreviewSnapshot())
           dispatch(closeAddressList())
         }
 
-        dispatch(toolbarAction({ section, key }))
+        dispatch(
+          toolbarAction({
+            section,
+            key,
+            payload: key === 'edit' ? { returnToList: true } : undefined,
+          }),
+        )
         return false
       }
 

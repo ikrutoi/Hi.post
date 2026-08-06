@@ -574,6 +574,7 @@ function* openRecipientAddressEditSession(templateId: string): SagaIterator {
 function* openMobileAddressCreateEditForm(
   role: 'sender' | 'recipient',
   templateId: string,
+  options?: { returnToList?: boolean },
 ): SagaIterator {
   const activeSession: AddressEditSession | null = yield select(
     selectActiveAddressEdit,
@@ -596,13 +597,44 @@ function* openMobileAddressCreateEditForm(
   const address = getEntryAddressFromBook(entries, templateId)
   if (!address) return
 
-  yield put(setAddressCreateEditContext({ role, templateId }))
+  yield put(
+    setAddressCreateEditContext({
+      role,
+      templateId,
+      returnToList: options?.returnToList === true,
+    }),
+  )
   if (role === 'sender') {
     yield put(setSenderFormDraft(address))
     yield put(setSenderView('senderCreate'))
   } else {
     yield put(setRecipientFormDraft(address))
     yield put(setRecipientView('recipientCreate'))
+  }
+}
+
+/** After mobile create-as-edit: restore View; reopen template list if edit came from list. */
+function* returnFromMobileAddressCreateEdit(
+  role: 'sender' | 'recipient',
+  templateId: string,
+  returnToList: boolean | undefined,
+): SagaIterator {
+  yield put(clearAddressCreateEditContext())
+  if (role === 'sender') {
+    yield put(clearSenderFormData())
+    yield put(setAddressFormView({ show: false, role: null }))
+    yield put(setSenderViewId(templateId))
+    yield put(setSenderView('senderView'))
+  } else {
+    yield put(clearRecipientFormData())
+    yield put(setAddressFormView({ show: false, role: null }))
+    yield put(setRecipientViewId(templateId))
+    yield put(setRecipientView('recipientView'))
+  }
+  if (returnToList) {
+    yield* ensureAddressListPanelOpen(
+      role === 'sender' ? 'sender' : 'recipients',
+    )
   }
 }
 
@@ -930,6 +962,7 @@ function* closeAddressCreateForm(
 
   if (sandboxActive) {
     if (editContext?.role === role) {
+      const returnToList = editContext.returnToList === true
       yield put(clearAddressCreateEditContext())
       if (role === 'sender') {
         yield put(clearArchiveSenderFormData())
@@ -941,6 +974,11 @@ function* closeAddressCreateForm(
         yield put(setArchiveRecipientView('recipientView'))
       }
       yield put(setAddressFormView({ show: false, role: null }))
+      if (returnToList) {
+        yield* ensureAddressListPanelOpen(
+          role === 'sender' ? 'sender' : 'recipients',
+        )
+      }
       return
     }
 
@@ -998,22 +1036,10 @@ function* closeAddressCreateForm(
   }
 
   if (editContext?.role === role) {
-    yield put(clearAddressCreateEditContext())
-    if (role === 'sender') {
-      yield put(clearSenderFormData())
-    } else {
-      yield put(clearRecipientFormData())
-    }
-    yield put(setAddressFormView({ show: false, role: null }))
-    yield put(
-      role === 'sender'
-        ? setSenderViewId(editContext.templateId)
-        : setRecipientViewId(editContext.templateId),
-    )
-    yield put(
-      role === 'sender'
-        ? setSenderView('senderView')
-        : setRecipientView('recipientView'),
+    yield* returnFromMobileAddressCreateEdit(
+      role,
+      editContext.templateId,
+      editContext.returnToList,
     )
     return
   }
@@ -1459,7 +1485,9 @@ function* handleEnvelopeToolbarAction(
       if (templateId) {
         const isMobileLayout: boolean = yield select(selectIsMobileLayout)
         if (isMobileLayout) {
-          yield call(openMobileAddressCreateEditForm, 'sender', templateId)
+          yield call(openMobileAddressCreateEditForm, 'sender', templateId, {
+            returnToList: action.payload.payload?.returnToList === true,
+          })
         } else {
           yield call(openSenderAddressEditSession, templateId)
         }
@@ -1492,7 +1520,9 @@ function* handleEnvelopeToolbarAction(
       if (templateId) {
         const isMobileLayout: boolean = yield select(selectIsMobileLayout)
         if (isMobileLayout) {
-          yield call(openMobileAddressCreateEditForm, 'recipient', templateId)
+          yield call(openMobileAddressCreateEditForm, 'recipient', templateId, {
+            returnToList: action.payload.payload?.returnToList === true,
+          })
         } else {
           yield call(openRecipientAddressEditSession, templateId)
         }
@@ -1659,11 +1689,11 @@ function* handleEnvelopeToolbarAction(
               editContext.templateId,
               draft,
             )
-            yield put(clearAddressCreateEditContext())
-            yield put(clearSenderFormData())
-            yield put(setAddressFormView({ show: false, role: null }))
-            yield put(setSenderViewId(editContext.templateId))
-            yield put(setSenderView('senderView'))
+            yield* returnFromMobileAddressCreateEdit(
+              'sender',
+              editContext.templateId,
+              editContext.returnToList,
+            )
             yield call(processEnvelopeVisuals)
             return
           }
@@ -1713,11 +1743,11 @@ function* handleEnvelopeToolbarAction(
               editContext.templateId,
               draft,
             )
-            yield put(clearAddressCreateEditContext())
-            yield put(clearRecipientFormData())
-            yield put(setAddressFormView({ show: false, role: null }))
-            yield put(setRecipientViewId(editContext.templateId))
-            yield put(setRecipientView('recipientView'))
+            yield* returnFromMobileAddressCreateEdit(
+              'recipient',
+              editContext.templateId,
+              editContext.returnToList,
+            )
             yield call(processEnvelopeVisuals)
             return
           }

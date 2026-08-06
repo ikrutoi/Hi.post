@@ -13,4 +13,9 @@ export type AddressEditSession = {
 export type AddressCreateEditContext = {
   role: 'sender' | 'recipient'
   templateId: string
+  /**
+   * Edit opened from address template list — on close/apply return to that list,
+   * not only to the main Envelope View.
+   */
+  returnToList?: boolean
 }
