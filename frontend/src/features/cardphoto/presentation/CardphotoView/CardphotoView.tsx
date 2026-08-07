@@ -4,9 +4,7 @@ import { useAppSelector } from '@app/hooks'
 import {
   selectActiveImage,
   selectCardphotoAssetToolbar,
-  selectCardphotoIsComplete,
   selectCardphotoViewDismissIconKey,
-  selectCardphotoViewTemplateInList,
 } from '@cardphoto/infrastructure/selectors'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
@@ -28,11 +26,7 @@ export const CardphotoView: React.FC<Props> = ({
 }) => {
   const activeImage = useAppSelector(selectActiveImage)
   const assetToolbar = useAppSelector(selectCardphotoAssetToolbar)
-  const cardphotoViewTemplateInList = useAppSelector(
-    selectCardphotoViewTemplateInList,
-  )
   const viewDismissIconKey = useAppSelector(selectCardphotoViewDismissIconKey)
-  const cardphotoIsComplete = useAppSelector(selectCardphotoIsComplete)
   const createToolbarState = useAppSelector(
     selectToolbarSectionState('cardphotoCreate'),
   )
@@ -54,9 +48,6 @@ export const CardphotoView: React.FC<Props> = ({
     !!onDelete &&
     ((showViewOverlay && canDismissView) ||
       (showCreateOverlay && !isCreateCropActive))
-  /** View: in-list template — hide after Apply (applied on postcard). */
-  const showListIndicator =
-    cardphotoViewTemplateInList && !cardphotoIsComplete
   const overlayIconKey = showCreateOverlay ? 'delete' : viewDismissKey
   const overlayAriaLabel = showCreateOverlay
     ? 'Delete image'
@@ -85,28 +76,21 @@ export const CardphotoView: React.FC<Props> = ({
           <IconSectionMenuCardphoto />
         </div>
       ) : null}
-      {showListIndicator || showDeleteOverlay ? (
+      {showDeleteOverlay ? (
         <div className={styles.viewOverlayActions}>
-          {showDeleteOverlay ? (
-            <button
-              type="button"
-              className={styles.viewDeleteBtn}
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={(e) => {
-                e.stopPropagation()
-                onDelete?.()
-              }}
-              aria-label={overlayAriaLabel}
-              title={overlayTitle}
-            >
-              {getToolbarIcon({ key: overlayIconKey })}
-            </button>
-          ) : null}
-          {showListIndicator ? (
-            <span className={styles.viewListIndicator} aria-hidden>
-              {getToolbarIcon({ key: 'listCardphoto' })}
-            </span>
-          ) : null}
+          <button
+            type="button"
+            className={styles.viewDeleteBtn}
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={(e) => {
+              e.stopPropagation()
+              onDelete?.()
+            }}
+            aria-label={overlayAriaLabel}
+            title={overlayTitle}
+          >
+            {getToolbarIcon({ key: overlayIconKey })}
+          </button>
         </div>
       ) : null}
     </div>

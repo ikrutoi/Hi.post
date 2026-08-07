@@ -29,9 +29,7 @@ import {
 } from '@cardPanel/infrastructure/state'
 import { selectArchiveEnvelopeSandboxActive } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import { toolbarAction } from '@toolbar/application/helpers'
-import { listStatusIsInQuickAddressBook } from '@envelope/domain/helpers'
 import { capitalizeWords } from '@shared/utils/helpers'
-import { getToolbarIcon } from '@/shared/utils/icons'
 
 type AddressViewRole = 'recipient' | 'sender'
 
@@ -56,7 +54,7 @@ type CityZipFocus = 'zip' | 'city'
 
 const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   role,
-  templateId,
+  templateId: _templateId,
   address,
 }) => {
   const dispatch = useAppDispatch()
@@ -65,16 +63,6 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const isEditMode =
     role === 'sender' ? senderViewEditMode : recipientViewEditMode
-  const templateInQuickList = useAppSelector((s) => {
-    const entries =
-      role === 'sender'
-        ? (s.addressBook?.senderEntries ?? [])
-        : (s.addressBook?.recipientEntries ?? [])
-    return entries.some(
-      (e) =>
-        e.id === templateId && listStatusIsInQuickAddressBook(e.listStatus),
-    )
-  })
 
   const [activeRow, setActiveRow] = useState<EditableRowKey>('name')
   const [cityZipFocus, setCityZipFocus] = useState<CityZipFocus>('zip')
@@ -321,19 +309,6 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
           </div>
         ) : null}
       </div>
-      {templateInQuickList ? (
-        <span
-          className={clsx(
-            styles.savedAddressListIndicator,
-            role === 'recipient'
-              ? styles.savedAddressListIndicatorRecipient
-              : styles.savedAddressListIndicatorSender,
-          )}
-          aria-hidden
-        >
-          {getToolbarIcon({ key: 'addressList' })}
-        </span>
-      ) : null}
     </div>
   )
 
