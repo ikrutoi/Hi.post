@@ -1,0 +1,68 @@
+@use '@styles/config/colors' as *;
+@use '@styles/mixins/sectionViewOverlayChip' as overlay;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
+
+.root {
+  position: absolute;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  @include overlay.sectionViewOverlayChip(transparent, transparent, false);
+  @include overlay.sectionViewOverlayChipIcon;
+  color: $color-font-enabled-light;
+  -webkit-tap-highlight-color: transparent;
+
+  svg {
+    display: block;
+    fill: currentColor;
+  }
+
+  &:hover {
+    color: $color-font-enabled-light-hover;
+    background-color: transparent;
+  }
+
+  :global([data-shell-layout='mobile']) & {
+    @include iconButton.toolbar-icon-button-size-mobile-toolbar(true);
+    width: iconButton.$toolbar-hit-size-mobile-toolbar;
+    height: iconButton.$toolbar-hit-size-mobile-toolbar;
+    min-width: iconButton.$toolbar-hit-size-mobile-toolbar;
+  }
+}
+
+.rootActive {
+  color: $color-favorite-star;
+
+  svg {
+    fill: $color-favorite-star;
+  }
+
+  &:hover,
+  &:active,
+  &:focus,
+  &:focus-visible {
+    color: $color-favorite-star;
+    background-color: transparent;
+
+    svg {
+      fill: $color-favorite-star;
+    }
+  }
+}
+
+.cornerTopRight {
+  top: overlay.$section-view-overlay-inset-top;
+  right: overlay.$section-view-overlay-inset-right;
+  left: auto;
+}
+
+.cornerTopLeft {
+  top: overlay.$section-view-overlay-inset-top;
+  left: overlay.$section-view-overlay-inset-right;
+  right: auto;
+}

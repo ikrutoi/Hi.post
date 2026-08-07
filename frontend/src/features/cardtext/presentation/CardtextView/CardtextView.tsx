@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import clsx from 'clsx'
 import { Slate, Editable, withReact } from 'slate-react'
 import { createEditor, Descendant } from 'slate'
@@ -8,6 +8,10 @@ import { renderLeaf } from '../renderLeaf'
 import { renderElement } from '../renderElement'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
+import { useAppDispatch } from '@app/hooks'
+import { toolbarAction } from '@toolbar/application/helpers'
+import { pulseListCardtextBadge } from '@cardtext/infrastructure/state'
+import { TemplateFavoriteToggle } from '@shared/ui/TemplateFavoriteToggle/TemplateFavoriteToggle'
 import styles from './CardtextView.module.scss'
 
 const COLOR_CLASS_MAP: Record<string, keyof typeof styles> = {
@@ -26,6 +30,10 @@ type Props = {
   onDelete?: () => void
   /** Archive peek: стандартный кадр секции (как cardphoto viewContainer). */
   sectionFrame?: boolean
+  /** View: template in quick list — yellow star when true. */
+  templateInQuickList?: boolean
+  /** Show add/remove-templates star (View, not applied peek). */
+  showFavoriteToggle?: boolean
 }
 
 export const CardtextView: React.FC<Props> = ({
@@ -35,7 +43,10 @@ export const CardtextView: React.FC<Props> = ({
   titleStripEditing,
   onDelete,
   sectionFrame = false,
+  templateInQuickList = false,
+  showFavoriteToggle = false,
 }) => {
+  const dispatch = useAppDispatch()
   const { isMobileLayout } = useSizeFacade()
   const slateKey =
     contentKey ??
@@ -55,6 +66,16 @@ export const CardtextView: React.FC<Props> = ({
       : [{ type: 'paragraph', align: 'left', children: [{ text: '' }] }]
   ) as Descendant[]
   const showDelete = Boolean(onDelete) && !isMobileLayout
+
+  const handleFavoriteToggle = useCallback(() => {
+    dispatch(pulseListCardtextBadge())
+    dispatch(
+      toolbarAction({
+        section: 'cardtextView',
+        key: templateInQuickList ? 'removeFromList' : 'addList',
+      }),
+    )
+  }, [dispatch, templateInQuickList])
 
   return (
     <div
@@ -86,6 +107,13 @@ export const CardtextView: React.FC<Props> = ({
           />
         </Slate>
       </div>
+      {showFavoriteToggle ? (
+        <TemplateFavoriteToggle
+          active={templateInQuickList}
+          corner="top-right"
+          onToggle={handleFavoriteToggle}
+        />
+      ) : null}
       {showDelete ? (
         <div className={styles.viewOverlayActions}>
           <button

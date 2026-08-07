@@ -80,10 +80,7 @@ export const CARDTEXT_EDITOR_UPPER_RETURN_TOOLBAR: ToolbarConfig = [
 export const CARDTEXT_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'font',
-    icons: [
-      { key: 'addList', state: 'enabled' },
-      { key: 'edit', state: 'enabled' },
-    ],
+    icons: [{ key: 'edit', state: 'enabled' }],
     status: 'enabled',
   },
   {

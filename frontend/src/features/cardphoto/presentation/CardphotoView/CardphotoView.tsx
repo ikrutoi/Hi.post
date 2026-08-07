@@ -1,16 +1,21 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import clsx from 'clsx'
-import { useAppSelector } from '@app/hooks'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
   selectActiveImage,
   selectCardphotoAssetToolbar,
+  selectCardphotoIsComplete,
   selectCardphotoViewDismissIconKey,
+  selectCardphotoViewTemplateInList,
 } from '@cardphoto/infrastructure/selectors'
+import { pulseListCardphotoBadge } from '@cardphoto/infrastructure/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
+import { toolbarAction } from '@toolbar/application/helpers'
 import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import styles from './CardphotoView.module.scss'
 import { IconSectionMenuCardphoto } from '@shared/ui/icons'
 import { getToolbarIcon } from '@shared/utils/icons'
+import { TemplateFavoriteToggle } from '@shared/ui/TemplateFavoriteToggle/TemplateFavoriteToggle'
 import { CardphotoStage } from '../CardphotoStage'
 
 type Props = {
@@ -24,9 +29,14 @@ export const CardphotoView: React.FC<Props> = ({
   onDelete,
   titleStripEditing,
 }) => {
+  const dispatch = useAppDispatch()
   const activeImage = useAppSelector(selectActiveImage)
   const assetToolbar = useAppSelector(selectCardphotoAssetToolbar)
+  const cardphotoViewTemplateInList = useAppSelector(
+    selectCardphotoViewTemplateInList,
+  )
   const viewDismissIconKey = useAppSelector(selectCardphotoViewDismissIconKey)
+  const cardphotoIsComplete = useAppSelector(selectCardphotoIsComplete)
   const createToolbarState = useAppSelector(
     selectToolbarSectionState('cardphotoCreate'),
   )
@@ -48,6 +58,8 @@ export const CardphotoView: React.FC<Props> = ({
     !!onDelete &&
     ((showViewOverlay && canDismissView) ||
       (showCreateOverlay && !isCreateCropActive))
+  const showFavoriteToggle =
+    showViewOverlay && !!activeImage && !cardphotoIsComplete
   const overlayIconKey = showCreateOverlay ? 'delete' : viewDismissKey
   const overlayAriaLabel = showCreateOverlay
     ? 'Delete image'
@@ -59,6 +71,16 @@ export const CardphotoView: React.FC<Props> = ({
     : viewDismissKey === 'close'
       ? 'Clear'
       : 'Delete'
+
+  const handleFavoriteToggle = useCallback(() => {
+    dispatch(pulseListCardphotoBadge())
+    dispatch(
+      toolbarAction({
+        section: 'cardphotoView',
+        key: cardphotoViewTemplateInList ? 'removeFromList' : 'addList',
+      }),
+    )
+  }, [cardphotoViewTemplateInList, dispatch])
 
   return (
     <div
@@ -75,6 +97,13 @@ export const CardphotoView: React.FC<Props> = ({
         <div className={styles.emptyPlaceholderIcon} aria-hidden>
           <IconSectionMenuCardphoto />
         </div>
+      ) : null}
+      {showFavoriteToggle ? (
+        <TemplateFavoriteToggle
+          active={cardphotoViewTemplateInList}
+          corner="top-right"
+          onToggle={handleFavoriteToggle}
+        />
       ) : null}
       {showDeleteOverlay ? (
         <div className={styles.viewOverlayActions}>

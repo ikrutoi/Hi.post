@@ -31,10 +31,7 @@ export interface AddressViewToolbarState extends Record<string, any> {
 export const RECIPIENT_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'recipientView',
-    icons: [
-      { key: 'addList', state: 'enabled' },
-      { key: 'edit', state: 'enabled' },
-    ],
+    icons: [{ key: 'edit', state: 'enabled' }],
     status: 'enabled',
   },
 ]
@@ -65,22 +62,16 @@ export const initialRecipientsViewToolbarState: AddressViewToolbarState = {
 export const SENDER_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'senderView',
-    icons: [
-      { key: 'addList', state: 'enabled' },
-      { key: 'edit', state: 'enabled' },
-    ],
+    icons: [{ key: 'edit', state: 'enabled' }],
     status: 'enabled',
   },
 ]
 
-/** Mobile focused address view (lower scenario bar): addList + edit + delete. */
+/** Mobile focused address view (lower scenario bar): edit + delete. */
 export const ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'senderView',
-    icons: [
-      { key: 'addList', state: 'enabled' },
-      { key: 'edit', state: 'enabled' },
-    ],
+    icons: [{ key: 'edit', state: 'enabled' }],
     status: 'enabled',
   },
   {

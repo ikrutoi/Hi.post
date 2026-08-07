@@ -29,7 +29,10 @@ import {
 } from '@cardPanel/infrastructure/state'
 import { selectArchiveEnvelopeSandboxActive } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import { toolbarAction } from '@toolbar/application/helpers'
+import { listStatusIsInQuickAddressBook } from '@envelope/domain/helpers'
 import { capitalizeWords } from '@shared/utils/helpers'
+import { TemplateFavoriteToggle } from '@shared/ui/TemplateFavoriteToggle/TemplateFavoriteToggle'
+import { useEnvelopeMobileAddressFocus } from '../../presentation/EnvelopeMobileAddressFocusContext'
 
 type AddressViewRole = 'recipient' | 'sender'
 
@@ -54,15 +57,26 @@ type CityZipFocus = 'zip' | 'city'
 
 const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   role,
-  templateId: _templateId,
+  templateId,
   address,
 }) => {
   const dispatch = useAppDispatch()
+  const mobileFocus = useEnvelopeMobileAddressFocus()
   const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const isEditMode =
     role === 'sender' ? senderViewEditMode : recipientViewEditMode
+  const templateInQuickList = useAppSelector((s) => {
+    const entries =
+      role === 'sender'
+        ? (s.addressBook?.senderEntries ?? [])
+        : (s.addressBook?.recipientEntries ?? [])
+    return entries.some(
+      (e) =>
+        e.id === templateId && listStatusIsInQuickAddressBook(e.listStatus),
+    )
+  })
 
   const [activeRow, setActiveRow] = useState<EditableRowKey>('name')
   const [cityZipFocus, setCityZipFocus] = useState<CityZipFocus>('zip')
@@ -119,7 +133,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       if (target.closest('[data-envelope-address-view-toolbar]')) {
         if (
           target.closest(
-            'button[data-icon-key="addList"], button[data-icon-key="removeFromList"]',
+            'button[data-icon-key="addList"], button[data-icon-key="removeFromList"], button[data-template-favorite]',
           )
         ) {
           return
@@ -130,7 +144,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       if (containerRef.current?.contains(target)) return
       if (
         target.closest(
-          '[data-address-book-entry], [data-address-book-list], [data-envelope-address-fieldset], [data-envelope-address-delete]',
+          '[data-address-book-entry], [data-address-book-list], [data-envelope-address-fieldset], [data-envelope-address-delete], [data-template-favorite]',
         )
       ) {
         return
@@ -263,14 +277,19 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     if (next.closest('[data-envelope-address-view-toolbar]')) {
       if (
         !next.closest(
-          'button[data-icon-key="addList"], button[data-icon-key="removeFromList"]',
+          'button[data-icon-key="addList"], button[data-icon-key="removeFromList"], button[data-template-favorite]',
         )
       ) {
         dispatch(toolbarAction({ section: toolbarSection, key: 'edit' } as any))
       }
       return
     }
-    if (next.closest('[data-envelope-address-delete]')) return
+    if (
+      next.closest(
+        '[data-envelope-address-delete], [data-template-favorite]',
+      )
+    )
+      return
     // Ignore blur shortly after opening edit (e.g. from list panel) so focus has time to land
     if (Date.now() - editModeOpenedAt.current < 200) return
 
@@ -281,6 +300,16 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
 
   const toolbarSection =
     role === 'sender' ? 'senderView' : 'recipientView'
+
+  const handleTemplateFavoriteToggle = () => {
+    mobileFocus?.triggerAddressListBadgePulse(role)
+    dispatch(
+      toolbarAction({
+        section: toolbarSection,
+        key: templateInQuickList ? 'removeFromList' : 'addList',
+      } as any),
+    )
+  }
 
   const savedAddressViewClassName = clsx(
     styles.savedAddressView,
@@ -309,6 +338,11 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
           </div>
         ) : null}
       </div>
+      <TemplateFavoriteToggle
+        active={templateInQuickList}
+        corner={role === 'recipient' ? 'top-left' : 'top-right'}
+        onToggle={handleTemplateFavoriteToggle}
+      />
     </div>
   )
 

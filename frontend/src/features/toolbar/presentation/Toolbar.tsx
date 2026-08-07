@@ -392,62 +392,36 @@ export const Toolbar = ({
           ? recipientCreateDraftInList
           : false
     const showCreateListCheck = key === 'addList' && createDraftInList
-    /** Envelope / cardphoto View: list glyph + ± badge (cart-on-pie pattern). */
-    const envelopeAddressListToggle =
-      key === 'addList' &&
-      (section === 'senderView' || section === 'recipientView')
-    const envelopeAddressListRemove =
-      envelopeAddressListToggle && templateInQuickList
-    const cardphotoListToggle =
-      key === 'addList' && section === 'cardphotoView'
-    const cardphotoListRemove =
-      cardphotoListToggle && cardphotoViewTemplateInList
-    const sectionListToggle =
-      envelopeAddressListToggle || cardphotoListToggle
-    const sectionListToggleRemove =
-      envelopeAddressListRemove || cardphotoListRemove
     const effectiveIconKey: IconKey = editorPieCartAdd
       ? 'cart'
       : editorPieDelete
         ? 'delete'
       : showCreateListCheck
       ? 'listCheck'
-      : envelopeAddressListToggle
-        ? 'addressList'
-      : cardphotoListToggle
-        ? 'listCardphoto'
-      : key === 'addList' &&
-          section === 'cardtextView' &&
-          cardtextViewInQuickList
-        ? 'removeFromList'
-        : (key === 'sortDown' || key === 'sortUp') &&
-            section === 'cardphotoList'
-          ? getCardphotoListSortIconForMode(cardphotoListSortMode)
-          : section === 'historyList' &&
-              (isHistoryListSortIconKey(key) ||
-                key === 'sortDown' ||
-                key === 'sortUp')
-            ? getHistoryListSortIconForMode(historyListSortMode)
-            : key === 'sortAZDown' &&
-              (section === 'cardtextList' ||
-                section === 'addressListSender' ||
-                section === 'addressListRecipient' ||
-                section === 'addressListRecipients')
-            ? (section === 'cardtextList'
-                ? cardtextListSortDirection
-                : section === 'addressListSender'
-                  ? senderSortDirection
-                  : recipientSortDirection) === 'asc'
-              ? 'sortAZDown'
-              : 'sortAZUp'
-            : key
-    /** Visual remaps (e.g. cart / list glyph) must still fire the real action key. */
+      : (key === 'sortDown' || key === 'sortUp') &&
+          section === 'cardphotoList'
+        ? getCardphotoListSortIconForMode(cardphotoListSortMode)
+        : section === 'historyList' &&
+            (isHistoryListSortIconKey(key) ||
+              key === 'sortDown' ||
+              key === 'sortUp')
+          ? getHistoryListSortIconForMode(historyListSortMode)
+          : key === 'sortAZDown' &&
+            (section === 'cardtextList' ||
+              section === 'addressListSender' ||
+              section === 'addressListRecipient' ||
+              section === 'addressListRecipients')
+          ? (section === 'cardtextList'
+              ? cardtextListSortDirection
+              : section === 'addressListSender'
+                ? senderSortDirection
+                : recipientSortDirection) === 'asc'
+            ? 'sortAZDown'
+            : 'sortAZUp'
+          : key
+    /** Visual remaps (e.g. cart glyph) must still fire the real action key. */
     const actionIconKey: IconKey = editorPieCartAdd
       ? 'addCart'
-      : sectionListToggle
-        ? sectionListToggleRemove
-          ? 'removeFromList'
-          : 'addList'
       : effectiveIconKey
     const options =
       rawData && typeof rawData === 'object' && 'options' in rawData
@@ -572,15 +546,10 @@ export const Toolbar = ({
       mergedOptions?.badge ?? (rawData as any)?.options?.badge
     /**
      * editorPie cart: `+` badge (glyph is cart, action still addCart).
-     * Envelope / cardphoto View addList: list glyph + `+` / `×` badge (add / remove).
      * Create form: duplicate of an inList address → keep applyMedium + `!` badge.
      */
     const badge = editorPieCartAdd
       ? '+'
-      : sectionListToggle
-        ? sectionListToggleRemove
-          ? '×'
-          : '+'
       : key === 'applyMedium' &&
           (section === 'senderCreate' || section === 'recipientCreate') &&
           createDraftInList
@@ -590,7 +559,7 @@ export const Toolbar = ({
       badge != null &&
       (typeof badge === 'number' || typeof badge === 'string') &&
       String(badge).trim().length > 0
-    const badgeIsPlusGlyph = editorPieCartAdd || sectionListToggle
+    const badgeIsPlusGlyph = editorPieCartAdd
 
     const badgeDot =
       mergedOptions?.badgeDot ?? (rawData as any)?.options?.badgeDot
@@ -726,9 +695,7 @@ export const Toolbar = ({
           groupStatus === 'disabled' && styles.toolbarKeyDisabled,
         )}
         style={forcedIconColor != null ? { color: forcedIconColor } : undefined}
-        data-icon-key={
-          sectionListToggle ? actionIconKey : effectiveIconKey
-        }
+        data-icon-key={effectiveIconKey}
         data-icon-state={buttonStatus}
         disabled={buttonStatus === 'disabled' || groupStatus === 'disabled'}
         onPointerDown={(e) => {

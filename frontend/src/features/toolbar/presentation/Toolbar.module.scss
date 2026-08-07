@@ -170,8 +170,25 @@
     }
   }
 
-  .toolbarKeyFavoriteActive {
+  .toolbarKey.toolbarKeyFavoriteActive,
+  .toolbarKey.toolbarKeyEnabled.toolbarKeyFavoriteActive {
     color: $color-favorite-star;
+
+    svg {
+      fill: $color-favorite-star;
+    }
+
+    &:hover,
+    &:active,
+    &:focus,
+    &:focus-visible {
+      color: $color-favorite-star;
+      background-color: #fff;
+
+      svg {
+        fill: $color-favorite-star;
+      }
+    }
   }
 
   .toolbarKeyCropCheckEnabled {
