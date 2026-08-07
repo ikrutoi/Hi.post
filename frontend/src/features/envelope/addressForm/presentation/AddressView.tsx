@@ -131,7 +131,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       if (target.closest('[data-envelope-address-view-toolbar]')) {
         if (
           target.closest(
-            'button[data-icon-key="addList"], button[data-icon-key="removeFromList"], button[data-icon-key="close"]',
+            'button[data-icon-key="addList"], button[data-icon-key="removeFromList"]',
           )
         ) {
           return
@@ -142,7 +142,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       if (containerRef.current?.contains(target)) return
       if (
         target.closest(
-          '[data-address-book-entry], [data-address-book-list], [data-envelope-address-fieldset], [data-envelope-address-delete], [data-envelope-address-close]',
+          '[data-address-book-entry], [data-address-book-list], [data-envelope-address-fieldset], [data-envelope-address-delete]',
         )
       ) {
         return
@@ -275,14 +275,14 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     if (next.closest('[data-envelope-address-view-toolbar]')) {
       if (
         !next.closest(
-          'button[data-icon-key="addList"], button[data-icon-key="removeFromList"], button[data-icon-key="close"]',
+          'button[data-icon-key="addList"], button[data-icon-key="removeFromList"]',
         )
       ) {
         dispatch(toolbarAction({ section: toolbarSection, key: 'edit' } as any))
       }
       return
     }
-    if (next.closest('[data-envelope-address-delete], [data-envelope-address-close]')) return
+    if (next.closest('[data-envelope-address-delete]')) return
     // Ignore blur shortly after opening edit (e.g. from list panel) so focus has time to land
     if (Date.now() - editModeOpenedAt.current < 200) return
 
@@ -294,14 +294,8 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   const toolbarSection =
     role === 'sender' ? 'senderView' : 'recipientView'
 
-  const handleFormClose = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    dispatch(toolbarAction({ section: toolbarSection, key: 'close' } as any))
-  }
-
   const savedAddressViewClassName = clsx(
     styles.savedAddressView,
-    !isEditMode && styles.savedAddressViewWithCloseAction,
     role === 'sender'
       ? styles.savedAddressViewSender
       : styles.savedAddressViewRecipient,
@@ -340,20 +334,6 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
           {getToolbarIcon({ key: 'addressList' })}
         </span>
       ) : null}
-      <button
-        type="button"
-        className={clsx(
-          role === 'recipient'
-            ? styles.savedAddressCloseButtonRecipient
-            : styles.savedAddressCloseButton,
-        )}
-        data-envelope-address-close
-        aria-label="Close"
-        title="Close"
-        onClick={handleFormClose}
-      >
-        {getToolbarIcon({ key: 'close' })}
-      </button>
     </div>
   )
 
