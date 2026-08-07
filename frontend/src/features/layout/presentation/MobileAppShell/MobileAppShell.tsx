@@ -563,9 +563,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         }
 
         if (key === 'edit') {
-          // Avoid restore-on-close wiping the template we just selected for edit.
+          // Snapshot only — close list in the same paint as create (saga).
           dispatch(clearAddressListPreviewSnapshot())
-          dispatch(closeAddressList())
         }
 
         dispatch(

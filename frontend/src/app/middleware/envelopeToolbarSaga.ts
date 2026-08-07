@@ -10,6 +10,8 @@ import {
   all,
 } from 'redux-saga/effects'
 import type { SagaIterator } from 'redux-saga'
+import { batch } from 'react-redux'
+import { store } from '@app/state/store'
 import { toolbarAction } from '@toolbar/application/helpers'
 import {
   clearSender,
@@ -180,6 +182,15 @@ import { postcardLocalDataChanged } from '@features/sync/store/postcardSync.acti
 import type { PostcardHydrated } from '@entities/postcard'
 
 const ADDRESS_LIST_UI_PREF_ID = 'addressList' as const
+
+/** One React paint for multi-slice address create/list transitions (avoids list↔View flash). */
+function dispatchBatched(actions: readonly unknown[]): void {
+  batch(() => {
+    for (const action of actions) {
+      store.dispatch(action as { type: string })
+    }
+  })
+}
 
 /**
  * Dual-mode: while assembly is leased (freeze), Apply writes envelope to the
@@ -597,20 +608,25 @@ function* openMobileAddressCreateEditForm(
   const address = getEntryAddressFromBook(entries, templateId)
   if (!address) return
 
-  yield put(
+  // Close list + enter create in one paint so AddressView does not flash between them.
+  const actions: unknown[] = [
+    clearAddressListPreviewSnapshot(),
+    closeAddressList(),
     setAddressCreateEditContext({
       role,
       templateId,
       returnToList: options?.returnToList === true,
     }),
-  )
+  ]
   if (role === 'sender') {
-    yield put(setSenderFormDraft(address))
-    yield put(setSenderView('senderCreate'))
+    actions.push(setSenderFormDraft(address), setSenderView('senderCreate'))
   } else {
-    yield put(setRecipientFormDraft(address))
-    yield put(setRecipientView('recipientCreate'))
+    actions.push(
+      setRecipientFormDraft(address),
+      setRecipientView('recipientCreate'),
+    )
   }
+  yield call(dispatchBatched, actions)
 }
 
 /** After mobile create-as-edit: restore View; reopen template list if edit came from list. */
@@ -619,22 +635,52 @@ function* returnFromMobileAddressCreateEdit(
   templateId: string,
   returnToList: boolean | undefined,
 ): SagaIterator {
-  yield put(clearAddressCreateEditContext())
-  if (role === 'sender') {
-    yield put(clearSenderFormData())
-    yield put(setAddressFormView({ show: false, role: null }))
-    yield put(setSenderViewId(templateId))
-    yield put(setSenderView('senderView'))
-  } else {
-    yield put(clearRecipientFormData())
-    yield put(setAddressFormView({ show: false, role: null }))
-    yield put(setRecipientViewId(templateId))
-    yield put(setRecipientView('recipientView'))
+  const reopenList = returnToList === true
+  const listMode = role === 'sender' ? ('sender' as const) : ('recipients' as const)
+
+  if (reopenList) {
+    yield call(closeCardPieListPanelAndSyncIconsSaga)
   }
-  if (returnToList) {
-    yield* ensureAddressListPanelOpen(
-      role === 'sender' ? 'sender' : 'recipients',
+
+  const actions: unknown[] = [clearAddressCreateEditContext()]
+
+  if (role === 'sender') {
+    actions.push(
+      clearSenderFormData(),
+      setAddressFormView({ show: false, role: null }),
+      setSenderViewId(templateId),
+      setSenderView('senderView'),
     )
+  } else {
+    if (reopenList) {
+      const pending: string[] = yield select(selectRecipientsPendingIds)
+      if (!pending.includes(templateId)) {
+        actions.push(setRecipientsPendingIds([...pending, templateId]))
+      }
+    }
+    actions.push(
+      clearRecipientFormData(),
+      setAddressFormView({ show: false, role: null }),
+      setRecipientViewId(templateId),
+      setRecipientView('recipientView'),
+    )
+  }
+
+  if (reopenList) {
+    const active: 'sender' | 'recipients' | null = yield select(
+      selectActiveAddressList,
+    )
+    if (active !== listMode) {
+      actions.push(setActiveAddressList(listMode))
+    }
+  }
+
+  // Exit create + open list together — no intermediate AddressView / list-cell flash.
+  yield call(dispatchBatched, actions)
+
+  if (reopenList) {
+    yield put(clearAddressListPreviewSnapshot())
+    yield call(captureAddressListPreviewSnapshot, listMode)
   }
 }
 
@@ -962,22 +1008,54 @@ function* closeAddressCreateForm(
 
   if (sandboxActive) {
     if (editContext?.role === role) {
-      const returnToList = editContext.returnToList === true
-      yield put(clearAddressCreateEditContext())
-      if (role === 'sender') {
-        yield put(clearArchiveSenderFormData())
-        yield put(setArchiveSenderViewId(editContext.templateId))
-        yield put(setArchiveSenderView('senderView'))
-      } else {
-        yield put(clearArchiveRecipientFormData())
-        yield put(setArchiveRecipientViewId(editContext.templateId))
-        yield put(setArchiveRecipientView('recipientView'))
+      const reopenList = editContext.returnToList === true
+      const listMode =
+        role === 'sender' ? ('sender' as const) : ('recipients' as const)
+      const templateId = editContext.templateId
+
+      if (reopenList) {
+        yield call(closeCardPieListPanelAndSyncIconsSaga)
       }
-      yield put(setAddressFormView({ show: false, role: null }))
-      if (returnToList) {
-        yield* ensureAddressListPanelOpen(
-          role === 'sender' ? 'sender' : 'recipients',
+
+      const actions: unknown[] = [
+        clearAddressCreateEditContext(),
+        setAddressFormView({ show: false, role: null }),
+      ]
+
+      if (role === 'sender') {
+        actions.push(
+          clearArchiveSenderFormData(),
+          setArchiveSenderViewId(templateId),
+          setArchiveSenderView('senderView'),
         )
+      } else {
+        if (reopenList) {
+          const pending: string[] = yield select(selectRecipientsPendingIds)
+          if (!pending.includes(templateId)) {
+            actions.push(setRecipientsPendingIds([...pending, templateId]))
+          }
+        }
+        actions.push(
+          clearArchiveRecipientFormData(),
+          setArchiveRecipientViewId(templateId),
+          setArchiveRecipientView('recipientView'),
+        )
+      }
+
+      if (reopenList) {
+        const active: 'sender' | 'recipients' | null = yield select(
+          selectActiveAddressList,
+        )
+        if (active !== listMode) {
+          actions.push(setActiveAddressList(listMode))
+        }
+      }
+
+      yield call(dispatchBatched, actions)
+
+      if (reopenList) {
+        yield put(clearAddressListPreviewSnapshot())
+        yield call(captureAddressListPreviewSnapshot, listMode)
       }
       return
     }

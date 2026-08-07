@@ -392,22 +392,25 @@ export const Toolbar = ({
           ? recipientCreateDraftInList
           : false
     const showCreateListCheck = key === 'addList' && createDraftInList
+    /** Envelope View lower toolbar: addressList glyph + ± badge (cart-on-pie pattern). */
+    const envelopeAddressListToggle =
+      key === 'addList' &&
+      (section === 'senderView' || section === 'recipientView')
+    const envelopeAddressListRemove =
+      envelopeAddressListToggle && templateInQuickList
     const effectiveIconKey: IconKey = editorPieCartAdd
       ? 'cart'
       : editorPieDelete
         ? 'delete'
       : showCreateListCheck
       ? 'listCheck'
+      : envelopeAddressListToggle
+        ? 'addressList'
       : key === 'addList' &&
-          (section === 'senderView' ||
-            section === 'recipientView' ||
-            section === 'cardtextView' ||
-            section === 'cardphotoView') &&
+          (section === 'cardtextView' || section === 'cardphotoView') &&
           (section === 'cardtextView'
             ? cardtextViewInQuickList
-            : section === 'cardphotoView'
-              ? cardphotoViewTemplateInList
-              : templateInQuickList)
+            : cardphotoViewTemplateInList)
         ? 'removeFromList'
         : (key === 'sortDown' || key === 'sortUp') &&
             section === 'cardphotoList'
@@ -430,9 +433,13 @@ export const Toolbar = ({
               ? 'sortAZDown'
               : 'sortAZUp'
             : key
-    /** Visual remaps (e.g. cart glyph) must still fire the real action key. */
+    /** Visual remaps (e.g. cart / addressList glyph) must still fire the real action key. */
     const actionIconKey: IconKey = editorPieCartAdd
       ? 'addCart'
+      : envelopeAddressListToggle
+        ? envelopeAddressListRemove
+          ? 'removeFromList'
+          : 'addList'
       : effectiveIconKey
     const options =
       rawData && typeof rawData === 'object' && 'options' in rawData
@@ -557,10 +564,15 @@ export const Toolbar = ({
       mergedOptions?.badge ?? (rawData as any)?.options?.badge
     /**
      * editorPie cart: `+` badge (glyph is cart, action still addCart).
+     * Envelope View addList: addressList glyph + `+` / `×` badge (add / remove).
      * Create form: duplicate of an inList address → keep applyMedium + `!` badge.
      */
     const badge = editorPieCartAdd
       ? '+'
+      : envelopeAddressListToggle
+        ? envelopeAddressListRemove
+          ? '×'
+          : '+'
       : key === 'applyMedium' &&
           (section === 'senderCreate' || section === 'recipientCreate') &&
           createDraftInList
@@ -570,6 +582,8 @@ export const Toolbar = ({
       badge != null &&
       (typeof badge === 'number' || typeof badge === 'string') &&
       String(badge).trim().length > 0
+    const badgeIsPlusGlyph =
+      editorPieCartAdd || envelopeAddressListToggle
 
     const badgeDot =
       mergedOptions?.badgeDot ?? (rawData as any)?.options?.badgeDot
@@ -705,7 +719,9 @@ export const Toolbar = ({
           groupStatus === 'disabled' && styles.toolbarKeyDisabled,
         )}
         style={forcedIconColor != null ? { color: forcedIconColor } : undefined}
-        data-icon-key={effectiveIconKey}
+        data-icon-key={
+          envelopeAddressListToggle ? actionIconKey : effectiveIconKey
+        }
         data-icon-state={buttonStatus}
         disabled={buttonStatus === 'disabled' || groupStatus === 'disabled'}
         onPointerDown={(e) => {
@@ -825,7 +841,7 @@ export const Toolbar = ({
           <span
             className={clsx(
               styles.toolbarBadge,
-              editorPieCartAdd && styles.toolbarBadgePlus,
+              badgeIsPlusGlyph && styles.toolbarBadgePlus,
               badgePulsing && styles.toolbarBadgePulse,
             )}
             key={badgePulseKey}

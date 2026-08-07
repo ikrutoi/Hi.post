@@ -295,11 +295,20 @@
     font-family: sans-serif;
   }
 
-  /** editorPie cart add: larger `+` glyph, same badge chip size. */
+  /** editorPie cart / envelope addressList toggle: circular chip for `+` / `×`. */
   .toolbarBadgePlus {
+    width: 1.125rem;
+    min-width: 1.125rem;
+    height: 1.125rem;
+    padding: 0;
+    border-radius: 50%;
+    box-sizing: border-box;
+    aspect-ratio: 1;
+
     .toolbarBadgeValue {
       font-size: 1.05rem;
       font-weight: 800;
+      line-height: 1;
     }
   }
 

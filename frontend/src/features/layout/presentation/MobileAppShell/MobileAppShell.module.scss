@@ -772,13 +772,17 @@ $mobile-central-pie-envelope-empty-icon-width: 40%;
   -webkit-overflow-scrolling: touch;
   background-color: #fff;
   gap: 0.22rem;
+  /* Hide until role is set — flex default is top-left and flashes for recipients. */
+  visibility: hidden;
 
   &[data-address-list-preview-role='sender'] {
+    visibility: visible;
     justify-content: flex-start;
     text-align: left;
   }
 
   &[data-address-list-preview-role='recipient'] {
+    visibility: visible;
     justify-content: flex-end;
     text-align: right;
   }
