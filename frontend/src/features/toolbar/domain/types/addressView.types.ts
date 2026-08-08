@@ -41,18 +41,7 @@ export const initialRecipientViewToolbarState: AddressViewToolbarState = {
   config: [...RECIPIENT_VIEW_TOOLBAR],
 }
 
-export const RECIPIENTS_VIEW_TOOLBAR: ToolbarConfig = [
-  // {
-  //   group: 'recipientsView',
-  //   icons: [{ key: 'sortDown', state: 'enabled' }],
-  //   status: 'enabled',
-  // },
-  {
-    group: 'actions',
-    icons: [{ key: 'listDelete', state: 'enabled' }],
-    status: 'enabled',
-  },
-]
+export const RECIPIENTS_VIEW_TOOLBAR: ToolbarConfig = []
 
 export const initialRecipientsViewToolbarState: AddressViewToolbarState = {
   ...Object.fromEntries(flattenIcons(RECIPIENTS_VIEW_TOOLBAR)),
@@ -77,6 +66,20 @@ export const ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'actions',
     icons: [{ key: 'delete', state: 'enabled' }],
+    status: 'enabled',
+  },
+]
+
+/** Mobile multi recipients list (lower scenario bar): clear selection on the right. */
+export const ENVELOPE_MOBILE_RECIPIENTS_MULTI_VIEW_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'spacer',
+    icons: [{ key: 'empty', state: 'disabled' }],
+    status: 'enabled',
+  },
+  {
+    group: 'actions',
+    icons: [{ key: 'listDelete', state: 'enabled' }],
     status: 'enabled',
   },
 ]

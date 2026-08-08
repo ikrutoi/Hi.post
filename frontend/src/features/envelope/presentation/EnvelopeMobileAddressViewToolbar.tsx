@@ -7,7 +7,7 @@ import { useSenderFacade } from '@envelope/sender/application/facades'
 import { useRecipientFacade } from '@envelope/recipient/application/facades'
 import { selectActiveAddressEdit } from '@envelope/infrastructure/selectors'
 import { selectSenderApplied, selectSenderView } from '@envelope/sender/infrastructure/selectors'
-import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
+import { selectRecipientView, selectRecipientsFormViewIdsCount } from '@envelope/recipient/infrastructure/selectors'
 import {
   selectArchiveEnvelopeSandboxActive,
   selectArchiveSandboxRecipient,
@@ -19,7 +19,10 @@ import { useMobileScenarioToolbar } from '@features/cardSectionEditor/presentati
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
-import { ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR } from '@toolbar/domain/types/addressView.types'
+import {
+  ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR,
+  ENVELOPE_MOBILE_RECIPIENTS_MULTI_VIEW_TOOLBAR,
+} from '@toolbar/domain/types/addressView.types'
 import { useEnvelopeMobileAddressFocus } from './EnvelopeMobileAddressFocusContext'
 import styles from './Envelope.module.scss'
 
@@ -59,6 +62,9 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
   const recipientView = sandboxActive
     ? sandboxRecipient.currentView
     : sessionRecipientView
+  const recipientsFormViewIdsCount = useAppSelector(
+    selectRecipientsFormViewIdsCount,
+  )
   const envelopeFacade = useEnvelopeFacade()
   const senderFacade = useSenderFacade()
   const recipientFacade = useRecipientFacade()
@@ -174,11 +180,19 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
     recipientView === 'recipientView' &&
     recipientDisplayEntry != null
 
-  const section: 'senderView' | 'recipientView' | null = showSenderToolbar
-    ? 'senderView'
-    : showRecipientToolbar
-      ? 'recipientView'
-      : null
+  const showRecipientsMultiToolbar =
+    recipientToolbarSlot &&
+    recipientView === 'recipientsView' &&
+    recipientsFormViewIdsCount > 1
+
+  const section: 'senderView' | 'recipientView' | 'recipients' | null =
+    showSenderToolbar
+      ? 'senderView'
+      : showRecipientToolbar
+        ? 'recipientView'
+        : showRecipientsMultiToolbar
+          ? 'recipients'
+          : null
 
   const slotRole: 'sender' | 'recipient' | 'complete' | null = bothAppliedToolbarSlot
     ? 'complete'
@@ -202,10 +216,15 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
         data-envelope-address-view-toolbar
         aria-hidden={section == null ? true : undefined}
       >
-        {section != null ? (
+        {section === 'senderView' || section === 'recipientView' ? (
           <Toolbar
             section={section}
             groupsOverride={ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR}
+          />
+        ) : section === 'recipients' ? (
+          <Toolbar
+            section="recipients"
+            groupsOverride={ENVELOPE_MOBILE_RECIPIENTS_MULTI_VIEW_TOOLBAR}
           />
         ) : null}
       </div>

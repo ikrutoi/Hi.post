@@ -872,3 +872,24 @@ $envelope-address-view-row-height: 1.625rem;
     min-width: 0;
   }
 }
+
+/** Compact square cells like address-book templates: always 3 per row. */
+.recipientsViewGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 0.35rem;
+  row-gap: 0.35rem;
+  align-content: start;
+  flex: 1;
+  min-height: 0;
+  box-sizing: border-box;
+  /* Top/bottom/right match address-book list; left comes from .addressFieldset. */
+  padding: 0.5rem
+    calc(0.25rem + #{$list-panel-scroll-gutter})
+    0.5rem
+    0;
+
+  > * {
+    min-width: 0;
+  }
+}

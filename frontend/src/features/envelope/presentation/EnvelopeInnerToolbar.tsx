@@ -9,7 +9,7 @@ import {
   selectRecipientViewEditMode,
   selectSenderViewEditMode,
 } from '@envelope/infrastructure/selectors'
-import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
+import { selectRecipientView, selectRecipientsFormViewIdsCount } from '@envelope/recipient/infrastructure/selectors'
 import { setRecipientApplied } from '@envelope/recipient/infrastructure/state'
 import { selectSenderView } from '@envelope/sender/infrastructure/selectors'
 import { setSenderApplied } from '@envelope/sender/infrastructure/state'
@@ -25,6 +25,7 @@ import {
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { ENVELOPE_MOBILE_ADDRESS_VIEW_UPPER_RETURN_TOOLBAR } from '@toolbar/domain/types/addressView.types'
+import { RECIPIENTS_TOOLBAR_WITH_LIST_DELETE } from '@toolbar/domain/types/envelope.types'
 import type { IconKey } from '@shared/config/constants'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
@@ -55,6 +56,9 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   const recipientView = sandboxActive
     ? sandboxRecipient.currentView
     : sessionRecipientView
+  const recipientsFormViewIdsCount = useAppSelector(
+    selectRecipientsFormViewIdsCount,
+  )
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const mobileFocus = useEnvelopeMobileAddressFocus()
@@ -311,6 +315,13 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     <Toolbar
       section="recipients"
       stateOverride={recipientsToolbarState}
+      groupsOverride={
+        !isMobile &&
+        recipientView === 'recipientsView' &&
+        recipientsFormViewIdsCount > 1
+          ? RECIPIENTS_TOOLBAR_WITH_LIST_DELETE
+          : undefined
+      }
       onActionClick={(key) => handleAddressAddClick('recipients', key)}
     />
   )

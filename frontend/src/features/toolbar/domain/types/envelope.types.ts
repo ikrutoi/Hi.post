@@ -73,6 +73,20 @@ export const RECIPIENTS_TOOLBAR: ToolbarConfig = [
   },
 ]
 
+/** Desktop recipients section: multi-select clear on the right. */
+export const RECIPIENTS_TOOLBAR_WITH_LIST_DELETE: ToolbarConfig = [
+  {
+    group: 'recipients',
+    icons: [
+      { key: 'apply', state: 'enabled' },
+      { key: 'addressAdd', state: 'enabled' },
+      { key: 'addressList', state: 'enabled' },
+      { key: 'listDelete', state: 'enabled' },
+    ],
+    status: 'enabled',
+  },
+]
+
 export const initialRecipientsToolbarState: EnvelopeToolbarState = {
   ...Object.fromEntries(flattenIcons(RECIPIENTS_TOOLBAR)),
   config: [...RECIPIENTS_TOOLBAR],
