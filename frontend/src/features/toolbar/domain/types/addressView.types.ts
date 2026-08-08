@@ -56,7 +56,7 @@ export const SENDER_VIEW_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-/** Mobile focused address view (lower scenario bar): edit + delete. */
+/** Mobile focused address view (lower scenario bar): edit + clear view. */
 export const ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'senderView',
@@ -65,7 +65,7 @@ export const ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR: ToolbarConfig = [
   },
   {
     group: 'actions',
-    icons: [{ key: 'delete', state: 'enabled' }],
+    icons: [{ key: 'close', state: 'enabled' }],
     status: 'enabled',
   },
 ]
