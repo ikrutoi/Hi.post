@@ -1,6 +1,6 @@
 import React from 'react'
 import clsx from 'clsx'
-import { IconStarFilled } from '@shared/ui/icons'
+import { IconStar, IconStarFilled } from '@shared/ui/icons'
 import styles from './TemplateFavoriteToggle.module.scss'
 
 export type TemplateFavoriteCorner = 'top-right' | 'top-left'
@@ -14,7 +14,7 @@ type Props = {
   title?: string
 }
 
-/** Filled star: gray = not in templates, favorite yellow = in templates. */
+/** Outline star = not in templates; filled yellow = in templates. */
 export const TemplateFavoriteToggle: React.FC<Props> = ({
   active,
   onToggle,
@@ -43,6 +43,6 @@ export const TemplateFavoriteToggle: React.FC<Props> = ({
       onToggle()
     }}
   >
-    <IconStarFilled aria-hidden />
+    {active ? <IconStarFilled aria-hidden /> : <IconStar aria-hidden />}
   </button>
 )

@@ -692,6 +692,9 @@ export const Toolbar = ({
               buttonStatus ?? 'enabled',
             )}`
           ],
+          effectiveIconKey === 'favoriteFilled' &&
+            buttonStatus === 'active' &&
+            styles.toolbarKeyFavoriteActive,
           groupStatus === 'disabled' && styles.toolbarKeyDisabled,
         )}
         style={forcedIconColor != null ? { color: forcedIconColor } : undefined}

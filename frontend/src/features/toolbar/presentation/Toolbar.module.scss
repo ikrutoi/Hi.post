@@ -1409,6 +1409,25 @@
       }
     }
 
+    &.toolbarKeyFavoriteActive,
+    &.toolbarKeyEnabled.toolbarKeyFavoriteActive,
+    &.toolbarKeyActive.toolbarKeyFavoriteActive {
+      color: $color-favorite-star;
+
+      svg {
+        fill: $color-favorite-star;
+      }
+
+      &:hover {
+        color: $color-favorite-star;
+        background-color: $color-app-inner;
+
+        svg {
+          fill: $color-favorite-star;
+        }
+      }
+    }
+
     &.toolbarKeyDisabled {
       color: $color-font-disabled;
       cursor: default;
@@ -1492,6 +1511,25 @@
       &:hover {
         color: $color-font-active;
         background-color: #fff;
+      }
+    }
+
+    &.toolbarKeyFavoriteActive,
+    &.toolbarKeyEnabled.toolbarKeyFavoriteActive,
+    &.toolbarKeyActive.toolbarKeyFavoriteActive {
+      color: $color-favorite-star;
+
+      svg {
+        fill: $color-favorite-star;
+      }
+
+      &:hover {
+        color: $color-favorite-star;
+        background-color: #fff;
+
+        svg {
+          fill: $color-favorite-star;
+        }
       }
     }
 

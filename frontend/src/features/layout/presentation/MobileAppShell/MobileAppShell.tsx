@@ -59,7 +59,6 @@ import {
   clearAddressListPreviewSnapshot,
   closeAddressList,
   requestClearMobileAddressFocus,
-  setRecipientsPendingIds,
 } from '@envelope/infrastructure/state'
 import {
   selectRecipientListPanelOpen,
@@ -76,6 +75,7 @@ import {
 } from '@envelope/sender/infrastructure/selectors'
 import { setSenderViewId } from '@envelope/sender/infrastructure/state'
 import { formatAddressPreviewLines } from '@envelope/addressBook/presentation/addressSummaryLines'
+import { listStatusIsInQuickAddressBook } from '@envelope/domain/helpers'
 import { clearViewAroma } from '@aroma/infrastructure/state'
 import { selectViewAroma } from '@aroma/infrastructure/selectors'
 import { getAromaImage } from '@entities/aroma/mappers/aromaImageMap'
@@ -120,8 +120,8 @@ const MOBILE_TEMPLATE_PREVIEW_PIE_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-/** Cardtext / address list preview: edit + delete evenly spaced beside the pie. */
-const MOBILE_LIST_TEMPLATE_PREVIEW_PIE_TOOLBAR: ToolbarConfig = [
+/** Cardtext list preview: edit + delete. */
+const MOBILE_CARDTEXT_TEMPLATE_PREVIEW_PIE_TOOLBAR: ToolbarConfig = [
   {
     group: 'main',
     icons: [
@@ -132,7 +132,40 @@ const MOBILE_LIST_TEMPLATE_PREVIEW_PIE_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-const MOBILE_LIST_TEMPLATE_PREVIEW_PIE_STATE = {
+/** Address list preview: edit + template favorite (outline / filled). */
+const MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_TOOLBAR_INACTIVE: ToolbarConfig = [
+  {
+    group: 'main',
+    icons: [
+      { key: 'edit', state: 'enabled' },
+      { key: 'favorite', state: 'enabled' },
+    ],
+    status: 'enabled',
+  },
+]
+
+const MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_TOOLBAR_ACTIVE: ToolbarConfig = [
+  {
+    group: 'main',
+    icons: [
+      { key: 'edit', state: 'enabled' },
+      { key: 'favoriteFilled', state: 'active' },
+    ],
+    status: 'enabled',
+  },
+]
+
+const MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_STATE_INACTIVE = {
+  edit: { state: 'enabled' as const },
+  favorite: { state: 'enabled' as const },
+}
+
+const MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_STATE_ACTIVE = {
+  edit: { state: 'enabled' as const },
+  favoriteFilled: { state: 'active' as const },
+}
+
+const MOBILE_CARDTEXT_TEMPLATE_PREVIEW_PIE_STATE = {
   edit: { state: 'enabled' as const },
   delete: { state: 'enabled' as const },
 }
@@ -417,6 +450,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         role: 'sender' as const,
         id: entry.id,
         lines: formatAddressPreviewLines(entry),
+        inQuickList: listStatusIsInQuickAddressBook(entry.listStatus),
       }
     }
 
@@ -429,6 +463,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         role: 'recipient' as const,
         id: entry.id,
         lines: formatAddressPreviewLines(entry),
+        inQuickList: listStatusIsInQuickAddressBook(entry.listStatus),
       }
     }
 
@@ -539,12 +574,23 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     (mobileCentralPieDisplay === 'addressTemplate' &&
       mobileAddressListTemplatePreview != null)
 
+  const addressTemplatePreviewPieToolbar = mobileAddressListTemplatePreview?.inQuickList
+    ? MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_TOOLBAR_ACTIVE
+    : MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_TOOLBAR_INACTIVE
+
+  const addressTemplatePreviewPieState =
+    mobileAddressListTemplatePreview?.inQuickList
+      ? MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_STATE_ACTIVE
+      : MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_STATE_INACTIVE
+
   const handleTemplatePreviewPieToolbarAction = useCallback(
     (key: IconKey) => {
       if (mobileCentralPieDisplay === 'addressTemplate') {
         const preview = mobileAddressListTemplatePreview
         if (!preview) return
-        if (key !== 'edit' && key !== 'delete') return
+        if (key !== 'edit' && key !== 'favorite' && key !== 'favoriteFilled') {
+          return
+        }
 
         const section =
           preview.role === 'sender' ? 'senderView' : 'recipientView'
@@ -553,25 +599,26 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
           dispatch(setSenderViewId(preview.id))
         } else {
           dispatch(setRecipientViewId(preview.id))
-          if (key === 'delete') {
-            dispatch(
-              setRecipientsPendingIds(
-                recipientListPendingIds.filter((id) => id !== preview.id),
-              ),
-            )
-          }
         }
 
         if (key === 'edit') {
           // Snapshot only — close list in the same paint as create (saga).
           dispatch(clearAddressListPreviewSnapshot())
+          dispatch(
+            toolbarAction({
+              section,
+              key: 'edit',
+              payload: { returnToList: true },
+            }),
+          )
+          return false
         }
 
+        // Soft remove/add quick list: keep panel + preview; star outline/filled via listStatus.
         dispatch(
           toolbarAction({
             section,
-            key,
-            payload: key === 'edit' ? { returnToList: true } : undefined,
+            key: preview.inQuickList ? 'removeFromList' : 'addList',
           }),
         )
         return false
@@ -604,7 +651,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       dispatch,
       mobileAddressListTemplatePreview,
       mobileCentralPieDisplay,
-      recipientListPendingIds,
     ],
   )
 
@@ -1132,16 +1178,18 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                         <Toolbar
                           section="editorPie"
                           groupsOverride={
-                            mobileCentralPieDisplay === 'addressTemplate' ||
-                            mobileCentralPieDisplay === 'cardtextTemplate'
-                              ? MOBILE_LIST_TEMPLATE_PREVIEW_PIE_TOOLBAR
-                              : MOBILE_TEMPLATE_PREVIEW_PIE_TOOLBAR
+                            mobileCentralPieDisplay === 'addressTemplate'
+                              ? addressTemplatePreviewPieToolbar
+                              : mobileCentralPieDisplay === 'cardtextTemplate'
+                                ? MOBILE_CARDTEXT_TEMPLATE_PREVIEW_PIE_TOOLBAR
+                                : MOBILE_TEMPLATE_PREVIEW_PIE_TOOLBAR
                           }
                           stateOverride={
-                            mobileCentralPieDisplay === 'addressTemplate' ||
-                            mobileCentralPieDisplay === 'cardtextTemplate'
-                              ? MOBILE_LIST_TEMPLATE_PREVIEW_PIE_STATE
-                              : undefined
+                            mobileCentralPieDisplay === 'addressTemplate'
+                              ? addressTemplatePreviewPieState
+                              : mobileCentralPieDisplay === 'cardtextTemplate'
+                                ? MOBILE_CARDTEXT_TEMPLATE_PREVIEW_PIE_STATE
+                                : undefined
                           }
                           mergedWithCenter
                           onActionClick={handleTemplatePreviewPieToolbarAction}

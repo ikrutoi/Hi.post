@@ -921,6 +921,21 @@ function* moveAddressTemplateToOutListFromToolbar(
     )
     if (!result.success) return false
 
+    const bookEntries: AddressBookEntry[] = yield select((s: RootState) =>
+      type === 'sender'
+        ? (s.addressBook?.senderEntries ?? [])
+        : (s.addressBook?.recipientEntries ?? []),
+    )
+    const bookEntry = bookEntries.find((e) => e.id === templateId)
+    if (bookEntry) {
+      yield put(
+        addAddressBookEntry({
+          ...bookEntry,
+          listStatus: 'outList',
+        }),
+      )
+    }
+
     yield put(incrementAddressTemplatesReloadVersion())
     yield put(incrementAddressBookReloadVersion())
     return true
