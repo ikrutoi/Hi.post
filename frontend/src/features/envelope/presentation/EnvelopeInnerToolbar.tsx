@@ -25,7 +25,7 @@ import {
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { ENVELOPE_MOBILE_ADDRESS_VIEW_UPPER_RETURN_TOOLBAR } from '@toolbar/domain/types/addressView.types'
-import { RECIPIENTS_TOOLBAR_WITH_LIST_DELETE } from '@toolbar/domain/types/envelope.types'
+import { RECIPIENTS_TOOLBAR_WITH_LIST_CLOSE } from '@toolbar/domain/types/envelope.types'
 import type { IconKey } from '@shared/config/constants'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
@@ -319,7 +319,7 @@ export const EnvelopeInnerToolbar: React.FC = () => {
         !isMobile &&
         recipientView === 'recipientsView' &&
         recipientsFormViewIdsCount > 1
-          ? RECIPIENTS_TOOLBAR_WITH_LIST_DELETE
+          ? RECIPIENTS_TOOLBAR_WITH_LIST_CLOSE
           : undefined
       }
       onActionClick={(key) => handleAddressAddClick('recipients', key)}

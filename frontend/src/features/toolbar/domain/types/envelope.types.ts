@@ -74,14 +74,14 @@ export const RECIPIENTS_TOOLBAR: ToolbarConfig = [
 ]
 
 /** Desktop recipients section: multi-select clear on the right. */
-export const RECIPIENTS_TOOLBAR_WITH_LIST_DELETE: ToolbarConfig = [
+export const RECIPIENTS_TOOLBAR_WITH_LIST_CLOSE: ToolbarConfig = [
   {
     group: 'recipients',
     icons: [
       { key: 'apply', state: 'enabled' },
       { key: 'addressAdd', state: 'enabled' },
       { key: 'addressList', state: 'enabled' },
-      { key: 'listDelete', state: 'enabled' },
+      { key: 'listClose', state: 'enabled' },
     ],
     status: 'enabled',
   },

@@ -2053,7 +2053,7 @@ function* handleEnvelopeToolbarAction(
   }
 
   if (
-    key === 'listDelete' &&
+    (key === 'listClose' || key === 'listDelete') &&
     (section === 'recipients' || section === 'recipientsView')
   ) {
     yield put(setRecipientsList([]))
@@ -2062,12 +2062,6 @@ function* handleEnvelopeToolbarAction(
     yield put(clearRecipientsPending())
     yield put(setRecipientViewId(null))
     yield put(setRecipientView('recipientsView'))
-  }
-
-  if (key === 'listClose' && section === 'recipientsView') {
-    yield put(setRecipientsList([]))
-    yield put(setRecipientsViewIds([]))
-    yield put(clearRecipientsPending())
   }
 
   if (

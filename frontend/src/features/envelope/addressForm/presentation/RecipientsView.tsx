@@ -6,7 +6,7 @@ import { ScrollArea } from '@/shared/ui/ScrollArea/ScrollArea'
 
 export type RecipientsViewProps = {
   entries: AddressBookEntry[]
-  /** Kept for call-site compatibility; clear-all lives on listDelete toolbar. */
+  /** Kept for call-site compatibility; clear-all lives on listClose toolbar. */
   onRemove?: (id: string) => void
   scrollbarPortalTarget?: React.RefObject<HTMLElement | null>
   onOpenRecipient: (entry: AddressBookEntry) => void

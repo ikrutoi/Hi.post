@@ -148,12 +148,16 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
     ? null
     : (mobileFocus?.dualSide ?? 'sender')
 
-  /** Keep the role-colored row even when tools are hidden (e.g. sender toggle off). */
+  /**
+   * Sender: keep the role-colored lower band whenever dualSide is sender
+   * and create is closed — including after Close (`senderEnvelopeView`) where
+   * there is no View entry / tools yet (otherwise the factory shell stays white).
+   */
   const senderToolbarSlot =
     enabled &&
     isMobile &&
     activeViewRole === 'sender' &&
-    senderView === 'senderView' &&
+    senderView !== 'senderCreate' &&
     !assemblySenderSimplifiedPeek
 
   /**
@@ -173,6 +177,7 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
 
   const showSenderToolbar =
     senderToolbarSlot &&
+    senderView === 'senderView' &&
     senderFacade.isEnabled &&
     senderDisplayEntry != null
 
