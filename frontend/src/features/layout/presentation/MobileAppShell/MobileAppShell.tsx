@@ -602,8 +602,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         }
 
         if (key === 'edit') {
-          // Snapshot only — close list in the same paint as create (saga).
+          // Avoid restore-on-close wiping the template we just selected for edit.
           dispatch(clearAddressListPreviewSnapshot())
+          dispatch(closeAddressList())
           dispatch(
             toolbarAction({
               section,
@@ -973,9 +974,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       className={styles.mobileShell}
       style={cardWidthStyle}
       data-envelope-address-create={envelopeAddressCreateRole ?? undefined}
-      data-address-list-open={
-        mobileAddressListChromeActive ? 'true' : undefined
-      }
       onClick={onAppClick}
     >
       <MarkStampYearDevProvider>

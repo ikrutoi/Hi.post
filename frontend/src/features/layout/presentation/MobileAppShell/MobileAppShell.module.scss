@@ -258,7 +258,7 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   --envelope-address-create-border: #{$color-envelope-recipient-input-border};
 }
 
-.mobileShell[data-keyboard-open='true']:not([data-address-list-open='true']) {
+.mobileShell[data-keyboard-open='true'] {
   .mobilePieSection {
     display: none;
   }

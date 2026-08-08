@@ -8,6 +8,7 @@ import {
   fork,
   spawn,
   all,
+  delay,
 } from 'redux-saga/effects'
 import type { SagaIterator } from 'redux-saga'
 import { batch } from 'react-redux'
@@ -182,14 +183,45 @@ import { postcardLocalDataChanged } from '@features/sync/store/postcardSync.acti
 import type { PostcardHydrated } from '@entities/postcard'
 
 const ADDRESS_LIST_UI_PREF_ID = 'addressList' as const
+const MOBILE_KEYBOARD_OPEN_THRESHOLD_PX = 48
 
-/** One React paint for multi-slice address create/list transitions (avoids list↔View flash). */
 function dispatchBatched(actions: readonly unknown[]): void {
   batch(() => {
     for (const action of actions) {
       store.dispatch(action as { type: string })
     }
   })
+}
+
+function readMobileKeyboardInsetPx(): number {
+  if (typeof window === 'undefined' || !window.visualViewport) return 0
+  const viewport = window.visualViewport
+  return Math.max(
+    0,
+    Math.round(window.innerHeight - viewport.height - viewport.offsetTop),
+  )
+}
+
+/**
+ * Return-to-list must wait for the OS keyboard: opening the factory list while
+ * the visual viewport is still short collapses bottom-dock (`margin-top: auto`)
+ * and the toolbar/section jump up under the pie.
+ */
+function* dismissMobileKeyboardAndWait(timeoutMs = 900): SagaIterator {
+  if (typeof document !== 'undefined') {
+    const active = document.activeElement
+    if (active instanceof HTMLElement) {
+      active.blur()
+    }
+  }
+  if (typeof window === 'undefined' || !window.visualViewport) return
+  if (readMobileKeyboardInsetPx() < MOBILE_KEYBOARD_OPEN_THRESHOLD_PX) return
+
+  const started = Date.now()
+  while (Date.now() - started < timeoutMs) {
+    yield delay(32)
+    if (readMobileKeyboardInsetPx() < MOBILE_KEYBOARD_OPEN_THRESHOLD_PX) return
+  }
 }
 
 /**
@@ -608,25 +640,20 @@ function* openMobileAddressCreateEditForm(
   const address = getEntryAddressFromBook(entries, templateId)
   if (!address) return
 
-  // Close list + enter create in one paint so AddressView does not flash between them.
-  const actions: unknown[] = [
-    clearAddressListPreviewSnapshot(),
-    closeAddressList(),
+  yield put(
     setAddressCreateEditContext({
       role,
       templateId,
       returnToList: options?.returnToList === true,
     }),
-  ]
+  )
   if (role === 'sender') {
-    actions.push(setSenderFormDraft(address), setSenderView('senderCreate'))
+    yield put(setSenderFormDraft(address))
+    yield put(setSenderView('senderCreate'))
   } else {
-    actions.push(
-      setRecipientFormDraft(address),
-      setRecipientView('recipientCreate'),
-    )
+    yield put(setRecipientFormDraft(address))
+    yield put(setRecipientView('recipientCreate'))
   }
-  yield call(dispatchBatched, actions)
 }
 
 /** After mobile create-as-edit: restore View; reopen template list if edit came from list. */
@@ -638,7 +665,9 @@ function* returnFromMobileAddressCreateEdit(
   const reopenList = returnToList === true
   const listMode = role === 'sender' ? ('sender' as const) : ('recipients' as const)
 
+  // Stay on fullscreen create until the keyboard is gone, then switch in one paint.
   if (reopenList) {
+    yield* dismissMobileKeyboardAndWait()
     yield call(closeCardPieListPanelAndSyncIconsSaga)
   }
 
@@ -675,19 +704,7 @@ function* returnFromMobileAddressCreateEdit(
     }
   }
 
-  // Exit create + open list together — no intermediate AddressView / list-cell flash.
-  if (reopenList && typeof document !== 'undefined') {
-    const active = document.activeElement
-    if (active instanceof HTMLElement) {
-      active.blur()
-    }
-  }
   yield call(dispatchBatched, actions)
-
-  if (reopenList) {
-    yield put(clearAddressListPreviewSnapshot())
-    yield call(captureAddressListPreviewSnapshot, listMode)
-  }
 }
 
 function* persistAddressTemplateUpdate(
@@ -1035,6 +1052,7 @@ function* closeAddressCreateForm(
       const templateId = editContext.templateId
 
       if (reopenList) {
+        yield* dismissMobileKeyboardAndWait()
         yield call(closeCardPieListPanelAndSyncIconsSaga)
       }
 
@@ -1073,11 +1091,6 @@ function* closeAddressCreateForm(
       }
 
       yield call(dispatchBatched, actions)
-
-      if (reopenList) {
-        yield put(clearAddressListPreviewSnapshot())
-        yield call(captureAddressListPreviewSnapshot, listMode)
-      }
       return
     }
 
