@@ -21,6 +21,7 @@ import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiv
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import {
   ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR,
+  ENVELOPE_MOBILE_ADDRESS_VIEW_RETURN_TOOLBAR,
   ENVELOPE_MOBILE_RECIPIENTS_MULTI_VIEW_TOOLBAR,
 } from '@toolbar/domain/types/addressView.types'
 import { useEnvelopeMobileAddressFocus } from './EnvelopeMobileAddressFocusContext'
@@ -219,7 +220,11 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
         {section === 'senderView' || section === 'recipientView' ? (
           <Toolbar
             section={section}
-            groupsOverride={ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR}
+            groupsOverride={
+              section === 'recipientView' && recipientsFormViewIdsCount > 1
+                ? ENVELOPE_MOBILE_ADDRESS_VIEW_RETURN_TOOLBAR
+                : ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR
+            }
           />
         ) : section === 'recipients' ? (
           <Toolbar

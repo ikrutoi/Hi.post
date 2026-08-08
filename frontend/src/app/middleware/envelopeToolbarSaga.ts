@@ -676,6 +676,12 @@ function* returnFromMobileAddressCreateEdit(
   }
 
   // Exit create + open list together — no intermediate AddressView / list-cell flash.
+  if (reopenList && typeof document !== 'undefined') {
+    const active = document.activeElement
+    if (active instanceof HTMLElement) {
+      active.blur()
+    }
+  }
   yield call(dispatchBatched, actions)
 
   if (reopenList) {
@@ -1529,7 +1535,7 @@ function* handleEnvelopeToolbarAction(
 
   if (
     (section === 'senderView' || section === 'recipientView') &&
-    key === 'close'
+    (key === 'close' || key === 'return')
   ) {
     if (section === 'senderView') {
       const isEditMode: boolean = yield select(selectSenderViewEditMode)

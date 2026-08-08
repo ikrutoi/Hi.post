@@ -70,6 +70,23 @@ export const ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR: ToolbarConfig = [
   },
 ]
 
+/**
+ * Recipient View opened from a multi-select list: close acts as “back to list”,
+ * so show return instead of close.
+ */
+export const ENVELOPE_MOBILE_ADDRESS_VIEW_RETURN_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'senderView',
+    icons: [{ key: 'edit', state: 'enabled' }],
+    status: 'enabled',
+  },
+  {
+    group: 'actions',
+    icons: [{ key: 'return', state: 'enabled' }],
+    status: 'enabled',
+  },
+]
+
 /** Mobile multi recipients list (lower scenario bar): clear selection on the right. */
 export const ENVELOPE_MOBILE_RECIPIENTS_MULTI_VIEW_TOOLBAR: ToolbarConfig = [
   {

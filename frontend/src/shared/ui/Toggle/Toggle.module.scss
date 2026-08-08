@@ -155,19 +155,19 @@
 }
 
 .toggleDefault .toggleSlider {
-  width: 34px;
-  height: 18px;
+  width: 2.125rem;
+  height: 1.125rem;
 }
 
 .toggleDefault .toggleSlider::after {
-  top: 2px;
-  left: 2px;
-  width: 14px;
-  height: 14px;
+  top: 0.125rem;
+  left: 0.125rem;
+  width: 0.875rem;
+  height: 0.875rem;
 }
 
 .toggleDefault .toggleInput:checked + .toggleSlider::after {
-  transform: translateX(16px);
+  transform: translateX(1rem);
 }
 
 .toggleSmall .toggleSlider {

@@ -973,6 +973,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       className={styles.mobileShell}
       style={cardWidthStyle}
       data-envelope-address-create={envelopeAddressCreateRole ?? undefined}
+      data-address-list-open={
+        mobileAddressListChromeActive ? 'true' : undefined
+      }
       onClick={onAppClick}
     >
       <MarkStampYearDevProvider>
