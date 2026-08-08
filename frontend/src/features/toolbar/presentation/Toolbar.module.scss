@@ -1413,6 +1413,7 @@
     &.toolbarKeyEnabled.toolbarKeyFavoriteActive,
     &.toolbarKeyActive.toolbarKeyFavoriteActive {
       color: $color-favorite-star;
+      background-color: transparent;
 
       svg {
         fill: $color-favorite-star;
@@ -1420,7 +1421,7 @@
 
       &:hover {
         color: $color-favorite-star;
-        background-color: $color-app-inner;
+        background-color: transparent;
 
         svg {
           fill: $color-favorite-star;
@@ -1514,10 +1515,20 @@
       }
     }
 
+    &[data-icon-key='favorite'],
+    &[data-icon-key='favoriteFilled'] {
+      background-color: transparent;
+
+      &:hover {
+        background-color: transparent;
+      }
+    }
+
     &.toolbarKeyFavoriteActive,
     &.toolbarKeyEnabled.toolbarKeyFavoriteActive,
     &.toolbarKeyActive.toolbarKeyFavoriteActive {
       color: $color-favorite-star;
+      background-color: transparent;
 
       svg {
         fill: $color-favorite-star;
@@ -1525,7 +1536,7 @@
 
       &:hover {
         color: $color-favorite-star;
-        background-color: #fff;
+        background-color: transparent;
 
         svg {
           fill: $color-favorite-star;

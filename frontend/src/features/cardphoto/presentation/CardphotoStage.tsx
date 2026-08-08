@@ -70,7 +70,8 @@ export const CardphotoStage = () => {
   )
   const stageRef = useRef<HTMLDivElement>(null)
 
-  const containerKey = `${activeImage?.id}_${sizeCard.orientation}_${activeImage?.status}_${activeImage?.source}`
+  /** Remount on identity / layout / source change — not listStatus (inLine↔outLine). */
+  const containerKey = `${activeImage?.id}_${sizeCard.orientation}_${activeImage?.source}`
 
   /** После любого commit конфига — реальные px стейджа (RO не срабатывает, если размер DOM не изменился). */
   useLayoutEffect(() => {
