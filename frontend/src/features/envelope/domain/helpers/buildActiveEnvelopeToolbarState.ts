@@ -5,11 +5,16 @@ import type { RecipientState } from '@envelope/recipient/domain/types'
 import type { EnvelopeToolbarState } from '@toolbar/domain/types'
 import {
   buildSenderToolbarState,
+} from './buildSenderToolbarState'
+import {
   buildRecipientToolbarState,
   getAddressListToolbarFragment,
+} from './buildRecipientToolbarState'
+import { isAddressInList } from './isAddressInList'
+import {
+  buildAddressAddPendingFlags,
   isAddressDraftComplete,
-  isAddressInList,
-} from '@envelope/domain/helpers'
+} from './resolveAddListToolbarState'
 
 function hasAddressData(data: AddressFields): boolean {
   return Object.values(data).some((v) => (v ?? '').trim() !== '')
@@ -28,12 +33,23 @@ export function buildSandboxSenderToolbarState(input: {
   addressListCount: number
   listOpen: boolean
   inListEntries: Pick<AddressBookEntry, 'address'>[]
+  entries?: Pick<AddressBookEntry, 'id' | 'address' | 'listStatus'>[]
 }): EnvelopeToolbarState {
-  const { sender, addressListCount, listOpen, inListEntries } = input
+  const { sender, addressListCount, listOpen, inListEntries, entries = [] } =
+    input
   const draft =
     sender.currentView === 'senderCreate' ? sender.formDraft : sender.viewDraft
   const draftComplete = isAddressDraftComplete(draft as AddressFields)
   const formDraft = sender.formDraft as AddressFields
+  const addressAddPending = buildAddressAddPendingFlags({
+    formDraft,
+    viewDraft: sender.viewDraft as AddressFields,
+    isAddressViewOpen: sender.currentView === 'senderView',
+    viewId: sender.senderViewId,
+    appliedIds: sender.applied ?? [],
+    appliedData: sender.appliedData,
+    entries,
+  })
 
   const base = buildSenderToolbarState({
     isComplete: draftComplete,
@@ -47,6 +63,9 @@ export function buildSandboxSenderToolbarState(input: {
     isAddressFormOpen: sender.currentView === 'senderCreate',
     formIsEmpty: formIsEmptyFlag(formDraft),
     formIsComplete: isAddressDraftComplete(formDraft),
+    formDraftInQuickList: addressAddPending.formDraftInQuickList,
+    formDraftIsApplied: addressAddPending.formDraftIsApplied,
+    viewAddressPendingBadge: addressAddPending.viewAddressPendingBadge,
     senderListPanelOpen: listOpen,
     isEnabled: sender.enabled,
   })
@@ -94,14 +113,30 @@ export function buildSandboxRecipientsToolbarState(input: {
   addressListCount: number
   listOpen: boolean
   inListEntries: Pick<AddressBookEntry, 'address'>[]
+  entries?: Pick<AddressBookEntry, 'id' | 'address' | 'listStatus'>[]
 }): EnvelopeToolbarState {
-  const { recipient, addressListCount, listOpen, inListEntries } = input
+  const {
+    recipient,
+    addressListCount,
+    listOpen,
+    inListEntries,
+    entries = [],
+  } = input
   const draft =
     recipient.currentView === 'recipientCreate'
       ? recipient.formDraft
       : recipient.viewDraft
   const draftComplete = isAddressDraftComplete(draft as AddressFields)
   const formDraft = recipient.formDraft as AddressFields
+  const addressAddPending = buildAddressAddPendingFlags({
+    formDraft,
+    viewDraft: recipient.viewDraft as AddressFields,
+    isAddressViewOpen: recipient.currentView === 'recipientView',
+    viewId: recipient.recipientViewId,
+    appliedIds: recipient.applied ?? [],
+    appliedData: recipient.appliedData,
+    entries,
+  })
 
   const base = buildRecipientToolbarState({
     isComplete: draftComplete,
@@ -115,6 +150,9 @@ export function buildSandboxRecipientsToolbarState(input: {
     isAddressFormOpen: recipient.currentView === 'recipientCreate',
     formIsEmpty: formIsEmptyFlag(formDraft),
     formIsComplete: isAddressDraftComplete(formDraft),
+    formDraftInQuickList: addressAddPending.formDraftInQuickList,
+    formDraftIsApplied: addressAddPending.formDraftIsApplied,
+    viewAddressPendingBadge: addressAddPending.viewAddressPendingBadge,
     recipientListPanelOpen: listOpen,
   })
 

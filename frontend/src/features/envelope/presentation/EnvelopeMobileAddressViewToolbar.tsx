@@ -21,9 +21,12 @@ import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiv
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import {
   ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR,
+  ENVELOPE_MOBILE_ADDRESS_VIEW_DELETE_TOOLBAR,
   ENVELOPE_MOBILE_ADDRESS_VIEW_RETURN_TOOLBAR,
   ENVELOPE_MOBILE_RECIPIENTS_MULTI_VIEW_TOOLBAR,
 } from '@toolbar/domain/types/addressView.types'
+import type { ToolbarConfig } from '@toolbar/domain/types'
+import { listStatusIsInQuickAddressBook } from '@envelope/domain/helpers'
 import { useEnvelopeMobileAddressFocus } from './EnvelopeMobileAddressFocusContext'
 import styles from './Envelope.module.scss'
 
@@ -200,6 +203,24 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
           ? 'recipients'
           : null
 
+  const addressViewInQuickList =
+    section === 'senderView'
+      ? senderDisplayEntry != null &&
+        listStatusIsInQuickAddressBook(senderDisplayEntry.listStatus)
+      : section === 'recipientView'
+        ? recipientDisplayEntry != null &&
+          listStatusIsInQuickAddressBook(recipientDisplayEntry.listStatus)
+        : false
+
+  const addressViewToolbar = useMemo((): ToolbarConfig => {
+    if (section === 'recipientView' && recipientsFormViewIdsCount > 1) {
+      return ENVELOPE_MOBILE_ADDRESS_VIEW_RETURN_TOOLBAR
+    }
+    return addressViewInQuickList
+      ? ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR
+      : ENVELOPE_MOBILE_ADDRESS_VIEW_DELETE_TOOLBAR
+  }, [addressViewInQuickList, recipientsFormViewIdsCount, section])
+
   const slotRole: 'sender' | 'recipient' | 'complete' | null = bothAppliedToolbarSlot
     ? 'complete'
     : senderToolbarSlot
@@ -223,14 +244,7 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
         aria-hidden={section == null ? true : undefined}
       >
         {section === 'senderView' || section === 'recipientView' ? (
-          <Toolbar
-            section={section}
-            groupsOverride={
-              section === 'recipientView' && recipientsFormViewIdsCount > 1
-                ? ENVELOPE_MOBILE_ADDRESS_VIEW_RETURN_TOOLBAR
-                : ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR
-            }
-          />
+          <Toolbar section={section} groupsOverride={addressViewToolbar} />
         ) : section === 'recipients' ? (
           <Toolbar
             section="recipients"

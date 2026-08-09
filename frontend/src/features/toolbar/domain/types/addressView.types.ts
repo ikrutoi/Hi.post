@@ -71,6 +71,22 @@ export const ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR: ToolbarConfig = [
 ]
 
 /**
+ * Address not in the quick template list: hard-delete instead of clear-only close.
+ */
+export const ENVELOPE_MOBILE_ADDRESS_VIEW_DELETE_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'senderView',
+    icons: [{ key: 'edit', state: 'enabled' }],
+    status: 'enabled',
+  },
+  {
+    group: 'actions',
+    icons: [{ key: 'delete', state: 'enabled' }],
+    status: 'enabled',
+  },
+]
+
+/**
  * Recipient View opened from a multi-select list: close acts as “back to list”,
  * so show return instead of close.
  */

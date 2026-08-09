@@ -1543,6 +1543,8 @@ function* handleEnvelopeToolbarAction(
         yield* ensureAddressListPanelOpen('recipients')
       }
     }
+    yield call(syncAddressListIconsFromActive)
+    yield call(processEnvelopeVisuals)
     return
   }
 

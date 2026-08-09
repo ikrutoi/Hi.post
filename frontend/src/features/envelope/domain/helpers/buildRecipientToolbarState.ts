@@ -19,6 +19,12 @@ export interface BuildRecipientToolbarParams {
   formIsEmpty: boolean
   /** formDraft заполнен полностью */
   formIsComplete: boolean
+  /** formDraft уже в быстром списке шаблонов */
+  formDraftInQuickList?: boolean
+  /** formDraft совпадает с applied */
+  formDraftIsApplied?: boolean
+  /** View: адрес не в быстром списке и не applied */
+  viewAddressPendingBadge?: boolean
   /** список адресов получателя открыт — иконка addressList в active */
   recipientListPanelOpen?: boolean
 }
@@ -32,6 +38,9 @@ export const buildRecipientToolbarState = ({
   isAddressFormOpen,
   formIsEmpty,
   formIsComplete,
+  formDraftInQuickList = false,
+  formDraftIsApplied = false,
+  viewAddressPendingBadge = false,
   recipientListPanelOpen = false,
 }: BuildRecipientToolbarParams): EnvelopeToolbarState => {
   const state = {} as EnvelopeToolbarState
@@ -46,6 +55,9 @@ export const buildRecipientToolbarState = ({
           isAddressFormOpen,
           formIsEmpty,
           formIsComplete,
+          formDraftInQuickList,
+          formDraftIsApplied,
+          viewAddressPendingBadge,
         })
         break
       case 'addressList':

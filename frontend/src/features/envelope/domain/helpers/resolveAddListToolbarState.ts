@@ -1,6 +1,11 @@
 import type { AddressFields } from '@shared/config/constants'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
-import { isAddressInList, normalizeAddressFields } from './isAddressInList'
+import { listStatusIsInQuickAddressBook } from './addressBookQuickList'
+import {
+  getMatchingEntryId,
+  isAddressInList,
+  normalizeAddressFields,
+} from './isAddressInList'
 
 export function isAddressDraftComplete(draft: AddressFields): boolean {
   return Object.values(draft).every((v) => (v ?? '').trim() !== '')
@@ -55,24 +60,117 @@ export function resolveApplyMediumToolbarState(
 /** @deprecated use resolveApplyMediumToolbarState */
 export const resolveApplyLightToolbarState = resolveApplyMediumToolbarState
 
+/**
+ * Flags for addressAdd badge `1`: address is outside the quick template list
+ * and not applied (create draft and/or current view card).
+ */
+export function buildAddressAddPendingFlags(input: {
+  formDraft: AddressFields
+  viewDraft: AddressFields
+  /** `senderView` / `recipientView` — focused address card */
+  isAddressViewOpen: boolean
+  viewId: string | null
+  appliedIds: string[]
+  appliedData: AddressFields | null | undefined
+  entries: Pick<AddressBookEntry, 'id' | 'address' | 'listStatus'>[]
+}): {
+  formDraftInQuickList: boolean
+  formDraftIsApplied: boolean
+  viewAddressPendingBadge: boolean
+} {
+  const {
+    formDraft,
+    viewDraft,
+    isAddressViewOpen,
+    viewId,
+    appliedIds,
+    appliedData,
+    entries,
+  } = input
+
+  const normalizedForm = normalizeAddressFields(formDraft)
+  const inListEntries = entries
+    .filter((e) => listStatusIsInQuickAddressBook(e.listStatus))
+    .map((e) => ({ address: normalizeAddressFields(e.address ?? {}) }))
+
+  const formDraftInQuickList = doesDraftMatchInList(
+    normalizedForm,
+    inListEntries,
+  )
+
+  const formMatchId = getMatchingEntryId(
+    normalizedForm,
+    entries.map((e) => ({
+      id: e.id,
+      address: normalizeAddressFields(e.address ?? {}),
+    })),
+  )
+  const formDraftIsApplied =
+    (formMatchId != null && appliedIds.includes(formMatchId)) ||
+    (appliedData != null &&
+      isAddressInList(normalizedForm, [
+        { address: normalizeAddressFields(appliedData) },
+      ]))
+
+  const viewEntry =
+    viewId != null ? entries.find((e) => e.id === viewId) : undefined
+  const viewInQuickList =
+    viewEntry != null &&
+    listStatusIsInQuickAddressBook(viewEntry.listStatus)
+  const viewIsApplied = viewId != null && appliedIds.includes(viewId)
+  const viewAddressPendingBadge =
+    isAddressViewOpen &&
+    viewId != null &&
+    isAddressDraftComplete(viewDraft) &&
+    !viewInQuickList &&
+    !viewIsApplied
+
+  return {
+    formDraftInQuickList,
+    formDraftIsApplied,
+    viewAddressPendingBadge,
+  }
+}
+
 export function resolveAddressAddToolbarState(params: {
   isAddressFormOpen: boolean
   formIsEmpty: boolean
   formIsComplete: boolean
+  /** Complete formDraft already in the quick template list */
+  formDraftInQuickList?: boolean
+  /** Complete formDraft is the applied postcard address */
+  formDraftIsApplied?: boolean
+  /**
+   * Focused view address is complete, not in the quick template list,
+   * and not applied.
+   */
+  viewAddressPendingBadge?: boolean
 }): {
   state: 'enabled' | 'disabled'
   options: { badge: number | null; badgeDot: boolean }
 } {
-  const { isAddressFormOpen, formIsEmpty, formIsComplete } = params
+  const {
+    isAddressFormOpen,
+    formIsEmpty,
+    formIsComplete,
+    formDraftInQuickList = false,
+    formDraftIsApplied = false,
+    viewAddressPendingBadge = false,
+  } = params
   if (isAddressFormOpen) {
     return { state: 'disabled', options: { badge: null, badgeDot: false } }
   }
 
   /**
    * Partial create draft → reminder dot.
-   * Complete draft (Close or applyMedium without clearing) → badge `1`.
+   * Complete address not in quick templates and not applied → badge `1`.
    */
-  const badge = !formIsEmpty && formIsComplete ? 1 : null
+  const formDraftPendingBadge =
+    !formIsEmpty &&
+    formIsComplete &&
+    !formDraftInQuickList &&
+    !formDraftIsApplied
+  const badge = formDraftPendingBadge || viewAddressPendingBadge ? 1 : null
   const badgeDot = !formIsEmpty && !formIsComplete
 
   return { state: 'enabled', options: { badge, badgeDot } }
