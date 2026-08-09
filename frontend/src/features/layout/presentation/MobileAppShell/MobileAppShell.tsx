@@ -3,11 +3,17 @@ import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { store } from '@app/state/store'
 import {
-  deleteCardphotoFromViewRequested,
   openCardphotoFromMiniStripRequested,
+  pulseListCardphotoBadge,
   setCardphotoListPanelOpen,
 } from '@cardphoto/infrastructure/state'
-import { selectIsListPanelOpen, selectCardphotoAssetData, selectCardphotoAssetDisplayPreviewUrl, selectCardphotoIsComplete, selectCardphotoAppliedData } from '@cardphoto/infrastructure/selectors'
+import {
+  selectIsListPanelOpen,
+  selectCardphotoAssetData,
+  selectCardphotoAssetDisplayPreviewUrl,
+  selectCardphotoIsComplete,
+  selectCardphotoAppliedData,
+} from '@cardphoto/infrastructure/selectors'
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import {
   selectCartListPanelOpen,
@@ -41,12 +47,16 @@ import {
   selectNotebookStripTab,
   selectCartCalendarDatePickMode,
 } from '@date/calendar/infrastructure/selectors'
-import { setCardtextListPanelOpen, deleteCardtextFromViewRequested } from '@cardtext/infrastructure/state'
+import {
+  setCardtextListPanelOpen,
+  pulseListCardtextBadge,
+} from '@cardtext/infrastructure/state'
 import {
   selectIsCardtextListPanelOpen,
   selectCardtextId,
   selectCardtextSessionData,
   selectCardtextAssetMatchesApplied,
+  selectCardtextViewInQuickList,
 } from '@cardtext/infrastructure/selectors'
 import {
   cardtextHasRenderableContent,
@@ -108,37 +118,78 @@ import { useMobileVisualViewport } from '@layout/application/hooks/useMobileVisu
 import type { MobileAppShellProps } from './mobileAppShell.types'
 import styles from './MobileAppShell.module.scss'
 
-/** Cardphoto list preview: delete in a two-slot column beside the pie. */
-const MOBILE_TEMPLATE_PREVIEW_PIE_TOOLBAR: ToolbarConfig = [
+/**
+ * Template list preview beside the pie: favorite on top, secondary action below
+ * (cardphoto / cardtext / address).
+ */
+const MOBILE_CARDPHOTO_TEMPLATE_PREVIEW_PIE_TOOLBAR_INACTIVE: ToolbarConfig = [
   {
     group: 'main',
     icons: [
+      { key: 'favorite', state: 'enabled' },
       { key: 'empty', state: 'disabled' },
-      { key: 'delete', state: 'enabled' },
     ],
     status: 'enabled',
   },
 ]
 
-/** Cardtext list preview: edit + delete. */
-const MOBILE_CARDTEXT_TEMPLATE_PREVIEW_PIE_TOOLBAR: ToolbarConfig = [
+const MOBILE_CARDPHOTO_TEMPLATE_PREVIEW_PIE_TOOLBAR_ACTIVE: ToolbarConfig = [
   {
     group: 'main',
     icons: [
-      { key: 'edit', state: 'enabled' },
-      { key: 'delete', state: 'enabled' },
+      { key: 'favoriteFilled', state: 'active' },
+      { key: 'empty', state: 'disabled' },
     ],
     status: 'enabled',
   },
 ]
 
-/** Address list preview: edit + template favorite (outline / filled). */
+const MOBILE_CARDPHOTO_TEMPLATE_PREVIEW_PIE_STATE_INACTIVE = {
+  favorite: { state: 'enabled' as const },
+}
+
+const MOBILE_CARDPHOTO_TEMPLATE_PREVIEW_PIE_STATE_ACTIVE = {
+  favoriteFilled: { state: 'active' as const },
+}
+
+const MOBILE_CARDTEXT_TEMPLATE_PREVIEW_PIE_TOOLBAR_INACTIVE: ToolbarConfig = [
+  {
+    group: 'main',
+    icons: [
+      { key: 'favorite', state: 'enabled' },
+      { key: 'edit', state: 'enabled' },
+    ],
+    status: 'enabled',
+  },
+]
+
+const MOBILE_CARDTEXT_TEMPLATE_PREVIEW_PIE_TOOLBAR_ACTIVE: ToolbarConfig = [
+  {
+    group: 'main',
+    icons: [
+      { key: 'favoriteFilled', state: 'active' },
+      { key: 'edit', state: 'enabled' },
+    ],
+    status: 'enabled',
+  },
+]
+
+const MOBILE_CARDTEXT_TEMPLATE_PREVIEW_PIE_STATE_INACTIVE = {
+  favorite: { state: 'enabled' as const },
+  edit: { state: 'enabled' as const },
+}
+
+const MOBILE_CARDTEXT_TEMPLATE_PREVIEW_PIE_STATE_ACTIVE = {
+  favoriteFilled: { state: 'active' as const },
+  edit: { state: 'enabled' as const },
+}
+
 const MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_TOOLBAR_INACTIVE: ToolbarConfig = [
   {
     group: 'main',
     icons: [
-      { key: 'edit', state: 'enabled' },
       { key: 'favorite', state: 'enabled' },
+      { key: 'edit', state: 'enabled' },
     ],
     status: 'enabled',
   },
@@ -148,26 +199,21 @@ const MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_TOOLBAR_ACTIVE: ToolbarConfig = [
   {
     group: 'main',
     icons: [
-      { key: 'edit', state: 'enabled' },
       { key: 'favoriteFilled', state: 'active' },
+      { key: 'edit', state: 'enabled' },
     ],
     status: 'enabled',
   },
 ]
 
 const MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_STATE_INACTIVE = {
-  edit: { state: 'enabled' as const },
   favorite: { state: 'enabled' as const },
+  edit: { state: 'enabled' as const },
 }
 
 const MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_STATE_ACTIVE = {
-  edit: { state: 'enabled' as const },
   favoriteFilled: { state: 'active' as const },
-}
-
-const MOBILE_CARDTEXT_TEMPLATE_PREVIEW_PIE_STATE = {
   edit: { state: 'enabled' as const },
-  delete: { state: 'enabled' as const },
 }
 
 export const MobileAppShell: React.FC<MobileAppShellProps> = ({
@@ -217,6 +263,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const cardtextAssetMatchesApplied = useAppSelector(
     selectCardtextAssetMatchesApplied,
   )
+  const cardtextViewInQuickList = useAppSelector(selectCardtextViewInQuickList)
   const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
   const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
   const senderSelectedId = useAppSelector(selectSenderSelectedId)
@@ -561,14 +608,14 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     mobileCentralArchivePostcardStatus != null &&
     !isCartArchivePiePostcardStatus
 
-  const canDeleteCardphotoTemplatePreview =
+  const canFavoriteCardphotoTemplatePreview =
     cardphotoAssetData?.status === 'inLine' ||
     cardphotoAssetData?.status === 'outLine' ||
     cardphotoAssetData?.status === 'processed'
 
   const showMobileCentralTemplatePreviewPieToolbar =
     (mobileCentralPieDisplay === 'cardphotoTemplate' &&
-      canDeleteCardphotoTemplatePreview) ||
+      canFavoriteCardphotoTemplatePreview) ||
     (mobileCentralPieDisplay === 'cardtextTemplate' &&
       mobileCardtextListTemplatePreview != null) ||
     (mobileCentralPieDisplay === 'addressTemplate' &&
@@ -582,6 +629,25 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     mobileAddressListTemplatePreview?.inQuickList
       ? MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_STATE_ACTIVE
       : MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_STATE_INACTIVE
+
+  const cardphotoTemplateInQuickList =
+    cardphotoAssetData?.status === 'inLine'
+
+  const cardphotoTemplatePreviewPieToolbar = cardphotoTemplateInQuickList
+    ? MOBILE_CARDPHOTO_TEMPLATE_PREVIEW_PIE_TOOLBAR_ACTIVE
+    : MOBILE_CARDPHOTO_TEMPLATE_PREVIEW_PIE_TOOLBAR_INACTIVE
+
+  const cardphotoTemplatePreviewPieState = cardphotoTemplateInQuickList
+    ? MOBILE_CARDPHOTO_TEMPLATE_PREVIEW_PIE_STATE_ACTIVE
+    : MOBILE_CARDPHOTO_TEMPLATE_PREVIEW_PIE_STATE_INACTIVE
+
+  const cardtextTemplatePreviewPieToolbar = cardtextViewInQuickList
+    ? MOBILE_CARDTEXT_TEMPLATE_PREVIEW_PIE_TOOLBAR_ACTIVE
+    : MOBILE_CARDTEXT_TEMPLATE_PREVIEW_PIE_TOOLBAR_INACTIVE
+
+  const cardtextTemplatePreviewPieState = cardtextViewInQuickList
+    ? MOBILE_CARDTEXT_TEMPLATE_PREVIEW_PIE_STATE_ACTIVE
+    : MOBILE_CARDTEXT_TEMPLATE_PREVIEW_PIE_STATE_INACTIVE
 
   const handleTemplatePreviewPieToolbarAction = useCallback(
     (key: IconKey) => {
@@ -634,21 +700,35 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
           )
           return false
         }
-        if (key === 'delete') {
-          dispatch(deleteCardtextFromViewRequested())
+        if (key === 'favorite' || key === 'favoriteFilled') {
+          dispatch(pulseListCardtextBadge())
+          dispatch(
+            toolbarAction({
+              section: 'cardtextView',
+              key: cardtextViewInQuickList ? 'removeFromList' : 'addList',
+            }),
+          )
           return false
         }
         return
       }
 
-      if (key !== 'delete') return
       if (mobileCentralPieDisplay === 'cardphotoTemplate') {
-        dispatch(deleteCardphotoFromViewRequested())
+        if (key !== 'favorite' && key !== 'favoriteFilled') return
+        dispatch(pulseListCardphotoBadge())
+        dispatch(
+          toolbarAction({
+            section: 'cardphotoView',
+            key: cardphotoTemplateInQuickList ? 'removeFromList' : 'addList',
+          }),
+        )
         return false
       }
     },
     [
+      cardphotoTemplateInQuickList,
       cardtextSession.status,
+      cardtextViewInQuickList,
       dispatch,
       mobileAddressListTemplatePreview,
       mobileCentralPieDisplay,
@@ -1182,15 +1262,15 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                             mobileCentralPieDisplay === 'addressTemplate'
                               ? addressTemplatePreviewPieToolbar
                               : mobileCentralPieDisplay === 'cardtextTemplate'
-                                ? MOBILE_CARDTEXT_TEMPLATE_PREVIEW_PIE_TOOLBAR
-                                : MOBILE_TEMPLATE_PREVIEW_PIE_TOOLBAR
+                                ? cardtextTemplatePreviewPieToolbar
+                                : cardphotoTemplatePreviewPieToolbar
                           }
                           stateOverride={
                             mobileCentralPieDisplay === 'addressTemplate'
                               ? addressTemplatePreviewPieState
                               : mobileCentralPieDisplay === 'cardtextTemplate'
-                                ? MOBILE_CARDTEXT_TEMPLATE_PREVIEW_PIE_STATE
-                                : undefined
+                                ? cardtextTemplatePreviewPieState
+                                : cardphotoTemplatePreviewPieState
                           }
                           mergedWithCenter
                           onActionClick={handleTemplatePreviewPieToolbarAction}
