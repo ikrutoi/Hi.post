@@ -12,6 +12,14 @@ import {
   selectRecipientListPanelOpen,
   selectSenderListPanelOpen,
 } from '@envelope/infrastructure/selectors'
+import { listStatusIsInQuickAddressBook } from '@envelope/domain/helpers'
+import { selectSenderEntriesState } from '@envelope/sender/infrastructure/selectors'
+import { selectRecipientEntriesState } from '@envelope/recipient/infrastructure/selectors'
+import { withDisabledToolbarGroups } from '@toolbar/domain/helpers'
+import {
+  ADDRESS_LIST_RECIPIENTS_TOOLBAR,
+  ADDRESS_LIST_SENDER_TOOLBAR,
+} from '@toolbar/domain/types/addressList.types'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
 import type { IconKey, IconState } from '@shared/config/constants'
@@ -40,6 +48,8 @@ export const AddressListMobileFactoryLowerToolbar: React.FC = () => {
   const senderListOpen = useAppSelector(selectSenderListPanelOpen)
   const recipientListOpen = useAppSelector(selectRecipientListPanelOpen)
   const activeSection = useAppSelector(selectActiveSection)
+  const senderEntries = useAppSelector(selectSenderEntriesState)
+  const recipientEntries = useAppSelector(selectRecipientEntriesState)
   const { isMobileLayout } = useSizeFacade()
   const { showMobileAddressListFactoryChrome } = useMobileFactoryListChrome()
 
@@ -49,9 +59,17 @@ export const AddressListMobileFactoryLowerToolbar: React.FC = () => {
     activeSection === 'envelope' &&
     showMobileAddressListFactoryChrome
 
+  const listEmpty = useMemo(() => {
+    const entries = senderListOpen ? senderEntries : recipientEntries
+    return !entries.some((e) => listStatusIsInQuickAddressBook(e.listStatus))
+  }, [recipientEntries, senderEntries, senderListOpen])
+
   const content = useMemo(() => {
     if (!enabled) return null
     const role = senderListOpen ? 'sender' : 'recipient'
+    const baseToolbar = senderListOpen
+      ? ADDRESS_LIST_SENDER_TOOLBAR
+      : ADDRESS_LIST_RECIPIENTS_TOOLBAR
     return (
       <div
         className={clsx(
@@ -66,10 +84,13 @@ export const AddressListMobileFactoryLowerToolbar: React.FC = () => {
           section={
             senderListOpen ? 'addressListSender' : 'addressListRecipients'
           }
+          groupsOverride={
+            listEmpty ? withDisabledToolbarGroups(baseToolbar) : undefined
+          }
         />
       </div>
     )
-  }, [enabled, senderListOpen])
+  }, [enabled, listEmpty, senderListOpen])
 
   useMobileScenarioToolbar(content)
 

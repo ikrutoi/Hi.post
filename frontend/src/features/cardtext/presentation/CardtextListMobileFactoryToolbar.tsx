@@ -7,8 +7,11 @@ import { useMobileScenarioToolbar } from '@features/cardSectionEditor/presentati
 import { setCardtextListPanelOpen } from '@cardtext/infrastructure/state'
 import {
   selectCardtextListCentralTemplateTitle,
+  selectCardtextTemplatesListItems,
   selectIsCardtextListPanelOpen,
 } from '@cardtext/infrastructure/selectors'
+import { withDisabledToolbarGroups } from '@toolbar/domain/helpers'
+import { CARDTEXT_LIST_TOOLBAR } from '@toolbar/domain/types/cardtextList.types'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
 import type { IconKey, IconState } from '@shared/config/constants'
@@ -36,6 +39,7 @@ const CARDTEXT_LIST_FACTORY_UPPER_TOOLBAR: ToolbarConfig = [
 export const CardtextListMobileFactoryLowerToolbar: React.FC = () => {
   const isOpen = useAppSelector(selectIsCardtextListPanelOpen)
   const activeSection = useAppSelector(selectActiveSection)
+  const templates = useAppSelector(selectCardtextTemplatesListItems)
   const { isMobileLayout } = useSizeFacade()
   const { showMobileCardtextListFactoryChrome } = useMobileFactoryListChrome()
 
@@ -45,6 +49,8 @@ export const CardtextListMobileFactoryLowerToolbar: React.FC = () => {
     activeSection === 'cardtext' &&
     showMobileCardtextListFactoryChrome
 
+  const listEmpty = (templates?.length ?? 0) === 0
+
   const content = useMemo(() => {
     if (!enabled) return null
     return (
@@ -52,10 +58,17 @@ export const CardtextListMobileFactoryLowerToolbar: React.FC = () => {
         className={styles.cardtextListToolbarRow}
         data-cardtext-list-toolbar
       >
-        <Toolbar section="cardtextList" />
+        <Toolbar
+          section="cardtextList"
+          groupsOverride={
+            listEmpty
+              ? withDisabledToolbarGroups(CARDTEXT_LIST_TOOLBAR)
+              : undefined
+          }
+        />
       </div>
     )
-  }, [enabled])
+  }, [enabled, listEmpty])
 
   useMobileScenarioToolbar(content)
 

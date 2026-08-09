@@ -12,10 +12,13 @@ import {
   selectCardphotoTitle,
 } from '@cardphoto/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import { withDisabledToolbarGroups } from '@toolbar/domain/helpers'
+import { CARDPHOTO_LIST_TOOLBAR } from '@toolbar/domain/types/cardphotoList.types'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
 import type { IconKey, IconState } from '@shared/config/constants'
 import type { ToolbarConfig } from '@toolbar/domain/types'
+import type { RootState } from '@app/state'
 import styles from './CardphotoListMobileFactoryToolbar.module.scss'
 
 function readApplyState(raw: unknown): IconState {
@@ -25,6 +28,15 @@ function readApplyState(raw: unknown): IconState {
     return String((raw as { state: unknown }).state) as IconState
   }
   return 'disabled'
+}
+
+function selectCardphotoInlineTemplateCount(state: RootState): number {
+  const raw = state.toolbar?.cardphoto?.listCardphoto
+  if (raw == null || typeof raw === 'string') return 0
+  const badge = (
+    raw as { options?: { badge?: number | null } }
+  ).options?.badge
+  return typeof badge === 'number' && badge > 0 ? badge : 0
 }
 
 const CARDPHOTO_LIST_FACTORY_UPPER_TOOLBAR: ToolbarConfig = [
@@ -39,6 +51,7 @@ const CARDPHOTO_LIST_FACTORY_UPPER_TOOLBAR: ToolbarConfig = [
 export const CardphotoListMobileFactoryLowerToolbar: React.FC = () => {
   const isOpen = useAppSelector(selectIsListPanelOpen)
   const activeSection = useAppSelector(selectActiveSection)
+  const inlineTemplateCount = useAppSelector(selectCardphotoInlineTemplateCount)
   const { isMobileLayout } = useSizeFacade()
   const { showMobileCardphotoListFactoryChrome } = useMobileFactoryListChrome()
 
@@ -48,6 +61,8 @@ export const CardphotoListMobileFactoryLowerToolbar: React.FC = () => {
     activeSection === 'cardphoto' &&
     showMobileCardphotoListFactoryChrome
 
+  const listEmpty = inlineTemplateCount === 0
+
   const content = useMemo(() => {
     if (!enabled) return null
     return (
@@ -55,10 +70,17 @@ export const CardphotoListMobileFactoryLowerToolbar: React.FC = () => {
         className={styles.cardphotoListToolbarRow}
         data-cardphoto-list-toolbar
       >
-        <Toolbar section="cardphotoList" />
+        <Toolbar
+          section="cardphotoList"
+          groupsOverride={
+            listEmpty
+              ? withDisabledToolbarGroups(CARDPHOTO_LIST_TOOLBAR)
+              : undefined
+          }
+        />
       </div>
     )
-  }, [enabled])
+  }, [enabled, listEmpty])
 
   useMobileScenarioToolbar(content)
 
