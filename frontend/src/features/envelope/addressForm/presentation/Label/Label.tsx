@@ -7,6 +7,7 @@ import type { AddressFields } from '@shared/config/constants'
 
 const TITLE_CASE_FIELDS = new Set<keyof AddressFields>([
   'name',
+  'street',
   'city',
   'country',
 ])

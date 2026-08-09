@@ -98,7 +98,10 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     const next =
       field === 'zip'
         ? value.toUpperCase()
-        : field === 'name' || field === 'city' || field === 'country'
+        : field === 'name' ||
+            field === 'street' ||
+            field === 'city' ||
+            field === 'country'
           ? capitalizeWords(value)
           : value
     if (isEditMode) {
