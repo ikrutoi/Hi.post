@@ -30,7 +30,7 @@ import {
 import { selectArchiveEnvelopeSandboxActive } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { listStatusIsInQuickAddressBook } from '@envelope/domain/helpers'
-import { capitalizeWords } from '@shared/utils/helpers'
+import { applyTitleCaseInput } from '@shared/utils/helpers'
 import { TemplateFavoriteToggle } from '@shared/ui/TemplateFavoriteToggle/TemplateFavoriteToggle'
 import { useEnvelopeMobileAddressFocus } from '../../presentation/EnvelopeMobileAddressFocusContext'
 
@@ -88,38 +88,95 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   const zipRef = useRef<HTMLInputElement | null>(null)
   const cityRef = useRef<HTMLInputElement | null>(null)
   const countryRef = useRef<HTMLInputElement | null>(null)
+  /** Restore caret after controlled capitalize/uppercase re-render. */
+  const pendingSelectionRef = useRef<{
+    field: keyof AddressFields
+    start: number
+    end: number
+  } | null>(null)
 
   const cityZipValue = useMemo(() => {
     const parts = [address.zip, address.city].filter(Boolean)
     return parts.join(', ')
   }, [address.zip, address.city])
 
-  const updateField = (field: keyof AddressFields, value: string) => {
-    const next =
-      field === 'zip'
-        ? value.toUpperCase()
-        : field === 'name' ||
-            field === 'street' ||
-            field === 'city' ||
-            field === 'country'
-          ? capitalizeWords(value)
-          : value
+  const commitFieldValue = (field: keyof AddressFields, value: string) => {
     if (isEditMode) {
-      dispatch(updateAddressEditDraftField({ field, value: next }))
+      dispatch(updateAddressEditDraftField({ field, value }))
       return
     }
     if (role === 'sender') {
       if (sandboxActive) {
-        dispatch(updateArchiveSenderField({ field, value: next }))
+        dispatch(updateArchiveSenderField({ field, value }))
       } else {
-        dispatch(updateSenderField({ field, value: next } as any))
+        dispatch(updateSenderField({ field, value } as any))
       }
     } else if (sandboxActive) {
-      dispatch(updateArchiveRecipientField({ field, value: next }))
+      dispatch(updateArchiveRecipientField({ field, value }))
     } else {
-      dispatch(updateRecipientField({ field, value: next } as any))
+      dispatch(updateRecipientField({ field, value } as any))
     }
   }
+
+  const handleFieldChange =
+    (field: keyof AddressFields) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const input = e.currentTarget
+      const raw = input.value
+      const prev = address[field] ?? ''
+      const selectionStart = input.selectionStart ?? raw.length
+      const selectionEnd = input.selectionEnd ?? raw.length
+      const next =
+        field === 'zip'
+          ? raw.toUpperCase()
+          : field === 'name' ||
+              field === 'street' ||
+              field === 'city' ||
+              field === 'country'
+            ? applyTitleCaseInput(prev, raw)
+            : raw
+      const delta = next.length - raw.length
+      pendingSelectionRef.current = {
+        field,
+        start: Math.max(0, selectionStart + delta),
+        end: Math.max(0, selectionEnd + delta),
+      }
+      commitFieldValue(field, next)
+    }
+
+  useLayoutEffect(() => {
+    const pending = pendingSelectionRef.current
+    if (pending == null) return
+    pendingSelectionRef.current = null
+    const input =
+      pending.field === 'name'
+        ? nameRef.current
+        : pending.field === 'street'
+          ? streetRef.current
+          : pending.field === 'zip'
+            ? zipRef.current
+            : pending.field === 'city'
+              ? cityRef.current
+              : pending.field === 'country'
+                ? countryRef.current
+                : null
+    if (!input || document.activeElement !== input) return
+    const max = input.value.length
+    try {
+      input.setSelectionRange(
+        Math.min(pending.start, max),
+        Math.min(pending.end, max),
+      )
+    } catch {
+      /* Edge may reject setSelectionRange on some input states */
+    }
+  }, [
+    address.name,
+    address.street,
+    address.zip,
+    address.city,
+    address.country,
+  ])
 
   useEffect(() => {
     if (!isEditMode && activeRow !== 'name') {
@@ -179,6 +236,9 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     }
 
     if (!input) return false
+
+    /** Already focused (user placed caret) — do not yank selection to the end. */
+    if (document.activeElement === input) return true
 
     editModeOpenedAt.current = Date.now()
     const len = input.value.length
@@ -261,15 +321,6 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
         moveFocus('up', row)
       }
     }
-
-  const handleCityZipChange = (value: string) => {
-    const [zipPart, ...cityParts] = value.split(',')
-    const zip = zipPart?.trim() ?? ''
-    const city = cityParts.join(',').trim()
-
-    updateField('zip', zip)
-    updateField('city', city)
-  }
 
   const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
     const next = e.relatedTarget as HTMLElement | null
@@ -372,7 +423,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
             value={address.name}
             autoCapitalize="words"
             autoCorrect="on"
-            onChange={(e) => updateField('name', e.target.value)}
+            onChange={handleFieldChange('name')}
             onKeyDown={handleKeyDown('name')}
             onBlur={handleBlur}
           />
@@ -397,7 +448,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
               styles.recipientAddressInputActive,
             )}
             value={address.street}
-            onChange={(e) => updateField('street', e.target.value)}
+            onChange={handleFieldChange('street')}
             onKeyDown={handleKeyDown('street')}
             onBlur={handleBlur}
           />
@@ -426,7 +477,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
               autoCapitalize="characters"
               autoCorrect="off"
               spellCheck={false}
-              onChange={(e) => updateField('zip', e.target.value)}
+              onChange={handleFieldChange('zip')}
               onFocus={() => setCityZipFocus('zip')}
               onKeyDown={(e) => {
                 if (e.key === 'ArrowDown') {
@@ -453,7 +504,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
               value={address.city}
               autoCapitalize="words"
               autoCorrect="on"
-              onChange={(e) => updateField('city', e.target.value)}
+              onChange={handleFieldChange('city')}
               onFocus={() => setCityZipFocus('city')}
               onKeyDown={(e) => {
                 if (e.key === 'ArrowUp') {
@@ -501,7 +552,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
             value={address.country}
             autoCapitalize="words"
             autoCorrect="on"
-            onChange={(e) => updateField('country', e.target.value)}
+            onChange={handleFieldChange('country')}
             onKeyDown={handleKeyDown('country')}
             onBlur={handleBlur}
           />

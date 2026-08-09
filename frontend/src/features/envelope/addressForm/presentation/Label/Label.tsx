@@ -1,7 +1,7 @@
-import React, { forwardRef } from 'react'
+import React, { forwardRef, useLayoutEffect, useRef } from 'react'
 import clsx from 'clsx'
 import { getToolbarIcon } from '@shared/utils/icons'
-import { capitalizeWords } from '@shared/utils/helpers'
+import { applyTitleCaseInput } from '@shared/utils/helpers'
 import styles from './Label.module.scss'
 import type { AddressFields } from '@shared/config/constants'
 
@@ -24,16 +24,52 @@ type LabelProps = {
 
 export const Label = forwardRef<HTMLInputElement, LabelProps>(
   ({ role, roleLabel, label, field, value, onValueChange, onKeyDown }, ref) => {
+    const inputRef = useRef<HTMLInputElement | null>(null)
+    const pendingSelectionRef = useRef<{ start: number; end: number } | null>(
+      null,
+    )
+
+    const setRefs = (el: HTMLInputElement | null) => {
+      inputRef.current = el
+      if (typeof ref === 'function') ref(el)
+      else if (ref) ref.current = el
+    }
+
     const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-      const raw = e.target.value
+      const input = e.currentTarget
+      const raw = input.value
+      const selectionStart = input.selectionStart ?? raw.length
+      const selectionEnd = input.selectionEnd ?? raw.length
       const next =
         field === 'zip'
           ? raw.toUpperCase()
           : TITLE_CASE_FIELDS.has(field)
-            ? capitalizeWords(raw)
+            ? applyTitleCaseInput(value, raw)
             : raw
+      const delta = next.length - raw.length
+      pendingSelectionRef.current = {
+        start: Math.max(0, selectionStart + delta),
+        end: Math.max(0, selectionEnd + delta),
+      }
       onValueChange(field, next)
     }
+
+    useLayoutEffect(() => {
+      const pending = pendingSelectionRef.current
+      if (pending == null) return
+      pendingSelectionRef.current = null
+      const input = inputRef.current
+      if (!input || document.activeElement !== input) return
+      const max = input.value.length
+      try {
+        input.setSelectionRange(
+          Math.min(pending.start, max),
+          Math.min(pending.end, max),
+        )
+      } catch {
+        /* Edge may reject setSelectionRange on some input states */
+      }
+    }, [value])
 
     const handleClear = () => {
       onValueChange(field, '')
@@ -62,7 +98,7 @@ export const Label = forwardRef<HTMLInputElement, LabelProps>(
               field === 'zip' && styles.labelInputZip,
               field === 'city' && styles.labelInputCity,
             )}
-            ref={ref}
+            ref={setRefs}
             type="text"
             value={value}
             aria-label={label}
