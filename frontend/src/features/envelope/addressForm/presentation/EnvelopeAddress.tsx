@@ -30,7 +30,11 @@ import {
   setArchiveRecipientView,
   setArchiveRecipientViewId,
 } from '@cardPanel/infrastructure/state'
-import { closeAddressEditSession } from '@envelope/infrastructure/state'
+import {
+  closeAddressEditSession,
+  setAddressFormView,
+  clearAddressCreateEditContext,
+} from '@envelope/infrastructure/state'
 import {
   selectActiveAddressEdit,
   selectRecipientViewEditMode,
@@ -431,6 +435,42 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     }
   }
 
+  /**
+   * Count badge (multi selection): from single View / Create back to the
+   * selected-addresses grid — same outcome as lower-toolbar return.
+   */
+  const handleRecipientsCountBadgeClick = useCallback(() => {
+    if (recipientsFormViewIdsCount <= 1) return
+    if (recipientView === 'recipientsView') return
+
+    if (sandboxActive) {
+      dispatch(setArchiveRecipientViewId(null))
+      dispatch(setArchiveRecipientView('recipientsView'))
+      return
+    }
+
+    if (recipientView === 'recipientView') {
+      dispatch(toolbarAction({ section: 'recipientView', key: 'return' }))
+      return
+    }
+
+    if (recipientViewEditMode) {
+      dispatch(
+        closeAddressEditSession({ role: 'recipient', keepRecipientView: true }),
+      )
+    }
+    dispatch(clearAddressCreateEditContext())
+    dispatch(setAddressFormView({ show: false, role: null }))
+    dispatch(setRecipientViewId(null))
+    dispatch(setRecipientView('recipientsView'))
+  }, [
+    recipientsFormViewIdsCount,
+    recipientView,
+    sandboxActive,
+    recipientViewEditMode,
+    dispatch,
+  ])
+
   const handlePlaceholderClick = (r: 'sender' | 'recipient') => {
     if (isMobile) {
       if (!bothFormsApplied && mobileFocus != null && mobileFocus.dualSide !== r) {
@@ -660,9 +700,19 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
            */}
           <div className={styles.envelopeRecipientToolbarIconContainer}>
             {recipientsFormViewIdsCount > 1 && (
-              <span className={styles.recipientsCountBadge}>
+              <button
+                type="button"
+                className={clsx(
+                  styles.recipientsCountBadge,
+                  recipientView !== 'recipientsView' &&
+                    styles.recipientsCountBadgeInteractive,
+                )}
+                onClick={handleRecipientsCountBadgeClick}
+                disabled={recipientView === 'recipientsView'}
+                aria-label="Open selected recipients list"
+              >
                 {recipientsFormViewIdsCount}
-              </span>
+              </button>
             )}
             <IconUsers className={styles.envelopeRecipientToolbarIcon} />
           </div>

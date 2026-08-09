@@ -1012,12 +1012,6 @@ function* openAddressViewFromFormDraftIfSaved(
   const recipient: RecipientState = yield select(selectRecipientState)
   if (recipient.formIsEmpty ?? true) return false
 
-  /**
-   * Multi recipients form: addressAdd means «new address», not reopen a
-   * leftover formDraft that matches one of the already selected cards.
-   */
-  if (recipient.currentView === 'recipientsView') return false
-
   const draft = normalizeAddressFields(recipient.formDraft as AddressFields)
   const recipientEntries: AddressBookEntry[] = yield select(
     (s: RootState) => s.addressBook?.recipientEntries ?? [],
@@ -1031,13 +1025,24 @@ function* openAddressViewFromFormDraftIfSaved(
   )
   if (!id) return false
 
-  const selectedIds = new Set<string>([
-    ...(recipient.recipientsViewIdsFirstList ?? []),
-    ...(recipient.recipientsViewIdsSecondList ?? []),
-  ])
-  const pendingIds: string[] = yield select(selectRecipientsPendingIds)
-  for (const pendingId of pendingIds) selectedIds.add(pendingId)
-  if (selectedIds.has(id)) return false
+  const matchedEntry = recipientEntries.find((e) => e.id === id)
+  const matchedInQuickList = listStatusIsInQuickAddressBook(
+    matchedEntry?.listStatus,
+  )
+  /**
+   * Leftover formDraft of an already-selected quick-list card → do not reopen
+   * View (addressAdd should start a new create). outList / badge `1` drafts
+   * still reopen in View even when already in the multi selection.
+   */
+  if (matchedInQuickList) {
+    const selectedIds = new Set<string>([
+      ...(recipient.recipientsViewIdsFirstList ?? []),
+      ...(recipient.recipientsViewIdsSecondList ?? []),
+    ])
+    const pendingIds: string[] = yield select(selectRecipientsPendingIds)
+    for (const pendingId of pendingIds) selectedIds.add(pendingId)
+    if (selectedIds.has(id)) return false
+  }
 
   yield put(setAddressFormView({ show: false, role: null }))
   yield put(setRecipientViewDraft(draft))
@@ -1791,9 +1796,8 @@ function* handleEnvelopeToolbarAction(
       if (openedView) return
 
       /**
-       * From the multi list, drop a formDraft that already matches a book
-       * template so Create starts empty (badge reopen of a true unsaved draft
-       * still works — that draft has no matching entry id).
+       * From the multi list: clear only a leftover quick-list formDraft so
+       * Create is empty. outList drafts are handled above as View (badge `1`).
        */
       if (recipientBeforeAdd.currentView === 'recipientsView') {
         if (!(recipientBeforeAdd.formIsEmpty ?? true)) {
@@ -1810,7 +1814,14 @@ function* handleEnvelopeToolbarAction(
               address: normalizeAddressFields(e.address ?? {}),
             })),
           )
-          if (matchingId != null) {
+          const matchedEntry =
+            matchingId != null
+              ? recipientEntries.find((e) => e.id === matchingId)
+              : undefined
+          if (
+            matchingId != null &&
+            listStatusIsInQuickAddressBook(matchedEntry?.listStatus)
+          ) {
             yield put(clearRecipientFormData())
           }
         }

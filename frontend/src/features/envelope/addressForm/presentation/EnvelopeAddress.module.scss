@@ -123,10 +123,15 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
   left: 0.5rem;
 }
 
-/* create-форма: иконка получателей не перехватывает клики по applyLight / close */
+/* create-форма: IconUsers не перехватывает клики по applyLight / close;
+   счётчик остаётся кликабельным (возврат к списку выбранных). */
 .addressFormRecipientBody:has(.addressFieldsetCreateOpen)
   > .envelopeRecipientToolbarIconContainer {
   pointer-events: none;
+
+  .recipientsCountBadgeInteractive {
+    pointer-events: auto;
+  }
 }
 
 .addressFormSenderBody .addressFormSender,
@@ -376,10 +381,14 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.25rem;
-  min-width: 1.25rem;
-  height: 1.25rem;
-  padding: 0;
+  /* Same track as sender Toggle default (2.125 × 1.125 rem), without the knob. */
+  width: 2.125rem;
+  min-width: 2.125rem;
+  height: 1.125rem;
+  padding: 0 0.2rem;
+  margin: 0;
+  border: none;
+  appearance: none;
   box-sizing: border-box;
   background-color: $color-envelope-recipient-input-border;
   color: $color-envelope-recipient-legend;
@@ -387,9 +396,28 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
   font-weight: 700;
   line-height: 1;
   font-family: sans-serif;
-  border-radius: 50%;
+  border-radius: 1.125rem;
   box-shadow: 0 0 0 1px rgba($color-envelope-recipient-legend, 0.15);
   flex-shrink: 0;
+  cursor: default;
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+.recipientsCountBadgeInteractive {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  &:hover {
+    filter: brightness(0.97);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba($color-envelope-recipient-legend, 0.45);
+    outline-offset: 2px;
+  }
 }
 
 .labelGroup {
