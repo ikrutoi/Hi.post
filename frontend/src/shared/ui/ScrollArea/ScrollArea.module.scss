@@ -57,18 +57,18 @@
 }
 
 /**
- * Cart / history: полный серый трек + коричневый thumb внутри
+ * Cart / history / envelope: полный серый трек + коричневый thumb внутри
  * (`$color-font-disabled` / `$color-toggle-active`).
- * Ширина 6px. Серый — только при overflow.
+ * Ширина 4px — как трек мини-паев слева от CardPie. Серый — только при overflow.
  */
 .scrollbarTrackSelection:not(.scrollbarHidden) {
-  width: 6px;
+  width: 4px;
   background-color: $color-font-disabled;
   border-radius: 999px;
 }
 
 .scrollbarTrackSelection.scrollbarHidden {
-  width: 6px;
+  width: 4px;
   background-color: transparent;
 }
 
@@ -76,7 +76,7 @@
   left: 0;
   right: 0;
   width: 100%;
-  border-radius: inherit;
+  border-radius: 999px;
   background-color: $color-toggle-active;
 
   &:hover {

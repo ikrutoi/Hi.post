@@ -124,10 +124,9 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
 }
 
 /* create-форма: иконка получателей не перехватывает клики по applyLight / close */
-.addressFieldsetCreateOpen {
-  .envelopeRecipientToolbarIconContainer {
-    pointer-events: none;
-  }
+.addressFormRecipientBody:has(.addressFieldsetCreateOpen)
+  > .envelopeRecipientToolbarIconContainer {
+  pointer-events: none;
 }
 
 .addressFormSenderBody .addressFormSender,
@@ -154,6 +153,8 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
 
 .recipientFieldsetWithList {
   padding-right: 0;
+  /** Обрезает скролл-трек по скруглению формы. IconUsers — снаружи fieldset. */
+  overflow: hidden;
 }
 
 .addressLegendReplicaContainer {
@@ -190,7 +191,8 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
 
 .envelopeRecipientToolbarIconContainer {
   position: absolute;
-  top: 0;
+  /** Верх fieldset = padding-top body; иконка живёт снаружи clip. */
+  top: $envelopeRecipientBodyTopOffset;
   right: 1rem;
   min-width: iconButton.$toolbar-hit-size-desktop;
   height: iconButton.$toolbar-hit-size-desktop;
@@ -201,6 +203,7 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
   gap: 0.35rem;
   padding: 0 0.25rem 0 0.5rem;
   box-sizing: border-box;
+  z-index: 3;
   // border: solid 1px blue;
 }
 
@@ -287,6 +290,8 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
   &.addressFieldset {
     border: solid 1px $color-envelope-recipient-border;
     // border: solid 1px red;
+    /** IconUsers вынесен наружу — можно безопасно клипать содержимое по радиусу. */
+    overflow: hidden;
   }
 
   &:has(
@@ -294,9 +299,7 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
         > [data-envelope-address-surface][data-envelope-address-view-mode='view']
     ) {
     padding: 0;
-    /* Keep overflow visible so IconUsers (lifted above the top edge) stays shown
-     * for a single selected recipient — same as empty / multi-recipient modes. */
-    overflow: visible;
+    overflow: hidden;
 
     .addressFieldsetInner {
       overflow: hidden;
@@ -500,13 +503,20 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
 
 .recipientFieldsetContainerScroll {
   position: absolute;
-  top: calc(3px + #{$envelopeRecipientBodyTopOffset});
-  right: 2px;
-  width: 0.75rem;
-  height: calc(100% - 4px - #{$envelopeRecipientBodyTopOffset});
-  border-radius: 0 0.75rem 0.75rem 0;
+  /** Внутри fieldset: обрезка по border-radius родителя (overflow: hidden). */
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 4px;
+  /** Полный pill 4px, как трек мини-паев. */
+  border-radius: 999px;
   overflow: hidden;
-  z-index: 1;
+  z-index: 2;
+  pointer-events: none;
+
+  :global([data-scrollarea-track]) {
+    pointer-events: auto;
+  }
 }
 
 /* Пустой отправитель: якорь слева снизу (зона отправителя на конверте) */

@@ -294,16 +294,7 @@ export const CardPie: React.FC<CardPieProps> = ({
           width="512"
           height="512"
           viewBox="0 0 5120 5120"
-          className={clsx(
-            styles.svg,
-            /**
-             * Список «Заблокированные»: все секторы ч/б.
-             * Центральный CardPie: только дата (pieTextDateDisabled), без grayscale SVG.
-             */
-            status === 'cartBlocked' &&
-              !sectorsInteractive &&
-              styles.svgCartBlockedMuted,
-          )}
+          className={styles.svg}
           fillRule="evenodd"
           clipRule="evenodd"
           imageRendering="optimizeQuality"

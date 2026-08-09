@@ -1,4 +1,5 @@
 import React from 'react'
+import clsx from 'clsx'
 import { AddressBookCell } from '../../addressBook/presentation/AddressBookCell'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import styles from './AddressView.module.scss'
@@ -19,10 +20,18 @@ export const RecipientsView: React.FC<RecipientsViewProps> = ({
   onOpenRecipient,
 }) => {
   return (
-    <div className={styles.savedAddressViewContainer} data-envelope-address-surface>
+    <div
+      className={clsx(
+        styles.savedAddressViewContainer,
+        /** Без max-height: 90% — иначе скролл появляется при свободном месте снизу. */
+        styles.savedAddressViewContainerFill,
+      )}
+      data-envelope-address-surface
+    >
       <ScrollArea
         className={styles.savedAddressViewScrollSlot}
         scrollbarPortalTarget={scrollbarPortalTarget}
+        selectionAccentThumb
       >
         <div className={styles.recipientsViewGrid} data-density-level={2}>
           {entries.map((entry) => (

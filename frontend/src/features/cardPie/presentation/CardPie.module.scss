@@ -124,15 +124,6 @@ $pie-center-cart-blocked-inner-stop: (
   height: 100%;
 }
 
-/**
- * Мини-pie в списке «Заблокированные» (`!sectorsInteractive`): все секторы ч/б.
- * Центр (жёлто-красный) рендерится вне SVG — цвет не трогаем.
- * Центральный CardPie полный grayscale не получает — там только дата.
- */
-.svgCartBlockedMuted {
-  filter: grayscale(1);
-}
-
 .rect {
   fill: var(--pie-rect-fill);
 }

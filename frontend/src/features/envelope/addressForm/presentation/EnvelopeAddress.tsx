@@ -141,7 +141,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const setRecipientFieldsetContainerScrollRef = useCallback(
     (el: HTMLDivElement | null) => {
       recipientFieldsetContainerScrollRef.current = el
-      if (el) setRecipientScrollContainerReady(true)
+      setRecipientScrollContainerReady(el != null)
     },
     [],
   )
@@ -654,10 +654,18 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
       {role === 'recipient' && (
         <div className={styles.addressFormRecipientBody}>
-          <div
-            ref={setRecipientFieldsetContainerScrollRef}
-            className={styles.recipientFieldsetContainerScroll}
-          />
+          {/**
+           * IconUsers выше верхней кромки fieldset — снаружи clip-контейнера,
+           * иначе overflow:hidden на форме обрежет иконку вместе со скроллом.
+           */}
+          <div className={styles.envelopeRecipientToolbarIconContainer}>
+            {recipientsFormViewIdsCount > 1 && (
+              <span className={styles.recipientsCountBadge}>
+                {recipientsFormViewIdsCount}
+              </span>
+            )}
+            <IconUsers className={styles.envelopeRecipientToolbarIcon} />
+          </div>
           <div className={styles.addressFieldsetStack}>
             <div
               ref={recipientFieldsetRef}
@@ -675,14 +683,12 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               )}
               onMouseDownCapture={handleRecipientFieldsetMouseDownCapture}
             >
-              <div className={styles.envelopeRecipientToolbarIconContainer}>
-                {recipientsFormViewIdsCount > 1 && (
-                  <span className={styles.recipientsCountBadge}>
-                    {recipientsFormViewIdsCount}
-                  </span>
-                )}
-                <IconUsers className={styles.envelopeRecipientToolbarIcon} />
-              </div>
+              {showRecipientsEnvelopeList ? (
+                <div
+                  ref={setRecipientFieldsetContainerScrollRef}
+                  className={styles.recipientFieldsetContainerScroll}
+                />
+              ) : null}
               <div className={styles.addressFieldsetInner}>
                 {recipientView === 'recipientCreate' ? (
                   <AddressFormView

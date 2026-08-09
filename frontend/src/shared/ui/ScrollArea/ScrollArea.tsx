@@ -15,8 +15,8 @@ type ScrollAreaProps = {
   contentClassName?: string
   scrollbarPortalTarget?: React.RefObject<HTMLElement | null>
   /**
-   * Cart / history: full-height disabled-color track with toggle-active
-   * (selection accent) thumb inside — same scheme as gutter mini pies.
+   * Cart / history / envelope: full-height disabled-color track with
+   * toggle-active thumb — same 4px scheme as gutter mini pies.
    */
   selectionAccentThumb?: boolean
 }
@@ -39,7 +39,8 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
     if (!el || !track) return
 
     const { scrollHeight, clientHeight, scrollTop } = el
-    if (scrollHeight <= clientHeight || clientHeight === 0) {
+    /** Sub-pixel layout can make scrollHeight ≈ clientHeight + 0.5…1 without real overflow. */
+    if (scrollHeight - clientHeight < 1 || clientHeight === 0) {
       setThumbHeight(0)
       setThumbTop(0)
       return
@@ -94,7 +95,7 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
 
     const onWheel = (ev: WheelEvent) => {
       const { scrollHeight, clientHeight } = el
-      if (scrollHeight <= clientHeight) return
+      if (scrollHeight - clientHeight < 1) return
       ev.preventDefault()
       el.scrollTop += ev.deltaY
       updateThumb()
