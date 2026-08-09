@@ -546,15 +546,9 @@ export const Toolbar = ({
       mergedOptions?.badge ?? (rawData as any)?.options?.badge
     /**
      * editorPie cart: `+` badge (glyph is cart, action still addCart).
-     * Create form: duplicate of an inList address → keep applyMedium + `!` badge.
+     * Duplicate create draft: applyMedium stays disabled (no `!` badge).
      */
-    const badge = editorPieCartAdd
-      ? '+'
-      : key === 'applyMedium' &&
-          (section === 'senderCreate' || section === 'recipientCreate') &&
-          createDraftInList
-        ? '!'
-        : badgeFromState
+    const badge = editorPieCartAdd ? '+' : badgeFromState
     const hasBadge =
       badge != null &&
       (typeof badge === 'number' || typeof badge === 'string') &&
