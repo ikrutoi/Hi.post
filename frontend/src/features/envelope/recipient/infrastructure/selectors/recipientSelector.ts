@@ -125,13 +125,19 @@ export const selectAppliedRecipientDisplayAddress = createSelector(
       if (hasFields) return recipient.appliedData
     }
 
-    const appliedId = recipient.applied?.[0]
-    if (appliedId) {
-      const entry = entries.find((e: { id: string }) => e.id === appliedId)
+    const applied = recipient.applied ?? EMPTY_STRINGS
+    const browseId =
+      recipient.recipientViewId != null &&
+      applied.includes(recipient.recipientViewId)
+        ? recipient.recipientViewId
+        : (applied[0] ?? null)
+
+    if (browseId) {
+      const entry = entries.find((e: { id: string }) => e.id === browseId)
       if (entry?.address) return entry.address as AddressFields
 
       const envelopeRow = envelopeRecipients.find(
-        (row) => row.recipientViewId === appliedId,
+        (row) => row.recipientViewId === browseId,
       )
       if (envelopeRow?.appliedData != null) {
         const hasFields = Object.values(envelopeRow.appliedData).some(

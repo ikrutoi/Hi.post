@@ -7,7 +7,11 @@ import { useSenderFacade } from '@envelope/sender/application/facades'
 import { useRecipientFacade } from '@envelope/recipient/application/facades'
 import { selectActiveAddressEdit } from '@envelope/infrastructure/selectors'
 import { selectSenderApplied, selectSenderView } from '@envelope/sender/infrastructure/selectors'
-import { selectRecipientView, selectRecipientsFormViewIdsCount } from '@envelope/recipient/infrastructure/selectors'
+import {
+  selectRecipientView,
+  selectRecipientsFormViewIdsCount,
+  selectRecipientState,
+} from '@envelope/recipient/infrastructure/selectors'
 import {
   selectArchiveEnvelopeSandboxActive,
   selectArchiveSandboxRecipient,
@@ -27,7 +31,12 @@ import {
 } from '@toolbar/domain/types/addressView.types'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import { listStatusIsInQuickAddressBook } from '@envelope/domain/helpers'
+import {
+  selectRecipientViewEditMode,
+  selectSenderViewEditMode,
+} from '@envelope/infrastructure/selectors'
 import { useEnvelopeMobileAddressFocus } from './EnvelopeMobileAddressFocusContext'
+import { RecipientsBrowseToolbar } from '@envelope/addressForm/presentation/RecipientsBrowseToolbar'
 import styles from './Envelope.module.scss'
 
 type EnvelopeMobileAddressViewToolbarProps = {
@@ -43,6 +52,7 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
     assemblySenderSimplifiedPeek,
     assemblyRecipientSimplifiedPeek,
     archiveCartEnvelopeSimplifiedPeek,
+    cardPieEditEngaged,
   } = useMobileFactoryListChrome()
   const { rightPieEnvelopePeekNoToolbar } = useRightListArchiveMini()
   /**
@@ -69,6 +79,23 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
   const recipientsFormViewIdsCount = useAppSelector(
     selectRecipientsFormViewIdsCount,
   )
+  const recipientState = useAppSelector(selectRecipientState)
+  const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
+  const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
+  const addressEditActive =
+    senderViewEditMode || recipientViewEditMode || cardPieEditEngaged
+  const recipientsMultiListReady = useMemo(() => {
+    if (sandboxActive) {
+      const first =
+        sandboxRecipient.recipientsViewIdsFirstList?.length ?? 0
+      const second =
+        sandboxRecipient.recipientsViewIdsSecondList?.length ?? 0
+      return first > 1 || second > 1
+    }
+    const first = recipientState?.recipientsViewIdsFirstList?.length ?? 0
+    const second = recipientState?.recipientsViewIdsSecondList?.length ?? 0
+    return first > 1 || second > 1
+  }, [sandboxActive, sandboxRecipient, recipientState])
   const envelopeFacade = useEnvelopeFacade()
   const senderFacade = useSenderFacade()
   const recipientFacade = useRecipientFacade()
@@ -192,7 +219,16 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
   const showRecipientsMultiToolbar =
     recipientToolbarSlot &&
     recipientView === 'recipientsView' &&
-    recipientsFormViewIdsCount > 1
+    recipientsMultiListReady
+
+  /**
+   * After both sender + recipient Apply, with multi recipients and no edit:
+   * browse chrome (← scale →) — scale length = recipient address count.
+   */
+  const showRecipientsBrowseToolbar =
+    bothAppliedToolbarSlot &&
+    recipientsMultiListReady &&
+    !addressEditActive
 
   const section: 'senderView' | 'recipientView' | 'recipients' | null =
     showSenderToolbar
@@ -241,7 +277,9 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
             styles.envelopeAddressViewToolbarRowComplete,
         )}
         data-envelope-address-view-toolbar
-        aria-hidden={section == null ? true : undefined}
+        aria-hidden={
+          section == null && !showRecipientsBrowseToolbar ? true : undefined
+        }
       >
         {section === 'senderView' || section === 'recipientView' ? (
           <Toolbar section={section} groupsOverride={addressViewToolbar} />
@@ -250,6 +288,8 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
             section="recipients"
             groupsOverride={ENVELOPE_MOBILE_RECIPIENTS_MULTI_VIEW_TOOLBAR}
           />
+        ) : showRecipientsBrowseToolbar ? (
+          <RecipientsBrowseToolbar />
         ) : null}
       </div>
     ) : historyEnvelopeListPeek ? (

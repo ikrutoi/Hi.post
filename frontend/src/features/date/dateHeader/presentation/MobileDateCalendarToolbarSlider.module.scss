@@ -22,10 +22,29 @@
   border: none;
   color: $color-font-enabled-light;
   cursor: pointer;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
   transition: color 0.2s ease;
 
-  &:hover {
-    color: $color-font-enabled-light-hover;
+  &:active,
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    background-color: #fff;
+    color: $color-font-enabled-light;
+  }
+
+  &:disabled {
+    color: $color-font-enabled-light;
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  @include iconButton.toolbar-key-hover-fine-pointer {
+    &:hover:not(:disabled) {
+      color: $color-font-enabled-light-hover;
+    }
   }
 
   /**
@@ -41,6 +60,8 @@
     &:focus,
     &:focus-visible {
       background-color: transparent;
+      outline: none;
+      color: $color-font-enabled-light;
     }
   }
 }
