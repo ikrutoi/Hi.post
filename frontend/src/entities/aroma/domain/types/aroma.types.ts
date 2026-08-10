@@ -2,7 +2,6 @@ import img100_11 from '../../assets/300_11.png'
 import img301_11 from '../../assets/301_11.png'
 import img303_11 from '../../assets/303_11.png'
 import img306_11 from '../../assets/306_11.png'
-import img311_11 from '../../assets/311_11.png'
 import img314_11 from '../../assets/314_11.png'
 import imgNl116 from '../../assets/nl_116.png'
 import imgNl116Thumb from '../../assets/nl_116_thumb.png'
@@ -10,6 +9,8 @@ import imgNl302 from '../../assets/nl_302.png'
 import imgNl302Thumb from '../../assets/nl_302_thumb.png'
 import imgNl305 from '../../assets/nl_305.png'
 import imgNl305Thumb from '../../assets/nl_305_thumb.png'
+import imgNl311 from '../../assets/nl_311.png'
+import imgNl311Thumb from '../../assets/nl_311_thumb.png'
 
 export const AROMA_CELL_COUNT = 9 as const
 
@@ -27,7 +28,7 @@ export const AROMA_IMAGES: Record<AromaSlot, string> = {
   5: img306_11,
   6: imgNl305,
   7: img301_11,
-  8: img311_11,
+  8: imgNl311,
 }
 
 /**
@@ -43,7 +44,7 @@ export const AROMA_IMAGES_THUMB: Record<AromaSlot, string> = {
   5: img306_11,
   6: imgNl305Thumb,
   7: img301_11,
-  8: img311_11,
+  8: imgNl311Thumb,
 }
 
 export interface AromaItem {
