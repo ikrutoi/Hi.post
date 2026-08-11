@@ -81,7 +81,7 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   /**
    * Dual toggle after Apply:
    * - one side applied → pin to the still-editable side (toggle locked)
-   * - both applied → leave dualSide; accent/View hidden; toggle disabled
+   * - both applied → hide dual toggle; accent/View hidden
    * After postcardEdit un-apply → select the side that became editable again.
    */
   useEffect(() => {
@@ -234,19 +234,19 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     assemblySenderSimplifiedPeek && assemblyRecipientSimplifiedPeek
   /**
    * One side Apply-peek → pin to editable (ignore toggles toward peek).
-   * Both applied → fully disabled (gray).
+   * Both applied → hide dual toggle entirely.
    */
   const showCenterDualToggle =
     isMobile &&
     !showFocusReturn &&
     showSenderSlot &&
     showRecipientsSlot &&
-    setDualSide != null
+    setDualSide != null &&
+    !bothFormsApplied
 
   /** Disable upper toolbar on the non-selected dual side (both forms still editable). */
   const dualToolbarDisableActive =
     showCenterDualToggle &&
-    !bothFormsApplied &&
     !assemblySenderSimplifiedPeek &&
     !assemblyRecipientSimplifiedPeek
   const senderToolbarSlotDisabled =
@@ -258,14 +258,12 @@ export const EnvelopeInnerToolbar: React.FC = () => {
 
   const handleCenterDualToggle = useCallback(
     (checked: boolean) => {
-      if (bothFormsApplied) return
       const next: 'sender' | 'recipient' = checked ? 'recipient' : 'sender'
       if (next === 'sender' && assemblySenderSimplifiedPeek) return
       if (next === 'recipient' && assemblyRecipientSimplifiedPeek) return
       setDualSide?.(next)
     },
     [
-      bothFormsApplied,
       assemblySenderSimplifiedPeek,
       assemblyRecipientSimplifiedPeek,
       setDualSide,
@@ -333,7 +331,7 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   const upperToolbarRoleFade =
     showFocusReturn && focusRole != null
       ? focusRole
-      : showCenterDualToggle && !bothFormsApplied
+      : showCenterDualToggle
         ? dualSide
         : null
 
@@ -387,7 +385,6 @@ export const EnvelopeInnerToolbar: React.FC = () => {
                 onChange={handleCenterDualToggle}
                 size="default"
                 variant="envelopeDual"
-                disabled={bothFormsApplied}
                 ariaLabel="Envelope side"
               />
             </div>
