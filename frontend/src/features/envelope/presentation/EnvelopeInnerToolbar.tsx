@@ -80,7 +80,7 @@ export const EnvelopeInnerToolbar: React.FC = () => {
 
   /**
    * Dual toggle after Apply:
-   * - one side applied → pin to the still-editable side (toggle locked)
+   * - any side applied → hide dual toggle; pin to the still-editable side
    * - both applied → hide dual toggle; accent/View hidden
    * After postcardEdit un-apply → select the side that became editable again.
    */
@@ -233,8 +233,8 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   const bothFormsApplied =
     assemblySenderSimplifiedPeek && assemblyRecipientSimplifiedPeek
   /**
-   * One side Apply-peek → pin to editable (ignore toggles toward peek).
-   * Both applied → hide dual toggle entirely.
+   * Dual toggle only while both sides are still editable.
+   * Any Apply-peek pins dualSide → hide the switcher (no disabled affordance).
    */
   const showCenterDualToggle =
     isMobile &&
@@ -242,13 +242,11 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     showSenderSlot &&
     showRecipientsSlot &&
     setDualSide != null &&
-    !bothFormsApplied
-
-  /** Disable upper toolbar on the non-selected dual side (both forms still editable). */
-  const dualToolbarDisableActive =
-    showCenterDualToggle &&
     !assemblySenderSimplifiedPeek &&
     !assemblyRecipientSimplifiedPeek
+
+  /** Disable upper toolbar on the non-selected dual side. */
+  const dualToolbarDisableActive = showCenterDualToggle
   const senderToolbarSlotDisabled =
     senderView === 'senderCreate' ||
     (dualToolbarDisableActive && dualSide !== 'sender')
@@ -258,16 +256,9 @@ export const EnvelopeInnerToolbar: React.FC = () => {
 
   const handleCenterDualToggle = useCallback(
     (checked: boolean) => {
-      const next: 'sender' | 'recipient' = checked ? 'recipient' : 'sender'
-      if (next === 'sender' && assemblySenderSimplifiedPeek) return
-      if (next === 'recipient' && assemblyRecipientSimplifiedPeek) return
-      setDualSide?.(next)
+      setDualSide?.(checked ? 'recipient' : 'sender')
     },
-    [
-      assemblySenderSimplifiedPeek,
-      assemblyRecipientSimplifiedPeek,
-      setDualSide,
-    ],
+    [setDualSide],
   )
 
   const handleFocusReturn = useCallback(
@@ -325,15 +316,16 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   )
 
   /**
-   * Role fade on upper row when dual chrome is active (same recipe as lower View).
-   * Both Apply-peek → neutral envelope tint (not sender/recipient).
+   * Role fade on upper row (same recipe as lower View).
+   * Dual toggle may be hidden while one side is Apply-peek — still tint by pinned dualSide.
+   * Both Apply-peek → neutral complete class (not sender/recipient).
    */
   const upperToolbarRoleFade =
     showFocusReturn && focusRole != null
       ? focusRole
-      : showCenterDualToggle
-        ? dualSide
-        : null
+      : bothFormsApplied
+        ? null
+        : dualSide
 
   return (
     <div
