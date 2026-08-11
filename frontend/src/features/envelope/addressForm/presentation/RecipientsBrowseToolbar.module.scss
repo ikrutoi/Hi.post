@@ -1,4 +1,83 @@
 @use '@styles/config/colors' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
+
+.root {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 0.5rem;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.navHit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  box-sizing: border-box;
+  margin-inline: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
+  padding: 0;
+  min-height: iconButton.$toolbar-hit-size-mobile-toolbar;
+  border: none;
+  border-radius: 0.6rem;
+  background-color: transparent;
+  color: $color-font-enabled-light;
+  cursor: pointer;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+
+  &:active,
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    background-color: transparent;
+    color: $color-font-enabled-light;
+  }
+
+  &:disabled {
+    color: $color-font-enabled-light;
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  @include iconButton.toolbar-key-hover-fine-pointer {
+    &:hover:not(:disabled) {
+      color: $color-font-enabled-light-hover;
+    }
+  }
+}
+
+.navHitPrev {
+  justify-content: flex-start;
+}
+
+.navHitNext {
+  justify-content: flex-end;
+}
+
+.navArrowIcon {
+  display: block;
+  flex-shrink: 0;
+  width: iconButton.$toolbar-icon-size-mobile-toolbar;
+  height: iconButton.$toolbar-icon-size-mobile-toolbar;
+}
+
+.remainingCount {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: inherit;
+  pointer-events: none;
+  user-select: none;
+}
 
 .recipientName {
   width: 100%;

@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo } from 'react'
+import clsx from 'clsx'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
@@ -7,12 +8,9 @@ import {
   selectRecipientState,
   selectRecipientViewId,
 } from '@envelope/recipient/infrastructure/selectors'
-import {
-  setRecipientViewId,
-} from '@envelope/recipient/infrastructure/state'
+import { setRecipientViewId } from '@envelope/recipient/infrastructure/state'
 import { selectRecipientsList } from '@envelope/infrastructure/selectors'
 import type { AddressFields } from '@shared/config/constants'
-import navStyles from '@date/dateHeader/presentation/MobileDateCalendarToolbarSlider.module.scss'
 import styles from './RecipientsBrowseToolbar.module.scss'
 
 function resolveRecipientAddress(
@@ -44,7 +42,7 @@ function resolveRecipientAddress(
 }
 
 /**
- * Envelope complete-band chrome: arrows + current recipient name.
+ * Envelope complete-band chrome: arrow+count hits + current recipient name.
  */
 export const RecipientsBrowseToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -70,6 +68,9 @@ export const RecipientsBrowseToolbar: React.FC = () => {
     const at = ids.indexOf(recipientViewId)
     return at >= 0 ? at : 0
   }, [count, ids, recipientViewId])
+
+  const remainingBefore = index
+  const remainingAfter = Math.max(0, count - 1 - index)
 
   const currentId = ids[index] ?? null
   const currentName = useMemo(() => {
@@ -101,39 +102,55 @@ export const RecipientsBrowseToolbar: React.FC = () => {
   if (count <= 1) return null
 
   return (
-    <div className={navStyles.root}>
+    <div className={styles.root}>
       <button
         type="button"
-        className={navStyles.navArrow}
+        className={clsx(styles.navHit, styles.navHitPrev)}
         onClick={handleDecrement}
-        aria-label="Previous recipient"
+        aria-label={
+          remainingBefore > 0
+            ? `Previous recipient, ${remainingBefore} remaining`
+            : 'Previous recipient'
+        }
         disabled={index <= 0}
       >
-        <FaChevronLeft className={navStyles.navArrowIcon} />
+        <FaChevronLeft className={styles.navArrowIcon} aria-hidden />
+        {remainingBefore > 0 ? (
+          <span className={styles.remainingCount} aria-hidden>
+            {remainingBefore}
+          </span>
+        ) : null}
       </button>
 
-      <div className={navStyles.sliderWrap}>
-        <p
-          className={styles.recipientName}
-          title={currentName || undefined}
-          aria-label={
-            currentName
-              ? `Recipient ${index + 1} of ${count}: ${currentName}`
-              : `Recipient ${index + 1} of ${count}`
-          }
-        >
-          {currentName || '—'}
-        </p>
-      </div>
+      <p
+        className={styles.recipientName}
+        title={currentName || undefined}
+        aria-label={
+          currentName
+            ? `Recipient ${index + 1} of ${count}: ${currentName}`
+            : `Recipient ${index + 1} of ${count}`
+        }
+      >
+        {currentName || '—'}
+      </p>
 
       <button
         type="button"
-        className={navStyles.navArrow}
+        className={clsx(styles.navHit, styles.navHitNext)}
         onClick={handleIncrement}
-        aria-label="Next recipient"
+        aria-label={
+          remainingAfter > 0
+            ? `Next recipient, ${remainingAfter} remaining`
+            : 'Next recipient'
+        }
         disabled={index >= maxIndex}
       >
-        <FaChevronRight className={navStyles.navArrowIcon} />
+        {remainingAfter > 0 ? (
+          <span className={styles.remainingCount} aria-hidden>
+            {remainingAfter}
+          </span>
+        ) : null}
+        <FaChevronRight className={styles.navArrowIcon} aria-hidden />
       </button>
     </div>
   )
