@@ -202,6 +202,12 @@ export function resolveAddressForRecipientId(
     (r) => r.recipientViewId === id,
   )
   if (
+    fromEnvelope?.appliedData != null &&
+    addressHasAnyField(fromEnvelope.appliedData)
+  ) {
+    return fromEnvelope.appliedData
+  }
+  if (
     fromEnvelope?.viewDraft != null &&
     addressHasAnyField(fromEnvelope.viewDraft)
   ) {

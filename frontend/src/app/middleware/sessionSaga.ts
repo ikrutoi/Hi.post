@@ -340,22 +340,29 @@ function* loadRecipientViewDraftForId(
     return recipient.viewDraft
   }
 
-  if (
-    recipient.appliedData != null &&
-    hasAddressData(recipient.appliedData) &&
-    (recipient.applied ?? []).includes(id)
-  ) {
-    return recipient.appliedData
-  }
-
   const envelopeList: RecipientState[] =
     ((yield select(selectRecipientsList)) as RecipientState[]) ?? []
   const fromEnvelope = envelopeList.find((r) => r.recipientViewId === id)
+  if (
+    fromEnvelope?.appliedData != null &&
+    hasAddressData(fromEnvelope.appliedData)
+  ) {
+    return fromEnvelope.appliedData
+  }
   if (
     fromEnvelope?.viewDraft != null &&
     hasAddressData(fromEnvelope.viewDraft)
   ) {
     return fromEnvelope.viewDraft
+  }
+
+  if (
+    (recipient.applied?.length ?? 0) <= 1 &&
+    recipient.appliedData != null &&
+    hasAddressData(recipient.appliedData) &&
+    (recipient.applied ?? []).includes(id)
+  ) {
+    return recipient.appliedData
   }
 
   const record = (yield call([recipientAdapter, 'getById'], id)) as {

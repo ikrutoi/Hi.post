@@ -80,7 +80,12 @@ export function buildCardPieInnerDataForPlanEntry(
     : null
   const date = entry.sourceDate ?? parsed?.date ?? null
   const dates = date != null ? [date] : []
-  const recipientSlotKey = parsed?.recipientSlotKey ?? 'session'
+  const refRecipient = entry.cardPieRefs?.recipient
+  const recipientSlotKey =
+    parsed?.recipientSlotKey ??
+    (refRecipient != null && refRecipient !== '' && refRecipient !== 'session'
+      ? refRecipient
+      : 'session')
 
   let recipient = base.recipient
   if (recipientSlotKey !== 'session') {
@@ -89,7 +94,11 @@ export function buildCardPieInnerDataForPlanEntry(
       options.ctx.envelopeRecipients ?? [],
       options.ctx.recipientEntries ?? [],
     )
-  } else if (recipient == null && options.recipientState.appliedData != null) {
+  } else if (
+    recipient == null &&
+    (options.recipientState.applied?.length ?? 0) <= 1 &&
+    options.recipientState.appliedData != null
+  ) {
     recipient = options.recipientState.appliedData
   }
 

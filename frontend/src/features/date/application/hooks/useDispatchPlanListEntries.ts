@@ -486,7 +486,7 @@ export function useDispatchPlanListEntries(
         }
         const recipientRef = slot.branchKey.includes('|')
           ? (slot.branchKey.split('|')[1] ?? 'session')
-          : 'session'
+          : slot.branchKey
         const cardPieRefs: CardPieRefs = {
           cardphoto: String(cardphotoState?.appliedData?.id ?? ''),
           cardtext: String(cardtextState?.appliedData?.id ?? ''),
@@ -509,7 +509,7 @@ export function useDispatchPlanListEntries(
           previewUrl: listPreviewUrl ?? undefined,
           cardId: listPreviewUrl ? 'current_session' : undefined,
           previewIsProcessed: true,
-          dispatchBranchKey,
+          ...(dispatchBranchKey != null ? { dispatchBranchKey } : {}),
           cardPieRefs,
           onDelete: () => {
             dispatch(clearCardPieEditorSession())

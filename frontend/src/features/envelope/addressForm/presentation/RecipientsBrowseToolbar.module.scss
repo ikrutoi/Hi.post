@@ -1,0 +1,17 @@
+@use '@styles/config/colors' as *;
+
+.recipientName {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0 0.25rem;
+  box-sizing: border-box;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: $color-font-enabled-light;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

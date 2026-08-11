@@ -118,14 +118,20 @@ export const selectAppliedRecipientDisplayAddress = createSelector(
     selectEnvelopeRecipientsList,
   ],
   (recipient, entries, envelopeRecipients): Readonly<AddressFields> => {
-    if (recipient.appliedData != null) {
+    const applied = recipient.applied ?? EMPTY_STRINGS
+    const multiApplied = applied.length > 1
+
+    /**
+     * Multi-apply: appliedData is not a committed singleton (browse used to
+     * overwrite it). Resolve by browse/view id from list / book instead.
+     */
+    if (!multiApplied && recipient.appliedData != null) {
       const hasFields = Object.values(recipient.appliedData).some(
         (v) => (v ?? '').toString().trim() !== '',
       )
       if (hasFields) return recipient.appliedData
     }
 
-    const applied = recipient.applied ?? EMPTY_STRINGS
     const browseId =
       recipient.recipientViewId != null &&
       applied.includes(recipient.recipientViewId)

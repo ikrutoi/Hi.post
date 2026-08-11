@@ -29,17 +29,15 @@ function* loadRecipientAddressForAppliedId(
   recipient: RecipientState,
   id: string,
 ): Generator<unknown, RecipientState['viewDraft'] | null, unknown> {
-  if (
-    recipient.appliedData != null &&
-    hasAddressData(recipient.appliedData) &&
-    (recipient.applied ?? []).includes(id)
-  ) {
-    return recipient.appliedData
-  }
-
   const envelopeList: RecipientState[] =
     ((yield select(selectRecipientsList)) as RecipientState[]) ?? []
   const fromEnvelope = envelopeList.find((r) => r.recipientViewId === id)
+  if (
+    fromEnvelope?.appliedData != null &&
+    hasAddressData(fromEnvelope.appliedData)
+  ) {
+    return fromEnvelope.appliedData
+  }
   if (
     fromEnvelope?.viewDraft != null &&
     hasAddressData(fromEnvelope.viewDraft)
@@ -53,6 +51,15 @@ function* loadRecipientAddressForAppliedId(
   } | null
   if (record?.address != null && hasAddressData(record.address)) {
     return record.address as RecipientState['viewDraft']
+  }
+
+  if (
+    (recipient.applied?.length ?? 0) <= 1 &&
+    recipient.appliedData != null &&
+    hasAddressData(recipient.appliedData) &&
+    (recipient.applied ?? []).includes(id)
+  ) {
+    return recipient.appliedData
   }
 
   return null

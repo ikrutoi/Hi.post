@@ -47,7 +47,8 @@ export function formatRecipientDetailFromLayers(
 ): string | undefined {
   if (!recipient) return undefined
 
-  if (recipient.appliedData != null) {
+  /** Multi-apply: ignore session appliedData cursor — resolve each id from book / list. */
+  if ((recipient.applied?.length ?? 0) <= 1 && recipient.appliedData != null) {
     return formatDetailLineFromAddressFields(recipient.appliedData)
   }
 

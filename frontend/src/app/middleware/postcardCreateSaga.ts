@@ -35,7 +35,8 @@ import type { AddressFields } from '@shared/config/constants'
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
 import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
 import { selectCardtextState } from '@cardtext/infrastructure/selectors'
-import { selectEnvelopeSessionRecord } from '@envelope/infrastructure/selectors'
+import { selectEnvelopeSessionRecord, selectRecipientsList } from '@envelope/infrastructure/selectors'
+import { resolveAddressForRecipientId } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import {
   selectExcludedDispatchBranchSet,
   selectExcludedDispatchBranches,
@@ -244,14 +245,20 @@ export function* createPostcardsFromEditor(): SagaIterator<boolean> {
     (s: { addressBook?: { recipientEntries?: AddressBookEntry[] } }) =>
       s.addressBook?.recipientEntries ?? [],
   )
+  const envelopeRecipients: RecipientState[] = yield select(selectRecipientsList)
   const appliedRecipientIds = envelope.recipient?.applied ?? []
   const recipientVariants: EnvelopeSessionRecord[] =
     appliedRecipientIds.length > 0
       ? appliedRecipientIds.map((recipientId) => {
           const matchedAddress =
-            recipientEntries.find((entry) => entry.id === recipientId)?.address ??
-            envelope.recipient?.appliedData ??
-            null
+            resolveAddressForRecipientId(
+              recipientId,
+              envelopeRecipients,
+              recipientEntries,
+            ) ??
+            (appliedRecipientIds.length === 1
+              ? (envelope.recipient?.appliedData ?? null)
+              : null)
           return {
             ...envelope,
             recipient: {
@@ -473,17 +480,29 @@ function* loadRecipientAddressForAppliedId(
   recipient: RecipientState,
   id: string,
 ): SagaIterator<AddressFields | null> {
+  const envelopeList: RecipientState[] = yield select(selectRecipientsList)
+  const fromEnvelope = envelopeList.find((r) => r.recipientViewId === id)
+  if (fromEnvelope?.appliedData != null && hasAddressData(fromEnvelope.appliedData)) {
+    return fromEnvelope.appliedData
+  }
+  if (fromEnvelope?.viewDraft != null && hasAddressData(fromEnvelope.viewDraft)) {
+    return fromEnvelope.viewDraft
+  }
+
+  const record: { id: string; address?: Record<string, string> } | null =
+    yield call([recipientAdapter, 'getById'], id)
+  if (record?.address != null && hasAddressData(record.address)) {
+    return record.address as AddressFields
+  }
+
+  /** Single committed snapshot only — never reuse browse cursor for multi-apply. */
   if (
+    (recipient.applied?.length ?? 0) <= 1 &&
     recipient.appliedData != null &&
     hasAddressData(recipient.appliedData) &&
     (recipient.applied ?? []).includes(id)
   ) {
     return recipient.appliedData
-  }
-  const record: { id: string; address?: Record<string, string> } | null =
-    yield call([recipientAdapter, 'getById'], id)
-  if (record?.address != null && hasAddressData(record.address)) {
-    return record.address as AddressFields
   }
   return null
 }
@@ -581,6 +600,7 @@ export function* handleToggleCartForDispatchBranch(
     (s: { addressBook?: { recipientEntries?: AddressBookEntry[] } }) =>
       s.addressBook?.recipientEntries ?? [],
   )
+  const envelopeRecipients: RecipientState[] = yield select(selectRecipientsList)
 
   const { date, recipientSlotKey } = parsed
   const appliedRecipientIds = envelope.recipient?.applied ?? []
@@ -595,9 +615,14 @@ export function* handleToggleCartForDispatchBranch(
           ...envelope.recipient,
           applied: [recipientSlotKey],
           appliedData:
-            recipientEntries.find((e) => e.id === recipientSlotKey)?.address ??
-            envelope.recipient?.appliedData ??
-            null,
+            resolveAddressForRecipientId(
+              recipientSlotKey,
+              envelopeRecipients,
+              recipientEntries,
+            ) ??
+            (appliedRecipientIds.length === 1
+              ? (envelope.recipient?.appliedData ?? null)
+              : null),
         },
       }
     : envelope

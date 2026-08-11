@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo } from 'react'
-import clsx from 'clsx'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
@@ -9,18 +8,21 @@ import {
   selectRecipientViewId,
 } from '@envelope/recipient/infrastructure/selectors'
 import {
-  setRecipientAppliedData,
   setRecipientViewId,
 } from '@envelope/recipient/infrastructure/state'
 import { selectRecipientsList } from '@envelope/infrastructure/selectors'
 import type { AddressFields } from '@shared/config/constants'
 import navStyles from '@date/dateHeader/presentation/MobileDateCalendarToolbarSlider.module.scss'
-import sliderStyles from '@date/slider/presentation/Slider.module.scss'
+import styles from './RecipientsBrowseToolbar.module.scss'
 
 function resolveRecipientAddress(
   id: string,
   entries: { id: string; address?: AddressFields }[],
-  envelopeRows: { recipientViewId: string | null; viewDraft?: AddressFields; appliedData?: AddressFields | null }[],
+  envelopeRows: {
+    recipientViewId: string | null
+    viewDraft?: AddressFields
+    appliedData?: AddressFields | null
+  }[],
 ): AddressFields | null {
   const entry = entries.find((e) => e.id === id)
   if (entry?.address) return { ...entry.address }
@@ -42,8 +44,7 @@ function resolveRecipientAddress(
 }
 
 /**
- * Envelope complete-band chrome: same layout as calendar lower toolbar,
- * scale = number of applied recipient addresses.
+ * Envelope complete-band chrome: arrows + current recipient name.
  */
 export const RecipientsBrowseToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -70,19 +71,23 @@ export const RecipientsBrowseToolbar: React.FC = () => {
     return at >= 0 ? at : 0
   }, [count, ids, recipientViewId])
 
+  const currentId = ids[index] ?? null
+  const currentName = useMemo(() => {
+    if (currentId == null) return ''
+    const address = resolveRecipientAddress(currentId, entries, envelopeRows)
+    return (address?.name ?? '').trim()
+  }, [currentId, entries, envelopeRows])
+
   const selectIndex = useCallback(
     (next: number) => {
       if (count <= 0) return
       const clamped = Math.min(maxIndex, Math.max(0, next))
       const id = ids[clamped]
       if (id == null) return
+      // Browse cursor only — do not overwrite session appliedData (shared by plan pies / cart).
       dispatch(setRecipientViewId(id))
-      const address = resolveRecipientAddress(id, entries, envelopeRows)
-      if (address != null) {
-        dispatch(setRecipientAppliedData(address))
-      }
     },
-    [count, dispatch, entries, envelopeRows, ids, maxIndex],
+    [count, dispatch, ids, maxIndex],
   )
 
   const handleDecrement = useCallback(() => {
@@ -108,29 +113,17 @@ export const RecipientsBrowseToolbar: React.FC = () => {
       </button>
 
       <div className={navStyles.sliderWrap}>
-        <div
-          className={clsx(
-            sliderStyles.sliderContainer,
-            sliderStyles.sliderContainerToolbar,
-          )}
+        <p
+          className={styles.recipientName}
+          title={currentName || undefined}
+          aria-label={
+            currentName
+              ? `Recipient ${index + 1} of ${count}: ${currentName}`
+              : `Recipient ${index + 1} of ${count}`
+          }
         >
-          <input
-            type="range"
-            className={clsx(
-              sliderStyles.dateSliderLine,
-              sliderStyles.dateSliderLineToolbar,
-            )}
-            min={0}
-            max={maxIndex}
-            step={1}
-            value={index}
-            aria-valuemin={1}
-            aria-valuemax={count}
-            aria-valuenow={index + 1}
-            aria-label={`Recipient ${index + 1} of ${count}`}
-            onChange={(e) => selectIndex(Number(e.target.value))}
-          />
-        </div>
+          {currentName || '—'}
+        </p>
       </div>
 
       <button
