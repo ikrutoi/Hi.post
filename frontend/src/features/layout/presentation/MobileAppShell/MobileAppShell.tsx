@@ -91,6 +91,7 @@ import { formatAddressPreviewLines } from '@envelope/addressBook/presentation/ad
 import { listStatusIsInQuickAddressBook } from '@envelope/domain/helpers'
 import { clearViewAroma } from '@aroma/infrastructure/state'
 import { selectViewAroma } from '@aroma/infrastructure/selectors'
+import { useMobileAromaPreviewGate } from '@aroma/application/hooks'
 import { getAromaImage } from '@entities/aroma/mappers/aromaImageMap'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { dispatchCardPieToolbarIconState } from '@toolbar/application/syncCardPieToolbarIcons'
@@ -558,6 +559,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     return { index: viewAroma.index, src }
   }, [activeSection, viewAroma])
 
+  const mobileAromaPreviewGate = useMobileAromaPreviewGate(mobileAromaPreview)
+
   const mobileCentralPieDisplay = useMemo(():
     | 'archive'
     | 'cardphotoTemplate'
@@ -567,7 +570,12 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     | 'emptyArchive'
     | 'assembly' => {
     /** Same as left factory edit: selected aroma cell fills the central CardPie. */
-    if (mobileAromaPreview != null) return 'aromaPreview'
+    if (
+      mobileAromaPreview != null ||
+      mobileAromaPreviewGate.mounted != null
+    ) {
+      return 'aromaPreview'
+    }
     if (mobileCentralArchivePreview != null) return 'archive'
     if (mobileCardphotoListTemplatePreview != null) return 'cardphotoTemplate'
     if (mobileCardtextListChromeActive) return 'cardtextTemplate'
@@ -582,6 +590,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     return 'assembly'
   }, [
     mobileAromaPreview,
+    mobileAromaPreviewGate.mounted,
     mobileCentralArchivePreview,
     mobileCardphotoListTemplatePreview,
     mobileCardtextListChromeActive,
@@ -1248,23 +1257,48 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                             <IconSectionMenuEnvelopeV2 />
                           </div>
                         )
-                      ) : mobileCentralPieDisplay === 'aromaPreview' &&
-                        mobileAromaPreview != null ? (
+                      ) : mobileCentralPieDisplay === 'aromaPreview' ? (
                         <div
-                          className={styles.mobileAromaPreview}
-                          aria-label="Selected aroma preview"
+                          className={clsx(
+                            styles.mobileAromaPreview,
+                            mobileAromaPreviewGate.phase === 'in' &&
+                              styles.mobileAromaPreviewFadeIn,
+                            mobileAromaPreviewGate.phase === 'out' &&
+                              styles.mobileAromaPreviewFadeOut,
+                          )}
+                          style={
+                            mobileAromaPreviewGate.phase === 'shown'
+                              ? { opacity: 1 }
+                              : mobileAromaPreviewGate.phase === 'hidden'
+                                ? { opacity: 0 }
+                                : {
+                                    animationDuration: `${mobileAromaPreviewGate.fadeMs}ms`,
+                                  }
+                          }
+                          aria-label={
+                            mobileAromaPreviewGate.mounted != null
+                              ? 'Selected aroma preview'
+                              : undefined
+                          }
+                          aria-hidden={
+                            mobileAromaPreviewGate.mounted == null
+                              ? true
+                              : undefined
+                          }
                         >
-                          <img
-                            key={mobileAromaPreview.index}
-                            src={mobileAromaPreview.src}
-                            alt={
-                              mobileAromaPreview.index === 0
-                                ? ''
-                                : `Aroma slot ${mobileAromaPreview.index}`
-                            }
-                            decoding="async"
-                            draggable={false}
-                          />
+                          {mobileAromaPreviewGate.mounted != null ? (
+                            <img
+                              key={mobileAromaPreviewGate.mounted.index}
+                              src={mobileAromaPreviewGate.mounted.src}
+                              alt={
+                                mobileAromaPreviewGate.mounted.index === 0
+                                  ? ''
+                                  : `Aroma slot ${mobileAromaPreviewGate.mounted.index}`
+                              }
+                              decoding="async"
+                              draggable={false}
+                            />
+                          ) : null}
                         </div>
                       ) : mobileCentralPieDisplay === 'emptyArchive' ? (
                         <div

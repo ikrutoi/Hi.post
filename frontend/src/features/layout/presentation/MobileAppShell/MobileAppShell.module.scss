@@ -987,6 +987,7 @@ $mobile-central-pie-envelope-empty-icon-width: 40%;
   }
 }
 
+/** Fade out / fade in aroma preview в центральном CardPie при смене слота. */
 .mobileAromaPreview {
   position: absolute;
   inset: 0;
@@ -999,12 +1000,39 @@ $mobile-central-pie-envelope-empty-icon-width: 40%;
   padding: 0.35rem;
   overflow: hidden;
   background-color: #fff;
+  opacity: 0;
 
   img {
     display: block;
     width: 100%;
     height: 100%;
     object-fit: contain;
+  }
+}
+
+.mobileAromaPreviewFadeIn {
+  animation: mobileAromaPreviewFadeIn 200ms ease forwards;
+}
+
+.mobileAromaPreviewFadeOut {
+  animation: mobileAromaPreviewFadeOut 200ms ease forwards;
+}
+
+@keyframes mobileAromaPreviewFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes mobileAromaPreviewFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
   }
 }
 
