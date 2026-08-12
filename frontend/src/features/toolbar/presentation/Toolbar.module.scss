@@ -472,6 +472,16 @@
   }
 }
 
+/* cardphotoView: единственная группа close/delete — к правому краю. */
+.toolbarCardphotoView {
+  justify-content: flex-end;
+
+  .toolbarGroup {
+    justify-content: flex-end;
+    margin-left: auto;
+  }
+}
+
 /* cardphotoCreate: quality слева; delete/close справа (когда кроп выкл.). */
 .toolbarCardphotoCreate {
   display: flex;

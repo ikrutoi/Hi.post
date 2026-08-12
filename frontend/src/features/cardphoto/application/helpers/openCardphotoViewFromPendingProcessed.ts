@@ -39,7 +39,8 @@ export function* openCardphotoViewFromPendingProcessedSaga(): SagaIterator<boole
     yield select(selectCardphotoAssetToolbar)
   if (
     cardphotoState?.assetData?.id === processedId &&
-    cardphotoState.assetData.status === 'processed' &&
+    (cardphotoState.assetData.status === 'processed' ||
+      cardphotoState.assetData.status === 'outLine') &&
     assetToolbar === 'cardphotoView'
   ) {
     yield call(syncToolbarContext)
@@ -60,7 +61,11 @@ export function* openCardphotoViewFromPendingProcessedSaga(): SagaIterator<boole
     hydrateMeta(fromIdb) ??
     hydrateMeta(persisted)
 
-  if (!processedMeta || processedMeta.status !== 'processed') {
+  if (
+    !processedMeta ||
+    (processedMeta.status !== 'processed' &&
+      processedMeta.status !== 'outLine')
+  ) {
     yield put(clearSessionPendingProcessedId())
     return false
   }

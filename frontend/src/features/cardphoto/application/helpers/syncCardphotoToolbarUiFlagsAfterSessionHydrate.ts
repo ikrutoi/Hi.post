@@ -19,7 +19,10 @@ export function* syncCardphotoToolbarUiFlagsAfterSessionHydrate(
     return
   }
 
-  if (assetData?.status === 'processed' && assetData.id) {
+  if (
+    (assetData?.status === 'processed' || assetData?.status === 'outLine') &&
+    assetData.id
+  ) {
     yield put(setSessionPendingProcessedId(assetData.id))
     yield put(setOriginalUploadReminderActive(false))
     return

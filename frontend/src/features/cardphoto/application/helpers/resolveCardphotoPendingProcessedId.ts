@@ -28,7 +28,10 @@ export function* resolveCardphotoPendingProcessedIdSaga(): SagaIterator<
     return null
   }
 
-  if (assetData?.status === 'processed' && assetData.id) {
+  if (
+    (assetData?.status === 'processed' || assetData?.status === 'outLine') &&
+    assetData.id
+  ) {
     return assetData.id
   }
 
@@ -41,11 +44,19 @@ export function* resolveCardphotoPendingProcessedIdSaga(): SagaIterator<
       [storeAdapters.cardphotoImages, 'getById'] as const,
       sessionPendingId,
     )
-    if (record?.status === 'processed') return sessionPendingId
+    if (
+      record?.status === 'processed' ||
+      record?.status === 'outLine'
+    ) {
+      return sessionPendingId
+    }
     yield put(clearSessionPendingProcessedId())
   }
 
-  // После addList / apply: точка-напоминание, бэдж processed из IDB не поднимаем.
+  /**
+   * After applyLight / demote from quick list (outLine): pending slot for cardphotoAdd badge `1`.
+   * Reminder-dot path must not resurrect a processed child from IDB after addList / apply.
+   */
   if (originalUploadReminderActive) {
     return null
   }
