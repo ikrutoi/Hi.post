@@ -57,6 +57,9 @@ import {
   selectCardtextSessionData,
   selectCardtextAssetMatchesApplied,
   selectCardtextViewInQuickList,
+  selectCardtextInteractionMode,
+  selectIsCardtextEditorComposerVisible,
+  selectIsDraftFocus,
 } from '@cardtext/infrastructure/selectors'
 import {
   cardtextHasRenderableContent,
@@ -239,9 +242,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
 }) => {
   const dispatch = useAppDispatch()
   const shellRef = useRef<HTMLDivElement>(null)
-  useMobileVisualViewport(shellRef, {
-    pinTop: envelopeAddressCreateRole != null,
-  })
   const userLoginPanelOpen = useAppSelector(selectUserLoginPanelOpen)
   const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
   const cartListSelectedLocalId = useAppSelector(selectCartListSelectedLocalId)
@@ -264,6 +264,31 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     selectCardtextAssetMatchesApplied,
   )
   const cardtextViewInQuickList = useAppSelector(selectCardtextViewInQuickList)
+  const cardtextInteractionMode = useAppSelector(selectCardtextInteractionMode)
+  const cardtextDraftEngaged = useAppSelector(
+    (s) => s.cardtext.isDraftEngaged === true,
+  )
+  const cardtextEditorComposerVisible = useAppSelector(
+    selectIsCardtextEditorComposerVisible,
+  )
+  const cardtextDraftFocus = useAppSelector(selectIsDraftFocus)
+  /**
+   * Envelope-like fullscreen create chrome (card + app-inner surround).
+   * Only createEmpty — editTemplate keeps the normal section frame.
+   */
+  const cardtextCreateChromeActive =
+    activeSection === 'cardtext' &&
+    cardtextInteractionMode === 'createEmpty' &&
+    (cardtextEditorComposerVisible || cardtextDraftEngaged)
+  /** Hide app header while typing in any cardtext composer (create or edit). */
+  const cardtextComposeHideAppHeader =
+    cardtextCreateChromeActive ||
+    (activeSection === 'cardtext' &&
+      (cardtextEditorComposerVisible || cardtextDraftFocus))
+  useMobileVisualViewport(shellRef, {
+    pinTop:
+      envelopeAddressCreateRole != null || cardtextComposeHideAppHeader,
+  })
   const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
   const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
   const senderSelectedId = useAppSelector(selectSenderSelectedId)
@@ -1059,6 +1084,12 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       className={styles.mobileShell}
       style={cardWidthStyle}
       data-envelope-address-create={envelopeAddressCreateRole ?? undefined}
+      data-cardtext-create={cardtextCreateChromeActive ? 'true' : undefined}
+      data-cardtext-compose={
+        cardtextComposeHideAppHeader && !cardtextCreateChromeActive
+          ? 'true'
+          : undefined
+      }
       onClick={onAppClick}
     >
       <MarkStampYearDevProvider>

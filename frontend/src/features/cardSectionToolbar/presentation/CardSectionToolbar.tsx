@@ -10,7 +10,6 @@ import { EnvelopeInnerToolbar } from '@envelope/presentation/EnvelopeInnerToolba
 import { MobileDateCalendarToolbarNav } from '@date/dateHeader/presentation/MobileDateCalendarToolbarNav'
 import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
-import { selectIsCardtextEditorComposerVisible } from '@cardtext/infrastructure/selectors'
 import {
   selectCardphotoAssetData,
   selectCardphotoAssetToolbar,
@@ -18,11 +17,7 @@ import {
   selectIsCardphotoViewEditMode,
 } from '@cardphoto/infrastructure/selectors'
 import { toolbarAction } from '@toolbar/application/helpers'
-import { CARDTEXT_EDITOR_UPPER_RETURN_TOOLBAR } from '@toolbar/domain/types/cardtext.types'
-import {
-  CARDPHOTO_CREATE_UPPER_APPLY_TOOLBAR,
-  CARDPHOTO_CREATE_UPPER_RETURN_TOOLBAR,
-} from '@toolbar/domain/types/cardphoto.types'
+import { CARDPHOTO_CREATE_UPPER_APPLY_TOOLBAR, CARDPHOTO_CREATE_UPPER_RETURN_TOOLBAR } from '@toolbar/domain/types/cardphoto.types'
 import { CardphotoPrintQualitySlot } from '@features/toolbar/presentation/CardphotoPrintQualitySlot'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
@@ -46,9 +41,6 @@ export const CardSectionToolbar: React.FC = () => {
   const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const cardPieCopyStripExpanded = useAppSelector(selectCardPieCopyStripExpanded)
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
-  const showCardtextEditorComposer = useAppSelector(
-    selectIsCardtextEditorComposerVisible,
-  )
   const cardphotoAssetToolbar = useAppSelector(selectCardphotoAssetToolbar)
   const cardphotoAssetData = useAppSelector(selectCardphotoAssetData)
   const cardphotoViewReturnSnapshot = useAppSelector(
@@ -104,17 +96,6 @@ export const CardSectionToolbar: React.FC = () => {
     showCalendarToolbar && isMobileLayout
   const showMobileAromaUpperToolbar =
     activeSection === 'aroma' && isMobileLayout
-
-  const handleCardtextEditorReturn = useCallback(
-    (key: IconKey) => {
-      if (key !== 'return') return
-      dispatch(
-        toolbarAction({ section: 'cardtextEditor', key: 'close' } as const),
-      )
-      return false
-    },
-    [dispatch],
-  )
 
   const handleCardphotoCreateReturn = useCallback(
     (key: IconKey) => {
@@ -186,36 +167,16 @@ export const CardSectionToolbar: React.FC = () => {
       )}
       {showMobileDateCalendarNav && <MobileDateCalendarToolbarNav />}
       {activeSection === 'envelope' && <EnvelopeInnerToolbar />}
-      {activeSection === 'cardtext' &&
-        (showCardtextEditorComposer ? (
-          <div
-            className={clsx(
-              styles.cardSectionToolbarAromaUpper,
-              isMobileLayout && styles.cardSectionToolbarCardtextTint,
-            )}
-          >
-            <div className={styles.cardSectionToolbarHeader}>
-              <Toolbar section="cardtext" />
-            </div>
-            <div className={styles.cardSectionToolbarUpperReturn}>
-              <Toolbar
-                section="cardtextCreate"
-                groupsOverride={CARDTEXT_EDITOR_UPPER_RETURN_TOOLBAR}
-                className={toolbarStyles.toolbarAromaUpperReturn}
-                onActionClick={handleCardtextEditorReturn}
-              />
-            </div>
-          </div>
-        ) : (
-          <div
-            className={clsx(
-              styles.cardSectionToolbarHeader,
-              isMobileLayout && styles.cardSectionToolbarCardtextTint,
-            )}
-          >
-            <Toolbar section="cardtext" />
-          </div>
-        ))}
+      {activeSection === 'cardtext' && (
+        <div
+          className={clsx(
+            styles.cardSectionToolbarHeader,
+            isMobileLayout && styles.cardSectionToolbarCardtextTint,
+          )}
+        >
+          <Toolbar section="cardtext" />
+        </div>
+      )}
       {showMobileAromaUpperToolbar ? (
         <div
           className={clsx(

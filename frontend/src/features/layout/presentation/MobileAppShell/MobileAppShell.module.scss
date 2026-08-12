@@ -2,6 +2,7 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
 @use '@styles/config/mobileNotebookTabColors' as notebookTab;
+@use '@styles/config/mobileSectionGutter' as sectionGutter;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 @use '@styles/mixins/listEntrySelectionAccent' as selectionAccent;
 
@@ -280,6 +281,170 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   .mobileForm {
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: 0;
+  }
+}
+
+/* Cardtext create: inset form card like address; toolbar + white field inside. */
+.mobileShell[data-cardtext-create='true'] {
+  --cardtext-create-form-bg: #{sectionGutter.$mobile-section-gutter-cardtext};
+  --cardtext-create-form-border: #{$color-cardtext-input-border};
+  --cardtext-create-field-bg: #fff;
+
+  .mobileHeader {
+    display: none;
+  }
+
+  .mobilePieSection {
+    display: none;
+  }
+
+  .mobileForm {
+    overflow: hidden;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: 0;
+    background-color: $color-app-inner;
+
+    :global([class*='cardSectionEditor']) {
+      justify-content: flex-start;
+      flex: 1 1 auto;
+      height: 100%;
+      min-height: 0;
+    }
+
+    :global([class*='editorArea']) {
+      justify-content: flex-start;
+      flex: 1 1 auto;
+      height: 100%;
+      min-height: 0;
+    }
+
+    :global([class*='editorAreaCenter']),
+    :global([class*='editorSection']),
+    :global([class*='cardSectionRenderer']) {
+      flex: 1 1 auto !important;
+      height: 100% !important;
+      min-height: 0;
+      max-height: 100%;
+    }
+
+    :global([data-mobile-factory-section-frame='true']) {
+      flex: 1 1 auto !important;
+      height: 100% !important;
+      max-height: none;
+      margin-top: 0 !important;
+      padding-top: 0;
+      padding-bottom: 0;
+      margin-bottom: 0;
+      background-color: transparent;
+      --mobile-section-surface-bg: #{$color-app-inner};
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    /*
+     * One form card with equal L/T/R/B insets (like address create).
+     * Section color wraps toolbar + white text field.
+     * Width must subtract horizontal margins — `width: 100%` + margin overflows right.
+     */
+    :global([class*='content']) {
+      flex: 1 1 auto;
+      width: calc(100% - 2 * var(--mobile-section-inset));
+      max-width: calc(100% - 2 * var(--mobile-section-inset));
+      height: auto;
+      min-width: 0;
+      min-height: 0;
+      margin: var(--mobile-section-inset);
+      gap: 0.35rem;
+      padding: 0.35rem;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border-radius: 0.5rem;
+      border: 1px solid var(--cardtext-create-form-border);
+      background-color: var(--cardtext-create-form-bg);
+      align-self: center;
+    }
+
+    :global([class*='toolbarSlot']) {
+      display: block;
+      flex: 0 0 auto;
+      width: 100% !important;
+      max-width: none !important;
+      margin-inline: 0 !important;
+      padding-inline: 0;
+      box-sizing: border-box;
+
+      :global([class*='toolbarCardtextEditor']),
+      :global([class*='toolbarCardtextCreate']) {
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+      }
+
+      /* No role-fade strip — form already has section color. */
+      :global([class*='cardtextToolbarRow']),
+      :global([class*='cardtextToolbarRowEmpty']) {
+        background-image: none !important;
+        background-color: transparent !important;
+      }
+    }
+
+    :global([data-mobile-central-work-zone='true']) {
+      aspect-ratio: unset;
+      flex: 1 1 auto;
+      width: 100% !important;
+      max-width: none !important;
+      height: auto;
+      min-height: 0;
+      margin: 0 !important;
+      overflow: hidden;
+      border-radius: 0.5rem;
+      border: none;
+      box-sizing: border-box;
+      background-color: var(--cardtext-create-field-bg);
+    }
+
+    :global([class*='cardtextContainer']),
+    :global([class*='cardtext']:not([class*='Container']):not([class*='View']):not([class*='Toolbar']):not([class*='ReadOnly'])),
+    :global([class*='cardtextViewWrap']),
+    :global([class*='cardtextViewContent']),
+    :global([class*='editor']:not([class*='Area']):not([class*='Title'])) {
+      flex: 1 1 auto !important;
+      height: 100% !important;
+      min-height: 0;
+      max-height: 100%;
+      border: none !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      background-color: transparent !important;
+    }
+
+    :global([class*='cardtextViewWrap']),
+    :global([class*='cardtextViewContent']) {
+      justify-content: flex-start;
+      align-items: stretch;
+    }
+  }
+
+  .mobileEditorSection {
+    flex: 1 1 auto;
+    min-height: 0;
+    background-color: $color-app-inner;
+  }
+}
+
+.mobileShell[data-cardtext-create='true'][data-keyboard-open='true'] {
+  .mobileForm {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: 0;
+  }
+}
+
+/* Edit compose: hide app header only (create uses full envelope-like chrome above). */
+.mobileShell[data-cardtext-compose='true'] {
+  .mobileHeader {
+    display: none;
   }
 }
 

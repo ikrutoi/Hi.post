@@ -11,6 +11,10 @@ import {
 } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
+import {
+  selectCardtextInteractionMode,
+  selectIsCardtextEditorComposerVisible,
+} from '@cardtext/infrastructure/selectors'
 import { useMobileFactoryListChrome } from '../../application/hooks/useMobileFactoryListChrome'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { CardSectionToolbar } from '@features/cardSectionToolbar/presentation/CardSectionToolbar'
@@ -30,6 +34,15 @@ export const MobileFactoryToolbarShell: React.FC = () => {
   const scenarioToolbar = useMobileScenarioToolbarSnapshot()
   const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const activeSection = useAppSelector(selectActiveSection)
+  const cardtextInteractionMode = useAppSelector(selectCardtextInteractionMode)
+  const cardtextEditorComposerVisible = useAppSelector(
+    selectIsCardtextEditorComposerVisible,
+  )
+  /** Create form: only the lower composer row (applyMedium / fonts / return). */
+  const hideCardtextCreateUpperToolbar =
+    activeSection === 'cardtext' &&
+    cardtextInteractionMode === 'createEmpty' &&
+    cardtextEditorComposerVisible
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const sessionSenderView = useAppSelector(selectSenderView)
   const sessionRecipientView = useAppSelector(selectRecipientView)
@@ -74,7 +87,7 @@ export const MobileFactoryToolbarShell: React.FC = () => {
   const showArchivePeekLowerToolbar =
     isMobileLayout && mobileArchiveSectionPeek
 
-  const showUpperContent = !hideUpperToolbar
+  const showUpperContent = !hideUpperToolbar && !hideCardtextCreateUpperToolbar
   const showMobileListFactoryUpper =
     showMobileCardphotoListFactoryChrome ||
     showMobileCardtextListFactoryChrome ||
@@ -91,12 +104,14 @@ export const MobileFactoryToolbarShell: React.FC = () => {
     showArchivePeekLowerToolbar ||
     scenarioToolbar != null ||
     showMobileListFactoryUpper
-  const showShell =
+  const showUpperRow =
     showPeekEmptyToolbarShell ||
     showSectionUpperToolbar ||
     showMobileListFactoryUpper ||
-    showLowerRow ||
     showMobileDateCalendarNavRow
+  const showShell =
+    showUpperRow ||
+    showLowerRow
   /** Жёлтая полоска: список корзины/истории или календарь в том же режиме. */
   const showCartYellowDivider =
     showMobileCartListFactoryChrome ||
@@ -114,37 +129,41 @@ export const MobileFactoryToolbarShell: React.FC = () => {
 
   return (
     <div className={styles.shell} aria-label="Section toolbars">
-      <div className={styles.rowUpper}>
-        {showPeekEmptyToolbarShell ? (
-          archiveCartEnvelopeSimplifiedPeek ? (
-            <EnvelopeInnerToolbar />
-          ) : (
-            <ArchivePeekUpperToolbar />
-          )
-        ) : showMobileCardphotoListFactoryChrome ? (
-          <CardphotoListMobileFactoryUpperToolbar />
-        ) : showMobileCardtextListFactoryChrome ? (
-          <CardtextListMobileFactoryUpperToolbar />
-        ) : showMobileAddressListFactoryChrome ? (
-          <AddressListMobileFactoryUpperToolbar />
-        ) : showMobileCartListFactoryChrome ? (
-          <CartListMobileFactoryUpperToolbar />
-        ) : showMobileHistoryListFactoryChrome ? (
-          <HistoryListMobileFactoryUpperToolbar />
-        ) : showSectionUpperToolbar ? (
-          <CardSectionToolbar />
-        ) : showMobileDateCalendarNavRow ? (
-          <MobileDateCalendarToolbarNav />
-        ) : null}
-      </div>
-      <div
-        className={clsx(
-          styles.rowDivider,
-          useAssemblySectionDivider && styles.rowDividerEnabled,
-          showCartYellowDivider && styles.rowDividerCart,
-        )}
-        aria-hidden
-      />
+      {showUpperRow ? (
+        <div className={styles.rowUpper}>
+          {showPeekEmptyToolbarShell ? (
+            archiveCartEnvelopeSimplifiedPeek ? (
+              <EnvelopeInnerToolbar />
+            ) : (
+              <ArchivePeekUpperToolbar />
+            )
+          ) : showMobileCardphotoListFactoryChrome ? (
+            <CardphotoListMobileFactoryUpperToolbar />
+          ) : showMobileCardtextListFactoryChrome ? (
+            <CardtextListMobileFactoryUpperToolbar />
+          ) : showMobileAddressListFactoryChrome ? (
+            <AddressListMobileFactoryUpperToolbar />
+          ) : showMobileCartListFactoryChrome ? (
+            <CartListMobileFactoryUpperToolbar />
+          ) : showMobileHistoryListFactoryChrome ? (
+            <HistoryListMobileFactoryUpperToolbar />
+          ) : showSectionUpperToolbar ? (
+            <CardSectionToolbar />
+          ) : showMobileDateCalendarNavRow ? (
+            <MobileDateCalendarToolbarNav />
+          ) : null}
+        </div>
+      ) : null}
+      {showUpperRow ? (
+        <div
+          className={clsx(
+            styles.rowDivider,
+            useAssemblySectionDivider && styles.rowDividerEnabled,
+            showCartYellowDivider && styles.rowDividerCart,
+          )}
+          aria-hidden
+        />
+      ) : null}
       <div
         className={styles.rowLower}
         aria-hidden={!showLowerRow ? true : undefined}

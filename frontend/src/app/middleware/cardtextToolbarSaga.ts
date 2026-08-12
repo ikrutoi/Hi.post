@@ -681,6 +681,12 @@ export function* handleCardtextToolbarAction(
       }
       break
 
+    case 'return':
+      if (section === 'cardtextEditor' || section === 'cardtextCreate') {
+        yield call(handleCloseCardtextEditorSaga)
+      }
+      break
+
     case 'removeFromList': {
       if (section === 'cardtextView') {
         yield call(handleCardtextViewRemoveFromList)

@@ -1960,6 +1960,19 @@
   }
 }
 
+.toolbarCardtextEditor,
+.toolbarCardtextCreate {
+  margin-right: 0.5rem;
+
+  .toolbarGroup:last-child {
+    margin-left: auto;
+  }
+
+  .toolbarGroup:last-child .toolbarKey:last-child {
+    margin-right: 0;
+  }
+}
+
 /* Как cardtext / cardtextView */
 .toolbarCardphoto {
   padding-left: 0;

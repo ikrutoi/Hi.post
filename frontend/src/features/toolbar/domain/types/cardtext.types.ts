@@ -66,9 +66,14 @@ export const CARDTEXT_COMPOSER_TOOLBAR: ToolbarConfig = [
     ],
     status: 'enabled',
   },
+  {
+    group: 'close',
+    icons: [{ key: 'return', state: 'enabled' }],
+    status: 'enabled',
+  },
 ]
 
-/** Mobile/desktop factory: return справа в верхнем toolbar формы редактирования. */
+/** @deprecated Prefer return in CARDTEXT_COMPOSER_TOOLBAR (lower row). Kept for list chrome. */
 export const CARDTEXT_EDITOR_UPPER_RETURN_TOOLBAR: ToolbarConfig = [
   {
     group: 'close',
