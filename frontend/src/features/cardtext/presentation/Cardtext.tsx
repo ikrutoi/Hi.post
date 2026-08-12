@@ -33,7 +33,11 @@ import {
   selectCardtextIsComplete,
 } from '@cardtext/infrastructure/selectors'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
-import { CARDTEXT_VIEW_TOOLBAR } from '@toolbar/domain/types/cardtext.types'
+import {
+  CARDTEXT_COMPOSER_SIDE_TOOLBAR,
+  CARDTEXT_COMPOSER_TOP_TOOLBAR,
+  CARDTEXT_VIEW_TOOLBAR,
+} from '@toolbar/domain/types/cardtext.types'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import styles from './Cardtext.module.scss'
@@ -237,11 +241,36 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
     factorySessionActive &&
     !hideEmptyCreateToolbar &&
     !assemblyCardtextSimplifiedPeek
-  const showCardtextToolbarRow = showCardtextToolbarControls
+
+  const isMobileCreateComposer =
+    isMobileLayout &&
+    interactionMode === 'createEmpty' &&
+    showCardtextToolbarControls
+
+  const composerToolbarGroupsOverride = useMemo(() => {
+    if (isMobileCreateComposer) return CARDTEXT_COMPOSER_TOP_TOOLBAR
+    return cardtextViewToolbarGroupsOverride
+  }, [isMobileCreateComposer, cardtextViewToolbarGroupsOverride])
 
   useLoadCardtextTemplatesWhenUnknown(
     cardtextTemplatesLoading,
     cardtextTemplates,
+  )
+
+  const editorBody = showReadOnlyCardtext ? (
+    <div className={styles.cardtextReadOnlyShell}>
+      <CardtextView
+        key={id ?? 'no-template'}
+        value={value}
+        style={style}
+        titleStripEditing={forceEditingTitle}
+        onDelete={isMobileLayout ? undefined : handleViewDelete}
+        templateInQuickList={cardtextViewInQuickList}
+        showFavoriteToggle={!cardtextIsComplete}
+      />
+    </div>
+  ) : (
+    <CardEditor titleStripEditing={forceEditingTitle} />
   )
 
   return (
@@ -255,110 +284,111 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
           >
             <Toolbar
               section={toolbarSection}
-              groupsOverride={cardtextViewToolbarGroupsOverride}
+              groupsOverride={composerToolbarGroupsOverride}
               stateOverride={cardtextViewToolbarStateOverride}
             />
           </MobileInlineToolbarRow>
-          <div className={styles.cardtextViewContent}>
-            {displayTitle && showTemplateTitleStrip && (
-              <>
-                {forceEditingTitle ? (
-                  <div
-                    ref={titleStripRef}
-                    className={clsx(
-                      viewStyles.viewTitle,
-                      viewStyles.viewTitleStrip,
-                      viewStyles.viewTitleEditing,
-                    )}
-                  >
-                    <input
-                      ref={titleInputRef}
-                      type="text"
-                      className={viewStyles.viewTitleEditingInput}
-                      value={draftTitle}
-                      maxLength={CARDTEXT_TEMPLATE_TITLE_MAX_LENGTH}
-                      onChange={(e) => setDraftTitle(e.target.value)}
-                      onBlur={() => {
-                        if (cardtextAssetStatus === 'inLine') cancelEditTitle()
-                        else void commitEditTitle()
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Escape') {
-                          e.preventDefault()
-                          cancelEditTitle()
-                        }
-                        if (e.key === 'Enter') {
-                          e.preventDefault()
-                          void commitEditTitle()
-                        }
-                      }}
-                      disabled={isSubmittingTitle}
-                      aria-label="Template name"
-                      title="Edit template name"
-                    />
-                    <button
-                      type="button"
-                      className={viewStyles.viewTitleEditingBtn}
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => void commitEditTitle()}
-                      aria-label="Save and close"
-                      title="Save and close"
-                      disabled={isSubmittingTitle}
-                    >
-                      {getToolbarIcon({ key: 'applyLight' })}
-                    </button>
-                  </div>
-                ) : (
-                  <div
-                    role="button"
-                    tabIndex={0}
-                    className={clsx(
-                      viewStyles.viewTitle,
-                      viewStyles.viewTitleStrip,
-                      viewStyles.viewTitleDisplay,
-                    )}
-                    onClick={startEditTitle}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault()
-                        startEditTitle()
-                      }
-                    }}
-                    aria-label="Edit template name"
-                    title="Edit template name"
-                  >
-                    <span className={viewStyles.viewTitleDisplayLabel}>
-                      <span className={viewStyles.viewTitleText}>
-                        {displayTitle}
-                      </span>
-                    </span>
-                    <span
-                      className={viewStyles.viewTitleEditingBtn}
-                      aria-hidden
-                    >
-                      {getToolbarIcon({ key: 'editLight' })}
-                    </span>
-                  </div>
-                )}
-              </>
-            )}
-
-            {showReadOnlyCardtext ? (
-              <div className={styles.cardtextReadOnlyShell}>
-                <CardtextView
-                  key={id ?? 'no-template'}
-                  value={value}
-                  style={style}
-                  titleStripEditing={forceEditingTitle}
-                  onDelete={isMobileLayout ? undefined : handleViewDelete}
-                  templateInQuickList={cardtextViewInQuickList}
-                  showFavoriteToggle={!cardtextIsComplete}
+          {isMobileCreateComposer ? (
+            <div className={styles.cardtextCreateLayout}>
+              <aside className={styles.cardtextCreateSideTools}>
+                <Toolbar
+                  section={toolbarSection}
+                  groupsOverride={CARDTEXT_COMPOSER_SIDE_TOOLBAR}
+                  className={styles.cardtextCreateSideToolbar}
                 />
+              </aside>
+              <div className={styles.cardtextCreateField}>
+                <div className={styles.cardtextViewContent}>{editorBody}</div>
               </div>
-            ) : (
-              <CardEditor titleStripEditing={forceEditingTitle} />
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className={styles.cardtextViewContent}>
+              {displayTitle && showTemplateTitleStrip && (
+                <>
+                  {forceEditingTitle ? (
+                    <div
+                      ref={titleStripRef}
+                      className={clsx(
+                        viewStyles.viewTitle,
+                        viewStyles.viewTitleStrip,
+                        viewStyles.viewTitleEditing,
+                      )}
+                    >
+                      <input
+                        ref={titleInputRef}
+                        type="text"
+                        className={viewStyles.viewTitleEditingInput}
+                        value={draftTitle}
+                        maxLength={CARDTEXT_TEMPLATE_TITLE_MAX_LENGTH}
+                        onChange={(e) => setDraftTitle(e.target.value)}
+                        onBlur={() => {
+                          if (cardtextAssetStatus === 'inLine') cancelEditTitle()
+                          else void commitEditTitle()
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Escape') {
+                            e.preventDefault()
+                            cancelEditTitle()
+                          }
+                          if (e.key === 'Enter') {
+                            e.preventDefault()
+                            void commitEditTitle()
+                          }
+                        }}
+                        disabled={isSubmittingTitle}
+                        aria-label="Template name"
+                        title="Edit template name"
+                      />
+                      <button
+                        type="button"
+                        className={viewStyles.viewTitleEditingBtn}
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => void commitEditTitle()}
+                        aria-label="Save and close"
+                        title="Save and close"
+                        disabled={isSubmittingTitle}
+                      >
+                        {getToolbarIcon({ key: 'applyLight' })}
+                      </button>
+                    </div>
+                  ) : (
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      className={clsx(
+                        viewStyles.viewTitle,
+                        viewStyles.viewTitleStrip,
+                        viewStyles.viewTitleDisplay,
+                      )}
+                      onClick={startEditTitle}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault()
+                          startEditTitle()
+                        }
+                      }}
+                      aria-label="Edit template name"
+                      title="Edit template name"
+                    >
+                      <span className={viewStyles.viewTitleDisplayLabel}>
+                        <span className={viewStyles.viewTitleText}>
+                          {displayTitle}
+                        </span>
+                      </span>
+                      <span
+                        className={viewStyles.viewTitleEditingBtn}
+                        aria-hidden
+                      >
+                        {getToolbarIcon({ key: 'editLight' })}
+                      </span>
+                    </div>
+                  )}
+                </>
+              )}
+
+              {editorBody}
+            </div>
+          )}
         </div>
       </div>
     </div>

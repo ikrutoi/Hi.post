@@ -3,55 +3,70 @@
 
 @mixin mobile-factory-inset-horizontal {
   box-sizing: border-box;
-  width: var(--mobile-central-work-side);
-  max-width: calc(100% - 2 * var(--mobile-section-inset));
-  margin-inline: var(--mobile-section-inset);
+  width: var(--mobile-factory-slot-width, var(--mobile-central-work-side));
+  max-width: var(
+    --mobile-factory-slot-max-width,
+    calc(100% - 2 * var(--mobile-section-inset))
+  );
+  margin-inline: var(
+    --mobile-factory-slot-margin-inline,
+    var(--mobile-section-inset)
+  );
 }
 
 .frame {
   --mobile-central-work-side: calc(100vw - 2 * var(--mobile-section-inset));
   position: relative;
-  flex: 0 0 auto;
-  margin-top: auto;
+  flex: var(--mobile-factory-frame-flex, 0 0 auto);
+  margin-top: var(--mobile-factory-frame-margin-top, auto);
   min-height: 0;
   width: 100%;
+  height: var(--mobile-factory-frame-height, auto);
+  max-height: var(--mobile-factory-frame-max-height, none);
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   // Верх фона секции: половина бокового inset непосредственно над toolbar.
-  padding-top: var(--mobile-factory-toolbar-central-gap);
+  padding-top: var(
+    --mobile-factory-frame-padding-top,
+    var(--mobile-factory-toolbar-central-gap)
+  );
   // Фон секции: контент + safe-area снизу (без растягивания вверх).
-  padding-bottom: var(--mobile-form-layout-padding-bottom, var(--mobile-form-padding-bottom));
-  margin-bottom: calc(-1 * var(--mobile-form-layout-padding-bottom, var(--mobile-form-padding-bottom)));
+  padding-bottom: var(
+    --mobile-factory-frame-padding-bottom,
+    var(--mobile-form-layout-padding-bottom, var(--mobile-form-padding-bottom))
+  );
+  margin-bottom: var(
+    --mobile-factory-frame-margin-bottom,
+    calc(-1 * var(--mobile-form-layout-padding-bottom, var(--mobile-form-padding-bottom)))
+  );
+  background-color: var(
+    --mobile-factory-frame-bg,
+    var(--mobile-section-surface-bg, transparent)
+  );
 
   &[data-mobile-section-surface='cardphoto'] {
     --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-cardphoto};
-    background-color: sectionGutter.$mobile-section-gutter-cardphoto;
   }
 
   &[data-mobile-section-surface='cardtext'] {
     --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-cardtext};
-    background-color: sectionGutter.$mobile-section-gutter-cardtext;
   }
 
   &[data-mobile-section-surface='envelope'] {
     --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-envelope};
-    background-color: sectionGutter.$mobile-section-gutter-envelope;
   }
 
   &[data-mobile-section-surface='envelope-sender'] {
     --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-envelope-sender};
-    background-color: sectionGutter.$mobile-section-gutter-envelope-sender;
   }
 
   &[data-mobile-section-surface='aroma'] {
     --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-aroma};
-    background-color: sectionGutter.$mobile-section-gutter-aroma;
   }
 
   &[data-mobile-section-surface='date'] {
     --mobile-section-surface-bg: #{notebookTab.$mobile-notebook-date-tab-date};
-    background-color: notebookTab.$mobile-notebook-date-tab-date;
   }
 
   &[data-mobile-section-surface='date-cart'] {
@@ -66,7 +81,6 @@
 
   &[data-mobile-section-surface='neutral'] {
     --mobile-section-surface-bg: transparent;
-    background-color: transparent;
   }
 }
 
@@ -77,12 +91,25 @@
 .content {
   position: relative;
   z-index: 1;
-  flex: 0 0 auto;
-  width: 100%;
+  flex: var(--mobile-factory-content-flex, 0 0 auto);
+  width: var(--mobile-factory-content-width, 100%);
+  max-width: var(--mobile-factory-content-max-width, none);
+  min-width: var(--mobile-factory-content-min-width, 0);
+  margin: var(--mobile-factory-content-margin, 0);
+  padding: var(--mobile-factory-content-padding, 0);
+  gap: var(
+    --mobile-factory-content-gap,
+    var(--mobile-factory-toolbar-central-gap)
+  );
+  align-self: var(--mobile-factory-content-align-self, stretch);
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  gap: var(--mobile-factory-toolbar-central-gap);
+  overflow: var(--mobile-factory-content-overflow, visible);
+  border-radius: var(--mobile-factory-content-radius, 0);
+  border: var(--mobile-factory-content-border, none);
+  background-color: var(--mobile-factory-content-bg, transparent);
+  container-type: var(--mobile-factory-content-container-type, normal);
 }
 
 .contentTemplateList {
@@ -104,14 +131,23 @@
 /** Квадратная рабочая зона: одинаковые отступы слева, справа и снизу. */
 .centralWorkZone {
   position: relative;
-  flex: 0 0 auto;
+  flex: var(--mobile-factory-work-zone-flex, 0 0 auto);
   @include mobile-factory-inset-horizontal;
-  aspect-ratio: 1;
-  height: auto;
-  margin-bottom: var(--mobile-section-inset);
+  aspect-ratio: var(--mobile-factory-work-zone-aspect-ratio, 1);
+  height: var(--mobile-factory-work-zone-height, auto);
+  align-self: var(--mobile-factory-work-zone-align-self, stretch);
+  margin-top: var(--mobile-factory-work-zone-margin-top, 0);
+  margin-bottom: var(
+    --mobile-factory-work-zone-margin-bottom,
+    var(--mobile-section-inset)
+  );
   min-width: 0;
+  min-height: var(--mobile-factory-work-zone-min-height, 0);
   overflow: hidden;
-  border-radius: 0.5rem;
+  border-radius: var(--mobile-factory-work-zone-radius, 0.5rem);
+  background-color: var(--mobile-factory-work-zone-bg, transparent);
+  display: var(--mobile-factory-work-zone-display, block);
+  flex-direction: var(--mobile-factory-work-zone-flex-direction, row);
 }
 
 .centralWorkZoneInner {

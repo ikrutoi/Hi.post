@@ -14,11 +14,13 @@
   );
 
   :global(button[class*='toolbarKey']) {
-    background-color: transparent !important;
+    background-color: transparent;
+    background-image: none;
 
     &:hover,
     &:active {
-      background-color: transparent !important;
+      background-color: transparent;
+      background-image: none;
     }
   }
 }
@@ -140,6 +142,74 @@
   }
 }
 
+/** Create chrome: no role-fade; fill work zone; icons blend with form gutter. */
+:global([data-cardtext-create='true']) {
+  .cardtextToolbarRow,
+  .cardtextToolbarRowEmpty {
+    background-image: none;
+    background-color: transparent;
+
+    :global(button[class*='toolbarKey']) {
+      background-color: transparent;
+
+      &:hover,
+      &:active {
+        background-color: transparent;
+      }
+    }
+  }
+
+  .cardtextContainer,
+  .cardtext,
+  .cardtextViewWrap {
+    flex: 1 1 auto;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    max-height: 100%;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    background-color: transparent;
+    justify-content: flex-start;
+  }
+
+  .cardtextViewWrap {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cardtextCreateLayout {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .cardtextCreateField {
+    max-height: min(100%, 100cqw);
+    background-color: #fff;
+  }
+
+  .cardtextCreateField .cardtextViewContent,
+  .cardtextCreateField .cardtextViewContent :global([class*='editor']) {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    background-color: transparent;
+  }
+
+  .cardtextCreateSideToolbar :global(button[class*='toolbarKey']) {
+    background-color: transparent;
+
+    &:hover,
+    &:active {
+      background-color: transparent;
+    }
+  }
+}
+
 .cardtextViewContent {
   flex: 1;
   min-height: 0;
@@ -172,6 +242,84 @@
 }
 
 /* View / Processed: форма на всю высоту, edit/delete — правый нижний угол CardtextView */
+
+/** Mobile create: font tools left of square field. */
+.cardtextCreateLayout {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  gap: 0.35rem;
+  box-sizing: border-box;
+}
+
+.cardtextCreateSideTools {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+  align-self: stretch;
+}
+
+.cardtextCreateSideToolbar {
+  flex-direction: column;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  justify-content: center;
+  align-items: center;
+
+  :global([class*='toolbarGroup']) {
+    flex-direction: column;
+    margin: 0;
+  }
+
+  :global([class*='toolbarKey']) {
+    margin: 0;
+    background-color: transparent;
+
+    &:hover,
+    &:active {
+      background-color: transparent;
+    }
+  }
+}
+
+.cardtextCreateField {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  max-width: 100%;
+  max-height: min(100%, 100%);
+  width: auto;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  align-self: flex-end;
+  margin-top: auto;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  background-color: #fff;
+  box-sizing: border-box;
+
+  .cardtextViewContent {
+    flex: 1 1 auto;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    align-items: stretch;
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+  }
+}
+
 .cardtextReadOnlyShell {
   flex: 1 1 0;
   min-height: 0;
