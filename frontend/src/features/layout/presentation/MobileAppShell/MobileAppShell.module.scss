@@ -364,6 +364,7 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
       border: 1px solid var(--cardtext-create-form-border);
       background-color: var(--cardtext-create-form-bg);
       align-self: center;
+      container-type: size;
     }
 
     :global([class*='toolbarSlot']) {
@@ -391,12 +392,19 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
     }
 
     :global([data-mobile-central-work-zone='true']) {
-      aspect-ratio: unset;
-      flex: 1 1 auto;
-      width: 100% !important;
-      max-width: none !important;
-      height: auto;
+      /*
+       * Square field: height from remaining space (display − keyboard − toolbar),
+       * width follows height; never wider than the form.
+       */
+      flex: 1 1 0;
       min-height: 0;
+      min-width: 0;
+      max-width: 100%;
+      max-height: min(100%, 100cqw);
+      width: auto !important;
+      height: auto;
+      aspect-ratio: 1 / 1;
+      align-self: center;
       margin: 0 !important;
       overflow: hidden;
       border-radius: 0.5rem;
