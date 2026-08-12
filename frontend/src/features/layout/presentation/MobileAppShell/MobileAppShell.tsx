@@ -568,17 +568,22 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   /**
    * Multi-date minis: all accented in overview; only the cycled pie while browsing.
    * Single plan pie: keep a sole accent.
+   * Keep accent for left-context template/preview modes; clear only for archive/right.
    */
+  const gutterKeepsPlanPieAccent =
+    mobileCentralPieDisplay !== 'archive' &&
+    mobileCentralPieDisplay !== 'emptyArchive'
+
   const gutterHighlightPlanPieId = useMemo(() => {
-    if (mobileCentralPieDisplay !== 'assembly') return null
+    if (!gutterKeepsPlanPieAccent) return null
     if (planPies.length > 1) return selectedPlanPieId
     if (selectedPlanPieId != null) return selectedPlanPieId
     if (planPies.length === 1) return planPies[0]?.id ?? null
     return null
-  }, [mobileCentralPieDisplay, selectedPlanPieId, planPies])
+  }, [gutterKeepsPlanPieAccent, selectedPlanPieId, planPies])
 
   const gutterHighlightAllPlanPies =
-    mobileCentralPieDisplay === 'assembly' &&
+    gutterKeepsPlanPieAccent &&
     planPies.length > 1 &&
     selectedPlanPieId == null
 
