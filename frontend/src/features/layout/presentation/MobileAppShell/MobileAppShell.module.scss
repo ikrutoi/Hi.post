@@ -405,6 +405,11 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
       background-color: var(--cardtext-create-field-bg);
     }
 
+    :global([class*='editorEditable']) {
+      padding-inline: 0.35rem;
+      box-sizing: border-box;
+    }
+
     :global([class*='cardtextContainer']),
     :global([class*='cardtext']:not([class*='Container']):not([class*='View']):not([class*='Toolbar']):not([class*='ReadOnly'])),
     :global([class*='cardtextViewWrap']),
