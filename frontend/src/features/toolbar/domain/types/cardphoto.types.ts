@@ -60,6 +60,11 @@ export const CARDPHOTO_CREATE_TOOLBAR: ToolbarConfig = [
 
 export const CARDPHOTO_VIEW_TOOLBAR: ToolbarConfig = [
   {
+    group: 'list',
+    icons: [{ key: 'addList', state: 'enabled' }],
+    status: 'enabled',
+  },
+  {
     group: 'close',
     icons: [{ key: 'close', state: 'enabled' }],
     status: 'enabled',

@@ -440,7 +440,9 @@
       [data-icon-key='cropCheck']
     ):not([data-icon-key='imageRotateRight']):not(
       [data-icon-key='imageRotateLeft']
-    ):not([data-icon-key='addList']):not([data-icon-key='removeFromList']) {
+    ):not([data-icon-key='addList']):not([data-icon-key='removeFromList']):not(
+      [data-icon-key='favorite']
+    ):not([data-icon-key='favoriteFilled']) {
     color: $color-font-enabled-light;
 
     &:hover {
@@ -472,13 +474,56 @@
   }
 }
 
-/* cardphotoView: единственная группа close/delete — к правому краю. */
+/* cardphotoView: звезда слева, close/delete справа. */
 .toolbarCardphotoView {
-  justify-content: flex-end;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
-  .toolbarGroup {
+  .toolbarGroup:nth-child(1) {
+    justify-content: flex-start;
+    margin-left: 0;
+  }
+
+  .toolbarGroup:nth-child(2) {
     justify-content: flex-end;
     margin-left: auto;
+  }
+
+  .toolbarKey[data-icon-key='favorite'].toolbarKeyEnabled,
+  .toolbarKey[data-icon-key='favoriteFilled'].toolbarKeyEnabled,
+  .toolbarKey[data-icon-key='favoriteFilled'].toolbarKeyActive {
+    color: $color-font-enabled-light;
+
+    &:hover,
+    &:active,
+    &:focus,
+    &:focus-visible {
+      color: $color-font-enabled-light;
+      background-color: #fff;
+    }
+  }
+
+  .toolbarKeyFavoriteActive,
+  .toolbarKey[data-icon-key='favoriteFilled'].toolbarKeyActive,
+  .toolbarKey[data-icon-key='favoriteFilled'].toolbarKeyFavoriteActive {
+    color: $color-favorite-star;
+
+    svg {
+      fill: $color-favorite-star;
+    }
+
+    &:hover,
+    &:active,
+    &:focus,
+    &:focus-visible {
+      color: $color-favorite-star;
+      background-color: #fff;
+
+      svg {
+        fill: $color-favorite-star;
+      }
+    }
   }
 }
 
