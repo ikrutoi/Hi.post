@@ -56,11 +56,14 @@ export const SENDER_VIEW_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-/** Mobile focused address view (lower scenario bar): edit + clear view. */
+/** Mobile focused address view (lower scenario bar): star + edit, clear view. */
 export const ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'senderView',
-    icons: [{ key: 'edit', state: 'enabled' }],
+    icons: [
+      { key: 'addList', state: 'enabled' },
+      { key: 'edit', state: 'enabled' },
+    ],
     status: 'enabled',
   },
   {
@@ -76,7 +79,10 @@ export const ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR: ToolbarConfig = [
 export const ENVELOPE_MOBILE_ADDRESS_VIEW_DELETE_TOOLBAR: ToolbarConfig = [
   {
     group: 'senderView',
-    icons: [{ key: 'edit', state: 'enabled' }],
+    icons: [
+      { key: 'addList', state: 'enabled' },
+      { key: 'edit', state: 'enabled' },
+    ],
     status: 'enabled',
   },
   {
@@ -93,7 +99,10 @@ export const ENVELOPE_MOBILE_ADDRESS_VIEW_DELETE_TOOLBAR: ToolbarConfig = [
 export const ENVELOPE_MOBILE_ADDRESS_VIEW_RETURN_TOOLBAR: ToolbarConfig = [
   {
     group: 'senderView',
-    icons: [{ key: 'edit', state: 'enabled' }],
+    icons: [
+      { key: 'addList', state: 'enabled' },
+      { key: 'edit', state: 'enabled' },
+    ],
     status: 'enabled',
   },
   {

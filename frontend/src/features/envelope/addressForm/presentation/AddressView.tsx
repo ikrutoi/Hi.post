@@ -33,6 +33,7 @@ import { listStatusIsInQuickAddressBook } from '@envelope/domain/helpers'
 import { applyTitleCaseInput } from '@shared/utils/helpers'
 import { TemplateFavoriteToggle } from '@shared/ui/TemplateFavoriteToggle/TemplateFavoriteToggle'
 import { useEnvelopeMobileAddressFocus } from '../../presentation/EnvelopeMobileAddressFocusContext'
+import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 
 type AddressViewRole = 'recipient' | 'sender'
 
@@ -55,6 +56,9 @@ type SingleAddressViewProps = {
 type EditableRowKey = 'name' | 'street' | 'cityZip' | 'country'
 type CityZipFocus = 'zip' | 'city'
 
+const ADDRESS_VIEW_LIST_STAR_BUTTON =
+  'button[data-icon-key="addList"], button[data-icon-key="removeFromList"], button[data-icon-key="favorite"], button[data-icon-key="favoriteFilled"], button[data-template-favorite]'
+
 const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   role,
   templateId,
@@ -62,6 +66,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
 }) => {
   const dispatch = useAppDispatch()
   const mobileFocus = useEnvelopeMobileAddressFocus()
+  const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
@@ -192,9 +197,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       if (!(target instanceof Element)) return
       if (target.closest('[data-envelope-address-view-toolbar]')) {
         if (
-          target.closest(
-            'button[data-icon-key="addList"], button[data-icon-key="removeFromList"], button[data-template-favorite]',
-          )
+          target.closest(ADDRESS_VIEW_LIST_STAR_BUTTON)
         ) {
           return
         }
@@ -330,9 +333,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     if (next.closest('[data-address-edit-row]')) return
     if (next.closest('[data-envelope-address-view-toolbar]')) {
       if (
-        !next.closest(
-          'button[data-icon-key="addList"], button[data-icon-key="removeFromList"], button[data-template-favorite]',
-        )
+        !next.closest(ADDRESS_VIEW_LIST_STAR_BUTTON)
       ) {
         dispatch(toolbarAction({ section: toolbarSection, key: 'edit' } as any))
       }
@@ -392,11 +393,13 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
           </div>
         ) : null}
       </div>
-      <TemplateFavoriteToggle
-        active={templateInQuickList}
-        corner={role === 'recipient' ? 'top-left' : 'top-right'}
-        onToggle={handleTemplateFavoriteToggle}
-      />
+      {!isMobileLayout ? (
+        <TemplateFavoriteToggle
+          active={templateInQuickList}
+          corner={role === 'recipient' ? 'top-left' : 'top-right'}
+          onToggle={handleTemplateFavoriteToggle}
+        />
+      ) : null}
     </div>
   )
 

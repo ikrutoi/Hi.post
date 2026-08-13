@@ -1869,11 +1869,35 @@
   }
 
   /* Same as cart list keys: no icon darken on hover */
-  .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
+  .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']):not(
+      [data-icon-key='favoriteFilled']
+    ) {
     color: $color-font-enabled-light;
 
     &:hover {
       background-color: #fff;
+    }
+  }
+
+  .toolbarKeyFavoriteActive,
+  .toolbarKey[data-icon-key='favoriteFilled'].toolbarKeyActive,
+  .toolbarKey[data-icon-key='favoriteFilled'].toolbarKeyFavoriteActive {
+    color: $color-favorite-star;
+
+    svg {
+      fill: $color-favorite-star;
+    }
+
+    &:hover,
+    &:active,
+    &:focus,
+    &:focus-visible {
+      color: $color-favorite-star;
+      background-color: #fff;
+
+      svg {
+        fill: $color-favorite-star;
+      }
     }
   }
 
@@ -2383,12 +2407,36 @@
       background-color: #fff;
     }
 
-    .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
+    .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']):not(
+        [data-icon-key='favoriteFilled']
+      ) {
       color: $color-font-enabled-light;
 
       @include iconButton.toolbar-key-hover-fine-pointer {
         &:hover {
           background-color: #fff;
+        }
+      }
+    }
+
+    .toolbarKeyFavoriteActive,
+    .toolbarKey[data-icon-key='favoriteFilled'].toolbarKeyActive,
+    .toolbarKey[data-icon-key='favoriteFilled'].toolbarKeyFavoriteActive {
+      color: $color-favorite-star;
+
+      svg {
+        fill: $color-favorite-star;
+      }
+
+      &:hover,
+      &:active,
+      &:focus,
+      &:focus-visible {
+        color: $color-favorite-star;
+        background-color: #fff;
+
+        svg {
+          fill: $color-favorite-star;
         }
       }
     }

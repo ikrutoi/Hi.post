@@ -392,15 +392,24 @@ export const Toolbar = ({
           ? recipientCreateDraftInList
           : false
     const showCreateListCheck = key === 'addList' && createDraftInList
-    const cardphotoViewListStar = key === 'addList' && section === 'cardphotoView'
+    const addressViewListStar =
+      key === 'addList' &&
+      (section === 'senderView' || section === 'recipientView')
+    const viewListStar = key === 'addList' && section === 'cardphotoView'
+    const viewListStarFilled = viewListStar
+      ? cardphotoViewTemplateInList
+      : addressViewListStar
+        ? templateInQuickList
+        : false
+    const listStarIcon = viewListStar || addressViewListStar
     const effectiveIconKey: IconKey = editorPieCartAdd
       ? 'cart'
       : editorPieDelete
         ? 'delete'
       : showCreateListCheck
       ? 'listCheck'
-      : cardphotoViewListStar
-        ? cardphotoViewTemplateInList
+      : listStarIcon
+        ? viewListStarFilled
           ? 'favoriteFilled'
           : 'favorite'
       : (key === 'sortDown' || key === 'sortUp') &&
@@ -427,8 +436,8 @@ export const Toolbar = ({
     /** Visual remaps (e.g. cart glyph) must still fire the real action key. */
     const actionIconKey: IconKey = editorPieCartAdd
       ? 'addCart'
-      : cardphotoViewListStar
-        ? cardphotoViewTemplateInList
+      : listStarIcon
+        ? viewListStarFilled
           ? 'removeFromList'
           : 'addList'
       : effectiveIconKey
@@ -460,7 +469,12 @@ export const Toolbar = ({
           ? cardphotoViewTemplateInList
           : templateInQuickList)
     ) {
-      buttonStatus = section === 'cardphotoView' ? 'active' : 'enabled'
+      buttonStatus =
+        section === 'cardphotoView' ||
+        section === 'senderView' ||
+        section === 'recipientView'
+          ? 'active'
+          : 'enabled'
     }
 
     if (key === 'apply' && section === 'cardtext') {
