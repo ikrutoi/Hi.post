@@ -395,13 +395,17 @@ export const Toolbar = ({
     const addressViewListStar =
       key === 'addList' &&
       (section === 'senderView' || section === 'recipientView')
+    const cardtextViewListStar = key === 'addList' && section === 'cardtextView'
     const viewListStar = key === 'addList' && section === 'cardphotoView'
     const viewListStarFilled = viewListStar
       ? cardphotoViewTemplateInList
-      : addressViewListStar
-        ? templateInQuickList
-        : false
-    const listStarIcon = viewListStar || addressViewListStar
+      : cardtextViewListStar
+        ? cardtextViewInQuickList
+        : addressViewListStar
+          ? templateInQuickList
+          : false
+    const listStarIcon =
+      viewListStar || addressViewListStar || cardtextViewListStar
     const effectiveIconKey: IconKey = editorPieCartAdd
       ? 'cart'
       : editorPieDelete
@@ -471,6 +475,7 @@ export const Toolbar = ({
     ) {
       buttonStatus =
         section === 'cardphotoView' ||
+        section === 'cardtextView' ||
         section === 'senderView' ||
         section === 'recipientView'
           ? 'active'

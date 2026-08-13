@@ -1125,7 +1125,7 @@
 .toolbarCardtextCreate {
   .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']):not(
       [data-icon-key='cropCheck']
-    ) {
+    ):not([data-icon-key='favoriteFilled']) {
     color: $color-font-enabled-light;
 
     &:hover {
@@ -1136,6 +1136,28 @@
   .toolbarKey.toolbarKeyActive:not([data-icon-key='apply']) {
     &:hover {
       background-color: #fff;
+    }
+  }
+
+  .toolbarKeyFavoriteActive,
+  .toolbarKey[data-icon-key='favoriteFilled'].toolbarKeyActive,
+  .toolbarKey[data-icon-key='favoriteFilled'].toolbarKeyFavoriteActive {
+    color: $color-favorite-star;
+
+    svg {
+      fill: $color-favorite-star;
+    }
+
+    &:hover,
+    &:active,
+    &:focus,
+    &:focus-visible {
+      color: $color-favorite-star;
+      background-color: #fff;
+
+      svg {
+        fill: $color-favorite-star;
+      }
     }
   }
 

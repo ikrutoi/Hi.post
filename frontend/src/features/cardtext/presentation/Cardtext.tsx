@@ -29,13 +29,10 @@ import {
   selectCardtextSource,
   selectCardtextTemplatesListItems,
   selectCardtextTemplatesListLoading,
-  selectCardtextViewInQuickList,
-  selectCardtextIsComplete,
 } from '@cardtext/infrastructure/selectors'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import {
-  CARDTEXT_COMPOSER_SIDE_TOOLBAR,
-  CARDTEXT_COMPOSER_TOP_TOOLBAR,
+  CARDTEXT_COMPOSER_TOOLBAR,
   CARDTEXT_VIEW_TOOLBAR,
 } from '@toolbar/domain/types/cardtext.types'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
@@ -148,8 +145,6 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
   const viewToolbarState = useAppSelector(
     selectToolbarSectionState('cardtextView'),
   )
-  const cardtextViewInQuickList = useAppSelector(selectCardtextViewInQuickList)
-  const cardtextIsComplete = useAppSelector(selectCardtextIsComplete)
 
   const {
     titleInputRef,
@@ -248,7 +243,7 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
     showCardtextToolbarControls
 
   const composerToolbarGroupsOverride = useMemo(() => {
-    if (isMobileCreateComposer) return CARDTEXT_COMPOSER_TOP_TOOLBAR
+    if (isMobileCreateComposer) return CARDTEXT_COMPOSER_TOOLBAR
     return cardtextViewToolbarGroupsOverride
   }, [isMobileCreateComposer, cardtextViewToolbarGroupsOverride])
 
@@ -265,8 +260,6 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
         style={style}
         titleStripEditing={forceEditingTitle}
         onDelete={isMobileLayout ? undefined : handleViewDelete}
-        templateInQuickList={cardtextViewInQuickList}
-        showFavoriteToggle={!cardtextIsComplete}
       />
     </div>
   ) : (
@@ -290,13 +283,6 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
           </MobileInlineToolbarRow>
           {isMobileCreateComposer ? (
             <div className={styles.cardtextCreateLayout}>
-              <aside className={styles.cardtextCreateSideTools}>
-                <Toolbar
-                  section={toolbarSection}
-                  groupsOverride={CARDTEXT_COMPOSER_SIDE_TOOLBAR}
-                  className={styles.cardtextCreateSideToolbar}
-                />
-              </aside>
               <div className={styles.cardtextCreateField}>
                 <div className={styles.cardtextViewContent}>{editorBody}</div>
               </div>

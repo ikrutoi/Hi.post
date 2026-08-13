@@ -73,36 +73,6 @@ export const CARDTEXT_COMPOSER_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-/** Mobile create: applyMedium left + return right (top of form). */
-export const CARDTEXT_COMPOSER_TOP_TOOLBAR: ToolbarConfig = [
-  {
-    group: 'create',
-    icons: [{ key: 'applyMedium', state: 'disabled' }],
-    status: 'enabled',
-  },
-  {
-    group: 'close',
-    icons: [{ key: 'return', state: 'enabled' }],
-    status: 'enabled',
-  },
-]
-
-/** Mobile create: font/align tools left of the text field (vertical). */
-export const CARDTEXT_COMPOSER_SIDE_TOOLBAR: ToolbarConfig = [
-  {
-    group: 'font',
-    icons: [
-      { key: 'fontSizeLess', state: 'enabled' },
-      { key: 'fontSizeIndicator', state: 'enabled' },
-      { key: 'fontSizeMore', state: 'enabled' },
-      { key: 'fontFamily', state: 'enabled' },
-      { key: 'colorPicker', state: 'enabled' },
-      { key: 'left', state: 'enabled' },
-    ],
-    status: 'enabled',
-  },
-]
-
 /** @deprecated Prefer return in CARDTEXT_COMPOSER_TOOLBAR (lower row). Kept for list chrome. */
 export const CARDTEXT_EDITOR_UPPER_RETURN_TOOLBAR: ToolbarConfig = [
   {
@@ -115,7 +85,10 @@ export const CARDTEXT_EDITOR_UPPER_RETURN_TOOLBAR: ToolbarConfig = [
 export const CARDTEXT_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'font',
-    icons: [{ key: 'edit', state: 'enabled' }],
+    icons: [
+      { key: 'addList', state: 'enabled' },
+      { key: 'edit', state: 'enabled' },
+    ],
     status: 'enabled',
   },
   {
