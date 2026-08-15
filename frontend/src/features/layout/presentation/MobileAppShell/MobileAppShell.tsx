@@ -936,6 +936,16 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
 
       if (section === 'cardtext' && currentActiveSection === 'cardtext') {
         const cardtextListOpen = selectIsCardtextListPanelOpen(state)
+        const cardtextMode = selectCardtextInteractionMode(state)
+        const isCardtextView =
+          cardtextMode === 'postcardTemplateView' ||
+          cardtextMode === 'processedSlot'
+        if (isCardtextView) {
+          if (cardtextListOpen) {
+            dispatch(setCardtextListPanelOpen(false))
+          }
+          return
+        }
         dispatch(setCardtextListPanelOpen(!cardtextListOpen))
         return
       }

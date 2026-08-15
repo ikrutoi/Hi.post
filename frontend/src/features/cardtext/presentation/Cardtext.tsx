@@ -29,12 +29,14 @@ import {
   selectCardtextSource,
   selectCardtextTemplatesListItems,
   selectCardtextTemplatesListLoading,
+  selectCardtextViewInQuickList,
 } from '@cardtext/infrastructure/selectors'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
+import { CARDTEXT_VIEW_TOOLBAR } from '@toolbar/domain/types/cardtext.types'
 import {
-  CARDTEXT_COMPOSER_TOOLBAR,
-  CARDTEXT_VIEW_TOOLBAR,
-} from '@toolbar/domain/types/cardtext.types'
+  CARDTEXT_CREATE_FIELD_FONT_SCALE,
+  CARDTEXT_CREATE_FIELD_FONT_SCALE_MIN,
+} from '@cardtext/domain/types'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import styles from './Cardtext.module.scss'
@@ -145,6 +147,7 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
   const viewToolbarState = useAppSelector(
     selectToolbarSectionState('cardtextView'),
   )
+  const cardtextViewInQuickList = useAppSelector(selectCardtextViewInQuickList)
 
   const {
     titleInputRef,
@@ -183,7 +186,11 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
   })
 
   const cardtextViewToolbarGroupsOverride = useMemo(() => {
-    if (toolbarSection === 'cardtextView' && isMobileLayout) {
+    if (
+      toolbarSection === 'cardtextView' &&
+      isMobileLayout &&
+      !cardtextViewInQuickList
+    ) {
       return CARDTEXT_VIEW_TOOLBAR.map((group) =>
         group.group === 'close'
           ? { ...group, icons: [{ key: 'delete' as const, state: 'enabled' as const }] }
@@ -191,14 +198,24 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
       )
     }
     return undefined
-  }, [isMobileLayout, toolbarSection])
+  }, [cardtextViewInQuickList, isMobileLayout, toolbarSection])
 
   const cardtextViewToolbarStateOverride = useMemo(() => {
-    if (toolbarSection === 'cardtextView' && isMobileLayout && viewToolbarState?.close) {
+    if (
+      toolbarSection === 'cardtextView' &&
+      isMobileLayout &&
+      !cardtextViewInQuickList &&
+      viewToolbarState?.close
+    ) {
       return { delete: viewToolbarState.close }
     }
     return undefined
-  }, [isMobileLayout, toolbarSection, viewToolbarState])
+  }, [
+    cardtextViewInQuickList,
+    isMobileLayout,
+    toolbarSection,
+    viewToolbarState,
+  ])
 
   const showReadOnlyCardtext =
     state.assetData != null &&
@@ -242,11 +259,6 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
     interactionMode === 'createEmpty' &&
     showCardtextToolbarControls
 
-  const composerToolbarGroupsOverride = useMemo(() => {
-    if (isMobileCreateComposer) return CARDTEXT_COMPOSER_TOOLBAR
-    return cardtextViewToolbarGroupsOverride
-  }, [isMobileCreateComposer, cardtextViewToolbarGroupsOverride])
-
   useLoadCardtextTemplatesWhenUnknown(
     cardtextTemplatesLoading,
     cardtextTemplates,
@@ -277,13 +289,21 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
           >
             <Toolbar
               section={toolbarSection}
-              groupsOverride={composerToolbarGroupsOverride}
+              groupsOverride={cardtextViewToolbarGroupsOverride}
               stateOverride={cardtextViewToolbarStateOverride}
             />
           </MobileInlineToolbarRow>
           {isMobileCreateComposer ? (
             <div className={styles.cardtextCreateLayout}>
-              <div className={styles.cardtextCreateField}>
+              <div
+                className={styles.cardtextCreateField}
+                style={
+                  {
+                    '--cardtext-font-scale-cap': CARDTEXT_CREATE_FIELD_FONT_SCALE,
+                    '--cardtext-font-scale-min': CARDTEXT_CREATE_FIELD_FONT_SCALE_MIN,
+                  } as React.CSSProperties
+                }
+              >
                 <div className={styles.cardtextViewContent}>{editorBody}</div>
               </div>
             </div>

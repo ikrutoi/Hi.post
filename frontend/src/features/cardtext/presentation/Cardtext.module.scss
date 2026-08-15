@@ -2,7 +2,7 @@
 @use '@styles/config/uiLayout' as *;
 @use '@styles/mixins/sectionToolbarRow' as sectionToolbarRow;
 
-/** Same edge-fade recipe as envelope / aroma role toolbars. */
+/** Same edge-fade recipe as envelope / aroma / cardphoto role toolbars. */
 @mixin cardtext-toolbar-role-fade {
   background-color: transparent;
   background-image: linear-gradient(
@@ -14,12 +14,14 @@
   );
 
   :global(button[class*='toolbarKey']) {
-    background-color: transparent;
+    background-color: transparent !important;
     background-image: none;
 
     &:hover,
-    &:active {
-      background-color: transparent;
+    &:active,
+    &:focus,
+    &:focus-visible {
+      background-color: transparent !important;
       background-image: none;
     }
   }
@@ -264,6 +266,18 @@
   border-radius: 0.5rem;
   background-color: #fff;
   box-sizing: border-box;
+  container-type: size;
+  /**
+   * Display scale only. Cap when the square is full-width; follow field /
+   * `--card-width` when the keyboard shrinks it. Floor keeps type readable.
+   */
+  --cardtext-font-scale: max(
+    var(--cardtext-font-scale-min, 0.6),
+    min(
+      var(--cardtext-font-scale-cap, 0.88),
+      calc(100cqw / var(--card-width, 100cqw))
+    )
+  );
 
   .cardtextViewContent {
     flex: 1 1 auto;

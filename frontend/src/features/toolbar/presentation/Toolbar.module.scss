@@ -2054,9 +2054,22 @@
 .toolbarCardtextEditor,
 .toolbarCardtextCreate {
   margin-right: 0.5rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  justify-content: stretch;
+
+  .toolbarGroup:nth-child(1) {
+    justify-self: start;
+  }
+
+  .toolbarGroup:nth-child(2) {
+    justify-self: center;
+  }
 
   .toolbarGroup:last-child {
-    margin-left: auto;
+    justify-self: end;
+    margin-left: 0;
   }
 
   .toolbarGroup:last-child .toolbarKey:last-child {

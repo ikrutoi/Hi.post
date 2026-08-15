@@ -200,8 +200,8 @@ export const CardEditor: React.FC<CardEditorProps> = ({
               className={styles.editorEditable}
               ref={editableRef}
               style={{
-                lineHeight: `${currentLineHeight}px`,
-                fontSize: `${currentPxSize}px`,
+                lineHeight: `calc(${currentLineHeight}px * var(--cardtext-font-scale, 1))`,
+                fontSize: `calc(${currentPxSize}px * var(--cardtext-font-scale, 1))`,
               }}
               placeholder=""
               renderLeaf={renderLeafWithColor}

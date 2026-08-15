@@ -68,6 +68,7 @@ import {
   selectCardtextInteractionMode,
   selectCardtextValue,
   selectCardtextAssetMatchesApplied,
+  selectCardtextViewInQuickList,
 } from '@cardtext/infrastructure/selectors'
 
 function* syncCardtextAlignIcons(
@@ -152,9 +153,18 @@ export function* syncCardtextAddToolbarState(): SagaIterator {
     (hasDraft || hasReduxDraft) &&
     (!isCreateModeOpen || assetNull)
 
+  const interactionMode: ReturnType<typeof selectCardtextInteractionMode> =
+    yield select(selectCardtextInteractionMode)
+  const inQuickList: boolean = yield select(selectCardtextViewInQuickList)
+  const isViewForm =
+    interactionMode === 'postcardTemplateView' ||
+    interactionMode === 'processedSlot'
+  const viewTextPendingBadge = isViewForm && hasText && !inQuickList
+
   const { state, options } = resolveCardtextAddToolbarState({
     createEditorOpenForTyping,
     hasPendingProcessed: hasProcessed,
+    viewTextPendingBadge,
     shouldShowDraftDot,
   })
 
@@ -380,9 +390,7 @@ export function* cardtextProcessSaga(): SagaIterator {
           (key === 'addList' || key === 'removeFromList')
         ) {
           yield call(syncCardtextViewToolbarAddList)
-          if (key === 'addList') {
-            yield call(syncCardtextAddToolbarState)
-          }
+          yield call(syncCardtextAddToolbarState)
         }
         if (
           key === 'applyLight' ||
