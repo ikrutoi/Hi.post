@@ -39,3 +39,10 @@ export function deriveCardtextInteractionMode(
 
   return 'editTemplate'
 }
+
+/** Mobile create chrome + square field: new draft or edit from View. */
+export function isCardtextCreateComposerMode(
+  mode: CardtextInteractionMode,
+): boolean {
+  return mode === 'createEmpty' || mode === 'editFromPostcardView'
+}

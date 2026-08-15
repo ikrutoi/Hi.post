@@ -59,11 +59,12 @@ export const initialCardtextState: CardtextSliceState = {
   ...initialCardtextTemplatesState,
 }
 
-/** В View только один текст; processed не из списка шаблонов — снимаем подсветку строки. */
-function clearTemplatesListSelectionWhenProcessed(
+/** Подсветка списка только для inLine; processed / outLine — не в быстром списке. */
+function clearTemplatesListSelectionWhenNotInQuickList(
   state: WritableDraft<CardtextSliceState>,
 ): void {
-  if (state.assetData?.status === 'processed') {
+  const status = state.assetData?.status
+  if (status === 'processed' || status === 'outLine') {
     state.templatesListSelectedId = null
   }
 }
@@ -137,7 +138,7 @@ export const cardtextSlice = createSlice({
     setStatus(state, action: PayloadAction<CardtextStatus>) {
       if (state.assetData === null) return
       state.assetData.status = action.payload
-      clearTemplatesListSelectionWhenProcessed(state)
+      clearTemplatesListSelectionWhenNotInQuickList(state)
     },
 
     clearText(state) {
@@ -331,11 +332,8 @@ export const cardtextSlice = createSlice({
       state.isDraftEngaged = false
       state.isCardtextViewEditMode = false
       state.isApplyPeekChrome = false
-      clearTemplatesListSelectionWhenProcessed(state)
-      if (
-        ad.id != null &&
-        (ad.status === 'inLine' || ad.status === 'outLine')
-      ) {
+      clearTemplatesListSelectionWhenNotInQuickList(state)
+      if (ad.id != null && ad.status === 'inLine') {
         state.templatesListSelectedId = ad.id
       }
       state.resetToken += 1
@@ -395,6 +393,15 @@ export const cardtextSlice = createSlice({
     ) {
       state.templatesList = action.payload
       state.templatesListLoading = false
+      const selected = state.templatesListSelectedId
+      if (
+        selected != null &&
+        !action.payload.some(
+          (t) => t.id != null && String(t.id) === String(selected),
+        )
+      ) {
+        state.templatesListSelectedId = null
+      }
     },
     loadCardtextTemplatesFailure(state) {
       state.templatesListLoading = false

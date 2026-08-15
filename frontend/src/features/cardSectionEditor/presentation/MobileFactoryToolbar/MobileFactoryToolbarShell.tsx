@@ -15,6 +15,7 @@ import {
   selectCardtextInteractionMode,
   selectIsCardtextEditorComposerVisible,
 } from '@cardtext/infrastructure/selectors'
+import { isCardtextCreateComposerMode } from '@cardtext/domain/cardtextInteractionMode'
 import { useMobileFactoryListChrome } from '../../application/hooks/useMobileFactoryListChrome'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { CardSectionToolbar } from '@features/cardSectionToolbar/presentation/CardSectionToolbar'
@@ -38,10 +39,10 @@ export const MobileFactoryToolbarShell: React.FC = () => {
   const cardtextEditorComposerVisible = useAppSelector(
     selectIsCardtextEditorComposerVisible,
   )
-  /** Create form: only the lower composer row (applyMedium / fonts / return). */
+  /** Create / edit-from-View: only the lower composer row (applyMedium / fonts / return). */
   const hideCardtextCreateUpperToolbar =
     activeSection === 'cardtext' &&
-    cardtextInteractionMode === 'createEmpty' &&
+    isCardtextCreateComposerMode(cardtextInteractionMode) &&
     cardtextEditorComposerVisible
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const sessionSenderView = useAppSelector(selectSenderView)

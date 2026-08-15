@@ -308,7 +308,7 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   --mobile-factory-slot-max-width: none;
   --mobile-factory-slot-margin-inline: 0;
 
-  --mobile-factory-content-flex: 1 1 auto;
+  --mobile-factory-content-flex: 0 0 auto;
   --mobile-factory-content-width: calc(100% - 2 * var(--mobile-section-inset));
   --mobile-factory-content-max-width: calc(100% - 2 * var(--mobile-section-inset));
   --mobile-factory-content-min-width: 0;
@@ -320,15 +320,15 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   --mobile-factory-content-radius: 0.5rem;
   --mobile-factory-content-border: 1px solid var(--cardtext-create-form-border);
   --mobile-factory-content-bg: var(--cardtext-create-form-bg);
-  --mobile-factory-content-container-type: size;
+  --mobile-factory-content-container-type: inline-size;
 
-  --mobile-factory-work-zone-flex: 1 1 0;
-  --mobile-factory-work-zone-aspect-ratio: auto;
+  --mobile-factory-work-zone-flex: 0 0 auto;
+  --mobile-factory-work-zone-aspect-ratio: 1;
   --mobile-factory-work-zone-height: auto;
   --mobile-factory-work-zone-align-self: stretch;
   --mobile-factory-work-zone-margin-top: 0;
   --mobile-factory-work-zone-margin-bottom: 0;
-  --mobile-factory-work-zone-min-height: 0;
+  --mobile-factory-work-zone-min-height: auto;
   --mobile-factory-work-zone-radius: 0;
   --mobile-factory-work-zone-bg: transparent;
   --mobile-factory-work-zone-display: flex;
@@ -372,20 +372,18 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
       overflow: hidden;
     }
 
-    /* Inset form card — fill remaining viewport under the top composer row. */
+    /* Inset form card — hug toolbar + square field + 0.35rem padding. */
     :global([class*='content']:not([class*='contentTemplate'])) {
-      flex: 1 1 auto;
-      height: 100%;
-      min-height: 0;
+      flex: 0 0 auto;
+      height: auto;
       max-height: 100%;
     }
 
     :global([data-mobile-central-work-zone='true']) {
-      /* Absolute inner needs a definite flex height — not content-sized strip. */
-      flex: 1 1 0;
-      min-height: 0;
+      flex: 0 0 auto;
+      min-height: auto;
       height: auto;
-      aspect-ratio: auto;
+      aspect-ratio: 1;
     }
 
     :global([class*='toolbarSlot']) {
@@ -441,9 +439,55 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
 }
 
 .mobileShell[data-cardtext-create='true'][data-keyboard-open='true'] {
+  --mobile-factory-frame-flex: 0 0 auto;
+  --mobile-factory-frame-height: auto;
+  --mobile-factory-content-flex: 0 0 auto;
+
   .mobileForm {
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+
+    :global([class*='cardSectionEditor']),
+    :global([class*='editorArea']),
+    :global([class*='editorAreaCenter']),
+    :global([class*='editorSection']),
+    :global([class*='cardSectionRenderer']) {
+      flex: 0 0 auto;
+      height: auto;
+      max-height: none;
+      min-height: 0;
+    }
+
+    :global([data-mobile-factory-section-frame='true']) {
+      flex: 0 0 auto;
+      height: auto;
+      max-height: none;
+      overflow: visible;
+    }
+
+    /* Keep the full square; scroll the form to reveal the clipped bottom. */
+    :global([class*='content']:not([class*='contentTemplate'])) {
+      flex: 0 0 auto;
+      height: auto;
+      max-height: none;
+    }
+
+    :global([data-mobile-central-work-zone='true']) {
+      flex: 0 0 auto;
+      min-height: auto;
+      height: auto;
+      aspect-ratio: 1;
+    }
+  }
+
+  .mobileFormEditorLayer {
+    flex: 0 0 auto;
+    min-height: 0;
+    height: auto;
   }
 }
 

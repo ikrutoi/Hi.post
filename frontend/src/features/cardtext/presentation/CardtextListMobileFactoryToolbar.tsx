@@ -78,21 +78,23 @@ export const CardtextListMobileFactoryLowerToolbar: React.FC = () => {
 /** Mobile factory: верхний ряд — applyMedium слева, заголовок, return справа. */
 export const CardtextListMobileFactoryUpperToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
+  const templates = useAppSelector(selectCardtextTemplatesListItems)
+  const listEmpty = (templates?.length ?? 0) === 0
   const centralTemplateTitle = useAppSelector(
     selectCardtextListCentralTemplateTitle,
   )
   const applyRaw = useAppSelector((s) => s.toolbar?.cardtext?.apply)
-  const applyState = readApplyState(applyRaw)
+  const applyState = listEmpty ? 'disabled' : readApplyState(applyRaw)
 
   const applyToolbar = useMemo((): ToolbarConfig => {
     return [
       {
         group: 'cardtext',
         icons: [{ key: 'applyMedium', state: applyState }],
-        status: 'enabled',
+        status: listEmpty ? 'disabled' : 'enabled',
       },
     ]
-  }, [applyState])
+  }, [applyState, listEmpty])
 
   const closeList = useCallback(() => {
     dispatch(setCardtextListPanelOpen(false))
@@ -101,6 +103,7 @@ export const CardtextListMobileFactoryUpperToolbar: React.FC = () => {
   const handleApplyAction = useCallback(
     (key: IconKey) => {
       if (key !== 'applyMedium') return
+      if (listEmpty) return false
       /**
        * Keep the list selection in View: close the list without postcard Apply.
        * Final Apply stays on the View toolbar (`apply`).
@@ -109,7 +112,7 @@ export const CardtextListMobileFactoryUpperToolbar: React.FC = () => {
       dispatch(setCardtextListPanelOpen(false))
       return false
     },
-    [dispatch],
+    [dispatch, listEmpty],
   )
 
   const handleAction = useCallback(

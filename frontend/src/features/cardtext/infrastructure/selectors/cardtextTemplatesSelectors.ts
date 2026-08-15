@@ -7,7 +7,6 @@ import type { PanelDensity2Size } from '@shared/ui/icons'
 import {
   selectCardtextId,
   selectCardtextPlainText,
-  selectCardtextSessionData,
 } from './cardtextEditorSelectors'
 
 function findCardtextTemplateInList(
@@ -64,10 +63,16 @@ export const selectCardtextListHighlightTemplateId = createSelector(
     selectCardtextViewInQuickList,
     selectCardtextId,
     (state: RootState) => state.cardtext.templatesListSelectedId,
+    selectCardtextTemplatesListItems,
   ],
-  (inQuickList, assetId, listSelectedId): string | null => {
+  (inQuickList, assetId, listSelectedId, templates): string | null => {
     if (inQuickList && assetId != null) return String(assetId)
-    if (listSelectedId != null) return String(listSelectedId)
+    if (
+      listSelectedId != null &&
+      findCardtextTemplateInList(templates, listSelectedId) != null
+    ) {
+      return String(listSelectedId)
+    }
     return null
   },
 )
@@ -77,22 +82,13 @@ export const selectCardtextListCentralTemplateTitle = createSelector(
   [
     selectCardtextListHighlightTemplateId,
     selectCardtextTemplatesListItems,
-    selectCardtextSessionData,
   ],
-  (highlightId, templates, session): string | null => {
+  (highlightId, templates): string | null => {
     if (highlightId == null) return null
 
     const fromList = findCardtextTemplateInList(templates, highlightId)
-    if (fromList != null) {
-      const title = getCardtextTemplateDisplayTitle(fromList)
-      return title === '?' ? null : title
-    }
-
-    if (session.id != null && String(session.id) === String(highlightId)) {
-      const title = getCardtextTemplateDisplayTitle(session)
-      return title === '?' ? null : title
-    }
-
-    return null
+    if (fromList == null) return null
+    const title = getCardtextTemplateDisplayTitle(fromList)
+    return title === '?' ? null : title
   },
 )

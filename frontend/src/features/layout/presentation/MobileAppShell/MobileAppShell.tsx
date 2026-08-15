@@ -66,7 +66,10 @@ import {
   cardtextValueForReadOnlyPreview,
   clampCardtextFontSizeStep,
 } from '@cardtext/domain/editor/editor.types'
-import { openCardtextEditorFromView } from '@cardtext/application/helpers'
+import {
+  isCardtextCreateComposerMode,
+  openCardtextEditorFromView,
+} from '@cardtext/application/helpers'
 import { CardtextView } from '@cardtext/presentation/CardtextView/CardtextView'
 import {
   clearAddressListPreviewSnapshot,
@@ -275,11 +278,11 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const cardtextDraftFocus = useAppSelector(selectIsDraftFocus)
   /**
    * Envelope-like fullscreen create chrome (card + app-inner surround).
-   * Only createEmpty — editTemplate keeps the normal section frame.
+   * createEmpty and edit-from-View; editTemplate keeps the normal section frame.
    */
   const cardtextCreateChromeActive =
     activeSection === 'cardtext' &&
-    cardtextInteractionMode === 'createEmpty' &&
+    isCardtextCreateComposerMode(cardtextInteractionMode) &&
     (cardtextEditorComposerVisible || cardtextDraftEngaged)
   /** Hide app header while typing in any cardtext composer (create or edit). */
   const cardtextComposeHideAppHeader =
@@ -482,6 +485,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     if (rightPieCardtextPeekNoToolbar) return null
     /** Assembly simplified peek after Apply: keep CardPie, not full-bleed template. */
     if (cardtextAssetMatchesApplied) return null
+    if (!cardtextViewInQuickList) return null
     if (!cardtextTemplateId) return null
     if (!cardtextHasRenderableContent(cardtextSession)) return null
     return {
@@ -500,6 +504,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     cardtextListPanelOpen,
     cardtextSession,
     cardtextTemplateId,
+    cardtextViewInQuickList,
     rightPieCardtextPeekNoToolbar,
   ])
 

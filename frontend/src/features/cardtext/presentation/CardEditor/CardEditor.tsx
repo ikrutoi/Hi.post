@@ -23,6 +23,38 @@ type CardEditorProps = {
   titleStripEditing?: boolean
 }
 
+/** When the keyboard clips the create form, keep the caret in the scrollport. */
+function scrollCaretIntoKeyboardForm(editor: Editor) {
+  if (
+    typeof document === 'undefined' ||
+    document.querySelector('[data-keyboard-open="true"]') == null ||
+    editor.selection == null ||
+    !ReactEditor.isFocused(editor)
+  ) {
+    return
+  }
+  try {
+    const caret = ReactEditor.toDOMRange(editor, editor.selection).getBoundingClientRect()
+    let node: HTMLElement | null = ReactEditor.toDOMNode(editor, editor)
+    while (node) {
+      const { overflowY } = getComputedStyle(node)
+      if (overflowY === 'auto' || overflowY === 'scroll') {
+        const box = node.getBoundingClientRect()
+        const pad = 12
+        if (caret.bottom > box.bottom - pad) {
+          node.scrollTop += caret.bottom - (box.bottom - pad)
+        } else if (caret.top < box.top + pad) {
+          node.scrollTop -= box.top + pad - caret.top
+        }
+        return
+      }
+      node = node.parentElement
+    }
+  } catch {
+    /* Selection is not in the DOM yet. */
+  }
+}
+
 export const CardEditor: React.FC<CardEditorProps> = ({
   titleStripEditing,
 }) => {
@@ -194,6 +226,7 @@ export const CardEditor: React.FC<CardEditorProps> = ({
                 return
               }
               setValue(next)
+              scrollCaretIntoKeyboardForm(editor)
             }}
           >
             <Editable
@@ -216,6 +249,7 @@ export const CardEditor: React.FC<CardEditorProps> = ({
                 if (editor.selection) {
                   lastSelectionRef.current = editor.selection
                 }
+                scrollCaretIntoKeyboardForm(editor)
               }}
             />
           </Slate>

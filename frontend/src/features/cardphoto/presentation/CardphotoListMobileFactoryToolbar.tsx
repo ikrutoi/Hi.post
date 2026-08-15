@@ -90,11 +90,13 @@ export const CardphotoListMobileFactoryLowerToolbar: React.FC = () => {
 /** Mobile factory: верхний ряд — applyMedium слева, заголовок, return справа. */
 export const CardphotoListMobileFactoryUpperToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
+  const inlineTemplateCount = useAppSelector(selectCardphotoInlineTemplateCount)
+  const listEmpty = inlineTemplateCount === 0
   const title = useAppSelector(selectCardphotoTitle)
   const assetId = useAppSelector(selectCardphotoAssetData)?.id
   const previewUrl = useAppSelector(selectCardphotoAssetDisplayPreviewUrl)
   const applyRaw = useAppSelector((s) => s.toolbar?.cardphoto?.apply)
-  const applyState = readApplyState(applyRaw)
+  const applyState = listEmpty ? 'disabled' : readApplyState(applyRaw)
   const centralTemplateTitle =
     assetId && previewUrl ? title.trim() || null : null
 
@@ -103,10 +105,10 @@ export const CardphotoListMobileFactoryUpperToolbar: React.FC = () => {
       {
         group: 'cardphoto',
         icons: [{ key: 'applyMedium', state: applyState }],
-        status: 'enabled',
+        status: listEmpty ? 'disabled' : 'enabled',
       },
     ]
-  }, [applyState])
+  }, [applyState, listEmpty])
 
   const closeList = useCallback(() => {
     dispatch(setCardphotoListPanelOpen(false))
@@ -122,6 +124,7 @@ export const CardphotoListMobileFactoryUpperToolbar: React.FC = () => {
   const handleApplyAction = useCallback(
     (key: IconKey) => {
       if (key !== 'applyMedium') return
+      if (listEmpty) return false
       /**
        * Keep the list selection in View: close the list without postcard Apply.
        * Final Apply stays on the View toolbar (`apply`).
@@ -130,7 +133,7 @@ export const CardphotoListMobileFactoryUpperToolbar: React.FC = () => {
       closeList()
       return false
     },
-    [closeList],
+    [closeList, listEmpty],
   )
 
   const handleAction = useCallback(

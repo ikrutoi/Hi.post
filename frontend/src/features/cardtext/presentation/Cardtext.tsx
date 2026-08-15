@@ -18,6 +18,7 @@ import {
   resolveCardtextInteractionMode,
   resolveCardtextToolbarSection,
   shouldHideEmptyCreateToolbar,
+  isCardtextCreateComposerMode,
   suggestCardtextTemplateTitle,
   CARDTEXT_TEMPLATE_TITLE_MAX_LENGTH,
 } from '../application/helpers'
@@ -256,7 +257,7 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
 
   const isMobileCreateComposer =
     isMobileLayout &&
-    interactionMode === 'createEmpty' &&
+    isCardtextCreateComposerMode(interactionMode) &&
     showCardtextToolbarControls
 
   useLoadCardtextTemplatesWhenUnknown(

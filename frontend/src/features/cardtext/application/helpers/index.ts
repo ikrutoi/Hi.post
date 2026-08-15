@@ -19,6 +19,8 @@ export {
   shouldHideEmptyCreateToolbar,
 } from './resolveCardtextToolbarSection'
 
+export { isCardtextCreateComposerMode } from '@cardtext/domain/cardtextInteractionMode'
+
 export { openCardtextEditorFromView } from './openCardtextEditorFromView'
 
 export { openCardtextFromMiniStripSaga } from './openCardtextFromMiniStrip'
