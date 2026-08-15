@@ -1,6 +1,5 @@
 import img100_11 from '../../assets/300_11.png'
 import img303_11 from '../../assets/303_11.png'
-import img314_11 from '../../assets/314_11.png'
 import imgNl116 from '../../assets/nl_116.png'
 import imgNl116Thumb from '../../assets/nl_116_thumb.png'
 import imgNl301 from '../../assets/nl_301.png'
@@ -13,6 +12,8 @@ import imgNl306 from '../../assets/nl_306.png'
 import imgNl306Thumb from '../../assets/nl_306_thumb.png'
 import imgNl311 from '../../assets/nl_311_1.png'
 import imgNl311Thumb from '../../assets/nl_311_1_thumb.png'
+import imgNl313 from '../../assets/nl_313.png'
+import imgNl313Thumb from '../../assets/nl_313_thumb.png'
 
 export const AROMA_CELL_COUNT = 9 as const
 
@@ -23,7 +24,7 @@ export type AromaSlot = (typeof aromaSlotOrder)[number]
 /** Full assets — сетка аромы и упрощённый peek на всю секцию. */
 export const AROMA_IMAGES: Record<AromaSlot, string> = {
   0: img100_11,
-  1: img314_11,
+  1: imgNl313,
   2: img303_11,
   3: imgNl302,
   4: imgNl116,
@@ -39,7 +40,7 @@ export const AROMA_IMAGES: Record<AromaSlot, string> = {
  */
 export const AROMA_IMAGES_THUMB: Record<AromaSlot, string> = {
   0: img100_11,
-  1: img314_11,
+  1: imgNl313Thumb,
   2: img303_11,
   3: imgNl302Thumb,
   4: imgNl116Thumb,
