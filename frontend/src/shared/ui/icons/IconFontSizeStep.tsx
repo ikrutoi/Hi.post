@@ -13,11 +13,11 @@ const STROKE_W = 5.90553
 
 const SEGMENTS: { size: FontSizeStep; d: string }[] = [
   {
-    size: 1,
+    size: 5,
     d: 'M257 1278H187c-101 0-185-84-185-185V187C2 86 86 2 187 2h70z',
   },
   {
-    size: 2,
+    size: 4,
     d: 'M257 2h255v1276H257z',
   },
   {
@@ -25,11 +25,11 @@ const SEGMENTS: { size: FontSizeStep; d: string }[] = [
     d: 'M512 2h256v1276H512z',
   },
   {
-    size: 4,
+    size: 2,
     d: 'M768 2h255v1276H768z',
   },
   {
-    size: 5,
+    size: 1,
     d: 'M1023 1278h70c101 0 185-84 185-185V187c0-101-84-185-185-185H1023z',
   },
 ]
