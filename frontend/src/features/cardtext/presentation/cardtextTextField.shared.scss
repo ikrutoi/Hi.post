@@ -1,0 +1,26 @@
+/**
+ * Shared mobile display scale for composer + View.
+ * Stored fontSizeStep / STEP_TO_PX stay unchanged; wrap stays close
+ * when both surfaces use the same column width and this scale.
+ */
+@mixin cardtext-display-font-scale {
+  --cardtext-font-scale: max(
+    var(--cardtext-font-scale-min, 0.6),
+    min(
+      var(--cardtext-font-scale-cap, 0.88),
+      calc(100cqw / var(--card-width, 100cqw))
+    )
+  );
+}
+
+/** Same Slate block rhythm in the composer and in View. */
+@mixin cardtext-slate-blocks {
+  p,
+  h2 {
+    margin: 0;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}

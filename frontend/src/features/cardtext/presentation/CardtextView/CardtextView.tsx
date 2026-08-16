@@ -65,8 +65,8 @@ export const CardtextView: React.FC<Props> = ({
         colorClass,
       )}
       style={{
-        fontSize: `${currentPxSize}px`,
-        lineHeight: `${lineHeight}px`,
+        fontSize: `calc(${currentPxSize}px * var(--cardtext-font-scale, 1))`,
+        lineHeight: `calc(${lineHeight}px * var(--cardtext-font-scale, 1))`,
         textAlign: style?.align ?? 'left',
       }}
     >

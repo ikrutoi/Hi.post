@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '../cardtextTextField.shared' as textField;
 
 .editor {
   position: relative;
@@ -58,4 +59,9 @@
   outline: none;
   min-height: 100%;
   box-sizing: border-box;
+  @include textField.cardtext-slate-blocks;
+
+  :global([data-shell-layout='mobile']) & {
+    padding: 0.35rem;
+  }
 }

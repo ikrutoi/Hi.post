@@ -260,6 +260,13 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
     isCardtextCreateComposerMode(interactionMode) &&
     showCardtextToolbarControls
 
+  const mobileTextFieldScaleStyle = isMobileLayout
+    ? ({
+        '--cardtext-font-scale-cap': CARDTEXT_CREATE_FIELD_FONT_SCALE,
+        '--cardtext-font-scale-min': CARDTEXT_CREATE_FIELD_FONT_SCALE_MIN,
+      } as React.CSSProperties)
+    : undefined
+
   useLoadCardtextTemplatesWhenUnknown(
     cardtextTemplatesLoading,
     cardtextTemplates,
@@ -298,18 +305,16 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
             <div className={styles.cardtextCreateLayout}>
               <div
                 className={styles.cardtextCreateField}
-                style={
-                  {
-                    '--cardtext-font-scale-cap': CARDTEXT_CREATE_FIELD_FONT_SCALE,
-                    '--cardtext-font-scale-min': CARDTEXT_CREATE_FIELD_FONT_SCALE_MIN,
-                  } as React.CSSProperties
-                }
+                style={mobileTextFieldScaleStyle}
               >
                 <div className={styles.cardtextViewContent}>{editorBody}</div>
               </div>
             </div>
           ) : (
-            <div className={styles.cardtextViewContent}>
+            <div
+              className={styles.cardtextViewContent}
+              style={mobileTextFieldScaleStyle}
+            >
               {displayTitle && showTemplateTitleStrip && (
                 <>
                   {forceEditingTitle ? (

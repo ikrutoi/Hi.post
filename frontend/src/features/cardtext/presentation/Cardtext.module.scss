@@ -1,6 +1,7 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
 @use '@styles/mixins/sectionToolbarRow' as sectionToolbarRow;
+@use './cardtextTextField.shared' as textField;
 
 /** Same edge-fade recipe as envelope / aroma / cardphoto role toolbars. */
 @mixin cardtext-toolbar-role-fade {
@@ -222,6 +223,8 @@
     height: auto;
     align-items: center;
     border: none;
+    container-type: inline-size;
+    @include textField.cardtext-display-font-scale;
   }
 
   :global([data-shell-layout='desktop']) & {
@@ -266,17 +269,7 @@
   background-color: #fff;
   box-sizing: border-box;
   container-type: size;
-  /**
-   * Display scale only. Cap when the square is full-width; follow field /
-   * `--card-width` when the keyboard shrinks it. Floor keeps type readable.
-   */
-  --cardtext-font-scale: max(
-    var(--cardtext-font-scale-min, 0.6),
-    min(
-      var(--cardtext-font-scale-cap, 0.88),
-      calc(100cqw / var(--card-width, 100cqw))
-    )
-  );
+  @include textField.cardtext-display-font-scale;
 
   .cardtextViewContent {
     flex: 1 1 auto;
@@ -287,11 +280,6 @@
     border: none;
     border-radius: 0;
     background-color: transparent;
-  }
-
-  :global([class*='editorEditable']) {
-    padding-inline: 0.35rem;
-    box-sizing: border-box;
   }
 }
 
