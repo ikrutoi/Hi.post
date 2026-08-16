@@ -54,7 +54,7 @@ export const getToolbarIcon = ({
   }
 
   if (key === 'fontSizeIndicator') {
-    const size = Math.min(5, Math.max(1, Math.round(step ?? 3))) as FontSizeStep
+    const size = Math.min(4, Math.max(1, Math.round(step ?? 3))) as FontSizeStep
     return <IconFontSizeStep activeSize={size} {...iconProps} />
   }
 

@@ -375,21 +375,17 @@ export const CardPie: React.FC<CardPieProps> = ({
                     className={styles.pieTextBase}
                     fill={cardtextFillVar}
                   >
-                    {previewLines.map((line, i) => {
-                      const currentOpacity = Math.max(1 - i * 0.1, 0.4)
-                      return (
-                        <tspan
-                          key={i}
-                          x="1400"
-                          dy={i === 0 ? 0 : 500}
-                          fontWeight="400"
-                          fontSize={350 - i * 5}
-                          opacity={currentOpacity}
-                        >
-                          {line}
-                        </tspan>
-                      )
-                    })}
+                    {previewLines.map((line, i) => (
+                      <tspan
+                        key={i}
+                        x="1400"
+                        dy={i === 0 ? 0 : 500}
+                        fontWeight="400"
+                        fontSize={350 - i * 5}
+                      >
+                        {line}
+                      </tspan>
+                    ))}
                   </text>
                 </>
               ) : (

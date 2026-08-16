@@ -2,8 +2,8 @@ import React from 'react'
 import clsx from 'clsx'
 import styles from './IconPanelDensity2.module.scss'
 
-/** Пять ступеней кегля cardtext (как колонки `panelDensity2`). */
-export type FontSizeStep = 1 | 2 | 3 | 4 | 5
+/** Четыре ступени кегля cardtext (слева крупный, справа мелкий). */
+export type FontSizeStep = 1 | 2 | 3 | 4
 
 type Props = React.SVGProps<SVGSVGElement> & {
   activeSize?: FontSizeStep
@@ -13,24 +13,20 @@ const STROKE_W = 5.90553
 
 const SEGMENTS: { size: FontSizeStep; d: string }[] = [
   {
-    size: 5,
-    d: 'M257 1278H187c-101 0-185-84-185-185V187C2 86 86 2 187 2h70z',
-  },
-  {
     size: 4,
-    d: 'M257 2h255v1276H257z',
+    d: 'M320 1278H187c-101 0-185-84-185-185V187C2 86 86 2 187 2h133z',
   },
   {
     size: 3,
-    d: 'M512 2h256v1276H512z',
+    d: 'M320 2h320v1276H320z',
   },
   {
     size: 2,
-    d: 'M768 2h255v1276H768z',
+    d: 'M640 2h320v1276H640z',
   },
   {
     size: 1,
-    d: 'M1023 1278h70c101 0 185-84 185-185V187c0-101-84-185-185-185H1023z',
+    d: 'M960 1278H1093c101 0 185-84 185-185V187c0-101-84-185-185-185H960z',
   },
 ]
 

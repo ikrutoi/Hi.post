@@ -11,7 +11,10 @@ import {
   setCardtextEditTitleOpen,
   setStatus,
 } from '../../infrastructure/state'
-import { initialCardtextValue } from '../../domain/types'
+import {
+  CARDTEXT_FONT_SIZE_STEP_MAX,
+  initialCardtextValue,
+} from '../../domain/types'
 import type {
   CardtextValue,
   CardtextStyle,
@@ -28,8 +31,6 @@ import {
   selectCardtextLines,
   selectCardtextInteractionMode,
 } from '../../infrastructure/selectors'
-
-const MAX_FONT_STEP = 5
 
 export const useCardtextFacade = () => {
   const dispatch = useAppDispatch()
@@ -94,7 +95,8 @@ export const useCardtextFacade = () => {
   const changeFontSize = React.useCallback(
     (direction: 'more' | 'less') => {
       let nextStep = fontSizeStep
-      if (direction === 'more' && fontSizeStep < MAX_FONT_STEP) nextStep++
+      if (direction === 'more' && fontSizeStep < CARDTEXT_FONT_SIZE_STEP_MAX)
+        nextStep++
       if (direction === 'less' && fontSizeStep > 1) nextStep--
       if (nextStep !== fontSizeStep) {
         dispatch(setTextStyle({ fontSizeStep: nextStep }))

@@ -27,8 +27,8 @@ export const TEXT_COLOR = [
   'forestGreen',
 ] as const
 
-/** 5 шагов — плавнее прежнего [16,18,22,28,36,48]. */
-export const STEP_TO_PX = [14, 16, 18, 22, 26] as const
+/** 4 шага; бывший пятый (26px) убран. */
+export const STEP_TO_PX = [14, 16, 18, 22] as const
 
 export const CARDTEXT_FONT_SIZE_STEP_MIN = 1
 export const CARDTEXT_FONT_SIZE_STEP_MAX = STEP_TO_PX.length
