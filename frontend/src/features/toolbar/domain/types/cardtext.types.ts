@@ -57,9 +57,7 @@ export const CARDTEXT_COMPOSER_TOOLBAR: ToolbarConfig = [
   {
     group: 'font',
     icons: [
-      { key: 'fontSizeLess', state: 'enabled' },
       { key: 'fontSizeIndicator', state: 'enabled' },
-      { key: 'fontSizeMore', state: 'enabled' },
       { key: 'fontFamily', state: 'enabled' },
       { key: 'colorPicker', state: 'enabled' },
       { key: 'left', state: 'enabled' },

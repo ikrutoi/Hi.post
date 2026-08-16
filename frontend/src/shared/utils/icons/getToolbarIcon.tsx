@@ -1,14 +1,15 @@
 import { cloneElement } from 'react'
-import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import { getIconByKey } from '@shared/assets/icons'
 import { IconKey } from '@shared/config/constants'
 import {
   IconDensity,
+  IconFontSizeStep,
   IconHistoryPanelDensity,
   IconCheckBox,
   IconListCheck,
   IconPanelDensity2,
   IconSortDirection,
+  type FontSizeStep,
   type HistoryPanelDensitySize,
   type PanelDensity2Size,
 } from '@shared/ui/icons'
@@ -53,7 +54,8 @@ export const getToolbarIcon = ({
   }
 
   if (key === 'fontSizeIndicator') {
-    return <FontSizeIndicator currentStep={step ?? 3} {...iconProps} />
+    const size = Math.min(5, Math.max(1, Math.round(step ?? 3))) as FontSizeStep
+    return <IconFontSizeStep activeSize={size} {...iconProps} />
   }
 
   if (key === 'sortDown' && sortDirection != null) {

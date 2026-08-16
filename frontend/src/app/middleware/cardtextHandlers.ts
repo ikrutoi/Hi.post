@@ -47,6 +47,15 @@ export function* changeFontSizeStep(
   }
 }
 
+/** Composer: one icon cycles 1→…→max→1, like list `panelDensity2`. */
+export function* cycleFontSizeStep() {
+  const currentStep: number = yield select(selectFontSizeStep)
+  const maxStep = CARDTEXT_CONFIG.step
+  const clamped = clampCardtextFontSizeStep(currentStep)
+  const nextStep = clamped >= maxStep ? 1 : clamped + 1
+  yield put(setTextStyle({ fontSizeStep: nextStep }))
+}
+
 export function* syncCardtextToolbarVisuals() {
   yield call(syncFontSizeButtonsStatus)
 }

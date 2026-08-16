@@ -23,7 +23,7 @@ import {
   setDraftData,
   setTitle,
 } from '@cardtext/infrastructure/state'
-import { changeFontSizeStep } from './cardtextHandlers'
+import { changeFontSizeStep, cycleFontSizeStep } from './cardtextHandlers'
 import type { RootState } from '@app/state'
 import { isEmptyCardtextValue } from '@cardtext/domain/helpers'
 import {
@@ -652,6 +652,16 @@ export function* handleCardtextToolbarAction(
         section === 'cardtextCreate'
       ) {
         yield call(changeFontSizeStep, editor, 'more')
+      }
+      break
+
+    case 'fontSizeIndicator':
+      if (
+        section === 'cardtext' ||
+        section === 'cardtextEditor' ||
+        section === 'cardtextCreate'
+      ) {
+        yield call(cycleFontSizeStep)
       }
       break
 

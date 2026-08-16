@@ -369,18 +369,6 @@
     background-color: #fff;
   }
 
-  .toolbarKeyFontSizeIndicator {
-    width: auto;
-    padding: 0;
-    margin-left: 0;
-    margin-right: 0;
-
-    &:hover {
-      background-color: #fff;
-      cursor: default;
-    }
-  }
-
   .toolbarKeyCropQualityIndicator {
     width: auto;
     padding: 0;
@@ -410,18 +398,6 @@
 
   .toolbarKey {
     background-color: #fff;
-  }
-
-  .toolbarKeyFontSizeIndicator {
-    width: auto;
-    padding: 0;
-    margin-left: 0;
-    margin-right: 0;
-
-    &:hover {
-      background-color: #fff;
-      cursor: default;
-    }
   }
 
   .toolbarKeyCropQualityIndicator {
@@ -644,16 +620,6 @@
     &:hover {
       background-color: transparent;
     }
-  }
-}
-
-.toolbarCardtextView,
-.toolbarCardtextEditor,
-.toolbarCardtextCreate,
-.toolbarSenderView,
-.toolbarRecipientView {
-  .toolbarKeyFontSizeIndicator {
-    width: auto;
   }
 }
 
@@ -2012,6 +1978,12 @@
   svg,
 .toolbarAddressListRecipients
   .toolbarKey[data-icon-key='panelDensity2'].toolbarKeyEnabled:hover
+  svg,
+.toolbarCardtextEditor
+  .toolbarKey[data-icon-key='fontSizeIndicator'].toolbarKeyEnabled:hover
+  svg,
+.toolbarCardtextCreate
+  .toolbarKey[data-icon-key='fontSizeIndicator'].toolbarKeyEnabled:hover
   svg {
   @include iconButton.toolbar-key-hover-fine-pointer {
     --history-density-inactive-fill: #b0b0b0;
@@ -2273,7 +2245,7 @@
     }
   }
 
-  .toolbar .toolbarKey:not(.toolbarKeyFontSizeIndicator):not(
+  .toolbar .toolbarKey:not(
       .toolbarKeyCropQualityIndicator
     ):not([data-icon-key='historyView']):not([data-icon-key='userLogin']) {
     @include iconButton.toolbar-icon-button-size-mobile-toolbar(true);
@@ -2351,7 +2323,7 @@
 
   // Uniform horizontal spacing: factory, template lists, address lists, aroma, …
   .toolbar:not(.toolbarRightSidebar):not(.toolbarSectionEditorMenuBottomBar) {
-    .toolbarKey:not(.toolbarKeyFontSizeIndicator):not(.toolbarKeyCropQualityIndicator):not(
+    .toolbarKey:not(.toolbarKeyCropQualityIndicator):not(
         .toolbarKeyPostcardIndicator
       ) {
       margin-inline: iconButton.$toolbar-mobile-toolbar-key-margin-inline;

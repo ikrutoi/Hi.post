@@ -29,7 +29,7 @@ import {
   selectCardtextInteractionMode,
 } from '../../infrastructure/selectors'
 
-const MAX_FONT_STEP = 6
+const MAX_FONT_STEP = 5
 
 export const useCardtextFacade = () => {
   const dispatch = useAppDispatch()

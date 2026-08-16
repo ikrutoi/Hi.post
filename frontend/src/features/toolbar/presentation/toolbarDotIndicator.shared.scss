@@ -6,7 +6,7 @@ $dot-indicator-active-size: 0.65rem;
 $dot-indicator-slot-size: 0.65rem;
 $dot-indicator-slot-margin-x: 0.15rem;
 /** Sync with `STEP_TO_PX.length` / `CARDTEXT_CONFIG.step` (font size indicator). */
-$dot-indicator-font-size-step-count: 6;
+$dot-indicator-font-size-step-count: 5;
 
 @function dot-indicator-row-width($step-count) {
   @return $step-count *
