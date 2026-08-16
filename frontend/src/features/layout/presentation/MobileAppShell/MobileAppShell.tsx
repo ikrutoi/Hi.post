@@ -741,6 +741,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
           openCardtextEditorFromView(
             dispatch,
             cardtextSession.status ?? 'inLine',
+            { returnTo: 'list' },
           )
           return false
         }

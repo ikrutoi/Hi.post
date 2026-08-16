@@ -19,6 +19,8 @@ import { isEmptyCardtextValue } from '@cardtext/domain/helpers/isEmptyCardtextVa
 import { isCardtextDraftContentEmpty } from '@cardtext/domain/helpers/isCardtextDraftContentEmpty'
 import type { PanelDensity2Size } from '@shared/ui/icons'
 
+export type CardtextEditReturnTo = 'view' | 'list'
+
 export interface CardtextTemplatesUIState {
   isListPanelOpen: boolean
   isAddTemplateOpen: boolean
@@ -28,6 +30,8 @@ export interface CardtextTemplatesUIState {
   templatesListLoading: boolean
   /** Подсветка строки в списке шаблонов (отдельно от assetData.id). */
   templatesListSelectedId: string | null
+  /** Откуда открыли редактор текста — сюда же возвращаем по return/close. */
+  editReturnTo: CardtextEditReturnTo | null
   /** Upper listCardtext badge pulse after View addList / removeFromList. */
   listCardtextBadgePulseSeq: number
   listCardtextBadgePulsing: boolean
@@ -50,6 +54,7 @@ const initialCardtextTemplatesState: Pick<
   templatesListLoading: false,
   templatesList: null,
   templatesListSelectedId: null,
+  editReturnTo: null,
   listCardtextBadgePulseSeq: 0,
   listCardtextBadgePulsing: false,
 }
@@ -355,6 +360,13 @@ export const cardtextSlice = createSlice({
       state.isListPanelOpen = action.payload
     },
 
+    setCardtextEditReturnTo(
+      state,
+      action: PayloadAction<CardtextEditReturnTo | null>,
+    ) {
+      state.editReturnTo = action.payload
+    },
+
     pulseListCardtextBadge(state) {
       state.listCardtextBadgePulseSeq += 1
       state.listCardtextBadgePulsing = true
@@ -496,6 +508,7 @@ export const {
   setCardtextTemplatesListSelectedId,
   clearCardtextTemplatesListSelection,
   setCardtextListPanelOpen,
+  setCardtextEditReturnTo,
   pulseListCardtextBadge,
   clearListCardtextBadgePulse,
   setCardtextAddTemplateOpen,

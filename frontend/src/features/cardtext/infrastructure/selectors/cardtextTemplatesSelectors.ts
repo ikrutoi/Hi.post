@@ -23,6 +23,10 @@ function findCardtextTemplateInList(
 export const selectIsCardtextListPanelOpen = (state: RootState): boolean =>
   state.cardtext.isListPanelOpen === true
 
+export const selectCardtextEditReturnTo = (
+  state: RootState,
+): 'view' | 'list' | null => state.cardtext.editReturnTo ?? null
+
 export const selectCardtextAddTemplateOpen = (state: RootState): boolean =>
   state.cardtext.isAddTemplateOpen ?? false
 

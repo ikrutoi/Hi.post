@@ -8,6 +8,7 @@ import {
   clearText,
   clearCardtextTemplatesListSelection,
   setCardtextListPanelOpen,
+  setCardtextEditReturnTo,
   setCardtextAddTemplateOpen,
   setDraftFocus,
   setCardtextId,
@@ -35,6 +36,7 @@ import {
   selectCardtextInteractionMode,
   selectCardtextAssetStatus,
   selectCardtextViewInQuickList,
+  selectCardtextEditReturnTo,
 } from '@cardtext/infrastructure/selectors'
 import type { CardtextStatus } from '@cardtext/domain/editor/editor.types'
 import { checkAndSyncProcessedCard } from './syncProcessedCard'
@@ -248,77 +250,98 @@ function* syncDraftDataOnCloseFromDraftSession(
   yield put(setDraftData(draft))
 }
 
+function* reopenCardtextListIfEditCameFromList(): SagaIterator {
+  const returnTo: ReturnType<typeof selectCardtextEditReturnTo> = yield select(
+    selectCardtextEditReturnTo,
+  )
+  yield put(setCardtextEditReturnTo(null))
+  if (returnTo !== 'list') return
+  yield put(setCardtextListPanelOpen(true))
+}
+
 /** CardEditor / cardtextCreate: закрыть форму редактирования (логика бывшей overlay close). */
 export function* handleCloseCardtextEditorSaga(): SagaIterator {
-  yield put(setDraftFocus(false))
+  try {
+    yield put(setDraftFocus(false))
 
-  const { assetData: cardtextAssetData, presetData: cardtextPresetData } =
-    yield select((s: RootState) => s.cardtext)
+    const { assetData: cardtextAssetData, presetData: cardtextPresetData } =
+      yield select((s: RootState) => s.cardtext)
 
-  if (cardtextAssetData == null) {
-    yield put(setDraftEngaged(false))
-    if (cardtextPresetData != null) {
-      yield put(restoreCardtextSession(cardtextPresetData))
+    if (cardtextAssetData == null) {
+      yield put(setDraftEngaged(false))
+      if (cardtextPresetData != null) {
+        yield put(restoreCardtextSession(cardtextPresetData))
+      }
+      return
     }
-    return
-  }
 
-  if (
-    cardtextPresetData != null &&
-    cardtextPresetData.status === 'processed' &&
-    cardtextAssetData.status === 'draft'
-  ) {
-    yield put(
-      restoreCardtextSession({
-        ...cardtextPresetData,
-        value: cardtextPresetData.value.map((b) => ({
-          ...b,
-          children: b.children.map((c) => ({ ...c })),
-        })),
-        style: { ...cardtextPresetData.style },
-      }),
-    )
-    yield put(setCardtextPresetData(null))
-    yield put(setDraftEngaged(false))
-    return
-  }
+    if (
+      cardtextPresetData != null &&
+      cardtextPresetData.status === 'processed' &&
+      cardtextAssetData.status === 'draft'
+    ) {
+      yield put(
+        restoreCardtextSession({
+          ...cardtextPresetData,
+          value: cardtextPresetData.value.map((b) => ({
+            ...b,
+            children: b.children.map((c) => ({ ...c })),
+          })),
+          style: { ...cardtextPresetData.style },
+        }),
+      )
+      yield put(setCardtextPresetData(null))
+      yield put(setDraftEngaged(false))
+      return
+    }
 
-  const assetId = cardtextAssetData.id ?? null
-  const presetId = cardtextPresetData?.id ?? null
-  const st = cardtextAssetData.status
+    const assetId = cardtextAssetData.id ?? null
+    const presetId = cardtextPresetData?.id ?? null
+    const st = cardtextAssetData.status
 
-  if (st === 'inLine' || st === 'outLine') {
+    if (st === 'inLine' || st === 'outLine') {
+      yield put(setCardtextViewEditMode(false))
+      if (cardtextPresetData != null) {
+        yield put(restoreCardtextSession(cardtextPresetData))
+      } else {
+        yield put(setStatus(st))
+      }
+      return
+    }
+
+    if (
+      cardtextPresetData != null &&
+      presetId != null &&
+      String(assetId) !== String(presetId)
+    ) {
+      yield call(syncDraftDataOnCloseFromDraftSession, cardtextAssetData)
+      yield put(restoreCardtextSession(cardtextPresetData))
+      return
+    }
+    if (cardtextPresetData == null && cardtextAssetData.status === 'draft') {
+      yield call(syncDraftDataOnCloseFromDraftSession, cardtextAssetData)
+      yield put(resetCardtextAssetToEmptyDraft())
+      return
+    }
+
+    yield call(syncDraftDataOnCloseFromDraftSession, cardtextAssetData)
     yield put(setCardtextViewEditMode(false))
-    if (cardtextPresetData != null) {
-      yield put(restoreCardtextSession(cardtextPresetData))
-    } else {
-      yield put(setStatus(st))
-    }
-    return
+    yield put(setStatus('inLine'))
+  } finally {
+    yield call(reopenCardtextListIfEditCameFromList)
   }
-
-  if (
-    cardtextPresetData != null &&
-    presetId != null &&
-    String(assetId) !== String(presetId)
-  ) {
-    yield call(syncDraftDataOnCloseFromDraftSession, cardtextAssetData)
-    yield put(restoreCardtextSession(cardtextPresetData))
-    return
-  }
-  if (cardtextPresetData == null && cardtextAssetData.status === 'draft') {
-    yield call(syncDraftDataOnCloseFromDraftSession, cardtextAssetData)
-    yield put(resetCardtextAssetToEmptyDraft())
-    return
-  }
-
-  yield call(syncDraftDataOnCloseFromDraftSession, cardtextAssetData)
-  yield put(setCardtextViewEditMode(false))
-  yield put(setStatus('inLine'))
 }
 
 /** CardEditor: удалить текущий черновик / текст (не трогает список шаблонов целиком). */
 export function* handleDeleteCardtextEditorSaga(): SagaIterator {
+  try {
+    yield call(handleDeleteCardtextEditorBody)
+  } finally {
+    yield call(reopenCardtextListIfEditCameFromList)
+  }
+}
+
+function* handleDeleteCardtextEditorBody(): SagaIterator {
   const interactionMode: CardtextInteractionMode = yield select(
     selectCardtextInteractionMode,
   )
@@ -359,6 +382,7 @@ export function* handleDeleteCardtextEditorSaga(): SagaIterator {
 
 /** View: закрыть форму просмотра шаблона (пустой create). */
 export function* handleCloseCardtextView(): SagaIterator {
+  yield put(setCardtextEditReturnTo(null))
   yield put(setCardtextViewEditMode(false))
   yield put(setCardtextAddTemplateOpen(false))
   yield put(setCardtextPresetData(null))
@@ -551,7 +575,12 @@ export function* handleCardtextToolbarAction(
       break
     }
 
-    case 'edit':
+    case 'edit': {
+      const existingReturnTo: ReturnType<typeof selectCardtextEditReturnTo> =
+        yield select(selectCardtextEditReturnTo)
+      if (existingReturnTo == null) {
+        yield put(setCardtextEditReturnTo('view'))
+      }
       if (interactionMode === 'processedSlot') {
         // Редактор черновика: appliedData не трогаем (только Apply на открытке).
         // Снимок processed — в presetData для отмены по close в CardEditor.
@@ -617,6 +646,7 @@ export function* handleCardtextToolbarAction(
         yield put(setCardtextViewEditMode(false))
       }
       break
+    }
 
     case 'delete':
       if (section === 'cardtextEditor' || section === 'cardtextCreate') {

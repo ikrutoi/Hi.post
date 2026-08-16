@@ -10,6 +10,7 @@ import {
   setDraftEngaged,
   setCardtextApplyPeekChrome,
   setCardtextListPanelOpen,
+  setCardtextEditReturnTo,
 } from '@cardtext/infrastructure/state'
 import type { RootState } from '@app/state'
 import {
@@ -96,6 +97,7 @@ export function* applyCardtextFromToolbar(
     }
     yield put(setCardtextApplyPeekChrome(true))
     yield put(setCardtextListPanelOpen(false))
+    yield put(setCardtextEditReturnTo(null))
     yield put(requestArchiveSectionPeek('cardtext'))
   }
 
