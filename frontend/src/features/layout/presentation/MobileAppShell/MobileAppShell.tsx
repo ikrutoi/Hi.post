@@ -64,8 +64,11 @@ import {
 import {
   cardtextHasRenderableContent,
   cardtextValueForReadOnlyPreview,
-  clampCardtextFontSizeStep,
 } from '@cardtext/domain/editor/editor.types'
+import {
+  CARDTEXT_CREATE_FIELD_FONT_SCALE,
+  CARDTEXT_CREATE_FIELD_FONT_SCALE_MIN,
+} from '@cardtext/domain/types'
 import {
   isCardtextCreateComposerMode,
   openCardtextEditorFromView,
@@ -491,12 +494,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     return {
       id: cardtextTemplateId,
       value: cardtextValueForReadOnlyPreview(cardtextSession),
-      style: {
-        ...cardtextSession.style,
-        fontSizeStep: clampCardtextFontSizeStep(
-          (cardtextSession.style?.fontSizeStep ?? 3) - 2,
-        ),
-      },
+      style: { ...cardtextSession.style },
     }
   }, [
     activeSection,
@@ -1229,12 +1227,24 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                           className={styles.mobileCardtextListTemplatePreview}
                           aria-label="Selected text template preview"
                         >
-                          <CardtextView
-                            key={mobileCardtextListTemplatePreview.id}
-                            contentKey={`list-preview-${mobileCardtextListTemplatePreview.id}`}
-                            value={mobileCardtextListTemplatePreview.value}
-                            style={mobileCardtextListTemplatePreview.style}
-                          />
+                          <div
+                            className={styles.mobileCardtextListTemplatePreviewStage}
+                            style={
+                              {
+                                '--cardtext-font-scale-cap':
+                                  CARDTEXT_CREATE_FIELD_FONT_SCALE,
+                                '--cardtext-font-scale-min':
+                                  CARDTEXT_CREATE_FIELD_FONT_SCALE_MIN,
+                              } as React.CSSProperties
+                            }
+                          >
+                            <CardtextView
+                              key={mobileCardtextListTemplatePreview.id}
+                              contentKey={`list-preview-${mobileCardtextListTemplatePreview.id}`}
+                              value={mobileCardtextListTemplatePreview.value}
+                              style={mobileCardtextListTemplatePreview.style}
+                            />
+                          </div>
                         </div>
                         ) : (
                           <div
