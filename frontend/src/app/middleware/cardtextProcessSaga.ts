@@ -155,11 +155,15 @@ export function* syncCardtextAddToolbarState(): SagaIterator {
 
   const interactionMode: ReturnType<typeof selectCardtextInteractionMode> =
     yield select(selectCardtextInteractionMode)
+  const templates: ReturnType<typeof selectCardtextTemplatesListItems> =
+    yield select(selectCardtextTemplatesListItems)
   const inQuickList: boolean = yield select(selectCardtextViewInQuickList)
   const isViewForm =
     interactionMode === 'postcardTemplateView' ||
     interactionMode === 'processedSlot'
-  const viewTextPendingBadge = isViewForm && hasText && !inQuickList
+  /** List still unknown (null) — do not treat as “not in quick list”. */
+  const viewTextPendingBadge =
+    isViewForm && hasText && templates != null && !inQuickList
 
   const { state, options } = resolveCardtextAddToolbarState({
     createEditorOpenForTyping,
@@ -412,6 +416,7 @@ export function* cardtextProcessSaga(): SagaIterator {
     takeEvery(loadCardtextTemplatesSuccess.type, function* (): SagaIterator {
       yield call(syncCardtextListBadge)
       yield call(syncCardtextViewToolbarAddList)
+      yield call(syncCardtextAddToolbarState)
     }),
     takeEvery(cardtextTemplateAdded.type, function* (): SagaIterator {
       yield call(loadCardtextTemplatesSaga)
