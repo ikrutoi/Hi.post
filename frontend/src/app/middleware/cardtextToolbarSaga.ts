@@ -507,6 +507,7 @@ export function* handleCardtextToolbarAction(
             yield put(setDraftEngaged(false))
             yield put(setStatus(postcardSt))
             yield put(loadCardtextTemplatesRequest())
+            yield call(reopenCardtextListIfEditCameFromList)
           }
           break
         }
@@ -538,6 +539,7 @@ export function* handleCardtextToolbarAction(
           yield put(setDraftEngaged(false))
           yield put(setStatus(postcardSt))
           yield put(loadCardtextTemplatesRequest())
+          yield call(reopenCardtextListIfEditCameFromList)
         }
         break
       }
@@ -571,6 +573,7 @@ export function* handleCardtextToolbarAction(
         yield put(setCardtextViewEditMode(false))
         yield put(setDraftEngaged(false))
         yield put(loadCardtextTemplatesRequest())
+        yield call(reopenCardtextListIfEditCameFromList)
       }
       break
     }
