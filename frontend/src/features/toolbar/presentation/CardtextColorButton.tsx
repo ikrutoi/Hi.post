@@ -1,9 +1,8 @@
 import React from 'react'
-import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { selectCardtextStyle } from '@cardtext/infrastructure/selectors'
 import { setTextStyle } from '@cardtext/infrastructure/state'
-import type { TextColor } from '@/features/cardtext/domain/editor/editor.types'
+import { TEXT_COLOR, type TextColor } from '@cardtext/domain/types'
 import { IconColor } from '@shared/ui/icons'
 import styles from './Toolbar.module.scss'
 
@@ -19,7 +18,11 @@ const COLOR_HEX: Record<TextColor, string> = {
   forestGreen: '#064e3b',
 }
 
-const OPTIONS: TextColor[] = ['deepBlack', 'blue', 'burgundy', 'forestGreen']
+function nextTextColor(current: TextColor): TextColor {
+  const index = TEXT_COLOR.indexOf(current)
+  const safeIndex = index < 0 ? 0 : index
+  return TEXT_COLOR[(safeIndex + 1) % TEXT_COLOR.length]
+}
 
 export const CardtextColorButton: React.FC<CardtextColorButtonProps> = ({
   className,
@@ -27,75 +30,28 @@ export const CardtextColorButton: React.FC<CardtextColorButtonProps> = ({
 }) => {
   const dispatch = useAppDispatch()
   const { color } = useAppSelector(selectCardtextStyle)
-  const [open, setOpen] = React.useState(false)
-  const containerRef = React.useRef<HTMLDivElement | null>(null)
+  const active = COLOR_HEX[color] ?? COLOR_HEX.deepBlack
 
-  const handleToggle = (e: React.MouseEvent) => {
+  const handleCycle = (e: React.PointerEvent) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return
     e.preventDefault()
     e.stopPropagation()
     if (disabled) return
-    setOpen((prev) => !prev)
+    dispatch(setTextStyle({ color: nextTextColor(color) }))
   }
-
-  const handleSelect = (value: TextColor) => {
-    dispatch(setTextStyle({ color: value }))
-    setOpen(false)
-  }
-
-  React.useEffect(() => {
-    if (!open) return
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [open])
-
-  const active = COLOR_HEX[color] ?? COLOR_HEX.blue
 
   return (
-    <div className={styles.toolbarColorWrapper} ref={containerRef}>
-      <button
-        type="button"
-        className={className}
-        data-icon-key="colorPicker"
-        data-icon-state={disabled ? 'disabled' : 'enabled'}
-        disabled={disabled}
-        onClick={handleToggle}
-      >
-        <IconColor className={styles.toolbarIcon} style={{ color: active }} />
-      </button>
-      {open && (
-        <div className={styles.toolbarColorMenu}>
-          {OPTIONS.map((value) => (
-            <button
-              key={value}
-              type="button"
-              className={clsx(
-                styles.toolbarColorMenuItem,
-                value === color && styles.toolbarColorMenuItemActive,
-              )}
-              onMouseDown={(e) => {
-                e.preventDefault()
-                handleSelect(value)
-              }}
-              aria-label={`Set text color ${value}`}
-            >
-              <IconColor
-                className={styles.toolbarIcon}
-                style={{ color: COLOR_HEX[value] }}
-              />
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
+    <button
+      type="button"
+      className={className}
+      data-icon-key="colorPicker"
+      data-icon-state={disabled ? 'disabled' : 'enabled'}
+      disabled={disabled}
+      aria-label="Cycle text color"
+      title="Cycle text color"
+      onPointerDown={handleCycle}
+    >
+      <IconColor className={styles.toolbarIcon} style={{ color: active }} />
+    </button>
   )
 }
