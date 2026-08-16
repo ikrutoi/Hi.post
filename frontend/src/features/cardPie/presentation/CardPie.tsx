@@ -374,7 +374,6 @@ export const CardPie: React.FC<CardPieProps> = ({
                     textAnchor="start"
                     className={styles.pieTextBase}
                     fill={cardtextFillVar}
-                    style={{ fontStyle: 'italic' }}
                   >
                     {previewLines.map((line, i) => {
                       const currentOpacity = Math.max(1 - i * 0.1, 0.4)

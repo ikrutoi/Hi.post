@@ -164,6 +164,7 @@ export function resolveAddressAddToolbarState(params: {
   /**
    * Partial create draft → reminder dot.
    * Complete address not in quick templates and not applied → badge `1`.
+   * View address after star-off (pending badge) → icon disabled, badge stays.
    */
   const formDraftPendingBadge =
     !formIsEmpty &&
@@ -173,5 +174,8 @@ export function resolveAddressAddToolbarState(params: {
   const badge = formDraftPendingBadge || viewAddressPendingBadge ? 1 : null
   const badgeDot = !formIsEmpty && !formIsComplete
 
-  return { state: 'enabled', options: { badge, badgeDot } }
+  return {
+    state: viewAddressPendingBadge ? 'disabled' : 'enabled',
+    options: { badge, badgeDot },
+  }
 }
