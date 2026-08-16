@@ -1,6 +1,6 @@
-export const CARDTEXT_TEMPLATE_TITLE_MAX_LENGTH = 32
+export const CARDTEXT_TEMPLATE_TITLE_MAX_LENGTH = 24
 
-const DEFAULT_AUTO_TITLE_MAX_LENGTH = 28
+const DEFAULT_AUTO_TITLE_MAX_LENGTH = CARDTEXT_TEMPLATE_TITLE_MAX_LENGTH
 
 /** Подпись шаблона из начала plainText (для автосохранения и сортировки). */
 export function suggestCardtextTemplateTitle(

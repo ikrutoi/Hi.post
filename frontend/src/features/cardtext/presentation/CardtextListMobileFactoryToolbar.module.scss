@@ -73,6 +73,40 @@
   padding-inline: $list-panel-header-chip-padding-inline;
   background-color: sectionGutter.$mobile-section-gutter-cardtext;
   color: $color-font-enabled-light;
+  border: 1px solid transparent;
+  cursor: pointer;
+  z-index: 1;
+  pointer-events: none;
+
+  &:hover {
+    color: $color-font-enabled-light-hover;
+  }
+}
+
+.upperTitleArmed {
+  pointer-events: auto;
+}
+
+.upperTitleEditing {
+  cursor: text;
+  pointer-events: auto;
+  border-color: $color-cardtext-input-border;
+  color: $color-font-enabled-light-hover;
+}
+
+.upperTitleInput {
+  width: 100%;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  padding: 0;
+  margin: 0;
+  text-align: left;
 }
 
 .upperToolbar {

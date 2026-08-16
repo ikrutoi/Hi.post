@@ -1114,6 +1114,11 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
           ? 'true'
           : undefined
       }
+      data-cardtext-list-open={
+        cardtextListPanelOpen && activeSection === 'cardtext'
+          ? 'true'
+          : undefined
+      }
       onClick={onAppClick}
     >
       <MarkStampYearDevProvider>
