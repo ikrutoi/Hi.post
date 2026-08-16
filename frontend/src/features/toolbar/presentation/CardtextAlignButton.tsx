@@ -1,5 +1,4 @@
 import React from 'react'
-import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { selectCardtextStyle } from '@cardtext/infrastructure/selectors'
 import { setAlign, setTextStyle } from '@cardtext/infrastructure/state'
@@ -17,12 +16,21 @@ interface CardtextAlignButtonProps {
   disabled: boolean
 }
 
-const OPTIONS: { value: TextAlign; Icon: React.ComponentType<React.SVGProps<SVGSVGElement>> }[] = [
+const OPTIONS: {
+  value: TextAlign
+  Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
+}[] = [
   { value: 'left', Icon: IconAlignLeftV3 },
   { value: 'center', Icon: IconAlignCenterV3 },
   { value: 'right', Icon: IconAlignRightV3 },
   { value: 'justify', Icon: IconAlignJustifyV3 },
 ]
+
+function nextTextAlign(current: TextAlign): TextAlign {
+  const index = OPTIONS.findIndex((option) => option.value === current)
+  const safeIndex = index < 0 ? 0 : index
+  return OPTIONS[(safeIndex + 1) % OPTIONS.length].value
+}
 
 export const CardtextAlignButton: React.FC<CardtextAlignButtonProps> = ({
   className,
@@ -30,75 +38,31 @@ export const CardtextAlignButton: React.FC<CardtextAlignButtonProps> = ({
 }) => {
   const dispatch = useAppDispatch()
   const { align } = useAppSelector(selectCardtextStyle)
-  const [open, setOpen] = React.useState(false)
-  const containerRef = React.useRef<HTMLDivElement | null>(null)
+  const active = OPTIONS.find((option) => option.value === align) ?? OPTIONS[0]
+  const ActiveIcon = active.Icon
 
-  const handleToggle = (e: React.MouseEvent) => {
+  const handleCycle = (e: React.PointerEvent) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return
     e.preventDefault()
     e.stopPropagation()
     if (disabled) return
-    setOpen((prev) => !prev)
+    const next = nextTextAlign(align)
+    dispatch(setAlign(next))
+    dispatch(setTextStyle({ align: next }))
   }
-
-  const handleSelect = (value: TextAlign) => {
-    // Обновляем выравнивание существующего текста и стили по умолчанию.
-    dispatch(setAlign(value))
-    dispatch(setTextStyle({ align: value }))
-    setOpen(false)
-  }
-
-  React.useEffect(() => {
-    if (!open) return
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [open])
-
-  const active = OPTIONS.find((o) => o.value === align) ?? OPTIONS[0]
-  const ActiveIcon = active.Icon
 
   return (
-    <div className={styles.toolbarAlignWrapper} ref={containerRef}>
-      <button
-        type="button"
-        className={className}
-        data-icon-key="left"
-        data-icon-state={disabled ? 'disabled' : 'enabled'}
-        disabled={disabled}
-        onClick={handleToggle}
-      >
-        <ActiveIcon className={styles.toolbarIcon} />
-      </button>
-      {open && (
-        <div className={styles.toolbarAlignMenu}>
-          {OPTIONS.map(({ value, Icon }) => (
-            <button
-              key={value}
-              type="button"
-              className={clsx(
-                styles.toolbarAlignMenuItem,
-                value === align && styles.toolbarAlignMenuItemActive,
-              )}
-              onMouseDown={(e) => {
-                e.preventDefault()
-                handleSelect(value)
-              }}
-            >
-              <Icon className={styles.toolbarIcon} />
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
+    <button
+      type="button"
+      className={className}
+      data-icon-key="left"
+      data-icon-state={disabled ? 'disabled' : 'enabled'}
+      disabled={disabled}
+      aria-label="Cycle text align"
+      title="Cycle text align"
+      onPointerDown={handleCycle}
+    >
+      <ActiveIcon className={styles.toolbarIcon} />
+    </button>
   )
 }
-
