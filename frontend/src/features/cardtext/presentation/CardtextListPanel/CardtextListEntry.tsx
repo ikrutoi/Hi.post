@@ -65,14 +65,18 @@ export const CardtextListEntry: React.FC<Props> = ({
     >
       <div className={cellStyles.body}>
         <div className={clsx(cellStyles.text, cellStyles.templateTextBlock)}>
-          <div className={clsx(cellStyles.nameLine, cellStyles.templateTitleText)}>
-            {nameLine}
+          <div className={cellStyles.templateTitle}>
+            <div className={clsx(cellStyles.nameLine, cellStyles.templateTitleText)}>
+              {nameLine}
+            </div>
           </div>
-          <div
-            className={clsx(cellStyles.cityLine, cellStyles.templatePreviewText)}
-            style={{ color: previewColor }}
-          >
-            {previewLine}
+          <div className={cellStyles.templatePreview}>
+            <div
+              className={clsx(cellStyles.cityLine, cellStyles.templatePreviewText)}
+              style={{ color: previewColor }}
+            >
+              {previewLine}
+            </div>
           </div>
         </div>
       </div>

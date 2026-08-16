@@ -135,7 +135,7 @@
     gap: 0.16rem;
   }
 
-  .templatePreviewText {
+  .templatePreview {
     padding: 0.16rem 0.26rem 0.14rem;
   }
 
@@ -151,12 +151,58 @@
     font-weight: 600;
   }
 
-  .templateTitleText {
+  // Padding живёт на обёртке: overflow режет по padding-edge,
+  // и третья строка иначе выглядывает под многоточием.
+  .templateTitle {
     flex-shrink: 0;
     margin: 0;
     padding: 0.26rem 0.28rem 0.22rem;
     background-color: $color-app-inner;
     border-radius: calc(#{$list-entry-radius-lg} - 1px);
+    box-sizing: border-box;
+  }
+
+  .templateTitleText {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    box-sizing: content-box;
+    padding: 0;
+    margin: 0;
+    height: 2lh;
+    min-height: 2lh;
+    max-height: 2lh;
+  }
+
+  &:not([data-density-level='2']) .templateTitleText,
+  &[data-density-level='2'] .templateTitleText {
+    height: 2lh;
+    min-height: 2lh;
+    max-height: 2lh;
+  }
+
+  .templatePreviewText {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+    box-sizing: content-box;
+    padding: 0;
+    margin: 0;
+    height: 3lh;
+    min-height: 3lh;
+    max-height: 3lh;
+  }
+
+  &:not([data-density-level='2']) .templatePreviewText {
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    height: 3lh;
+    min-height: 3lh;
+    max-height: 3lh;
   }
 
   &[data-density-level='2'] {
@@ -170,13 +216,20 @@
       line-height: 1.18;
     }
 
-    .templateTitleText {
+    .templateTitle {
       padding: 0.22rem 0.24rem 0.18rem;
-      min-height: calc(0.62rem * 1.18 * 2);
+    }
+
+    .templatePreview {
+      padding: 0.14rem 0.22rem 0.12rem;
     }
 
     .templatePreviewText {
-      padding: 0.14rem 0.22rem 0.12rem;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      height: 2lh;
+      min-height: 2lh;
+      max-height: 2lh;
     }
   }
 }

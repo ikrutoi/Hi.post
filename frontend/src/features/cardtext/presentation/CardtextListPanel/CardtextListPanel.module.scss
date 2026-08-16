@@ -130,9 +130,15 @@ $list-panel-scroll-inset: 0.35rem;
   }
 
   > [role='option'] {
-    display: flex;
+    display: block;
     min-width: 0;
     width: 100%;
+    aspect-ratio: 1;
+    align-self: start;
+
+    :global([data-cardtext-template-entry]) {
+      height: 100%;
+    }
   }
 }
 
