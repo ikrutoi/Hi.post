@@ -43,7 +43,10 @@ import { checkAndSyncProcessedCard } from './syncProcessedCard'
 import type { CardtextInteractionMode } from '@cardtext/domain/cardtextInteractionMode'
 import type { CardtextContent } from '@cardtext/domain/editor/editor.types'
 import { findCardtextQuickListMatch } from '@cardtext/domain/helpers/cardtextQuickListMatch'
-import { resolveCardtextTemplateTitle } from '@cardtext/application/helpers/resolveCardtextTemplateTitle'
+import {
+  resolveCardtextTemplateTitle,
+  titlesForCardtextUniqueness,
+} from '@cardtext/application/helpers/resolveCardtextTemplateTitle'
 import { suggestCardtextTemplateTitle } from '@cardtext/application/helpers/suggestCardtextTemplateTitle'
 import { selectCardtextTemplatesListItems } from '@cardtext/infrastructure/selectors'
 import { applyCardtextFromToolbar } from './cardtextToolbarApplySaga'
@@ -122,7 +125,7 @@ function* handleCardtextViewAddList(): SagaIterator {
     return
   }
 
-  const existingTitles = (templates ?? []).map((t) => t.title ?? '')
+  const existingTitles = titlesForCardtextUniqueness(templates)
   const resolvedTitle = resolveCardtextTemplateTitle(
     plainText,
     existingTitles,
@@ -464,21 +467,16 @@ export function* handleCardtextToolbarAction(
       const templates: CardtextContent[] | null = yield select(
         selectCardtextTemplatesListItems,
       )
-      const existingTitles = (templates ?? []).map((t) => t.title ?? '')
-      const resolvedTitle = resolveCardtextTemplateTitle(
-        plainText,
-        existingTitles,
-        assetData?.title,
-      )
+      const currentId =
+        assetData?.id != null
+          ? String(assetData.id)
+          : templateIdFromSelect != null
+            ? String(templateIdFromSelect)
+            : null
 
       const postcardSt = assetData?.status
       if (postcardSt === 'inLine' || postcardSt === 'outLine') {
-        const id =
-          assetData?.id != null
-            ? String(assetData.id)
-            : templateIdFromSelect != null
-              ? String(templateIdFromSelect)
-              : null
+        const id = currentId
         if (id == null) break
 
         const cartItems: PostcardHydrated[] = yield select(selectCartItems)
@@ -486,6 +484,11 @@ export function* handleCardtextToolbarAction(
           anyPostcardReferencesCardtextTemplateId(cartItems, id)
 
         if (referencedByPostcard) {
+          const resolvedTitle = resolveCardtextTemplateTitle(
+            plainText,
+            titlesForCardtextUniqueness(templates),
+            assetData?.title,
+          )
           const createResult: TemplateOperationResult = yield call(
             [templateService, 'createCardtextTemplate'],
             {
@@ -512,6 +515,11 @@ export function* handleCardtextToolbarAction(
           break
         }
 
+        const resolvedTitle = resolveCardtextTemplateTitle(
+          plainText,
+          titlesForCardtextUniqueness(templates, id),
+          assetData?.title,
+        )
         const result: { success?: boolean } = yield call(
           [templateService, 'updateCardtextTemplate'],
           id,
@@ -544,6 +552,11 @@ export function* handleCardtextToolbarAction(
         break
       }
 
+      const resolvedTitle = resolveCardtextTemplateTitle(
+        plainText,
+        titlesForCardtextUniqueness(templates, currentId),
+        assetData?.title,
+      )
       const processedTitle =
         resolvedTitle || suggestCardtextTemplateTitle(plainText)
 

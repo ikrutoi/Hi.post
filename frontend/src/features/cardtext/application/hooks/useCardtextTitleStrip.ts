@@ -11,7 +11,10 @@ import {
 } from '@cardtext/infrastructure/state'
 import { useTemplateActions } from '@entities/templates/application/hooks/useTemplateActions'
 import { templateService } from '@entities/templates/domain/services/templateService'
-import { resolveCardtextTemplateTitle } from '@cardtext/application/helpers/resolveCardtextTemplateTitle'
+import {
+  resolveCardtextTemplateTitle,
+  titlesForCardtextUniqueness,
+} from '@cardtext/application/helpers/resolveCardtextTemplateTitle'
 import {
   CARDTEXT_TEMPLATE_TITLE_MAX_LENGTH,
   suggestCardtextTemplateTitle,
@@ -77,19 +80,18 @@ export function useCardtextTitleStrip(p: UseCardtextTitleStripParams) {
 
   const saveTemplateToList = useCallback(
     async (baseTitle: string): Promise<boolean> => {
-      const existingTitles = (cardtextTemplates ?? []).map((t) => t.title ?? '')
-      const uniqueTitle = resolveCardtextTemplateTitle(
-        plainText,
-        existingTitles,
-        baseTitle,
-      )
-      if (!uniqueTitle) return false
-
       const processedFromDb =
         await templateService.getSingleCardtextByStatus('processed')
       const processedId =
         (cardtextAssetStatus === 'processed' && id) ||
         (processedFromDb?.id != null ? String(processedFromDb.id) : null)
+      const uniqueTitle = resolveCardtextTemplateTitle(
+        plainText,
+        titlesForCardtextUniqueness(cardtextTemplates, processedId),
+        baseTitle,
+      )
+      if (!uniqueTitle) return false
+
       const result =
         processedId != null
           ? await updateCardtextTemplate(processedId, {

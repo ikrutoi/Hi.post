@@ -10,7 +10,10 @@ export {
   CARDTEXT_TEMPLATE_TITLE_MAX_LENGTH,
 } from './suggestCardtextTemplateTitle'
 
-export { resolveCardtextTemplateTitle } from './resolveCardtextTemplateTitle'
+export {
+  resolveCardtextTemplateTitle,
+  titlesForCardtextUniqueness,
+} from './resolveCardtextTemplateTitle'
 
 export {
   cardtextToolbarSectionFromMode,
