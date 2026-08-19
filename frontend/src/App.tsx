@@ -70,11 +70,9 @@ import {
 } from '@cart/infrastructure/state'
 import { EnvelopeRightSlot } from '@envelope/presentation/EnvelopeRightSlot'
 import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
-import { selectSenderView } from '@envelope/sender/infrastructure/selectors'
 import {
   selectArchiveEnvelopeSandboxActive,
   selectArchiveSandboxRecipient,
-  selectArchiveSandboxSender,
 } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import { DateRightSlot } from '@date/presentation/DateRightSlot'
 import { HistoryListRightSlot } from '@date/presentation/HistoryListRightSlot'
@@ -336,16 +334,11 @@ const App = () => {
 
   const handleAppClick = useToolbarClickReset(colorToolbar, setColorToolbar)
   const { activeSection } = useSectionMenuFacade()
-  const sessionSenderView = useAppSelector(selectSenderView)
   const sessionRecipientView = useAppSelector(selectRecipientView)
   const archiveEnvelopeSandboxActive = useAppSelector(
     selectArchiveEnvelopeSandboxActive,
   )
-  const archiveSandboxSender = useAppSelector(selectArchiveSandboxSender)
   const archiveSandboxRecipient = useAppSelector(selectArchiveSandboxRecipient)
-  const senderView = archiveEnvelopeSandboxActive
-    ? archiveSandboxSender.currentView
-    : sessionSenderView
   const recipientView = archiveEnvelopeSandboxActive
     ? archiveSandboxRecipient.currentView
     : sessionRecipientView
@@ -2156,12 +2149,9 @@ const App = () => {
   const mobileEnvelopeAddressCreateRole =
     isMobileLayout &&
     activeSection === 'envelope' &&
-    (archiveEnvelopeSandboxActive || !rightPieEnvelopePeekNoToolbar)
-      ? senderView === 'senderCreate'
-        ? ('sender' as const)
-        : recipientView === 'recipientCreate'
-          ? ('recipient' as const)
-          : null
+    (archiveEnvelopeSandboxActive || !rightPieEnvelopePeekNoToolbar) &&
+    recipientView === 'recipientCreate'
+      ? ('recipient' as const)
       : null
 
   if (isMobileLayout) {

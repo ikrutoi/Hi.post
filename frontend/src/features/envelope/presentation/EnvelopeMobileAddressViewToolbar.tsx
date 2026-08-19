@@ -173,10 +173,8 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
     recipientAddress,
   ])
 
-  /** Lower View toolbar follows dualSide; both applied → neutral tint band only. */
-  const activeViewRole = bothFormsApplied
-    ? null
-    : (mobileFocus?.dualSide ?? 'sender')
+  /** Lower View toolbar follows recipient; both applied → neutral tint band only. */
+  const activeViewRole = bothFormsApplied ? null : 'recipient'
 
   /**
    * Sender: keep the role-colored lower band whenever dualSide is sender

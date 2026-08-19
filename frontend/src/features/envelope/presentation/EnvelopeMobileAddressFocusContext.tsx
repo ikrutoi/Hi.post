@@ -39,7 +39,7 @@ export const EnvelopeMobileAddressFocusProvider: React.FC<{
 }> = ({ children }) => {
   const [focusRole, setFocusRole] =
     useState<EnvelopeMobileAddressFocusRole | null>(null)
-  const [dualSide, setDualSide] = useState<EnvelopeMobileDualSide>('sender')
+  const [dualSide, setDualSide] = useState<EnvelopeMobileDualSide>('recipient')
   const [addressListBadgePulseSide, setAddressListBadgePulseSide] =
     useState<EnvelopeMobileDualSide | null>(null)
   const [addressListBadgePulseSeq, setAddressListBadgePulseSeq] = useState(0)

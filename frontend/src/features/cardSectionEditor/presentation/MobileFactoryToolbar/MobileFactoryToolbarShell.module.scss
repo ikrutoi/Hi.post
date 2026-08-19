@@ -247,7 +247,7 @@
     align-self: stretch;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     border: none;
     background-color: transparent;
     padding-inline: 0;
@@ -256,20 +256,14 @@
 
     :global([class*='envelopeToolbarSlotSender']),
     :global([class*='envelopeToolbarSlotRecipients']) {
-      flex: 0 1 auto;
+      flex: 0 0 auto;
       display: flex;
       align-items: center;
-      min-width: 0;
-    }
-
-    :global([class*='envelopeToolbarSlotSender']) {
       justify-content: flex-start;
-    }
-
-    :global([class*='envelopeToolbarSlotRecipients']) {
-      flex: 0 1 auto;
-      justify-content: flex-end;
-      margin-left: auto;
+      min-width: 0;
+      margin-left: 0;
+      margin-right: auto;
+      width: auto;
     }
 
     :global([class*='toolbarSender']),
@@ -279,6 +273,18 @@
       max-width: 100%;
       height: 100%;
       min-height: 0;
+      justify-content: flex-start;
+    }
+
+    /* Beat `.rowUpper [class*='toolbar']:not(...)` width:100% (higher :not count). */
+    :global(
+        [class*='toolbar']:not([class*='toolbarKey']):not(
+            [class*='toolbarGroup']
+          ):not([class*='toolbarBadge']):not([class*='toolbarIcon'])
+      ) {
+      flex: 0 0 auto;
+      width: auto;
+      justify-content: flex-start;
     }
   }
 }

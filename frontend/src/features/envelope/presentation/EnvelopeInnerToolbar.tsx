@@ -1,25 +1,16 @@
 import React, { useCallback, useEffect, useRef } from 'react'
 import clsx from 'clsx'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
-import { Toggle } from '@shared/ui/Toggle/Toggle'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
   selectActiveRecipientsToolbarState,
-  selectActiveSenderToolbarState,
   selectRecipientViewEditMode,
-  selectSenderViewEditMode,
 } from '@envelope/infrastructure/selectors'
 import { selectRecipientView, selectRecipientsFormViewIdsCount } from '@envelope/recipient/infrastructure/selectors'
 import { setRecipientApplied } from '@envelope/recipient/infrastructure/state'
-import { selectSenderView } from '@envelope/sender/infrastructure/selectors'
-import { setSenderApplied } from '@envelope/sender/infrastructure/state'
-import {
-  setArchiveSenderApplied,
-  setArchiveRecipientApplied,
-} from '@cardPanel/infrastructure/state'
+import { setArchiveRecipientApplied } from '@cardPanel/infrastructure/state'
 import {
   selectArchiveEnvelopeSandboxActive,
-  selectArchiveSandboxSender,
   selectArchiveSandboxRecipient,
 } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
@@ -46,27 +37,19 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
   const isMobile = useAppSelector(selectIsMobileLayout)
   const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
-  const sandboxSender = useAppSelector(selectArchiveSandboxSender)
   const sandboxRecipient = useAppSelector(selectArchiveSandboxRecipient)
-  const sessionSenderView = useAppSelector(selectSenderView)
   const sessionRecipientView = useAppSelector(selectRecipientView)
-  const senderView = sandboxActive
-    ? sandboxSender.currentView
-    : sessionSenderView
   const recipientView = sandboxActive
     ? sandboxRecipient.currentView
     : sessionRecipientView
   const recipientsFormViewIdsCount = useAppSelector(
     selectRecipientsFormViewIdsCount,
   )
-  const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const mobileFocus = useEnvelopeMobileAddressFocus()
   const focusRole = mobileFocus?.focusRole ?? null
-  const dualSide = mobileFocus?.dualSide ?? 'sender'
+  const dualSide = mobileFocus?.dualSide ?? 'recipient'
   const setDualSide = mobileFocus?.setDualSide
-  /** Session or archive sandbox — same builders / badges. */
-  const senderToolbarState = useAppSelector(selectActiveSenderToolbarState)
   const recipientsToolbarState = useAppSelector(
     selectActiveRecipientsToolbarState,
   )
@@ -74,45 +57,12 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     assemblySenderSimplifiedPeek,
     assemblyRecipientSimplifiedPeek,
   } = useMobileFactoryListChrome()
-  const pendingAddressAddFocusRef = useRef<'sender' | 'recipient' | null>(null)
-  const prevSenderPeekRef = useRef(false)
-  const prevRecipientPeekRef = useRef(false)
+  const pendingAddressAddFocusRef = useRef<'recipient' | null>(null)
 
-  /**
-   * Dual toggle after Apply:
-   * - any side applied → hide dual toggle; pin to the still-editable side
-   * - both applied → hide dual toggle; accent/View hidden
-   * After postcardEdit un-apply → select the side that became editable again.
-   */
   useEffect(() => {
-    if (!isMobile || setDualSide == null) {
-      prevSenderPeekRef.current = assemblySenderSimplifiedPeek
-      prevRecipientPeekRef.current = assemblyRecipientSimplifiedPeek
-      return
-    }
-    const senderJustUnapplied =
-      !assemblySenderSimplifiedPeek && prevSenderPeekRef.current
-    const recipientJustUnapplied =
-      !assemblyRecipientSimplifiedPeek && prevRecipientPeekRef.current
-
-    if (assemblySenderSimplifiedPeek && !assemblyRecipientSimplifiedPeek) {
-      setDualSide('recipient')
-    } else if (assemblyRecipientSimplifiedPeek && !assemblySenderSimplifiedPeek) {
-      setDualSide('sender')
-    } else if (senderJustUnapplied) {
-      setDualSide('sender')
-    } else if (recipientJustUnapplied) {
-      setDualSide('recipient')
-    }
-
-    prevSenderPeekRef.current = assemblySenderSimplifiedPeek
-    prevRecipientPeekRef.current = assemblyRecipientSimplifiedPeek
-  }, [
-    isMobile,
-    setDualSide,
-    assemblySenderSimplifiedPeek,
-    assemblyRecipientSimplifiedPeek,
-  ])
+    if (!isMobile || setDualSide == null) return
+    setDualSide('recipient')
+  }, [isMobile, setDualSide])
 
   /** После apply выходим из focus — postcardEdit в слоте sender/recipients. */
   useEffect(() => {
@@ -142,48 +92,40 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     const pending = pendingAddressAddFocusRef.current
     if (pending == null) return
 
-    const targetView = pending === 'sender' ? 'senderView' : 'recipientView'
-    const view = pending === 'sender' ? senderView : recipientView
-
-    if (view === targetView) {
-      mobileFocus.setDualSide(pending)
+    if (recipientView === 'recipientView') {
+      mobileFocus.setDualSide('recipient')
       mobileFocus.clearFocus()
       pendingAddressAddFocusRef.current = null
       return
     }
 
-    if (view === 'senderCreate' || view === 'recipientCreate') {
+    if (recipientView === 'recipientCreate') {
       pendingAddressAddFocusRef.current = null
     }
-  }, [isMobile, mobileFocus, senderView, recipientView])
+  }, [isMobile, mobileFocus, recipientView])
 
   const handleAddressAddClick = useCallback(
     (section: 'sender' | 'recipients', key: IconKey): void | false => {
       if (key !== 'addressAdd' || !isMobile || mobileFocus == null) return
+      if (section !== 'recipients') return
 
-      const role = section === 'sender' ? 'sender' : 'recipient'
-      const view = role === 'sender' ? senderView : recipientView
-      if (view === 'senderCreate' || view === 'recipientCreate') return
-
-      const isEditMode =
-        role === 'sender' ? senderViewEditMode : recipientViewEditMode
-      if (isEditMode) return false
+      if (recipientView === 'recipientCreate') return
+      if (recipientViewEditMode) return false
 
       const { state: addState } = readAddressAddToolbarMeta(
-        section === 'sender' ? senderToolbarState : recipientsToolbarState,
+        recipientsToolbarState,
       )
 
       if (addState === 'active') {
-        mobileFocus.setDualSide(role)
+        mobileFocus.setDualSide('recipient')
         mobileFocus.clearFocus()
         return false
       }
 
       if (addState === 'enabled') {
-        pendingAddressAddFocusRef.current = role
-        const targetView = role === 'sender' ? 'senderView' : 'recipientView'
-        if (view === targetView) {
-          mobileFocus.setDualSide(role)
+        pendingAddressAddFocusRef.current = 'recipient'
+        if (recipientView === 'recipientView') {
+          mobileFocus.setDualSide('recipient')
           mobileFocus.clearFocus()
         }
       }
@@ -191,26 +133,10 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     [
       isMobile,
       mobileFocus,
-      senderView,
       recipientView,
-      senderViewEditMode,
       recipientViewEditMode,
-      senderToolbarState,
       recipientsToolbarState,
     ],
-  )
-
-  const handleSenderApplyPeekClick = useCallback(
-    (key: IconKey): void | false => {
-      if (key !== 'postcardEdit') return
-      if (sandboxActive) {
-        dispatch(setArchiveSenderApplied(false))
-      } else {
-        dispatch(setSenderApplied(false))
-      }
-      return false
-    },
-    [dispatch, sandboxActive],
   )
 
   const handleRecipientApplyPeekClick = useCallback(
@@ -226,72 +152,22 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     [dispatch, sandboxActive],
   )
 
-  const showSenderSlot = focusRole !== 'recipient'
-  const showRecipientsSlot = focusRole !== 'sender'
   const showFocusReturn =
-    isMobile && focusRole != null && mobileFocus != null
+    isMobile && focusRole === 'recipient' && mobileFocus != null
   const bothFormsApplied =
     assemblySenderSimplifiedPeek && assemblyRecipientSimplifiedPeek
-  /**
-   * Dual toggle only while both sides are still editable.
-   * Any Apply-peek pins dualSide → hide the switcher (no disabled affordance).
-   */
-  const showCenterDualToggle =
-    isMobile &&
-    !showFocusReturn &&
-    showSenderSlot &&
-    showRecipientsSlot &&
-    setDualSide != null &&
-    !assemblySenderSimplifiedPeek &&
-    !assemblyRecipientSimplifiedPeek
-
-  /** Disable upper toolbar on the non-selected dual side. */
-  const dualToolbarDisableActive = showCenterDualToggle
-  const senderToolbarSlotDisabled =
-    senderView === 'senderCreate' ||
-    (dualToolbarDisableActive && dualSide !== 'sender')
-  const recipientsToolbarSlotDisabled =
-    recipientView === 'recipientCreate' ||
-    (dualToolbarDisableActive && dualSide !== 'recipient')
-
-  const handleCenterDualToggle = useCallback(
-    (checked: boolean) => {
-      setDualSide?.(checked ? 'recipient' : 'sender')
-    },
-    [setDualSide],
-  )
+  const recipientsToolbarSlotDisabled = recipientView === 'recipientCreate'
 
   const handleFocusReturn = useCallback(
     (key: IconKey): void | false => {
       if (key !== 'return' || mobileFocus == null || focusRole == null) return
 
-      const isEditMode =
-        focusRole === 'sender' ? senderViewEditMode : recipientViewEditMode
-      if (isEditMode) return false
+      if (recipientViewEditMode) return false
 
       mobileFocus.clearFocus()
       return false
     },
-    [
-      mobileFocus,
-      focusRole,
-      senderViewEditMode,
-      recipientViewEditMode,
-    ],
-  )
-
-  const senderToolbar = assemblySenderSimplifiedPeek ? (
-    <Toolbar
-      section="sender"
-      groupsOverride={ADDRESS_APPLY_PEEK_TOOLBAR}
-      onActionClick={handleSenderApplyPeekClick}
-    />
-  ) : (
-    <Toolbar
-      section="sender"
-      stateOverride={senderToolbarState}
-      onActionClick={(key) => handleAddressAddClick('sender', key)}
-    />
+    [mobileFocus, focusRole, recipientViewEditMode],
   )
 
   const recipientsToolbar = assemblyRecipientSimplifiedPeek ? (
@@ -343,13 +219,11 @@ export const EnvelopeInnerToolbar: React.FC = () => {
       {showFocusReturn ? (
         <>
           <div className={styles.envelopeToolbarFocusLeft}>
-            {focusRole === 'sender' ? senderToolbar : recipientsToolbar}
+            {recipientsToolbar}
           </div>
           <div className={styles.envelopeToolbarFocusReturn}>
             <Toolbar
-              section={
-                focusRole === 'sender' ? 'senderView' : 'recipientView'
-              }
+              section="recipientView"
               groupsOverride={ENVELOPE_MOBILE_ADDRESS_VIEW_UPPER_RETURN_TOOLBAR}
               className={toolbarStyles.toolbarAromaUpperReturn}
               onActionClick={handleFocusReturn}
@@ -357,42 +231,15 @@ export const EnvelopeInnerToolbar: React.FC = () => {
           </div>
         </>
       ) : (
-        <>
-          {showSenderSlot ? (
-            <div
-              className={clsx(
-                styles.envelopeToolbarSlotSender,
-                senderToolbarSlotDisabled &&
-                  styles.envelopeToolbarSlotDisabled,
-              )}
-            >
-              {senderToolbar}
-            </div>
-          ) : null}
-          {showCenterDualToggle ? (
-            <div className={styles.envelopeToolbarCenterToggle}>
-              <Toggle
-                label=""
-                checked={dualSide === 'recipient'}
-                onChange={handleCenterDualToggle}
-                size="default"
-                variant="envelopeDual"
-                ariaLabel="Envelope side"
-              />
-            </div>
-          ) : null}
-          {showRecipientsSlot ? (
-            <div
-              className={clsx(
-                styles.envelopeToolbarSlotRecipients,
-                recipientsToolbarSlotDisabled &&
-                  styles.envelopeToolbarSlotDisabled,
-              )}
-            >
-              {recipientsToolbar}
-            </div>
-          ) : null}
-        </>
+        <div
+          className={clsx(
+            styles.envelopeToolbarSlotRecipients,
+            recipientsToolbarSlotDisabled &&
+              styles.envelopeToolbarSlotDisabled,
+          )}
+        >
+          {recipientsToolbar}
+        </div>
       )}
     </div>
   )
