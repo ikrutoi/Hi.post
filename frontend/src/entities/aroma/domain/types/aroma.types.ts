@@ -1,4 +1,5 @@
-import img100_11 from '../../assets/300_11.png'
+import imgNl100 from '../../assets/nl_100.png'
+import imgNl100Thumb from '../../assets/nl_100_thumb.png'
 import img303_11 from '../../assets/303_11.png'
 import imgNl116 from '../../assets/nl_116.png'
 import imgNl116Thumb from '../../assets/nl_116_thumb.png'
@@ -23,7 +24,7 @@ export type AromaSlot = (typeof aromaSlotOrder)[number]
 
 /** Full assets — сетка аромы и упрощённый peek на всю секцию. */
 export const AROMA_IMAGES: Record<AromaSlot, string> = {
-  0: img100_11,
+  0: imgNl100,
   1: imgNl313,
   2: img303_11,
   3: imgNl302,
@@ -39,7 +40,7 @@ export const AROMA_IMAGES: Record<AromaSlot, string> = {
  * Слоты без отдельного thumb пока падают на full.
  */
 export const AROMA_IMAGES_THUMB: Record<AromaSlot, string> = {
-  0: img100_11,
+  0: imgNl100Thumb,
   1: imgNl313Thumb,
   2: img303_11,
   3: imgNl302Thumb,
