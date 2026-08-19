@@ -39,8 +39,8 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
     if (!el || !track) return
 
     const { scrollHeight, clientHeight, scrollTop } = el
-    /** Sub-pixel layout can make scrollHeight ≈ clientHeight + 0.5…1 without real overflow. */
-    if (scrollHeight - clientHeight < 1 || clientHeight === 0) {
+    /** Sub-pixel square cells can make scrollHeight ≈ clientHeight + 1…2 without a real row. */
+    if (scrollHeight - clientHeight < 2 || clientHeight === 0) {
       setThumbHeight(0)
       setThumbTop(0)
       return
@@ -81,11 +81,18 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
     }
     window.addEventListener('resize', handleResize)
 
+    const resizeObserver = new ResizeObserver(handleResize)
+    resizeObserver.observe(el)
+    for (const child of el.children) {
+      resizeObserver.observe(child)
+    }
+
     return () => {
       el.removeEventListener('scroll', handleScroll)
       window.removeEventListener('resize', handleResize)
+      resizeObserver.disconnect()
     }
-  }, [updateThumb])
+  }, [updateThumb, children])
 
   /** Трек поверх контента по правому краю: без этого колесо не двигает `scrollTop` у контента. */
   useLayoutEffect(() => {
@@ -95,7 +102,7 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
 
     const onWheel = (ev: WheelEvent) => {
       const { scrollHeight, clientHeight } = el
-      if (scrollHeight - clientHeight < 1) return
+      if (scrollHeight - clientHeight < 2) return
       ev.preventDefault()
       el.scrollTop += ev.deltaY
       updateThumb()

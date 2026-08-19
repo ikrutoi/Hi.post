@@ -158,6 +158,7 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
 
 .recipientFieldsetWithList {
   padding-right: 0;
+  padding-bottom: 0;
   /** Обрезает скролл-трек по скруглению формы. IconUsers — снаружи fieldset. */
   overflow: hidden;
 }
