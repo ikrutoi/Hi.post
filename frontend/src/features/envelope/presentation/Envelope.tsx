@@ -71,7 +71,6 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
     : sessionRecipientView
   const mobileFocus = useEnvelopeMobileAddressFocus()
   const mobileFocusRole = mobileFocus?.focusRole ?? null
-  const dualSide = mobileFocus?.dualSide ?? 'recipient'
   const {
     rightPieEnvelopePeekNoToolbar,
     listRowLocalId,
@@ -111,12 +110,6 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
     hasIncompleteVisibleRecipient
       ? ('recipient' as const)
       : null
-
-  const showDualSideSelectionBorder =
-    isMobile &&
-    !envelopePeekMode &&
-    !bothFormsApplied &&
-    recipientView !== 'recipientCreate'
 
   const mobileFormRole =
     recipientView === 'recipientCreate' ? ('recipient' as const) : null
@@ -254,13 +247,6 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
           className={clsx(
             styles.envelopeSection,
             styles.envelopeSectionRecipient,
-            showDualSideSelectionBorder &&
-              dualSide === 'recipient' &&
-              styles.envelopeSectionRecipientDualSelected,
-            showDualSideSelectionBorder &&
-              dualSide !== 'recipient' &&
-              !showRecipientSimplified &&
-              styles.envelopeSectionDualUnfocused,
           )}
         >
           {envelopePeekMode ? (
