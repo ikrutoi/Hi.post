@@ -118,11 +118,6 @@ export const ENVELOPE_MOBILE_ADDRESS_VIEW_RETURN_TOOLBAR: ToolbarConfig = [
  */
 export const ENVELOPE_MOBILE_RECIPIENTS_MULTI_VIEW_TOOLBAR: ToolbarConfig = [
   {
-    group: 'spacer',
-    icons: [{ key: 'empty', state: 'disabled' }],
-    status: 'enabled',
-  },
-  {
     group: 'actions',
     icons: [{ key: 'listClose', state: 'enabled' }],
     status: 'enabled',

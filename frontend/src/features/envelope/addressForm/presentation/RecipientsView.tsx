@@ -13,7 +13,7 @@ export type RecipientsViewProps = {
   onOpenRecipient: (entry: AddressBookEntry) => void
 }
 
-/** Multi recipients on the envelope: template-list cells at compact density. */
+/** Multi recipients on the envelope: 4 square cells across the form. */
 export const RecipientsView: React.FC<RecipientsViewProps> = ({
   entries,
   scrollbarPortalTarget,

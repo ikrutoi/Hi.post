@@ -285,6 +285,7 @@ export const EnvelopeMobileAddressViewToolbar: React.FC<
           <Toolbar
             section="recipients"
             groupsOverride={ENVELOPE_MOBILE_RECIPIENTS_MULTI_VIEW_TOOLBAR}
+            justifyGroupsEnd
           />
         ) : showRecipientsBrowseToolbar ? (
           <RecipientsBrowseToolbar />
