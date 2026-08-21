@@ -1,20 +1,20 @@
-import imgNl100 from '../../assets/nl_100.png'
-import imgNl100Thumb from '../../assets/nl_100_thumb.png'
+import imgNl101 from '../../assets/nl_101.png'
+import imgNl101Thumb from '../../assets/nl_101_thumb.png'
 import img303_11 from '../../assets/303_11.png'
-import imgNl116 from '../../assets/nl_116.png'
-import imgNl116Thumb from '../../assets/nl_116_thumb.png'
-import imgNl301 from '../../assets/nl_301.png'
-import imgNl301Thumb from '../../assets/nl_301_thumb.png'
-import imgNl302 from '../../assets/nl_302.png'
-import imgNl302Thumb from '../../assets/nl_302_thumb.png'
-import imgNl305 from '../../assets/nl_305.png'
-import imgNl305Thumb from '../../assets/nl_305_thumb.png'
-import imgNl306 from '../../assets/nl_306.png'
-import imgNl306Thumb from '../../assets/nl_306_thumb.png'
-import imgNl311 from '../../assets/nl_311_1.png'
-import imgNl311Thumb from '../../assets/nl_311_1_thumb.png'
-import imgNl313 from '../../assets/nl_313.png'
-import imgNl313Thumb from '../../assets/nl_313_thumb.png'
+import imgNl500 from '../../assets/nl_500.png'
+import imgNl500Thumb from '../../assets/nl_500_thumb.png'
+import imgNl800 from '../../assets/nl_800.png'
+import imgNl800Thumb from '../../assets/nl_800_thumb.png'
+import imgNl400 from '../../assets/nl_400.png'
+import imgNl400Thumb from '../../assets/nl_400_thumb.png'
+import imgNl700 from '../../assets/nl_700.png'
+import imgNl700Thumb from '../../assets/nl_700_thumb.png'
+import imgNl600 from '../../assets/nl_600.png'
+import imgNl600Thumb from '../../assets/nl_600_thumb.png'
+import imgNl900 from '../../assets/nl_900.png'
+import imgNl900Thumb from '../../assets/nl_900_thumb.png'
+import imgNl200 from '../../assets/nl_200.png'
+import imgNl200Thumb from '../../assets/nl_200_thumb.png'
 
 export const AROMA_CELL_COUNT = 9 as const
 
@@ -24,15 +24,15 @@ export type AromaSlot = (typeof aromaSlotOrder)[number]
 
 /** Full assets — сетка аромы и упрощённый peek на всю секцию. */
 export const AROMA_IMAGES: Record<AromaSlot, string> = {
-  0: imgNl100,
-  1: imgNl313,
+  0: imgNl101,
+  1: imgNl200,
   2: img303_11,
-  3: imgNl302,
-  4: imgNl116,
-  5: imgNl306,
-  6: imgNl305,
-  7: imgNl301,
-  8: imgNl311,
+  3: imgNl400,
+  4: imgNl500,
+  5: imgNl600,
+  6: imgNl700,
+  7: imgNl800,
+  8: imgNl900,
 }
 
 /**
@@ -40,15 +40,15 @@ export const AROMA_IMAGES: Record<AromaSlot, string> = {
  * Слоты без отдельного thumb пока падают на full.
  */
 export const AROMA_IMAGES_THUMB: Record<AromaSlot, string> = {
-  0: imgNl100Thumb,
-  1: imgNl313Thumb,
+  0: imgNl101Thumb,
+  1: imgNl200Thumb,
   2: img303_11,
-  3: imgNl302Thumb,
-  4: imgNl116Thumb,
-  5: imgNl306Thumb,
-  6: imgNl305Thumb,
-  7: imgNl301Thumb,
-  8: imgNl311Thumb,
+  3: imgNl400Thumb,
+  4: imgNl500Thumb,
+  5: imgNl600Thumb,
+  6: imgNl700Thumb,
+  7: imgNl800Thumb,
+  8: imgNl900Thumb,
 }
 
 export interface AromaItem {
