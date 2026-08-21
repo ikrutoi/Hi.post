@@ -1,20 +1,21 @@
 import imgNl101 from '../../assets/nl_101.png'
 import imgNl101Thumb from '../../assets/nl_101_thumb.png'
-import img303_11 from '../../assets/303_11.png'
-import imgNl500 from '../../assets/nl_500.png'
-import imgNl500Thumb from '../../assets/nl_500_thumb.png'
-import imgNl800 from '../../assets/nl_800.png'
-import imgNl800Thumb from '../../assets/nl_800_thumb.png'
-import imgNl400 from '../../assets/nl_400.png'
-import imgNl400Thumb from '../../assets/nl_400_thumb.png'
-import imgNl700 from '../../assets/nl_700.png'
-import imgNl700Thumb from '../../assets/nl_700_thumb.png'
-import imgNl600 from '../../assets/nl_600.png'
-import imgNl600Thumb from '../../assets/nl_600_thumb.png'
-import imgNl900 from '../../assets/nl_900.png'
-import imgNl900Thumb from '../../assets/nl_900_thumb.png'
 import imgNl200 from '../../assets/nl_200.png'
 import imgNl200Thumb from '../../assets/nl_200_thumb.png'
+import imgNl300 from '../../assets/nl_300.png'
+import imgNl300Thumb from '../../assets/nl_300_thumb.png'
+import imgNl400 from '../../assets/nl_400.png'
+import imgNl400Thumb from '../../assets/nl_400_thumb.png'
+import imgNl500 from '../../assets/nl_500.png'
+import imgNl500Thumb from '../../assets/nl_500_thumb.png'
+import imgNl600 from '../../assets/nl_600.png'
+import imgNl600Thumb from '../../assets/nl_600_thumb.png'
+import imgNl700 from '../../assets/nl_700.png'
+import imgNl700Thumb from '../../assets/nl_700_thumb.png'
+import imgNl800 from '../../assets/nl_800.png'
+import imgNl800Thumb from '../../assets/nl_800_thumb.png'
+import imgNl900 from '../../assets/nl_900.png'
+import imgNl900Thumb from '../../assets/nl_900_thumb.png'
 
 export const AROMA_CELL_COUNT = 9 as const
 
@@ -26,7 +27,7 @@ export type AromaSlot = (typeof aromaSlotOrder)[number]
 export const AROMA_IMAGES: Record<AromaSlot, string> = {
   0: imgNl101,
   1: imgNl200,
-  2: img303_11,
+  2: imgNl300,
   3: imgNl400,
   4: imgNl500,
   5: imgNl600,
@@ -37,12 +38,11 @@ export const AROMA_IMAGES: Record<AromaSlot, string> = {
 
 /**
  * Thumb для CardPie / mini — меньше decode.
- * Слоты без отдельного thumb пока падают на full.
  */
 export const AROMA_IMAGES_THUMB: Record<AromaSlot, string> = {
   0: imgNl101Thumb,
   1: imgNl200Thumb,
-  2: img303_11,
+  2: imgNl300Thumb,
   3: imgNl400Thumb,
   4: imgNl500Thumb,
   5: imgNl600Thumb,

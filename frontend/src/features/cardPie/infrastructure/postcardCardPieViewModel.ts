@@ -378,7 +378,8 @@ export function buildPieSectionFlagsFromInner(
     cardphoto: Boolean(inner.cardphoto.previewUrl),
     cardtext: cardtextComplete,
     envelope: envelopeComplete,
-    aroma: Boolean(inner.aroma?.index),
+    /** Slot 0 (`nl_101`) is a real applied choice — do not treat index as a boolean. */
+    aroma: inner.aroma?.index != null,
     date: inner.dates.length > 0,
   }
 }
