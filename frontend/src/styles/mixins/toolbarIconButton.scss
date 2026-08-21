@@ -97,6 +97,20 @@ $toolbar-css-var-icon-mobile: --mobile-toolbar-icon-size;
 $toolbar-css-var-hit-mobile-section: --mobile-section-toolbar-key-size;
 $toolbar-css-var-icon-mobile-section: --mobile-section-toolbar-icon-size;
 
+/** Aroma section glyph — 1600×1280, size by height. */
+$toolbar-aroma-icon-aspect: 1600 / 1280;
+
+@mixin toolbar-aroma-wide-glyph {
+  overflow: visible;
+
+  svg,
+  > svg {
+    width: auto;
+    max-width: none;
+    aspect-ratio: #{$toolbar-aroma-icon-aspect};
+  }
+}
+
 @mixin toolbar-icon-glyph($icon-size) {
   svg {
     display: block;

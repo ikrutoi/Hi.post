@@ -48,6 +48,9 @@ const PATTERN = {
 
 const PIE_EMPTY_ICON_SIZE = 1440
 const PIE_EMPTY_ICON_HALF = PIE_EMPTY_ICON_SIZE / 2
+/** Aroma glyph is 1600×1280 — size by height, width follows viewBox. */
+const PIE_AROMA_ICON_HEIGHT = PIE_EMPTY_ICON_SIZE
+const PIE_AROMA_ICON_WIDTH = (PIE_AROMA_ICON_HEIGHT * 1600) / 1280
 /** Empty envelope sector: icon center (1440×1440), left edge stays inside pattern. */
 const PIE_ENVELOPE_EMPTY_ICON_X = 1120
 const PIE_ENVELOPE_EMPTY_ICON_Y = 2000
@@ -592,12 +595,12 @@ export const CardPie: React.FC<CardPieProps> = ({
                   />
                   <g
                     className={styles.pieSectorIconBg}
-                    transform={`translate(1550, 1550) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
+                    transform={`translate(1550, 1550) translate(-${PIE_AROMA_ICON_WIDTH / 2}, -${PIE_AROMA_ICON_HEIGHT / 2})`}
                   >
                     {!hideEmptySectorPlaceholders ? (
                       <IconSectionMenuAromaV2
-                        width={PIE_EMPTY_ICON_SIZE}
-                        height={PIE_EMPTY_ICON_SIZE}
+                        height={PIE_AROMA_ICON_HEIGHT}
+                        width={PIE_AROMA_ICON_WIDTH}
                       />
                     ) : null}
                   </g>

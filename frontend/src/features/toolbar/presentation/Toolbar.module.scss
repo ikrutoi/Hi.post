@@ -46,6 +46,10 @@
       );
     }
 
+    &[data-icon-key='aroma'] {
+      @include iconButton.toolbar-aroma-wide-glyph;
+    }
+
     &Disabled {
       color: $color-font-disabled;
       cursor: default;
@@ -744,6 +748,10 @@
       flex-shrink: 0;
     }
 
+    &[data-icon-key='aroma'] {
+      @include iconButton.toolbar-aroma-wide-glyph;
+    }
+
     &.toolbarKeyEnabled {
       color: $color-font-enabled-light;
       cursor: pointer;
@@ -870,6 +878,10 @@
     @include iconButton.toolbar-icon-button-size-mobile;
     margin: 0;
     background-color: transparent;
+
+    &[data-icon-key='aroma'] {
+      @include iconButton.toolbar-aroma-wide-glyph;
+    }
 
     &.toolbarKeyEnabled:hover,
     &.toolbarKeyActive:hover,
@@ -2251,6 +2263,10 @@
     @include iconButton.toolbar-icon-button-size-mobile-toolbar(true);
   }
 
+  .toolbar .toolbarKey[data-icon-key='aroma'] {
+    @include iconButton.toolbar-aroma-wide-glyph;
+  }
+
   .toolbar .toolbarKey[data-icon-key='historyView'] {
     @include iconButton.toolbar-icon-button-height-only(
       iconButton.$toolbar-hit-size-mobile-toolbar,
@@ -2476,6 +2492,10 @@
     .toolbarKey {
       @include iconButton.toolbar-icon-button-size-chrome-sidebar-desktop(true);
       margin: 0;
+
+      &[data-icon-key='aroma'] {
+        @include iconButton.toolbar-aroma-wide-glyph;
+      }
     }
   }
 

@@ -88,6 +88,12 @@
   }
 }
 
+.miniCardAroma .miniCardIconBg svg {
+  width: auto;
+  height: 3.6rem;
+  aspect-ratio: #{iconButton.$toolbar-aroma-icon-aspect};
+}
+
 .miniCard:hover,
 .miniCard.hovered {
   border-color: rgba($color-toggle-active, 0.6);
