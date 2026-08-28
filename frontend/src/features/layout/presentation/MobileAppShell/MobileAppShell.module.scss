@@ -41,6 +41,30 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   }
 }
 
+/** Two heartbeat beats: +46% each. */
+@keyframes mobile-pie-right-slot-second-click-hint {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  12% {
+    transform: translate(-50%, -50%) scale(1.46);
+  }
+
+  28% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  40% {
+    transform: translate(-50%, -50%) scale(1.46);
+  }
+
+  56% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
 .mobilePieRightSlotActiveIndicatorIcon {
   position: absolute;
   top: 50%;
@@ -58,6 +82,14 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   align-items: center;
   justify-content: center;
   color: $mobile-pie-right-slot-active-indicator-fg;
+
+  &.mobilePieRightSlotActiveIndicatorIconHint {
+    animation: mobile-pie-right-slot-second-click-hint 1.5s ease-in-out 1;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
+  }
 
   svg {
     display: block;

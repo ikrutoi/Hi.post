@@ -125,6 +125,7 @@ import { UserLoginRightSlot } from '@features/auth/presentation/UserLoginRightSl
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { useDateStripSectionForNotebookTabs } from '@date/presentation/useDateStripSectionForNotebookTabs'
 import { useMobileVisualViewport } from '@layout/application/hooks/useMobileVisualViewport'
+import { useMobileArchiveSlotSecondClickHint } from '@layout/application/hooks/useMobileArchiveSlotSecondClickHint'
 import type { MobileAppShellProps } from './mobileAppShell.types'
 import styles from './MobileAppShell.module.scss'
 
@@ -1090,6 +1091,14 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const showHistorySlotDateIcon =
     historyStripActive && historyArchiveViewMode === 'list'
 
+  const cartModeIconVisible = showCartSlotDateIcon || showCartSlotCartIcon
+  const historyModeIconVisible =
+    showHistorySlotDateIcon || showHistorySlotHistoryIcon
+  const cartSecondClickHint =
+    useMobileArchiveSlotSecondClickHint(cartModeIconVisible)
+  const historySecondClickHint =
+    useMobileArchiveSlotSecondClickHint(historyModeIconVisible)
+
   const cardWidthStyle =
     sizeCard?.width != null && sizeCard.width > 0
       ? ({
@@ -1411,8 +1420,13 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                         <div className={styles.mobilePieRightSlotCartButtonFrame}>
                           {showCartSlotDateIcon || showCartSlotCartIcon ? (
                             <span
-                              className={styles.mobilePieRightSlotActiveIndicatorIcon}
+                              className={clsx(
+                                styles.mobilePieRightSlotActiveIndicatorIcon,
+                                cartSecondClickHint.pulsing &&
+                                  styles.mobilePieRightSlotActiveIndicatorIconHint,
+                              )}
                               aria-hidden
+                              onAnimationEnd={cartSecondClickHint.onPulseEnd}
                             >
                               {showCartSlotDateIcon ? (
                                 <IconSectionMenuDate />
@@ -1437,7 +1451,10 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                               cartListPanelOpen ||
                               isCartOwnedNotebookStrip(notebookStripSection)
                             }
-                            onClick={handleCartSlotClick}
+                            onClick={(event) => {
+                              cartSecondClickHint.onUserClick()
+                              handleCartSlotClick(event)
+                            }}
                           >
                             <div
                               className={clsx(
@@ -1484,12 +1501,20 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                         )}
                         aria-label="History postcards"
                         aria-pressed={historyStripActive}
-                        onClick={handleHistorySlotClick}
+                        onClick={(event) => {
+                          historySecondClickHint.onUserClick()
+                          handleHistorySlotClick(event)
+                        }}
                       >
                         {showHistorySlotDateIcon || showHistorySlotHistoryIcon ? (
                           <span
-                            className={styles.mobilePieRightSlotActiveIndicatorIcon}
+                            className={clsx(
+                              styles.mobilePieRightSlotActiveIndicatorIcon,
+                              historySecondClickHint.pulsing &&
+                                styles.mobilePieRightSlotActiveIndicatorIconHint,
+                            )}
                             aria-hidden
+                            onAnimationEnd={historySecondClickHint.onPulseEnd}
                           >
                             {showHistorySlotDateIcon ? (
                               <IconSectionMenuDate />
