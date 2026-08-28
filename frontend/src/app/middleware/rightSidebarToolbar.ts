@@ -8,6 +8,8 @@ import { setHistoryListPanelOpen } from '@date/calendar/infrastructure/state'
 import {
   selectIsHistoryListPanelOpen,
   selectNotebookStripTab,
+  selectLastCartArchiveView,
+  selectLastHistoryArchiveView,
 } from '@date/calendar/infrastructure/selectors'
 import {
   buildCartArchiveToggleCommands,
@@ -86,12 +88,16 @@ export function* handleRightSidebarToolbarAction(
   if (key === 'cart') {
     const cartListPanelOpen: boolean = yield select(selectCartListPanelOpen)
     const notebookStripTab = yield select(selectNotebookStripTab)
+    const lastActiveView: 'calendar' | 'list' = yield select(
+      selectLastCartArchiveView,
+    )
     yield put(setUserLoginPanelOpen(false))
     yield* dispatchCommands(
       buildCartArchiveToggleCommands({
         cartListPanelOpen,
         notebookStripTab,
         isMobileLayout: false,
+        lastActiveView,
       }),
     )
     yield call(syncSectionMenuVisualsAllEnabled)
@@ -119,6 +125,9 @@ export function* handleRightSidebarToolbarAction(
     const historyListPanelOpen: boolean = yield select(selectIsHistoryListPanelOpen)
     const notebookStripTab = yield select(selectNotebookStripTab)
     const activeSection = yield select(selectActiveSection)
+    const lastActiveView: 'calendar' | 'list' = yield select(
+      selectLastHistoryArchiveView,
+    )
     yield put(setUserLoginPanelOpen(false))
     yield* dispatchCommands(
       buildHistoryArchiveToggleCommands({
@@ -126,6 +135,7 @@ export function* handleRightSidebarToolbarAction(
         notebookStripTab,
         activeSection,
         isMobileLayout: false,
+        lastActiveView,
       }),
     )
     yield* syncRightSidebarVisuals('history')

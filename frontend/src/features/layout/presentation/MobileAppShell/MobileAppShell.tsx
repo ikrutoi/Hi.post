@@ -46,6 +46,8 @@ import {
   selectHistoryListSelectedLocalId,
   selectNotebookStripTab,
   selectCartCalendarDatePickMode,
+  selectLastCartArchiveView,
+  selectLastHistoryArchiveView,
 } from '@date/calendar/infrastructure/selectors'
 import {
   setCardtextListPanelOpen,
@@ -1025,6 +1027,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         cartListPanelOpen: selectCartListPanelOpen(state),
         notebookStripTab: selectNotebookStripTab(state),
         isMobileLayout: true,
+        lastActiveView: selectLastCartArchiveView(state),
       })) {
         dispatch(command)
       }
@@ -1046,6 +1049,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         notebookStripTab: selectNotebookStripTab(state),
         activeSection: selectActiveSection(state),
         isMobileLayout: true,
+        lastActiveView: selectLastHistoryArchiveView(state),
       })) {
         dispatch(command)
       }

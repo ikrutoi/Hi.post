@@ -3,7 +3,7 @@ import { call, put, select, takeEvery } from 'redux-saga/effects'
 import { selectIsMobileLayout } from '@layout/infrastructure/selectors'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
-import { selectIsHistoryListPanelOpen, selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
+import { selectIsHistoryListPanelOpen, selectNotebookStripTab, selectLastCartArchiveView, selectLastHistoryArchiveView } from '@date/calendar/infrastructure/selectors'
 import { closeCardPieListPanelAndSyncIconsSaga } from '@app/middleware/exclusiveListPanelsSaga'
 import {
   notebookSessionRestored,
@@ -41,6 +41,9 @@ function* handleNotebookTabCartClicked(): SagaIterator {
   const isMobileLayout: boolean = yield select(selectIsMobileLayout)
   const cartListPanelOpen: boolean = yield select(selectCartListPanelOpen)
   const notebookStripTab = yield select(selectNotebookStripTab)
+  const lastActiveView: 'calendar' | 'list' = yield select(
+    selectLastCartArchiveView,
+  )
   if (isMobileLayout) {
     yield call(closeCardPieListPanelAndSyncIconsSaga)
   }
@@ -49,6 +52,7 @@ function* handleNotebookTabCartClicked(): SagaIterator {
       cartListPanelOpen,
       notebookStripTab,
       isMobileLayout,
+      lastActiveView,
     }),
   )
 }
@@ -58,6 +62,9 @@ function* handleNotebookTabHistoryClicked(): SagaIterator {
   const historyListPanelOpen: boolean = yield select(selectIsHistoryListPanelOpen)
   const notebookStripTab = yield select(selectNotebookStripTab)
   const activeSection = yield select(selectActiveSection)
+  const lastActiveView: 'calendar' | 'list' = yield select(
+    selectLastHistoryArchiveView,
+  )
   if (isMobileLayout) {
     yield call(closeCardPieListPanelAndSyncIconsSaga)
   }
@@ -67,6 +74,7 @@ function* handleNotebookTabHistoryClicked(): SagaIterator {
       notebookStripTab,
       activeSection,
       isMobileLayout,
+      lastActiveView,
     }),
   )
 }

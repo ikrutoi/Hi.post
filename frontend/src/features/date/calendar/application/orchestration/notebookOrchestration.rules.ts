@@ -10,6 +10,8 @@ import {
   endCartCalendarDatePick,
   setHistoryListSelectedLocalId,
   setHistoryListPanelOpen,
+  setLastCartArchiveView,
+  setLastHistoryArchiveView,
   setNotebookStripDateOverCart,
   setNotebookStripDateOverHistory,
   setNotebookStripTab,
@@ -21,6 +23,7 @@ import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 
 export type CartArchiveViewMode = 'inactive' | 'calendar' | 'list'
 export type HistoryArchiveViewMode = 'inactive' | 'calendar' | 'list'
+export type ArchiveActiveView = 'calendar' | 'list'
 
 export function resolveCartArchiveViewMode(input: {
   cartListPanelOpen: boolean
@@ -51,7 +54,9 @@ export function resolveHistoryArchiveViewMode(input: {
 
 export function resolveNextArchiveViewOnClick(
   mode: CartArchiveViewMode | HistoryArchiveViewMode,
-): 'calendar' | 'list' {
+  lastActiveView: ArchiveActiveView = 'calendar',
+): ArchiveActiveView {
+  if (mode === 'inactive') return lastActiveView
   return mode === 'calendar' ? 'list' : 'calendar'
 }
 
@@ -181,17 +186,21 @@ export function buildCartArchiveToggleCommands(input: {
   cartListPanelOpen: boolean
   notebookStripTab: DateStripSection
   isMobileLayout: boolean
+  lastActiveView?: ArchiveActiveView
 }): UnknownAction[] {
   const mode = resolveCartArchiveViewMode(input)
-  const next = resolveNextArchiveViewOnClick(mode)
+  const next = resolveNextArchiveViewOnClick(mode, input.lastActiveView)
+  const remember = setLastCartArchiveView(next)
   if (next === 'list') {
-    return input.isMobileLayout
+    const openList = input.isMobileLayout
       ? buildMobileCartSlotOpenCommands()
       : buildCartListCommands()
+    return [remember, ...openList]
   }
-  return input.isMobileLayout
+  const openCalendar = input.isMobileLayout
     ? buildNotebookCartTabCommandsMobile()
     : buildCartCalendarCommands()
+  return [remember, ...openCalendar]
 }
 
 export function buildHistoryArchiveToggleCommands(input: {
@@ -199,23 +208,28 @@ export function buildHistoryArchiveToggleCommands(input: {
   notebookStripTab: DateStripSection
   activeSection: CardMenuSection | null
   isMobileLayout: boolean
+  lastActiveView?: ArchiveActiveView
 }): UnknownAction[] {
   const mode = resolveHistoryArchiveViewMode(input)
-  const next = resolveNextArchiveViewOnClick(mode)
+  const next = resolveNextArchiveViewOnClick(mode, input.lastActiveView)
+  const remember = setLastHistoryArchiveView(next)
   if (next === 'list') {
-    return input.isMobileLayout
+    const openList = input.isMobileLayout
       ? buildMobileHistorySlotOpenCommands()
       : buildHistoryListCommands()
+    return [remember, ...openList]
   }
-  return input.isMobileLayout
+  const openCalendar = input.isMobileLayout
     ? buildNotebookHistoryTabCommandsMobile()
     : buildHistoryCalendarCommandsDesktop()
+  return [remember, ...openCalendar]
 }
 
-/** Mobile Cart slot: только список корзины, режим календаря не меняется. */
+/** Mobile Cart slot: список корзины; tab cart, чтобы слот оставался включённым. */
 export const buildMobileCartSlotOpenCommands = (): UnknownAction[] => [
   setHistoryListPanelOpen(false),
   endCartCalendarDatePick(),
+  setNotebookStripTab('cart'),
   setCartListPanelOpen(true),
 ]
 
@@ -223,10 +237,11 @@ export const buildMobileCartSlotCloseCommands = (): UnknownAction[] => [
   setCartListPanelOpen(false),
 ]
 
-/** Mobile History slot: только список истории, режим календаря не меняется. */
+/** Mobile History slot: список истории; tab history, чтобы слот оставался включённым. */
 export const buildMobileHistorySlotOpenCommands = (): UnknownAction[] => [
   setCartListPanelOpen(false),
   endCartCalendarDatePick(),
+  setNotebookStripTab('history'),
   setHistoryListPanelOpen(true),
 ]
 

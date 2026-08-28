@@ -70,6 +70,14 @@ export const computeNotebookStripTabFromState = (
 export const selectNotebookStripTab = (state: RootState): DateStripSection =>
   state.calendar.notebookStripTab
 
+export const selectLastCartArchiveView = (
+  state: RootState,
+): 'calendar' | 'list' => state.calendar.lastCartArchiveView ?? 'calendar'
+
+export const selectLastHistoryArchiveView = (
+  state: RootState,
+): 'calendar' | 'list' => state.calendar.lastHistoryArchiveView ?? 'calendar'
+
 export const selectComputedNotebookStripTab = (
   state: RootState,
 ): DateStripSection => computeNotebookStripTabFromState(state)

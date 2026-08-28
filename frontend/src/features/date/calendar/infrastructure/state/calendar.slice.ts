@@ -52,6 +52,15 @@ type CalendarState = {
    */
   notebookStripTab: DateStripSection
   /**
+   * Последний режим корзины (календарь / список), чтобы слот открывал его снова
+   * после выключения, а не всегда календарь.
+   */
+  lastCartArchiveView: 'calendar' | 'list'
+  /**
+   * Последний режим истории (календарь / список).
+   */
+  lastHistoryArchiveView: 'calendar' | 'list'
+  /**
    * Закладка «Дата» при открытом CartListPanel: полоса «Дата», пока корзина не открывают заново снаружи.
    * Сбрасывается при `setNotebookStripTab('cart'|'history')` и при `setCartListPanelOpen(true)`.
    */
@@ -126,6 +135,8 @@ const initialState: CalendarState = {
     month: now.month,
   },
   notebookStripTab: getInitialNotebookStripTab(),
+  lastCartArchiveView: 'calendar',
+  lastHistoryArchiveView: 'calendar',
   notebookStripDateOverCart: false,
   notebookStripDateOverHistory: false,
   cartCalendarDatePickMode: false,
@@ -267,6 +278,7 @@ const calendarSlice = createSlice({
       if (!action.payload) {
         return
       }
+      state.lastHistoryArchiveView = 'list'
       state.dateListPanelOpen = false
       /** Переход закрыть → открыть: сохраняем выбранную в календаре открытку; сбрасываем только панель дня. */
       if (!wasOpen) {
@@ -299,6 +311,20 @@ const calendarSlice = createSlice({
         state.cartDatePickDraftDate = null
         state.cartDatePickSessionActive = false
       }
+    },
+
+    setLastCartArchiveView(
+      state,
+      action: PayloadAction<'calendar' | 'list'>,
+    ) {
+      state.lastCartArchiveView = action.payload
+    },
+
+    setLastHistoryArchiveView(
+      state,
+      action: PayloadAction<'calendar' | 'list'>,
+    ) {
+      state.lastHistoryArchiveView = action.payload
     },
 
     setNotebookStripDateOverCart(state, action: PayloadAction<boolean>) {
@@ -422,6 +448,7 @@ const calendarSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(setCartListPanelOpen, (state, action) => {
       if (action.payload === true) {
+        state.lastCartArchiveView = 'list'
         state.notebookStripDateOverCart = false
         /**
          * Do not clear date-pick here: callers that leave pick call
@@ -449,6 +476,8 @@ export const {
   setHistoryListPanelOpen,
   setHistoryListSelectedLocalId,
   setNotebookStripTab,
+  setLastCartArchiveView,
+  setLastHistoryArchiveView,
   setNotebookStripDateOverCart,
   setNotebookStripDateOverHistory,
   setCartCalendarDatePickMode,
