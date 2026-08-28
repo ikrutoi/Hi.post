@@ -163,6 +163,7 @@ import {
   IconApplyBold,
   IconColor,
   IconCardphotoAdd,
+  IconCardphotoReturn,
   IconListCardphoto,
   IconCardtextCheck,
   IconApplyLight,
@@ -275,6 +276,8 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconImageRotateLeft />
     case 'imageRotateRight':
       return <IconImageRotateRight />
+    case 'cardphotoReturn':
+      return <IconCardphotoReturn />
     case 'chevronLeft':
       return <FaChevronLeft />
     case 'chevronRight':

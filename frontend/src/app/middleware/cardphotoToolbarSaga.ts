@@ -740,7 +740,11 @@ export function* handleCardphotoToolbarAction(
 
     case 'imageRotateLeft':
     case 'imageRotateRight':
-      yield call(handleImageRotate, key)
+    case 'cardphotoReturn':
+      yield call(
+        handleImageRotate,
+        key === 'imageRotateLeft' ? 'imageRotateLeft' : 'imageRotateRight',
+      )
       break
 
     case 'apply':
@@ -766,6 +770,7 @@ function pickCardphotoProcessedToolbarPatch(
   const keys = [
     'imageRotateLeft',
     'imageRotateRight',
+    'cardphotoReturn',
     'crop',
     'cropFull',
     'cropCheck',
@@ -852,6 +857,7 @@ export function* syncToolbarContext() {
       sectionUpdate = {
         imageRotateLeft: { state: 'disabled' },
         imageRotateRight: { state: 'disabled' },
+        cardphotoReturn: { state: 'disabled' },
         crop: { state: 'disabled' },
         cropFull: { state: 'disabled' },
         cropCheck: { state: 'disabled' },
@@ -871,6 +877,7 @@ export function* syncToolbarContext() {
       sectionUpdate = {
         imageRotateLeft: { state: 'disabled' },
         imageRotateRight: { state: 'disabled' },
+        cardphotoReturn: { state: 'disabled' },
         crop: { state: 'disabled' },
         cropFull: { state: 'disabled' },
         cropCheck: { state: 'disabled' },
@@ -890,6 +897,7 @@ export function* syncToolbarContext() {
       sectionUpdate = {
         imageRotateLeft: { state: 'disabled' },
         imageRotateRight: { state: 'disabled' },
+        cardphotoReturn: { state: 'disabled' },
         crop: { state: 'disabled' },
         cropFull: { state: 'disabled' },
         cropCheck: { state: 'disabled' },
@@ -913,6 +921,7 @@ export function* syncToolbarContext() {
       sectionUpdate = {
         imageRotateLeft: { state: 'enabled' },
         imageRotateRight: { state: 'enabled' },
+        cardphotoReturn: { state: 'enabled' },
         crop: { state: 'enabled' },
         cropFull: { state: 'disabled' },
         cropCheck: { state: 'disabled' },
@@ -932,6 +941,7 @@ export function* syncToolbarContext() {
       sectionUpdate = {
         imageRotateLeft: { state: 'disabled' },
         imageRotateRight: { state: 'disabled' },
+        cardphotoReturn: { state: 'disabled' },
         crop: { state: 'disabled' },
         cropFull: { state: 'disabled' },
         cropCheck: { state: 'disabled' },
@@ -951,6 +961,7 @@ export function* syncToolbarContext() {
       sectionUpdate = {
         imageRotateLeft: { state: 'disabled' },
         imageRotateRight: { state: 'disabled' },
+        cardphotoReturn: { state: 'disabled' },
         crop: { state: 'disabled' },
         cropFull: { state: 'disabled' },
         cropCheck: { state: 'disabled' },

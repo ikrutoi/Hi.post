@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type AnimationEvent } from 'react'
 
-const HINT_DELAY_MS = 1800
+const HINT_DELAY_MS = 1600
 
 function prefersReducedMotion(): boolean {
   if (typeof window === 'undefined' || !window.matchMedia) return false
@@ -8,7 +8,7 @@ function prefersReducedMotion(): boolean {
 }
 
 /**
- * After cart/history turns on (circle icon appears), wait 1.8s then pulse the
+ * After cart/history turns on (circle icon appears), wait 1.6s then pulse the
  * circle twice — a hint that another click on the same slot switches mode.
  * Cancels if the user clicks while already on, and does not hint again
  * this session once that second click happened.

@@ -10,7 +10,7 @@
   .toolbarKey {
     position: relative;
     margin: 0 0.3rem;
-    &:not([data-icon-key='historyView']) {
+    &:not([data-icon-key='historyView']):not([data-icon-key='cardphotoReturn']) {
       @include iconButton.toolbar-icon-button-size-standard-shell(true);
     }
     background-color: white;
@@ -48,6 +48,14 @@
 
     &[data-icon-key='aroma'] {
       @include iconButton.toolbar-aroma-wide-glyph;
+    }
+
+    &[data-icon-key='cardphotoReturn'] {
+      @include iconButton.toolbar-cardphoto-return-button-at-desktop-scale(
+        iconButton.$toolbar-hit-size-standard,
+        iconButton.$toolbar-icon-size-standard,
+        true
+      );
     }
 
     &Disabled {
@@ -353,7 +361,6 @@
     .toolbarBadge {
       background-color: $color-font-disabled;
     }
-    // color: $color-font-disabled !important;
   }
 }
 
@@ -419,6 +426,8 @@
   .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']):not(
       [data-icon-key='cropCheck']
     ):not([data-icon-key='imageRotateRight']):not(
+      [data-icon-key='cardphotoReturn']
+    ):not(
       [data-icon-key='imageRotateLeft']
     ):not([data-icon-key='addList']):not([data-icon-key='removeFromList']):not(
       [data-icon-key='favorite']
@@ -433,6 +442,7 @@
 
   /** Momentary / toggle icons: stay enabled-light (sticky :hover after tap must not darken). */
   .toolbarKey[data-icon-key='imageRotateRight'].toolbarKeyEnabled,
+  .toolbarKey[data-icon-key='cardphotoReturn'].toolbarKeyEnabled,
   .toolbarKey[data-icon-key='imageRotateLeft'].toolbarKeyEnabled,
   .toolbarKey[data-icon-key='addList'].toolbarKeyEnabled,
   .toolbarKey[data-icon-key='removeFromList'].toolbarKeyEnabled {
@@ -2259,12 +2269,22 @@
 
   .toolbar .toolbarKey:not(
       .toolbarKeyCropQualityIndicator
-    ):not([data-icon-key='historyView']):not([data-icon-key='userLogin']) {
+    ):not([data-icon-key='historyView']):not([data-icon-key='userLogin']):not(
+      [data-icon-key='cardphotoReturn']
+    ) {
     @include iconButton.toolbar-icon-button-size-mobile-toolbar(true);
   }
 
   .toolbar .toolbarKey[data-icon-key='aroma'] {
     @include iconButton.toolbar-aroma-wide-glyph;
+  }
+
+  .toolbar .toolbarKey[data-icon-key='cardphotoReturn'] {
+    @include iconButton.toolbar-cardphoto-return-button(
+      iconButton.$toolbar-hit-size-mobile-toolbar,
+      iconButton.$toolbar-icon-size-mobile-toolbar,
+      true
+    );
   }
 
   .toolbar .toolbarKey[data-icon-key='historyView'] {

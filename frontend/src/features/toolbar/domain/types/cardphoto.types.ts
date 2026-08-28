@@ -12,6 +12,7 @@ export const CARDPHOTO_KEYS = [
   // 'cropDelete',
   'apply',
   'cardphotoAdd',
+  'cardphotoReturn',
   'download',
   'close',
   'edit',
@@ -51,7 +52,7 @@ export const CARDPHOTO_CREATE_TOOLBAR: ToolbarConfig = [
     group: 'quality',
     icons: [
       { key: 'crop', state: 'enabled' },
-      { key: 'imageRotateRight', state: 'enabled' },
+      { key: 'cardphotoReturn', state: 'enabled' },
       { key: 'cropFull', state: 'disabled' },
     ],
     status: 'enabled',
