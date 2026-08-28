@@ -12,7 +12,7 @@ import {
 } from './buildRecipientToolbarState'
 import { isAddressInList } from './isAddressInList'
 import {
-  doesDraftMatchAnyTemplate,
+  doesDraftMatchInList,
   isAddressDraftComplete,
 } from './resolveAddListToolbarState'
 
@@ -35,8 +35,7 @@ export function buildSandboxSenderToolbarState(input: {
   inListEntries: Pick<AddressBookEntry, 'address'>[]
   entries?: Pick<AddressBookEntry, 'id' | 'address' | 'listStatus'>[]
 }): EnvelopeToolbarState {
-  const { sender, addressListCount, listOpen, inListEntries, entries = [] } =
-    input
+  const { sender, addressListCount, listOpen, inListEntries } = input
   const draft =
     sender.currentView === 'senderCreate' ? sender.formDraft : sender.viewDraft
   const draftComplete = isAddressDraftComplete(draft as AddressFields)
@@ -53,7 +52,7 @@ export function buildSandboxSenderToolbarState(input: {
     hasDraft: hasAddressData(sender.viewDraft as AddressFields),
     isAddressFormOpen: sender.currentView === 'senderCreate',
     formIsEmpty: formIsEmptyFlag(formDraft),
-    formDraftMatchesTemplate: doesDraftMatchAnyTemplate(formDraft, entries),
+    formDraftMatchesTemplate: doesDraftMatchInList(formDraft, inListEntries),
     senderListPanelOpen: listOpen,
     isEnabled: sender.enabled,
   })
@@ -108,7 +107,6 @@ export function buildSandboxRecipientsToolbarState(input: {
     addressListCount,
     listOpen,
     inListEntries,
-    entries = [],
   } = input
   const draft =
     recipient.currentView === 'recipientCreate'
@@ -128,7 +126,7 @@ export function buildSandboxRecipientsToolbarState(input: {
     hasDraft: hasAddressData(recipient.viewDraft as AddressFields),
     isAddressFormOpen: recipient.currentView === 'recipientCreate',
     formIsEmpty: formIsEmptyFlag(formDraft),
-    formDraftMatchesTemplate: doesDraftMatchAnyTemplate(formDraft, entries),
+    formDraftMatchesTemplate: doesDraftMatchInList(formDraft, inListEntries),
     recipientListPanelOpen: listOpen,
   })
 

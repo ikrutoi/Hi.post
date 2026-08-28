@@ -17,7 +17,7 @@ export interface BuildRecipientToolbarParams {
   isAddressFormOpen: boolean
   /** true = форма создания адреса при закрытии была пустой; для точки addressAdd */
   formIsEmpty: boolean
-  /** formDraft совпадает с уже сохранённым шаблоном */
+  /** formDraft совпадает с шаблоном в быстром списке (звезда) */
   formDraftMatchesTemplate?: boolean
   /** список адресов получателя открыт — иконка addressList в active */
   recipientListPanelOpen?: boolean

@@ -69,7 +69,7 @@ import {
   isAddressInList,
   listStatusIsInQuickAddressBook,
   isAddressDraftComplete,
-  doesDraftMatchAnyTemplate,
+  doesDraftMatchInList,
   resolveAddListToolbarState,
   resolveAddressAddToolbarState,
   resolveApplyMediumToolbarState,
@@ -279,9 +279,11 @@ export function* processEnvelopeVisuals() {
     hasDraft: hasSenderDraft,
     isAddressFormOpen: sender.currentView === 'senderCreate',
     formIsEmpty: sender.formIsEmpty ?? true,
-    formDraftMatchesTemplate: doesDraftMatchAnyTemplate(
+    formDraftMatchesTemplate: doesDraftMatchInList(
       sender.formDraft as AddressFields,
-      senderList ?? [],
+      (senderList ?? []).filter((item) =>
+        listStatusIsInQuickAddressBook(item.listStatus),
+      ),
     ),
     senderListPanelOpen,
     isEnabled: sender.enabled,
@@ -307,9 +309,11 @@ export function* processEnvelopeVisuals() {
     hasDraft: hasRecipientDraft,
     isAddressFormOpen: recipient.currentView === 'recipientCreate',
     formIsEmpty: recipient.formIsEmpty ?? true,
-    formDraftMatchesTemplate: doesDraftMatchAnyTemplate(
+    formDraftMatchesTemplate: doesDraftMatchInList(
       recipient.formDraft as AddressFields,
-      recipientList ?? [],
+      (recipientList ?? []).filter((item) =>
+        listStatusIsInQuickAddressBook(item.listStatus),
+      ),
     ),
     recipientListPanelOpen: recipientListPanelOpenForToolbar,
   })
@@ -432,9 +436,11 @@ export function* processEnvelopeVisuals() {
         addressAdd: resolveAddressAddToolbarState({
           isAddressFormOpen: isRecipientFormOpen,
           formIsEmpty: recipient.formIsEmpty ?? true,
-          formDraftMatchesTemplate: doesDraftMatchAnyTemplate(
+          formDraftMatchesTemplate: doesDraftMatchInList(
             recipient.formDraft as AddressFields,
-            recipientList ?? [],
+            (recipientList ?? []).filter((item) =>
+              listStatusIsInQuickAddressBook(item.listStatus),
+            ),
           ),
         }),
       },

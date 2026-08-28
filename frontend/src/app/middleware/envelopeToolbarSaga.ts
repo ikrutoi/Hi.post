@@ -980,7 +980,7 @@ function* selectInListEntriesForRole(
   return entries.filter((e) => listStatusIsInQuickAddressBook(e.listStatus))
 }
 
-/** Add always opens create: keep unsaved formDraft, drop leftover of a saved template. */
+/** Add always opens create: keep unsaved / outList formDraft, drop leftover of a quick-list template. */
 function* prepareAddressAddCreateDraft(
   role: 'sender' | 'recipient',
 ): SagaIterator {
@@ -988,10 +988,9 @@ function* prepareAddressAddCreateDraft(
     const sender: SenderState = yield select(selectSenderState)
     if (sender.formIsEmpty ?? true) return
     const draft = normalizeAddressFields(sender.formDraft as AddressFields)
-    const senderEntries: AddressBookEntry[] = yield select(
-      (s: RootState) => s.addressBook?.senderEntries ?? [],
-    )
-    if (doesDraftMatchAnyTemplate(draft, senderEntries)) {
+    const inListEntries: Pick<AddressBookEntry, 'address'>[] =
+      yield* selectInListEntriesForRole('sender')
+    if (doesDraftMatchInList(draft, inListEntries)) {
       yield put(clearSenderFormData())
     }
     return
@@ -1000,10 +999,9 @@ function* prepareAddressAddCreateDraft(
   const recipient: RecipientState = yield select(selectRecipientState)
   if (recipient.formIsEmpty ?? true) return
   const draft = normalizeAddressFields(recipient.formDraft as AddressFields)
-  const recipientEntries: AddressBookEntry[] = yield select(
-    (s: RootState) => s.addressBook?.recipientEntries ?? [],
-  )
-  if (doesDraftMatchAnyTemplate(draft, recipientEntries)) {
+  const inListEntries: Pick<AddressBookEntry, 'address'>[] =
+    yield* selectInListEntriesForRole('recipient')
+  if (doesDraftMatchInList(draft, inListEntries)) {
     yield put(clearRecipientFormData())
   }
 }

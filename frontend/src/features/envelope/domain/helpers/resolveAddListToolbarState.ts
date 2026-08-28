@@ -58,7 +58,7 @@ export const resolveApplyLightToolbarState = resolveApplyMediumToolbarState
 export function resolveAddressAddToolbarState(params: {
   isAddressFormOpen: boolean
   formIsEmpty: boolean
-  /** Complete formDraft already matches a saved template (inList or outList). */
+  /** Complete formDraft already in the quick template list (star on). */
   formDraftMatchesTemplate?: boolean
 }): {
   state: 'enabled' | 'disabled'
@@ -73,7 +73,7 @@ export function resolveAddressAddToolbarState(params: {
     return { state: 'disabled', options: { badge: null, badgeDot: false } }
   }
 
-  /** Unsaved working copy (partial or complete, not in templates) → reminder dot. */
+  /** Unsaved working copy (partial or complete, not in the quick list) → reminder dot. */
   const badgeDot = !formIsEmpty && !formDraftMatchesTemplate
 
   return {
