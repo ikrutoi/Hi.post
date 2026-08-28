@@ -602,7 +602,9 @@ export function* handleDemoteInlineTemplateSaga(): SagaIterator {
   yield put(bumpCardphotoInlineTemplateList())
   /** Left the quick list, still a recoverable slot that Add reopens. */
   yield put(setSessionPendingProcessedId(id))
-  yield put(setOriginalUploadReminderActive(false))
+  if (state.userOriginalData) {
+    yield put(setOriginalUploadReminderActive(true))
+  }
   yield fork(syncToolbarContext)
   yield call(syncCardphotoAddToolbarState)
 }

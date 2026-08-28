@@ -598,11 +598,13 @@ export function* handleCardphotoToolbarAction(
       )
       if (
         userOriginal &&
-        (addVisual.hasDot || originalReminderActive)
+        (addVisual.hasDot || originalReminderActive || pendingProcessedId)
       ) {
         yield call(reopenCardphotoCreateFromSavedOriginalSaga)
         return
       }
+
+      if (pendingProcessedId) return
 
       yield put(clearCardphotoViewReturnSnapshot())
       yield call(onDownloadClick)

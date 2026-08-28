@@ -43,9 +43,8 @@ export function* openCardphotoViewFromPendingProcessedSaga(): SagaIterator<boole
       cardphotoState.assetData.status === 'outLine') &&
     assetToolbar === 'cardphotoView'
   ) {
-    yield call(syncToolbarContext)
-    yield call(syncCardphotoAddToolbarState)
-    return true
+    /** Already showing this draft — let Add reopen the original, not a new file. */
+    return false
   }
 
   const fromIdb: ImageMeta | null = yield call(

@@ -44,10 +44,7 @@ export function* resolveCardphotoPendingProcessedIdSaga(): SagaIterator<
       [storeAdapters.cardphotoImages, 'getById'] as const,
       sessionPendingId,
     )
-    if (
-      record?.status === 'processed' ||
-      record?.status === 'outLine'
-    ) {
+    if (record?.status === 'processed' || record?.status === 'outLine') {
       return sessionPendingId
     }
     yield put(clearSessionPendingProcessedId())
@@ -68,7 +65,8 @@ export function* resolveCardphotoPendingProcessedIdSaga(): SagaIterator<
   const pending = all
     .filter(
       (meta) =>
-        meta.status === 'processed' && meta.parentImageId === originalId,
+        (meta.status === 'processed' || meta.status === 'outLine') &&
+        meta.parentImageId === originalId,
     )
     .sort((a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0))[0]
 
