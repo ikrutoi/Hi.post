@@ -202,18 +202,21 @@ function readMobileKeyboardInsetPx(): number {
   )
 }
 
+function blurMobileKeyboard(): void {
+  if (typeof document === 'undefined') return
+  const active = document.activeElement
+  if (active instanceof HTMLElement) {
+    active.blur()
+  }
+}
+
 /**
  * Return-to-list must wait for the OS keyboard: opening the factory list while
  * the visual viewport is still short collapses bottom-dock (`margin-top: auto`)
  * and the toolbar/section jump up under the pie.
  */
 function* dismissMobileKeyboardAndWait(timeoutMs = 900): SagaIterator {
-  if (typeof document !== 'undefined') {
-    const active = document.activeElement
-    if (active instanceof HTMLElement) {
-      active.blur()
-    }
-  }
+  blurMobileKeyboard()
   if (typeof window === 'undefined' || !window.visualViewport) return
   if (readMobileKeyboardInsetPx() < MOBILE_KEYBOARD_OPEN_THRESHOLD_PX) return
 
@@ -1010,6 +1013,7 @@ function* prepareAddressAddCreateDraft(
 function* closeAddressCreateForm(
   section: 'senderCreate' | 'recipientCreate',
 ) {
+  blurMobileKeyboard()
   const role = section === 'senderCreate' ? 'sender' : 'recipient'
   const sandboxActive: boolean = yield select(
     selectArchiveEnvelopeSandboxActive,

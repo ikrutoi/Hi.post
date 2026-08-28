@@ -263,10 +263,12 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
 }
 
 .mobileShell[data-keyboard-open='true']:not([data-cardtext-list-open='true']) {
-  .mobilePieSection {
-    display: none;
-  }
-
+  /**
+   * Do not hide CardPie here. Create chrome already hides it
+   * (`data-envelope-address-create` / `data-cardtext-create`). If we keep it
+   * hidden after closing the form, leftover keyboard-open makes the factory
+   * jump into the pie slot until the visual viewport settles.
+   */
   .mobileForm {
     --mobile-form-layout-padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
     padding-bottom: var(--mobile-form-layout-padding-bottom);
