@@ -12,7 +12,7 @@ import {
 } from './buildRecipientToolbarState'
 import { isAddressInList } from './isAddressInList'
 import {
-  buildAddressAddPendingFlags,
+  doesDraftMatchAnyTemplate,
   isAddressDraftComplete,
 } from './resolveAddListToolbarState'
 
@@ -41,15 +41,6 @@ export function buildSandboxSenderToolbarState(input: {
     sender.currentView === 'senderCreate' ? sender.formDraft : sender.viewDraft
   const draftComplete = isAddressDraftComplete(draft as AddressFields)
   const formDraft = sender.formDraft as AddressFields
-  const addressAddPending = buildAddressAddPendingFlags({
-    formDraft,
-    viewDraft: sender.viewDraft as AddressFields,
-    isAddressViewOpen: sender.currentView === 'senderView',
-    viewId: sender.senderViewId,
-    appliedIds: sender.applied ?? [],
-    appliedData: sender.appliedData,
-    entries,
-  })
 
   const base = buildSenderToolbarState({
     isComplete: draftComplete,
@@ -62,10 +53,7 @@ export function buildSandboxSenderToolbarState(input: {
     hasDraft: hasAddressData(sender.viewDraft as AddressFields),
     isAddressFormOpen: sender.currentView === 'senderCreate',
     formIsEmpty: formIsEmptyFlag(formDraft),
-    formIsComplete: isAddressDraftComplete(formDraft),
-    formDraftInQuickList: addressAddPending.formDraftInQuickList,
-    formDraftIsApplied: addressAddPending.formDraftIsApplied,
-    viewAddressPendingBadge: addressAddPending.viewAddressPendingBadge,
+    formDraftMatchesTemplate: doesDraftMatchAnyTemplate(formDraft, entries),
     senderListPanelOpen: listOpen,
     isEnabled: sender.enabled,
   })
@@ -128,15 +116,6 @@ export function buildSandboxRecipientsToolbarState(input: {
       : recipient.viewDraft
   const draftComplete = isAddressDraftComplete(draft as AddressFields)
   const formDraft = recipient.formDraft as AddressFields
-  const addressAddPending = buildAddressAddPendingFlags({
-    formDraft,
-    viewDraft: recipient.viewDraft as AddressFields,
-    isAddressViewOpen: recipient.currentView === 'recipientView',
-    viewId: recipient.recipientViewId,
-    appliedIds: recipient.applied ?? [],
-    appliedData: recipient.appliedData,
-    entries,
-  })
 
   const base = buildRecipientToolbarState({
     isComplete: draftComplete,
@@ -149,10 +128,7 @@ export function buildSandboxRecipientsToolbarState(input: {
     hasDraft: hasAddressData(recipient.viewDraft as AddressFields),
     isAddressFormOpen: recipient.currentView === 'recipientCreate',
     formIsEmpty: formIsEmptyFlag(formDraft),
-    formIsComplete: isAddressDraftComplete(formDraft),
-    formDraftInQuickList: addressAddPending.formDraftInQuickList,
-    formDraftIsApplied: addressAddPending.formDraftIsApplied,
-    viewAddressPendingBadge: addressAddPending.viewAddressPendingBadge,
+    formDraftMatchesTemplate: doesDraftMatchAnyTemplate(formDraft, entries),
     recipientListPanelOpen: listOpen,
   })
 

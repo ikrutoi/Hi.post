@@ -582,7 +582,10 @@ export function* handleCardphotoToolbarAction(
         yield select(readCardphotoAddToolbarVisual)
       if (!addVisual.enabled) return
 
-      if (addVisual.hasBadge) {
+      const pendingProcessedId: string | null = yield call(
+        resolveCardphotoPendingProcessedIdSaga,
+      )
+      if (pendingProcessedId) {
         const opened: boolean = yield call(
           openCardphotoViewFromPendingProcessedSaga,
         )

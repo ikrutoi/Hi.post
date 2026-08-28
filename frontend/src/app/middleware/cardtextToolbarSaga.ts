@@ -35,7 +35,6 @@ import {
   selectCardtextLines,
   selectCardtextInteractionMode,
   selectCardtextAssetStatus,
-  selectCardtextViewInQuickList,
   selectCardtextEditReturnTo,
 } from '@cardtext/infrastructure/selectors'
 import type { CardtextStatus } from '@cardtext/domain/editor/editor.types'
@@ -762,18 +761,6 @@ export function* handleCardtextToolbarAction(
 
     case 'cardtextAdd': {
       if (section === 'cardtext' || section === 'cardtextView') {
-        const viewInQuickList: boolean = yield select(
-          selectCardtextViewInQuickList,
-        )
-        const viewPlainText: string = yield select(selectCardtextPlainText)
-        const viewHasText = (viewPlainText?.trim?.() ?? '').length > 0
-        const viewBlocksAdd =
-          (interactionMode === 'postcardTemplateView' ||
-            interactionMode === 'processedSlot') &&
-          viewHasText &&
-          !viewInQuickList
-        if (viewBlocksAdd) break
-
         yield put(setCardtextAddTemplateOpen(false))
         const postcardAsset: CardtextContent | null = yield select(
           (s: RootState) => s.cardtext.assetData,

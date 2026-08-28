@@ -37,7 +37,6 @@ function normalizeCardphotoAddEntry(raw: unknown): {
 /** Фактическое состояние cardphotoAdd на главном тулбаре (как в UI). */
 export function readCardphotoAddToolbarVisual(state: RootState): {
   enabled: boolean
-  hasBadge: boolean
   hasDot: boolean
 } {
   const section = state.toolbar.cardphoto
@@ -49,15 +48,8 @@ export function readCardphotoAddToolbarVisual(state: RootState): {
 
   const options = { ...configIcon?.options, ...normalized.options }
 
-  const badge = options.badge
-  const hasBadge =
-    badge != null &&
-    (typeof badge === 'number' || typeof badge === 'string') &&
-    String(badge).trim().length > 0
-
   return {
     enabled: normalized.state !== 'disabled',
-    hasBadge,
     hasDot: Boolean(options.badgeDot),
   }
 }

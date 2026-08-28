@@ -10,14 +10,8 @@ export interface BuildSenderToolbarParams {
   isAddressFormOpen: boolean
   /** true = форма создания адреса при закрытии была пустой; для точки addressAdd */
   formIsEmpty: boolean
-  /** formDraft заполнен полностью */
-  formIsComplete: boolean
-  /** formDraft уже в быстром списке шаблонов */
-  formDraftInQuickList?: boolean
-  /** formDraft совпадает с applied */
-  formDraftIsApplied?: boolean
-  /** View: адрес не в быстром списке и не applied */
-  viewAddressPendingBadge?: boolean
+  /** formDraft совпадает с уже сохранённым шаблоном */
+  formDraftMatchesTemplate?: boolean
   /** список адресов отправителя открыт — иконка addressList в active */
   senderListPanelOpen?: boolean
   /** Отправитель выключен тумблером — иконки toolbar disabled, кроме addressAdd */
@@ -32,10 +26,7 @@ export const buildSenderToolbarState = ({
   hasDraft,
   isAddressFormOpen,
   formIsEmpty,
-  formIsComplete,
-  formDraftInQuickList = false,
-  formDraftIsApplied = false,
-  viewAddressPendingBadge = false,
+  formDraftMatchesTemplate = false,
   senderListPanelOpen = false,
   isEnabled = true,
 }: BuildSenderToolbarParams): EnvelopeToolbarState => {
@@ -50,10 +41,7 @@ export const buildSenderToolbarState = ({
         state.addressAdd = resolveAddressAddToolbarState({
           isAddressFormOpen,
           formIsEmpty,
-          formIsComplete,
-          formDraftInQuickList,
-          formDraftIsApplied,
-          viewAddressPendingBadge,
+          formDraftMatchesTemplate,
         })
         break
       case 'addressList':

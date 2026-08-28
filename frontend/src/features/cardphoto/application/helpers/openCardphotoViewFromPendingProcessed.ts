@@ -26,7 +26,7 @@ import {
 } from '@app/middleware/cardphotoToolbarSaga'
 import { resolveCardphotoPendingProcessedIdSaga } from './resolveCardphotoPendingProcessedId'
 
-/** cardphotoAdd с бэджем `1` → cardphotoView с processed-слотом из сессии / IDB. */
+/** cardphotoAdd with unsaved processed slot → cardphotoView from session / IDB. */
 export function* openCardphotoViewFromPendingProcessedSaga(): SagaIterator<boolean> {
   const cardphotoState: CardphotoState | null = yield select(selectCardphotoState)
   const processedId: string | null = yield call(

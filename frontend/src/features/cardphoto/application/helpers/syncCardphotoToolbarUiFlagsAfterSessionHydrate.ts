@@ -7,7 +7,7 @@ import {
 } from '@cardphoto/infrastructure/state'
 import type { ImageMeta } from '@cardphoto/domain/types'
 
-/** Восстановить бэдж / точку cardphotoAdd после hydrate сессии. */
+/** Восстановить pending processed / точку cardphotoAdd после hydrate сессии. */
 export function* syncCardphotoToolbarUiFlagsAfterSessionHydrate(
   userOriginal: ImageMeta | null,
   assetData: ImageMeta | null,

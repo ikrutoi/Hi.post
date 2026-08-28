@@ -1,5 +1,5 @@
 export function resolveCardphotoAddToolbarState(params: {
-  /** После applyLight: processed-слот в cardphotoView, до addList / apply на открытке. */
+  /** After applyLight: processed slot still exists (Add reopens it). */
   hasPendingProcessed: boolean
   /** Оригинал загрузки в памяти, create закрыт — кружок-напоминание. */
   shouldShowOriginalDot: boolean
@@ -9,8 +9,12 @@ export function resolveCardphotoAddToolbarState(params: {
 } {
   const { hasPendingProcessed, shouldShowOriginalDot } = params
 
-  const badge = hasPendingProcessed ? 1 : null
-  const badgeDot = shouldShowOriginalDot && !hasPendingProcessed
-
-  return { state: 'enabled', options: { badge, badgeDot } }
+  return {
+    state: 'enabled',
+    options: {
+      badge: null,
+      /** Original in memory and/or unsaved processed: same ball, Add restores it. */
+      badgeDot: shouldShowOriginalDot || hasPendingProcessed,
+    },
+  }
 }

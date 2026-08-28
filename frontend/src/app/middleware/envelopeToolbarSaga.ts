@@ -980,76 +980,32 @@ function* selectInListEntriesForRole(
   return entries.filter((e) => listStatusIsInQuickAddressBook(e.listStatus))
 }
 
-/** Черновик create-формы совпадает с шаблоном в книге — открыть View, не Create. */
-function* openAddressViewFromFormDraftIfSaved(
+/** Add always opens create: keep unsaved formDraft, drop leftover of a saved template. */
+function* prepareAddressAddCreateDraft(
   role: 'sender' | 'recipient',
-): SagaIterator<boolean> {
+): SagaIterator {
   if (role === 'sender') {
     const sender: SenderState = yield select(selectSenderState)
-    if (sender.formIsEmpty ?? true) return false
-
+    if (sender.formIsEmpty ?? true) return
     const draft = normalizeAddressFields(sender.formDraft as AddressFields)
     const senderEntries: AddressBookEntry[] = yield select(
       (s: RootState) => s.addressBook?.senderEntries ?? [],
     )
-    const id = getMatchingEntryId(
-      draft,
-      senderEntries.map((e) => ({
-        id: e.id,
-        address: normalizeAddressFields(e.address ?? {}),
-      })),
-    )
-    if (!id) return false
-
-    yield put(setAddressFormView({ show: false, role: null }))
-    yield put(setSenderViewDraft(draft))
-    yield put(setSenderViewId(id))
-    yield put(setSenderView('senderView'))
-    yield call(processEnvelopeVisuals)
-    return true
+    if (doesDraftMatchAnyTemplate(draft, senderEntries)) {
+      yield put(clearSenderFormData())
+    }
+    return
   }
 
   const recipient: RecipientState = yield select(selectRecipientState)
-  if (recipient.formIsEmpty ?? true) return false
-
+  if (recipient.formIsEmpty ?? true) return
   const draft = normalizeAddressFields(recipient.formDraft as AddressFields)
   const recipientEntries: AddressBookEntry[] = yield select(
     (s: RootState) => s.addressBook?.recipientEntries ?? [],
   )
-  const id = getMatchingEntryId(
-    draft,
-    recipientEntries.map((e) => ({
-      id: e.id,
-      address: normalizeAddressFields(e.address ?? {}),
-    })),
-  )
-  if (!id) return false
-
-  const matchedEntry = recipientEntries.find((e) => e.id === id)
-  const matchedInQuickList = listStatusIsInQuickAddressBook(
-    matchedEntry?.listStatus,
-  )
-  /**
-   * Leftover formDraft of an already-selected quick-list card → do not reopen
-   * View (addressAdd should start a new create). outList / badge `1` drafts
-   * still reopen in View even when already in the multi selection.
-   */
-  if (matchedInQuickList) {
-    const selectedIds = new Set<string>([
-      ...(recipient.recipientsViewIdsFirstList ?? []),
-      ...(recipient.recipientsViewIdsSecondList ?? []),
-    ])
-    const pendingIds: string[] = yield select(selectRecipientsPendingIds)
-    for (const pendingId of pendingIds) selectedIds.add(pendingId)
-    if (selectedIds.has(id)) return false
+  if (doesDraftMatchAnyTemplate(draft, recipientEntries)) {
+    yield put(clearRecipientFormData())
   }
-
-  yield put(setAddressFormView({ show: false, role: null }))
-  yield put(setRecipientViewDraft(draft))
-  yield put(setRecipientViewId(id))
-  yield put(setRecipientView('recipientView'))
-  yield call(processEnvelopeVisuals)
-  return true
 }
 
 /** Закрыть форму создания. Черновик сохраняем, кроме случая listCheck (адрес уже в inList). */
@@ -1738,11 +1694,7 @@ function* handleEnvelopeToolbarAction(
         yield put(setArchiveSenderView('senderCreate'))
         return
       }
-      const openedView: boolean = yield call(
-        openAddressViewFromFormDraftIfSaved,
-        'sender',
-      )
-      if (openedView) return
+      yield call(prepareAddressAddCreateDraft, 'sender')
       yield put(setAddressFormView({ show: true, role: 'sender' }))
       // Черновик formDraft сохраняем при Close; addressAdd снова открывает его
       yield put(setSenderView('senderCreate'))
@@ -1786,47 +1738,7 @@ function* handleEnvelopeToolbarAction(
         yield put(setArchiveRecipientView('recipientCreate'))
         return
       }
-      const recipientBeforeAdd: RecipientState = yield select(
-        selectRecipientState,
-      )
-      const openedView: boolean = yield call(
-        openAddressViewFromFormDraftIfSaved,
-        'recipient',
-      )
-      if (openedView) return
-
-      /**
-       * From the multi list: clear only a leftover quick-list formDraft so
-       * Create is empty. outList drafts are handled above as View (badge `1`).
-       */
-      if (recipientBeforeAdd.currentView === 'recipientsView') {
-        if (!(recipientBeforeAdd.formIsEmpty ?? true)) {
-          const draft = normalizeAddressFields(
-            recipientBeforeAdd.formDraft as AddressFields,
-          )
-          const recipientEntries: AddressBookEntry[] = yield select(
-            (s: RootState) => s.addressBook?.recipientEntries ?? [],
-          )
-          const matchingId = getMatchingEntryId(
-            draft,
-            recipientEntries.map((e) => ({
-              id: e.id,
-              address: normalizeAddressFields(e.address ?? {}),
-            })),
-          )
-          const matchedEntry =
-            matchingId != null
-              ? recipientEntries.find((e) => e.id === matchingId)
-              : undefined
-          if (
-            matchingId != null &&
-            listStatusIsInQuickAddressBook(matchedEntry?.listStatus)
-          ) {
-            yield put(clearRecipientFormData())
-          }
-        }
-      }
-
+      yield call(prepareAddressAddCreateDraft, 'recipient')
       yield put(setAddressFormView({ show: true, role: 'recipient' }))
       yield put(setRecipientView('recipientCreate'))
     }

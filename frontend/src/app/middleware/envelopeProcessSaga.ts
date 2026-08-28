@@ -63,13 +63,13 @@ import {
 } from '@envelope/recipient/infrastructure/state'
 import { selectRecipientsList } from '@envelope/infrastructure/selectors'
 import {
-  buildAddressAddPendingFlags,
   buildRecipientToolbarState,
   buildSenderToolbarState,
   getAddressListToolbarFragment,
   isAddressInList,
   listStatusIsInQuickAddressBook,
   isAddressDraftComplete,
+  doesDraftMatchAnyTemplate,
   resolveAddListToolbarState,
   resolveAddressAddToolbarState,
   resolveApplyMediumToolbarState,
@@ -271,26 +271,6 @@ export function* processEnvelopeVisuals() {
     selectRecipientListPanelOpen,
   )
 
-  const senderAddressAddPending = buildAddressAddPendingFlags({
-    formDraft: sender.formDraft as AddressFields,
-    viewDraft: sender.viewDraft as AddressFields,
-    isAddressViewOpen: sender.currentView === 'senderView',
-    viewId: sender.senderViewId,
-    appliedIds: sender.applied ?? [],
-    appliedData: sender.appliedData,
-    entries: senderList ?? [],
-  })
-
-  const recipientAddressAddPending = buildAddressAddPendingFlags({
-    formDraft: recipient.formDraft as AddressFields,
-    viewDraft: recipient.viewDraft as AddressFields,
-    isAddressViewOpen: recipient.currentView === 'recipientView',
-    viewId: recipient.recipientViewId,
-    appliedIds: recipient.applied ?? [],
-    appliedData: recipient.appliedData,
-    entries: recipientList ?? [],
-  })
-
   const senderToolbar = buildSenderToolbarState({
     isComplete: senderComplete,
     hasData: checkHasData(sender.viewDraft),
@@ -299,10 +279,10 @@ export function* processEnvelopeVisuals() {
     hasDraft: hasSenderDraft,
     isAddressFormOpen: sender.currentView === 'senderCreate',
     formIsEmpty: sender.formIsEmpty ?? true,
-    formIsComplete: isAddressDraftComplete(sender.formDraft as AddressFields),
-    formDraftInQuickList: senderAddressAddPending.formDraftInQuickList,
-    formDraftIsApplied: senderAddressAddPending.formDraftIsApplied,
-    viewAddressPendingBadge: senderAddressAddPending.viewAddressPendingBadge,
+    formDraftMatchesTemplate: doesDraftMatchAnyTemplate(
+      sender.formDraft as AddressFields,
+      senderList ?? [],
+    ),
     senderListPanelOpen,
     isEnabled: sender.enabled,
   })
@@ -327,10 +307,10 @@ export function* processEnvelopeVisuals() {
     hasDraft: hasRecipientDraft,
     isAddressFormOpen: recipient.currentView === 'recipientCreate',
     formIsEmpty: recipient.formIsEmpty ?? true,
-    formIsComplete: isAddressDraftComplete(recipient.formDraft as AddressFields),
-    formDraftInQuickList: recipientAddressAddPending.formDraftInQuickList,
-    formDraftIsApplied: recipientAddressAddPending.formDraftIsApplied,
-    viewAddressPendingBadge: recipientAddressAddPending.viewAddressPendingBadge,
+    formDraftMatchesTemplate: doesDraftMatchAnyTemplate(
+      recipient.formDraft as AddressFields,
+      recipientList ?? [],
+    ),
     recipientListPanelOpen: recipientListPanelOpenForToolbar,
   })
 
@@ -452,13 +432,10 @@ export function* processEnvelopeVisuals() {
         addressAdd: resolveAddressAddToolbarState({
           isAddressFormOpen: isRecipientFormOpen,
           formIsEmpty: recipient.formIsEmpty ?? true,
-          formIsComplete: isAddressDraftComplete(
+          formDraftMatchesTemplate: doesDraftMatchAnyTemplate(
             recipient.formDraft as AddressFields,
+            recipientList ?? [],
           ),
-          formDraftInQuickList: recipientAddressAddPending.formDraftInQuickList,
-          formDraftIsApplied: recipientAddressAddPending.formDraftIsApplied,
-          viewAddressPendingBadge:
-            recipientAddressAddPending.viewAddressPendingBadge,
         }),
       },
     }),

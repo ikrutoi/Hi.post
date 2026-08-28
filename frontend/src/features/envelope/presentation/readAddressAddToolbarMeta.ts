@@ -24,7 +24,7 @@ export function readAddressAddToolbarMeta(
   }
 }
 
-/** Incomplete draft indicator on addressAdd (dot or numeric badge). */
+/** Incomplete draft reminder on addressAdd (dot). */
 export function addressAddHasIndicator(meta: AddressAddToolbarMeta): boolean {
   return meta.badgeDot || meta.badge != null
 }

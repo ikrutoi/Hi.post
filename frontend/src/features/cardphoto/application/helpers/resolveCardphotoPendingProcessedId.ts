@@ -54,7 +54,7 @@ export function* resolveCardphotoPendingProcessedIdSaga(): SagaIterator<
   }
 
   /**
-   * After applyLight / demote from quick list (outLine): pending slot for cardphotoAdd badge `1`.
+   * After applyLight / demote from quick list (outLine): pending slot that Add reopens.
    * Reminder-dot path must not resurrect a processed child from IDB after addList / apply.
    */
   if (originalUploadReminderActive) {

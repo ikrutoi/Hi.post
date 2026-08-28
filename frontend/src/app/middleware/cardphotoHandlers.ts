@@ -600,7 +600,7 @@ export function* handleDemoteInlineTemplateSaga(): SagaIterator {
 
   yield put(setProcessedImage(prepareForRedux(updated)))
   yield put(bumpCardphotoInlineTemplateList())
-  /** Like addressAdd badge `1`: left the quick list, still a recoverable slot. */
+  /** Left the quick list, still a recoverable slot that Add reopens. */
   yield put(setSessionPendingProcessedId(id))
   yield put(setOriginalUploadReminderActive(false))
   yield fork(syncToolbarContext)

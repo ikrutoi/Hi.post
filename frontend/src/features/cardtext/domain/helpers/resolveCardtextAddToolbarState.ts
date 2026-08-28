@@ -1,29 +1,23 @@
 export function resolveCardtextAddToolbarState(params: {
   /** Редактор создания открыт и пользователь печатает. */
   createEditorOpenForTyping: boolean
-  /** В БД есть processed-слот (после applyLight, до addList / apply на открытке). */
-  hasPendingProcessed: boolean
-  /** View с текстом, звезда выключена (нет в быстром списке). */
-  viewTextPendingBadge?: boolean
-  /** Черновик до первого applyLight — точка, не цифра. */
+  /** Working copy not in templates (draft or processed) — reminder dot. */
   shouldShowDraftDot: boolean
 }): {
   state: 'enabled' | 'disabled'
   options: { badge: number | null; badgeDot: boolean }
 } {
-  const {
-    createEditorOpenForTyping,
-    hasPendingProcessed,
-    viewTextPendingBadge = false,
-    shouldShowDraftDot,
-  } = params
+  const { createEditorOpenForTyping, shouldShowDraftDot } = params
 
-  const badge = hasPendingProcessed || viewTextPendingBadge ? 1 : null
-  const badgeDot = shouldShowDraftDot && badge == null
-
-  if (createEditorOpenForTyping || viewTextPendingBadge) {
-    return { state: 'disabled', options: { badge, badgeDot } }
+  if (createEditorOpenForTyping) {
+    return {
+      state: 'disabled',
+      options: { badge: null, badgeDot: false },
+    }
   }
 
-  return { state: 'enabled', options: { badge, badgeDot } }
+  return {
+    state: 'enabled',
+    options: { badge: null, badgeDot: shouldShowDraftDot },
+  }
 }

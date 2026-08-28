@@ -68,7 +68,6 @@ import {
   selectCardtextInteractionMode,
   selectCardtextValue,
   selectCardtextAssetMatchesApplied,
-  selectCardtextViewInQuickList,
 } from '@cardtext/infrastructure/selectors'
 
 function* syncCardtextAlignIcons(
@@ -131,9 +130,6 @@ export function* syncCardtextAddToolbarState(): SagaIterator {
   const createEditorOpenForTyping =
     isCreateModeOpen && (hasText || isDraftEngaged)
 
-  const assetNull: boolean = yield select(
-    (s: RootState) => s.cardtext.assetData == null,
-  )
   const draftInRedux: ReturnType<typeof selectCardtextDraftData> = yield select(
     selectCardtextDraftData,
   )
@@ -149,26 +145,10 @@ export function* syncCardtextAddToolbarState(): SagaIterator {
     'draft',
   )
   const shouldShowDraftDot =
-    !hasProcessed &&
-    (hasDraft || hasReduxDraft) &&
-    (!isCreateModeOpen || assetNull)
-
-  const interactionMode: ReturnType<typeof selectCardtextInteractionMode> =
-    yield select(selectCardtextInteractionMode)
-  const templates: ReturnType<typeof selectCardtextTemplatesListItems> =
-    yield select(selectCardtextTemplatesListItems)
-  const inQuickList: boolean = yield select(selectCardtextViewInQuickList)
-  const isViewForm =
-    interactionMode === 'postcardTemplateView' ||
-    interactionMode === 'processedSlot'
-  /** List still unknown (null) — do not treat as “not in quick list”. */
-  const viewTextPendingBadge =
-    isViewForm && hasText && templates != null && !inQuickList
+    !isCreateModeOpen && (hasProcessed || hasDraft || hasReduxDraft)
 
   const { state, options } = resolveCardtextAddToolbarState({
     createEditorOpenForTyping,
-    hasPendingProcessed: hasProcessed,
-    viewTextPendingBadge,
     shouldShowDraftDot,
   })
 
