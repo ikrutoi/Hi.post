@@ -56,6 +56,11 @@ export interface EnvelopeSelectionState {
   mobileAddressFocusClearSeq: number
   /** State before opening address template list — restored on return without Apply. */
   addressListPreviewSnapshot: AddressListPreviewSnapshot | null
+  /**
+   * Mobile recipients grid: which card is previewed on the central CardPie.
+   * Does not enter recipientView.
+   */
+  recipientsFormPreviewId: string | null
 }
 
 const initialState: EnvelopeSelectionState = {
@@ -71,6 +76,7 @@ const initialState: EnvelopeSelectionState = {
   recipientAddressListPanelDensity: 1,
   mobileAddressFocusClearSeq: 0,
   addressListPreviewSnapshot: null,
+  recipientsFormPreviewId: null,
 }
 
 export const envelopeSelectionSlice = createSlice({
@@ -111,17 +117,27 @@ export const envelopeSelectionSlice = createSlice({
       state.addressListPreviewSnapshot = null
     },
 
+    setRecipientsFormPreviewId(state, action: PayloadAction<string | null>) {
+      state.recipientsFormPreviewId = action.payload
+    },
+
+    clearRecipientsFormPreviewId(state) {
+      state.recipientsFormPreviewId = null
+    },
+
     setActiveAddressList(state, action: PayloadAction<AddressBookMode | null>) {
       const mode = action.payload
       state.activeAddressList = mode
       state.senderListPanelOpen = mode === 'sender'
       state.recipientListPanelOpen = mode === 'recipients'
+      state.recipientsFormPreviewId = null
     },
 
     closeAddressList(state) {
       state.activeAddressList = null
       state.senderListPanelOpen = false
       state.recipientListPanelOpen = false
+      state.recipientsFormPreviewId = null
     },
 
     /** Mobile CardPie / chrome: leave focused address view without opening lists. */
@@ -214,6 +230,8 @@ export const {
   restoreRecipientsPendingIds,
   setAddressListPreviewSnapshot,
   clearAddressListPreviewSnapshot,
+  setRecipientsFormPreviewId,
+  clearRecipientsFormPreviewId,
   setActiveAddressList,
   closeAddressList,
   requestClearMobileAddressFocus,

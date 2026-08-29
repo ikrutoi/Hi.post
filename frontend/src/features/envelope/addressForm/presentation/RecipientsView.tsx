@@ -11,6 +11,8 @@ export type RecipientsViewProps = {
   onRemove?: (id: string) => void
   scrollbarPortalTarget?: React.RefObject<HTMLElement | null>
   onOpenRecipient: (entry: AddressBookEntry) => void
+  /** Card currently previewed on the central CardPie. */
+  selectedId?: string | null
 }
 
 /** Multi recipients on the envelope: 4 square cells across the form. */
@@ -18,6 +20,7 @@ export const RecipientsView: React.FC<RecipientsViewProps> = ({
   entries,
   scrollbarPortalTarget,
   onOpenRecipient,
+  selectedId = null,
 }) => {
   return (
     <div
@@ -41,6 +44,7 @@ export const RecipientsView: React.FC<RecipientsViewProps> = ({
               onSelect={onOpenRecipient}
               variant="recipient"
               density={2}
+              isSelected={selectedId === entry.id}
             />
           ))}
         </div>

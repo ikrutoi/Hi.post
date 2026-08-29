@@ -59,6 +59,7 @@ import {
   restoreRecipientsPendingIds,
   setAddressListPreviewSnapshot,
   clearAddressListPreviewSnapshot,
+  setRecipientsFormPreviewId,
   openAddressEditSession,
   closeAddressEditSession,
   setAddressCreateEditContext,
@@ -620,7 +621,7 @@ function* openRecipientAddressEditSession(templateId: string): SagaIterator {
 function* openMobileAddressCreateEditForm(
   role: 'sender' | 'recipient',
   templateId: string,
-  options?: { returnToList?: boolean },
+  options?: { returnToList?: boolean; returnToFormPreview?: boolean },
 ): SagaIterator {
   const activeSession: AddressEditSession | null = yield select(
     selectActiveAddressEdit,
@@ -648,6 +649,7 @@ function* openMobileAddressCreateEditForm(
       role,
       templateId,
       returnToList: options?.returnToList === true,
+      returnToFormPreview: options?.returnToFormPreview === true,
     }),
   )
   if (role === 'sender') {
@@ -664,8 +666,10 @@ function* returnFromMobileAddressCreateEdit(
   role: 'sender' | 'recipient',
   templateId: string,
   returnToList: boolean | undefined,
+  returnToFormPreview?: boolean,
 ): SagaIterator {
   const reopenList = returnToList === true
+  const restoreFormPreview = returnToFormPreview === true
   const listMode = role === 'sender' ? ('sender' as const) : ('recipients' as const)
 
   // Stay on fullscreen create until the keyboard is gone, then switch in one paint.
@@ -682,6 +686,14 @@ function* returnFromMobileAddressCreateEdit(
       setAddressFormView({ show: false, role: null }),
       setSenderViewId(templateId),
       setSenderView('senderView'),
+    )
+  } else if (restoreFormPreview) {
+    actions.push(
+      clearRecipientFormData(),
+      setAddressFormView({ show: false, role: null }),
+      setRecipientViewId(null),
+      setRecipientView('recipientsView'),
+      setRecipientsFormPreviewId(templateId),
     )
   } else {
     if (reopenList) {
@@ -1044,6 +1056,13 @@ function* closeAddressCreateForm(
           setArchiveSenderViewId(templateId),
           setArchiveSenderView('senderView'),
         )
+      } else if (editContext.returnToFormPreview === true) {
+        actions.push(
+          clearArchiveRecipientFormData(),
+          setArchiveRecipientViewId(null),
+          setArchiveRecipientView('recipientsView'),
+          setRecipientsFormPreviewId(templateId),
+        )
       } else {
         if (reopenList) {
           const pending: string[] = yield select(selectRecipientsPendingIds)
@@ -1129,6 +1148,7 @@ function* closeAddressCreateForm(
       role,
       editContext.templateId,
       editContext.returnToList,
+      editContext.returnToFormPreview,
     )
     return
   }
@@ -1613,6 +1633,8 @@ function* handleEnvelopeToolbarAction(
         if (isMobileLayout) {
           yield call(openMobileAddressCreateEditForm, 'recipient', templateId, {
             returnToList: action.payload.payload?.returnToList === true,
+            returnToFormPreview:
+              action.payload.payload?.returnToFormPreview === true,
           })
         } else {
           yield call(openRecipientAddressEditSession, templateId)
@@ -1830,6 +1852,7 @@ function* handleEnvelopeToolbarAction(
               'recipient',
               editContext.templateId,
               editContext.returnToList,
+              editContext.returnToFormPreview,
             )
             yield call(processEnvelopeVisuals)
             return

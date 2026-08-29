@@ -34,10 +34,13 @@ import {
   closeAddressEditSession,
   setAddressFormView,
   clearAddressCreateEditContext,
+  setRecipientsFormPreviewId,
+  clearRecipientsFormPreviewId,
 } from '@envelope/infrastructure/state'
 import {
   selectActiveAddressEdit,
   selectRecipientViewEditMode,
+  selectRecipientsFormPreviewId,
   selectSenderListPanelOpen,
   selectSenderViewEditMode,
 } from '@envelope/infrastructure/selectors'
@@ -124,6 +127,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     : sessionRecipientView
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
+  const recipientsFormPreviewId = useAppSelector(selectRecipientsFormPreviewId)
   const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
   const sessionRecipientsFormViewIdsCount = useAppSelector(
     selectRecipientsFormViewIdsCount,
@@ -212,6 +216,19 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     recipientView !== 'recipientCreate' &&
     recipientView !== 'recipientView' &&
     recipientsDisplayList.length > 1
+
+  useEffect(() => {
+    if (role !== 'recipient') return
+    if (!isMobile || recipientsFormPreviewId == null) return
+    if (showRecipientsEnvelopeList) return
+    dispatch(clearRecipientsFormPreviewId())
+  }, [
+    dispatch,
+    isMobile,
+    recipientsFormPreviewId,
+    role,
+    showRecipientsEnvelopeList,
+  ])
 
   const applyRecipientEntry = useCallback(
     (entry: AddressBookEntry) => {
@@ -413,6 +430,24 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   }
 
   const handleOpenRecipientFromList = (entry: AddressBookEntry) => {
+    /**
+     * Mobile: keep the recipients grid; preview the card on the central
+     * CardPie (same pattern as the address template list).
+     */
+    if (isMobile) {
+      dispatch(
+        setRecipientsFormPreviewId(
+          recipientsFormPreviewId === entry.id ? null : entry.id,
+        ),
+      )
+      if (recipientViewEditMode) {
+        dispatch(
+          closeAddressEditSession({ role: 'recipient', keepRecipientView: true }),
+        )
+      }
+      return
+    }
+
     if (sandboxActive) {
       dispatch(setArchiveRecipientViewId(entry.id))
     } else {
@@ -761,6 +796,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                     entries={recipientsDisplayList}
                     onRemove={recipientFacade.removeFromList}
                     onOpenRecipient={handleOpenRecipientFromList}
+                    selectedId={isMobile ? recipientsFormPreviewId : null}
                     scrollbarPortalTarget={
                       recipientScrollContainerReady
                         ? recipientFieldsetContainerScrollRef

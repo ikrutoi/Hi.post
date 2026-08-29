@@ -46,6 +46,7 @@ const selectEnvelopeSelectionState = (state: {
     recipientAddressListPanelDensity?: PanelDensity2Size
     addressListPanelDensity?: PanelDensity2Size
     mobileAddressFocusClearSeq?: number
+    recipientsFormPreviewId?: string | null
   }
 }) => state.envelopeSelection
 
@@ -95,6 +96,11 @@ export const selectActiveAddressList = createSelector(
 export const selectAddressListPreviewSnapshot = createSelector(
   [selectEnvelopeSelectionState],
   (s) => s.addressListPreviewSnapshot ?? null,
+)
+
+export const selectRecipientsFormPreviewId = createSelector(
+  [selectEnvelopeSelectionState],
+  (s): string | null => s.recipientsFormPreviewId ?? null,
 )
 
 export const selectMobileAddressFocusClearSeq = createSelector(

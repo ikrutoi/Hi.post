@@ -18,4 +18,9 @@ export type AddressCreateEditContext = {
    * not only to the main Envelope View.
    */
   returnToList?: boolean
+  /**
+   * Edit opened from the recipients-form CardPie preview — on close/apply
+   * return to the multi-card grid, not recipientView.
+   */
+  returnToFormPreview?: boolean
 }

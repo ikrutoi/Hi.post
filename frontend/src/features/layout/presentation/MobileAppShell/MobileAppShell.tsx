@@ -78,19 +78,25 @@ import {
 import { CardtextView } from '@cardtext/presentation/CardtextView/CardtextView'
 import {
   clearAddressListPreviewSnapshot,
+  clearRecipientsFormPreviewId,
   closeAddressList,
   requestClearMobileAddressFocus,
 } from '@envelope/infrastructure/state'
 import {
   selectRecipientListPanelOpen,
   selectRecipientListPendingIds,
+  selectRecipientsFormPreviewId,
   selectSenderListPanelOpen,
   selectSenderSelectedId,
 } from '@envelope/infrastructure/selectors'
 import {
   selectRecipientEntriesState,
+  selectRecipientView,
 } from '@envelope/recipient/infrastructure/selectors'
-import { setRecipientViewId } from '@envelope/recipient/infrastructure/state'
+import {
+  setRecipientViewDraft,
+  setRecipientViewId,
+} from '@envelope/recipient/infrastructure/state'
 import {
   selectSenderEntriesState,
 } from '@envelope/sender/infrastructure/selectors'
@@ -104,7 +110,7 @@ import { getAromaImage } from '@entities/aroma/mappers/aromaImageMap'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { dispatchCardPieToolbarIconState } from '@toolbar/application/syncCardPieToolbarIcons'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
-import type { CardSection, IconKey } from '@shared/config/constants'
+import type { AddressFields, CardSection, IconKey } from '@shared/config/constants'
 import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
 import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDevContext'
 import { IconCardPie, IconCart, IconHistoryV2, IconLogo, IconSectionMenuCardtext, IconSectionMenuDate, IconSectionMenuEnvelopeV2 } from '@shared/ui/icons'
@@ -303,6 +309,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
   const senderSelectedId = useAppSelector(selectSenderSelectedId)
   const recipientListPendingIds = useAppSelector(selectRecipientListPendingIds)
+  const recipientsFormPreviewId = useAppSelector(selectRecipientsFormPreviewId)
+  const recipientView = useAppSelector(selectRecipientView)
   const senderEntries = useAppSelector(selectSenderEntriesState)
   const recipientEntries = useAppSelector(selectRecipientEntriesState)
   const viewAroma = useAppSelector(selectViewAroma)
@@ -329,6 +337,12 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       dispatchCardPieToolbarIconState(dispatch, false)
     }
   }, [showMobileCardPieListInFactory, cardPieListPanelOpen, dispatch])
+
+  useEffect(() => {
+    if (activeSection === 'envelope') return
+    if (recipientsFormPreviewId == null) return
+    dispatch(clearRecipientsFormPreviewId())
+  }, [activeSection, dispatch, recipientsFormPreviewId])
 
   useEffect(() => {
     if (
@@ -527,7 +541,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       if (!entry) return null
       return {
         role: 'sender' as const,
+        source: 'list' as const,
         id: entry.id,
+        address: entry.address,
         lines: formatAddressPreviewLines(entry),
         inQuickList: listStatusIsInQuickAddressBook(entry.listStatus),
       }
@@ -540,7 +556,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       if (!entry) return null
       return {
         role: 'recipient' as const,
+        source: 'list' as const,
         id: entry.id,
+        address: entry.address,
         lines: formatAddressPreviewLines(entry),
         inQuickList: listStatusIsInQuickAddressBook(entry.listStatus),
       }
@@ -556,6 +574,37 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     recipientListPendingIds,
     recipientEntries,
   ])
+
+  const mobileRecipientsFormPreview = useMemo(() => {
+    if (activeSection !== 'envelope') return null
+    if (mobileAddressListChromeActive) return null
+    if (
+      recipientView === 'recipientView' ||
+      recipientView === 'recipientCreate'
+    ) {
+      return null
+    }
+    if (recipientsFormPreviewId == null) return null
+    const entry = recipientEntries.find((e) => e.id === recipientsFormPreviewId)
+    if (!entry) return null
+    return {
+      role: 'recipient' as const,
+      source: 'form' as const,
+      id: entry.id,
+      address: entry.address,
+      lines: formatAddressPreviewLines(entry),
+      inQuickList: listStatusIsInQuickAddressBook(entry.listStatus),
+    }
+  }, [
+    activeSection,
+    mobileAddressListChromeActive,
+    recipientView,
+    recipientsFormPreviewId,
+    recipientEntries,
+  ])
+
+  const mobileAddressPiePreview =
+    mobileAddressListTemplatePreview ?? mobileRecipientsFormPreview
 
   const mobileAromaPreview = useMemo(() => {
     if (activeSection !== 'aroma') return null
@@ -585,7 +634,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     if (mobileCentralArchivePreview != null) return 'archive'
     if (mobileCardphotoListTemplatePreview != null) return 'cardphotoTemplate'
     if (mobileCardtextListChromeActive) return 'cardtextTemplate'
-    if (mobileAddressListChromeActive) return 'addressTemplate'
+    if (mobileAddressListChromeActive || mobileRecipientsFormPreview != null) {
+      return 'addressTemplate'
+    }
     if (
       mobileListArchiveSlotActive ||
       isCartOwnedNotebookStrip(notebookStripSection) ||
@@ -601,6 +652,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     mobileCardphotoListTemplatePreview,
     mobileCardtextListChromeActive,
     mobileAddressListChromeActive,
+    mobileRecipientsFormPreview,
     mobileListArchiveSlotActive,
     notebookStripSection,
   ])
@@ -664,14 +716,14 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     (mobileCentralPieDisplay === 'cardtextTemplate' &&
       mobileCardtextListTemplatePreview != null) ||
     (mobileCentralPieDisplay === 'addressTemplate' &&
-      mobileAddressListTemplatePreview != null)
+      mobileAddressPiePreview != null)
 
-  const addressTemplatePreviewPieToolbar = mobileAddressListTemplatePreview?.inQuickList
+  const addressTemplatePreviewPieToolbar = mobileAddressPiePreview?.inQuickList
     ? MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_TOOLBAR_ACTIVE
     : MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_TOOLBAR_INACTIVE
 
   const addressTemplatePreviewPieState =
-    mobileAddressListTemplatePreview?.inQuickList
+    mobileAddressPiePreview?.inQuickList
       ? MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_STATE_ACTIVE
       : MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_STATE_INACTIVE
 
@@ -697,7 +749,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const handleTemplatePreviewPieToolbarAction = useCallback(
     (key: IconKey) => {
       if (mobileCentralPieDisplay === 'addressTemplate') {
-        const preview = mobileAddressListTemplatePreview
+        const preview = mobileAddressPiePreview
         if (!preview) return
         if (key !== 'edit' && key !== 'favorite' && key !== 'favoriteFilled') {
           return
@@ -710,9 +762,22 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
           dispatch(setSenderViewId(preview.id))
         } else {
           dispatch(setRecipientViewId(preview.id))
+          if (preview.source === 'form') {
+            dispatch(setRecipientViewDraft(preview.address as AddressFields))
+          }
         }
 
         if (key === 'edit') {
+          if (preview.source === 'form') {
+            dispatch(
+              toolbarAction({
+                section,
+                key: 'edit',
+                payload: { returnToFormPreview: true },
+              }),
+            )
+            return false
+          }
           // Avoid restore-on-close wiping the template we just selected for edit.
           dispatch(clearAddressListPreviewSnapshot())
           dispatch(closeAddressList())
@@ -776,7 +841,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       cardtextSession.status,
       cardtextViewInQuickList,
       dispatch,
-      mobileAddressListTemplatePreview,
+      mobileAddressPiePreview,
       mobileCentralPieDisplay,
     ],
   )
@@ -1268,16 +1333,16 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                           </div>
                         )
                       ) : mobileCentralPieDisplay === 'addressTemplate' ? (
-                        mobileAddressListTemplatePreview != null ? (
+                        mobileAddressPiePreview != null ? (
                         <div
                           className={styles.mobileAddressListTemplatePreview}
                           data-address-list-preview-role={
-                            mobileAddressListTemplatePreview.role
+                            mobileAddressPiePreview.role
                           }
                           aria-label="Selected address template preview"
                         >
                           <div className={styles.mobileAddressListTemplatePreviewLines}>
-                            {mobileAddressListTemplatePreview.lines.map(
+                            {mobileAddressPiePreview.lines.map(
                               (line) => (
                                 <div
                                   key={line.field}
