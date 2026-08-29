@@ -11,6 +11,10 @@ import {
   selectCardphotoSessionPendingProcessedId,
   selectCardphotoState,
 } from '@cardphoto/infrastructure/selectors'
+import {
+  isCardphotoAssetFromUserOriginalWorkflow,
+  isCardphotoUserOriginalAsset,
+} from './isCardphotoAssetFromUserOriginalWorkflow'
 
 /** processed-слот после applyLight: Redux id, текущий asset или запись в IDB по parentImageId. */
 export function* resolveCardphotoPendingProcessedIdSaga(): SagaIterator<
@@ -28,23 +32,40 @@ export function* resolveCardphotoPendingProcessedIdSaga(): SagaIterator<
     return null
   }
 
+  /**
+   * Only a cropped / listed child of this upload counts as Add's draft.
+   * The original itself is `status: processed` — treating it as pending
+   * made Add re-open View instead of create.
+   */
   if (
     (assetData?.status === 'processed' || assetData?.status === 'outLine') &&
-    assetData.id
+    assetData.id &&
+    !isCardphotoUserOriginalAsset(assetData, state?.userOriginalData) &&
+    isCardphotoAssetFromUserOriginalWorkflow(
+      assetData,
+      state?.userOriginalData,
+      state?.appliedData,
+    )
   ) {
     return assetData.id
   }
 
+  const originalId = state?.userOriginalData?.id ?? null
   const sessionPendingId: string | null = yield select(
     selectCardphotoSessionPendingProcessedId,
   )
 
-  if (sessionPendingId) {
+  if (sessionPendingId && sessionPendingId === originalId) {
+    yield put(clearSessionPendingProcessedId())
+  } else if (sessionPendingId) {
     const record = yield call(
       [storeAdapters.cardphotoImages, 'getById'] as const,
       sessionPendingId,
     )
-    if (record?.status === 'processed' || record?.status === 'outLine') {
+    if (
+      (record?.status === 'processed' || record?.status === 'outLine') &&
+      !isCardphotoUserOriginalAsset(record, state?.userOriginalData)
+    ) {
       return sessionPendingId
     }
     yield put(clearSessionPendingProcessedId())
@@ -58,7 +79,6 @@ export function* resolveCardphotoPendingProcessedIdSaga(): SagaIterator<
     return null
   }
 
-  const originalId = state?.userOriginalData?.id
   if (!originalId) return null
 
   const all = yield call(storeAdapters.cardphotoImages.getAll)

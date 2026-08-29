@@ -1,5 +1,16 @@
 import type { ImageMeta } from '../../domain/types'
 
+/** The live user upload itself — not a cropped / listed child of it. */
+export function isCardphotoUserOriginalAsset(
+  asset: ImageMeta | null | undefined,
+  userOriginal: ImageMeta | null | undefined,
+): boolean {
+  if (!asset) return false
+  if (asset.source === 'original') return true
+  if (userOriginal?.id && asset.id === userOriginal.id) return true
+  return false
+}
+
 /** Текущий слот относится к загруженному оригиналу (кроп / inLine / apply), а не к чужому шаблону из списка. */
 export function isCardphotoAssetFromUserOriginalWorkflow(
   asset: ImageMeta | null | undefined,

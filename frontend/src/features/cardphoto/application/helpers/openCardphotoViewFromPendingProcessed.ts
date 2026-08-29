@@ -43,7 +43,7 @@ export function* openCardphotoViewFromPendingProcessedSaga(): SagaIterator<boole
       cardphotoState.assetData.status === 'outLine') &&
     assetToolbar === 'cardphotoView'
   ) {
-    /** Already showing this draft — let Add reopen the original, not a new file. */
+    /** Already showing this draft — let Add reopen the original or pick a file. */
     return false
   }
 

@@ -6,6 +6,10 @@ import {
   setSessionPendingProcessedId,
 } from '@cardphoto/infrastructure/state'
 import type { ImageMeta } from '@cardphoto/domain/types'
+import {
+  isCardphotoAssetFromUserOriginalWorkflow,
+  isCardphotoUserOriginalAsset,
+} from './isCardphotoAssetFromUserOriginalWorkflow'
 
 /** Восстановить pending processed / точку cardphotoAdd после hydrate сессии. */
 export function* syncCardphotoToolbarUiFlagsAfterSessionHydrate(
@@ -21,7 +25,9 @@ export function* syncCardphotoToolbarUiFlagsAfterSessionHydrate(
 
   if (
     (assetData?.status === 'processed' || assetData?.status === 'outLine') &&
-    assetData.id
+    assetData.id &&
+    !isCardphotoUserOriginalAsset(assetData, userOriginal) &&
+    isCardphotoAssetFromUserOriginalWorkflow(assetData, userOriginal, null)
   ) {
     yield put(setSessionPendingProcessedId(assetData.id))
     yield put(setOriginalUploadReminderActive(false))

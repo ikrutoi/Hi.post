@@ -410,7 +410,14 @@ function* watchCardphotoAddToolbarState(): SagaIterator {
 
 export function* cardphotoProcessSaga(): SagaIterator {
   yield all([
-    takeLatest(toolbarAction.type, handleCardphotoToolbarAction),
+    takeEvery(toolbarAction.type, function* (action: ReturnType<typeof toolbarAction>) {
+      if (action.payload.key !== 'cardphotoAdd') return
+      yield call(handleCardphotoToolbarAction, action)
+    }),
+    takeLatest(toolbarAction.type, function* (action: ReturnType<typeof toolbarAction>) {
+      if (action.payload.key === 'cardphotoAdd') return
+      yield call(handleCardphotoToolbarAction, action)
+    }),
     takeLatest(selectInLineTemplate.type, onSelectInLineTemplateSaga),
     takeEvery(closeCardphotoViewRequested.type, function* (): SagaIterator {
       yield call(handleCloseCardphotoViewSaga)

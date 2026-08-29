@@ -10,12 +10,13 @@ export function computeCardphotoAssetToolbar(
   const img = s.assetData
   const applied = s.appliedData
   if (!img) return null
+  // Fresh upload: `processed` on meta is technical; create UI follows `source: original`.
+  // Must win over `isApply` so Add can reopen the original after it was applied.
+  if (img.source === 'original') return 'cardphotoCreate'
   const isApply = !!(img.id && applied?.id && img.id === applied.id)
   if (img.status === 'inLine' || img.status === 'outLine' || isApply) {
     return 'cardphotoView'
   }
-  // Fresh upload: `processed` on meta is technical; create UI follows `source: original`.
-  if (img.source === 'original') return 'cardphotoCreate'
   if (img.status === 'processed') return 'cardphotoView'
   return 'cardphotoCreate'
 }

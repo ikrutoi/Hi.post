@@ -78,6 +78,7 @@ import {
   handleDemoteInlineTemplateSaga,
   deactivateCropIfActive,
 } from './cardphotoHandlers'
+import { setAsset } from '@/entities/assetRegistry/infrastructure/state'
 import { closeCardPieListPanelAndSyncIconsSaga } from './exclusiveListPanelsSaga'
 import { rebuildConfigFromMeta, onDownloadClick } from './cardphotoProcessSaga'
 import { prepareForRedux, prepareConfigForRedux, updateCropToolbarState, hydrateSessionImageMeta, hydrateMeta, fuelAssetRegistry } from './cardphotoHelpers'
@@ -92,6 +93,7 @@ import {
   readCardphotoAddToolbarVisual,
 } from '@cardphoto/application/helpers'
 import { openCardphotoViewFromPendingProcessedSaga } from '@cardphoto/application/helpers/openCardphotoViewFromPendingProcessed'
+import { loadUserOriginalImageMetaSaga } from '@cardphoto/application/helpers/loadUserOriginalImageMeta'
 import { syncCardtextToolbarVisuals } from './cardtextHandlers'
 import {
   updateToolbarSection,
@@ -265,12 +267,12 @@ function* handleCloseCardphotoCreateSaga(): SagaIterator {
   }
 }
 
-function* reopenCardphotoCreateFromSavedOriginalSaga(): SagaIterator {
+function* reopenCardphotoCreateFromSavedOriginalSaga(): SagaIterator<boolean> {
   try {
-    const state: CardphotoState | null = yield select(selectCardphotoState)
-    const userOriginal = state?.userOriginalData
-    if (!userOriginal) return
+    const imageMeta: ImageMeta | null = yield call(loadUserOriginalImageMetaSaga)
+    if (!imageMeta) return false
 
+    const state: CardphotoState | null = yield select(selectCardphotoState)
     const assetToolbar: ReturnType<typeof selectCardphotoAssetToolbar> =
       yield select(selectCardphotoAssetToolbar)
     if (
@@ -288,30 +290,12 @@ function* reopenCardphotoCreateFromSavedOriginalSaga(): SagaIterator {
       yield put(clearCardphotoViewReturnSnapshot())
     }
 
-    const record: ImageRecord | null = yield call(
-      [storeAdapters.userImages, 'getById'] as const,
-      CURRENT_EDITOR_IMAGE_ID,
-    )
-    const imageMeta = hydrateSessionImageMeta(
-      userOriginal,
-      record?.image ?? null,
-    )
-    if (!imageMeta) {
-      console.error('reopenCardphotoCreate: cannot hydrate original image')
-      return
-    }
-
-    yield call(
-      fuelAssetRegistry,
-      {
-        user: imageMeta,
-        applied: state?.appliedData
-          ? hydrateMeta(state.appliedData)
-          : null,
-        processed: null,
-        stock: null,
-      },
-      [],
+    yield put(
+      setAsset({
+        id: imageMeta.id,
+        url: imageMeta.url,
+        thumbUrl: imageMeta.thumbnail?.url || imageMeta.url,
+      }),
     )
 
     const config: WorkingConfig | null = yield call(
@@ -319,8 +303,9 @@ function* reopenCardphotoCreateFromSavedOriginalSaga(): SagaIterator {
       imageMeta,
       true,
     )
-    if (!config) return
+    if (!config) return false
 
+    yield put(setCardphotoViewEditMode(false))
     yield put(clearSessionPendingProcessedId())
     yield put(
       hydrateEditor({
@@ -337,8 +322,10 @@ function* reopenCardphotoCreateFromSavedOriginalSaga(): SagaIterator {
     yield put(markLoaded())
     yield call(syncToolbarContext)
     yield call(syncCardphotoAddToolbarState)
+    return true
   } catch (error) {
     console.error('reopenCardphotoCreateFromSavedOriginalSaga', error)
+    return false
   }
 }
 
@@ -582,6 +569,25 @@ export function* handleCardphotoToolbarAction(
         yield select(readCardphotoAddToolbarVisual)
       if (!addVisual.enabled) return
 
+      const originalReminderActive: boolean = yield select(
+        selectCardphotoOriginalReminderActive,
+      )
+      /** Dot / reminder / IDB original → create with the uploaded image. */
+      if (addVisual.hasDot || originalReminderActive) {
+        const reopened: boolean = yield call(
+          reopenCardphotoCreateFromSavedOriginalSaga,
+        )
+        if (reopened) return
+      } else {
+        const userOriginal: ImageMeta | null = yield select(selectUserImage)
+        if (userOriginal) {
+          const reopened: boolean = yield call(
+            reopenCardphotoCreateFromSavedOriginalSaga,
+          )
+          if (reopened) return
+        }
+      }
+
       const pendingProcessedId: string | null = yield call(
         resolveCardphotoPendingProcessedIdSaga,
       )
@@ -591,20 +597,6 @@ export function* handleCardphotoToolbarAction(
         )
         if (opened) return
       }
-
-      const userOriginal: ImageMeta | null = yield select(selectUserImage)
-      const originalReminderActive: boolean = yield select(
-        selectCardphotoOriginalReminderActive,
-      )
-      if (
-        userOriginal &&
-        (addVisual.hasDot || originalReminderActive || pendingProcessedId)
-      ) {
-        yield call(reopenCardphotoCreateFromSavedOriginalSaga)
-        return
-      }
-
-      if (pendingProcessedId) return
 
       yield put(clearCardphotoViewReturnSnapshot())
       yield call(onDownloadClick)
