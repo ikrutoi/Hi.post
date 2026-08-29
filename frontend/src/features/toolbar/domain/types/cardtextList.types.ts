@@ -4,7 +4,7 @@ import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 
 export const CARDTEXT_LIST_KEYS = [
   // 'search',
-  'listDelete',
+  'listClose',
   // 'listApply',
   'sortDown',
   'panelDensity2',
@@ -29,7 +29,7 @@ export const CARDTEXT_LIST_TOOLBAR: ToolbarConfig = [
   },
   {
     group: 'actions',
-    icons: [{ key: 'listDelete', state: 'enabled' }],
+    icons: [{ key: 'listClose', state: 'enabled' }],
     status: 'enabled',
   },
 ]

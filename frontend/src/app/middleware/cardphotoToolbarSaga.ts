@@ -655,7 +655,7 @@ export function* handleCardphotoToolbarAction(
   }
 
   if (section === 'cardphotoList') {
-    if (key === 'listDelete') {
+    if (key === 'listDelete' || key === 'listClose') {
       yield call(handleDeleteAllCardphotoInlineTemplatesSaga)
       return
     }

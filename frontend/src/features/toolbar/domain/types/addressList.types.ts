@@ -4,7 +4,7 @@ import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 
 export const ADDRESS_LIST_KEYS = [
   // 'search',
-  'listDelete',
+  'listClose',
   'listApply',
   'sortDown',
   'sortAZDown',
@@ -29,7 +29,7 @@ export const ADDRESS_LIST_SENDER_TOOLBAR: ToolbarConfig = [
   },
   {
     group: 'actions',
-    icons: [{ key: 'listDelete', state: 'enabled' }],
+    icons: [{ key: 'listClose', state: 'enabled' }],
     status: 'enabled',
   },
 ]
@@ -42,7 +42,7 @@ export const ADDRESS_LIST_RECIPIENT_TOOLBAR: ToolbarConfig = [
   },
   {
     group: 'actions',
-    icons: [{ key: 'listDelete', state: 'enabled' }],
+    icons: [{ key: 'listClose', state: 'enabled' }],
     status: 'enabled',
   },
 ]
@@ -59,7 +59,7 @@ export const ADDRESS_LIST_RECIPIENTS_TOOLBAR: ToolbarConfig = [
   },
   {
     group: 'actions',
-    icons: [{ key: 'listDelete', state: 'enabled' }],
+    icons: [{ key: 'listClose', state: 'enabled' }],
     status: 'enabled',
   },
 ]

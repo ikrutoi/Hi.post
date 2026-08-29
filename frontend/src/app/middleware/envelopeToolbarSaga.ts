@@ -1345,14 +1345,20 @@ function* handleEnvelopeToolbarAction(
     return
   }
 
-  if (section === 'addressListSender' && key === 'listDelete') {
+  if (
+    section === 'addressListSender' &&
+    (key === 'listDelete' || key === 'listClose')
+  ) {
     yield call([senderAdapter, 'clear'])
     yield put(setAddressBookEntries({ sender: [] }))
     yield call(syncAddressListIconsFromActive)
     return
   }
 
-  if (isRecipientAddressListSection && key === 'listDelete') {
+  if (
+    isRecipientAddressListSection &&
+    (key === 'listDelete' || key === 'listClose')
+  ) {
     yield call([recipientAdapter, 'clear'])
     yield put(setAddressBookEntries({ recipient: [] }))
     yield call(syncAddressListIconsFromActive)

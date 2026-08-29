@@ -3,7 +3,7 @@ import type { IconKey } from '@shared/config/constants'
 import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 
 export const CARDPHOTO_LIST_KEYS = [
-  'listDelete',
+  'listClose',
   'sortDown',
   'sortUp',
   'sortAZDown',
@@ -29,7 +29,7 @@ export const CARDPHOTO_LIST_TOOLBAR: ToolbarConfig = [
   },
   {
     group: 'actions',
-    icons: [{ key: 'listDelete', state: 'enabled' }],
+    icons: [{ key: 'listClose', state: 'enabled' }],
     status: 'enabled',
   },
 ]
