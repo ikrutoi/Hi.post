@@ -64,7 +64,7 @@ export const CardphotoStage = () => {
 
   const { sizeCard } = useSizeFacade()
 
-  const [loaded, setLoaded] = useState(false)
+  const [loadedSrc, setLoadedSrc] = useState<string | null>(null)
   const [stagePx, setStagePx] = useState<{ width: number; height: number } | null>(
     null,
   )
@@ -117,9 +117,9 @@ export const CardphotoStage = () => {
     init()
   }, [])
 
-  useEffect(() => {
-    if (!activeImage) setLoaded(false)
-  }, [activeImage])
+  const asset = getAssetById(activeImage?.id ?? null)
+  const src = asset?.url || activeImage?.url || null
+  const imageReady = !!src && loadedSrc === src
 
   const { inputRef, trackCancel } = useFileDialog()
 
@@ -136,8 +136,6 @@ export const CardphotoStage = () => {
     cardphotoUiActions.markLoading,
   )
 
-  const asset = getAssetById(activeImage?.id ?? null)
-  const src = asset?.url || activeImage?.url || null
   const alt = activeImage?.id
   const imageLayer = assetConfig?.image ?? null
 
@@ -211,10 +209,12 @@ export const CardphotoStage = () => {
                   key={src}
                   src={src}
                   alt={alt}
-                  onLoad={() => setLoaded(true)}
+                  onLoad={(e) => {
+                    if (e.currentTarget.src === src) setLoadedSrc(src)
+                  }}
                   className={clsx(
                     styles.cropImage,
-                    loaded ? styles.fadeInVisible : styles.fadeIn,
+                    imageReady ? styles.fadeInVisible : styles.fadeIn,
                   )}
                   style={imageStyle}
                 />
@@ -226,7 +226,7 @@ export const CardphotoStage = () => {
               </>
             )}
           </div>
-          {loaded &&
+          {imageReady &&
             imageLayer &&
             cropToolbarState === 'active' &&
             tempCrop &&

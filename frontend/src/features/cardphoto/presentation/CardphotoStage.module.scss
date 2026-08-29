@@ -60,18 +60,30 @@
 .cropImage {
   display: block;
   opacity: 0;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.2s ease;
   object-fit: fill;
   // will-change: transform — у compositor layer иногда остаётся 1px зазор у края.
 }
 
 .fadeIn {
   opacity: 0;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.2s ease;
 }
 
 .fadeInVisible {
   opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cropImage,
+  .fadeIn,
+  .fadeInVisible {
+    transition: none;
+  }
+
+  .fadeInVisible {
+    opacity: 1;
+  }
 }
 
 .cropArea {

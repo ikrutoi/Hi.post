@@ -80,7 +80,12 @@ import {
 } from './cardphotoHandlers'
 import { setAsset } from '@/entities/assetRegistry/infrastructure/state'
 import { closeCardPieListPanelAndSyncIconsSaga } from './exclusiveListPanelsSaga'
-import { rebuildConfigFromMeta, onDownloadClick } from './cardphotoProcessSaga'
+import {
+  buildWorkingConfigFromMeta,
+  rebuildConfigFromMeta,
+  onDownloadClick,
+} from './cardphotoProcessSaga'
+import { persistGlobalSession } from './sessionSaga'
 import { prepareForRedux, prepareConfigForRedux, updateCropToolbarState, hydrateSessionImageMeta, hydrateMeta, fuelAssetRegistry } from './cardphotoHelpers'
 import { collectReferencedBlobUrls } from './blobUrlRevokeGuards'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
@@ -290,6 +295,14 @@ function* reopenCardphotoCreateFromSavedOriginalSaga(): SagaIterator<boolean> {
       yield put(clearCardphotoViewReturnSnapshot())
     }
 
+    const config: WorkingConfig | null = yield call(
+      buildWorkingConfigFromMeta,
+      imageMeta,
+    )
+    if (!config) return false
+
+    yield put(setCardphotoViewEditMode(false))
+    yield put(clearSessionPendingProcessedId())
     yield put(
       setAsset({
         id: imageMeta.id,
@@ -297,16 +310,7 @@ function* reopenCardphotoCreateFromSavedOriginalSaga(): SagaIterator<boolean> {
         thumbUrl: imageMeta.thumbnail?.url || imageMeta.url,
       }),
     )
-
-    const config: WorkingConfig | null = yield call(
-      rebuildConfigFromMeta,
-      imageMeta,
-      true,
-    )
-    if (!config) return false
-
-    yield put(setCardphotoViewEditMode(false))
-    yield put(clearSessionPendingProcessedId())
+    /** One paint: original asset + its crop config. Do not commitConfig first. */
     yield put(
       hydrateEditor({
         config: prepareConfigForRedux(config),
@@ -318,6 +322,7 @@ function* reopenCardphotoCreateFromSavedOriginalSaga(): SagaIterator<boolean> {
           : {}),
       }),
     )
+    yield fork(persistGlobalSession)
     yield put(setOriginalUploadReminderActive(false))
     yield put(markLoaded())
     yield call(syncToolbarContext)

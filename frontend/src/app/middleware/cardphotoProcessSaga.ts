@@ -234,17 +234,13 @@ function* onCancelFileDialog(): SagaIterator {
   )
 }
 
-export function* rebuildConfigFromMeta(
+/** Fit + crop layers only — does not write Redux (avoids a View/create paint flash). */
+export function* buildWorkingConfigFromMeta(
   meta: ImageMeta,
-  syncUserOriginal: boolean,
-  forceOrientation?: LayoutOrientation,
   rotation?: number,
-) {
+): SagaIterator<WorkingConfig | null> {
   try {
-    void forceOrientation
-
     const newRotation = rotation ?? meta.rotation ?? 0
-
     const updatedCard: CardLayer = yield select(selectCardphotoWorkingCardLayer)
     const imageLayer = fitImageToCard(
       meta,
@@ -254,16 +250,36 @@ export function* rebuildConfigFromMeta(
     )
     const cropLayer = createInitialCropLayer(imageLayer, updatedCard, meta)
 
-    const newConfig: WorkingConfig = {
+    return {
       card: updatedCard,
       image: imageLayer,
       crop: cropLayer,
     }
+  } catch {
+    return null
+  }
+}
+
+export function* rebuildConfigFromMeta(
+  meta: ImageMeta,
+  syncUserOriginal: boolean,
+  forceOrientation?: LayoutOrientation,
+  rotation?: number,
+) {
+  try {
+    void forceOrientation
+
+    const newConfig: WorkingConfig | null = yield call(
+      buildWorkingConfigFromMeta,
+      meta,
+      rotation,
+    )
+    if (!newConfig) return null
 
     if (syncUserOriginal) {
       const newOriginalMeta = {
         ...meta,
-        rotation: newRotation,
+        rotation: rotation ?? meta.rotation ?? 0,
       }
 
       const serializableMeta = prepareForRedux(newOriginalMeta)
