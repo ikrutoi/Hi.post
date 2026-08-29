@@ -98,6 +98,7 @@ export const Toolbar = ({
   justifyGroupsEnd = false,
   layout,
   className,
+  editorPieCartAddCount,
 }: {
   section: ToolbarSection
   stateOverride?: Record<string, unknown>
@@ -105,6 +106,8 @@ export const Toolbar = ({
   groupsOverride?: ToolbarGroup[]
   /** Вернуть `false`, чтобы не диспатчить стандартный `toolbar/action` (например кастомная логика в панели). */
   onActionClick?: (key: IconKey) => void | false
+  /** Assembly cart: how many plan pies will be added (1 → `+`, more → count). */
+  editorPieCartAddCount?: number
   mergedWithCenter?: boolean
   /** Одна группа иконок — прижать к правому краю (как space-between с пустой левой группой). */
   justifyGroupsEnd?: boolean
@@ -573,15 +576,21 @@ export const Toolbar = ({
     const badgeFromState =
       mergedOptions?.badge ?? (rawData as any)?.options?.badge
     /**
-     * editorPie cart: `+` badge (glyph is cart, action still addCart).
-     * Duplicate create draft: applyMedium stays disabled (no `!` badge).
+     * editorPie cart: `+` for one postcard; a count when several plan pies
+     * will go to the cart. Duplicate create draft: applyMedium stays disabled.
      */
-    const badge = editorPieCartAdd ? '+' : badgeFromState
+    const editorPieCartShowsCount =
+      editorPieCartAdd && (editorPieCartAddCount ?? 1) > 1
+    const badge = editorPieCartShowsCount
+      ? editorPieCartAddCount
+      : editorPieCartAdd
+        ? '+'
+        : badgeFromState
     const hasBadge =
       badge != null &&
       (typeof badge === 'number' || typeof badge === 'string') &&
       String(badge).trim().length > 0
-    const badgeIsPlusGlyph = editorPieCartAdd
+    const badgeIsPlusGlyph = editorPieCartAdd && !editorPieCartShowsCount
 
     const badgeDot =
       mergedOptions?.badgeDot ?? (rawData as any)?.options?.badgeDot

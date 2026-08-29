@@ -117,6 +117,7 @@ import { IconCardPie, IconCart, IconHistoryV2, IconLogo, IconSectionMenuCardtext
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { useEditorPieAddCartHandler } from '@features/cardPie/application/hooks/useEditorPieAddCartHandler'
+import { resolveEditorPieAddCartPayload } from '@features/cardPie/application/helpers/resolveEditorPieAddCartPayload'
 import { useMobileCentralArchivePieGate } from '@features/cardPie/application/hooks/useMobileCentralArchivePieGate'
 import { MobileCardPieGutterMinis } from './MobileCardPieGutterMinis'
 import { MobileDateListSlotActionsProvider } from './MobileDateListSlotActionsContext'
@@ -1079,6 +1080,16 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     onEditorPieToolbarAction,
   })
 
+  /** All gutter minis selected: cart adds every branch — badge is the count. */
+  const editorPieCartAddCount = useMemo(() => {
+    if (selectedPlanPieId != null || planPies.length <= 1) return 1
+    return resolveEditorPieAddCartPayload({
+      planPies,
+      selectedPlanPie,
+      planEntries: [],
+    }).branchKeys.length
+  }, [planPies, selectedPlanPie, selectedPlanPieId])
+
   const handleCartSlotClick = useCallback(
     (event: React.MouseEvent) => {
       event.stopPropagation()
@@ -1461,6 +1472,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                         <Toolbar
                           section="editorPie"
                           onActionClick={handleEditorPieToolbarAction}
+                          editorPieCartAddCount={editorPieCartAddCount}
                         />
                       </div>
                     ) : null}
