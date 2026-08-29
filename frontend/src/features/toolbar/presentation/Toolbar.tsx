@@ -590,7 +590,7 @@ export const Toolbar = ({
       badge != null &&
       (typeof badge === 'number' || typeof badge === 'string') &&
       String(badge).trim().length > 0
-    const badgeIsPlusGlyph = editorPieCartAdd && !editorPieCartShowsCount
+    const badgeIsPlusGlyph = editorPieCartAdd
 
     const badgeDot =
       mergedOptions?.badgeDot ?? (rawData as any)?.options?.badgeDot
