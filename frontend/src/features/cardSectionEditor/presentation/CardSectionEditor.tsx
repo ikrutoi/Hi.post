@@ -123,7 +123,7 @@ export const CardSectionEditor: React.FC = () => {
   const useFluidLayout = height <= 0 || width <= 0
   const sectionWidth = width > 0 ? `${width}px` : '100%'
   const sectionHeight = height > 0 ? `${height}px` : '100%'
-  /** Desktop: закладки над фабрикой. Mobile: закладки в хедере — inner sections не дублируют shell. */
+  /** Inner sections must not wrap themselves in another NotebookPeekShell. */
   const notebookTabsOuter = true
 
   const editorSection = (
