@@ -74,14 +74,16 @@
 }
 
 .appMainContentCenter {
+  --desktop-factory-toolbar-stack-height: #{$desktop-factory-toolbar-stack-height};
+  --desktop-factory-section-gap: #{$desktop-factory-section-gap};
   grid-column: 5 / 11;
   grid-row: 2 / -1;
   min-height: 0;
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 0.5fr 10fr;
-  justify-items: center;
-  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--desktop-factory-section-gap);
   padding-bottom: 1rem;
   // border: solid 1px red;
 }
@@ -117,19 +119,9 @@
 
 .appMainContentCenter_mergedWithPie {
   grid-row: 2 / -1;
-  grid-template-rows: auto 1fr;
-  // border: solid 1px green;
 
   .mainCardPanel {
     display: none;
-  }
-
-  .mainCardSectionToolbar {
-    grid-row: 1 / 2;
-  }
-
-  .mainForm {
-    grid-row: 2 / 3;
   }
 }
 
@@ -469,18 +461,38 @@
 }
 
 .mainCardSectionToolbar {
-  grid-row: 1 / 2;
-  grid-column: 1 / -1;
+  flex: 0 0 var(--desktop-factory-toolbar-stack-height);
+  box-sizing: border-box;
   width: var(--card-width, 100%);
-  padding-bottom: 0.25rem;
-  min-height: calc(#{$section-inner-toolbar-height-desktop} + 0.25rem);
+  max-width: 100%;
+  min-height: var(--desktop-factory-toolbar-stack-height);
+  display: flex;
+  flex-direction: column;
+}
+
+.mainCardSectionToolbarRow {
+  flex: 1 1 0;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.mainCardSectionToolbarDivider {
+  flex: 0 0 1px;
+  width: calc(100% - 1rem);
+  margin-inline: 0.5rem;
+  background-color: $color-section-light;
 }
 
 .mainForm {
-  grid-row: 2 / 3;
-  grid-column: 1 / -1;
-  min-height: 0;
+  flex: 0 0 auto;
   width: var(--card-width, 100%);
+  height: var(--card-width, auto);
+  max-width: 100%;
+  min-height: 0;
+  aspect-ratio: 1 / 1;
   display: flex;
   flex-direction: column;
   overflow: visible;

@@ -2378,15 +2378,25 @@ const App = () => {
                 <div className={clsx(styles.appMainContentCenter)}>
                   {!isMobileLayout ? (
                     <div className={styles.mainCardSectionToolbar}>
-                      {rightPieCardphotoPeekNoToolbar ||
-                      rightPieCardtextPeekNoToolbar ||
-                      rightPieEnvelopePeekNoToolbar ||
-                      rightPieAromaPeekNoToolbar ||
-                      rightPieDatePeekNoToolbar ? (
-                        <ArchivePeekUpperToolbar />
-                      ) : (
-                        <CardSectionToolbar />
-                      )}
+                      <div className={styles.mainCardSectionToolbarRow}>
+                        {rightPieCardphotoPeekNoToolbar ||
+                        rightPieCardtextPeekNoToolbar ||
+                        rightPieEnvelopePeekNoToolbar ||
+                        rightPieAromaPeekNoToolbar ||
+                        rightPieDatePeekNoToolbar ? (
+                          <ArchivePeekUpperToolbar />
+                        ) : (
+                          <CardSectionToolbar />
+                        )}
+                      </div>
+                      <div
+                        className={styles.mainCardSectionToolbarDivider}
+                        aria-hidden
+                      />
+                      <div
+                        className={styles.mainCardSectionToolbarRow}
+                        aria-hidden
+                      />
                     </div>
                   ) : null}
                   <div ref={formRef} className={clsx(styles.mainForm)}>

@@ -29,16 +29,6 @@ $tab2-b: color.adjust(
 $tab-blue: color.mix($tab1-t, $tab1-b, 52%);
 $tab-yellow: color.mix($tab2-t, $tab2-b, 48%);
 
-$tab-cardphoto: color.mix($color-cardphoto-input, $color-cardphoto-input-border, 48%);
-$tab-cardtext: color.mix($color-cardtext-input, $color-cardtext-input-border, 48%);
-$tab-envelope: color.mix(
-  $color-envelope-recipient-input,
-  $color-envelope-recipient-input-border,
-  48%
-);
-$tab-aroma: color.mix($color-aroma-input, $color-aroma-input-border, 48%);
-$tab-date-stripe: color.mix($color-date-input, $color-date-input-border, 48%);
-
 $tab-height: 1.05rem;
 $tab-height-header: 1.75rem;
 // active ≈ 2.35rem
@@ -51,7 +41,7 @@ $tab-height-header-active-scale: 1.35;
   transform: translateY(calc(-100% + 1px));
   z-index: -1;
   box-sizing: border-box;
-  width: calc(3 * min((100% - 2 * #{$align-inset}) / 5.5, 3.5rem) + 0.84rem);
+  width: calc(2 * min((100% - 2 * #{$align-inset}) / 5.5, 3.5rem) + 0.42rem);
   max-width: calc(100% - 2 * #{$align-inset});
 }
 
@@ -86,21 +76,6 @@ $tab-height-header-active-scale: 1.35;
 
 .tabActive {
   transform: scaleY(1.5);
-}
-
-.tab1 {
-  background: linear-gradient(
-    to right,
-    $tab-cardphoto 0 20%,
-    $tab-cardtext 20% 40%,
-    $tab-envelope 40% 60%,
-    $tab-aroma 60% 80%,
-    $tab-date-stripe 80% 100%
-  );
-  box-shadow:
-    0 -1px 0 rgba(0, 0, 0, 0.06),
-    0 1px 3px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.32);
 }
 
 .tab2 {
@@ -161,13 +136,6 @@ $tab-height-header-active-scale: 1.35;
     0 1px 0 rgba(0, 0, 0, 0.06),
     0 2px 3px rgba(0, 0, 0, 0.1),
     inset 0 -1px 0 rgba(255, 255, 255, 0.45);
-}
-
-.trackHeader .tab1 {
-  box-shadow:
-    0 1px 0 rgba(0, 0, 0, 0.06),
-    0 2px 3px rgba(0, 0, 0, 0.1),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.32);
 }
 
 .trackHeader .tab2 {

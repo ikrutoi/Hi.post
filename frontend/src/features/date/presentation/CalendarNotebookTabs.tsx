@@ -5,7 +5,6 @@ import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiv
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import {
   notebookTabCartClicked,
-  notebookTabDateClicked,
   notebookTabHistoryClicked,
 } from '@date/calendar/application/orchestration/notebookOrchestration.events'
 import styles from './CalendarNotebookTabs.module.scss'
@@ -21,8 +20,8 @@ type Props = {
 }
 
 /**
- * Закладки хедера: открывают календарь в режиме Date / Cart / History strip.
- * Списки корзины и истории — только правые кнопки у CardPie.
+ * Закладки над секцией: календарь корзины и истории.
+ * Календарь сборки включается секцией Date в сайдбаре, не закладкой.
  */
 export const CalendarNotebookTabs: React.FC<Props> = ({
   section,
@@ -46,10 +45,6 @@ export const CalendarNotebookTabs: React.FC<Props> = ({
       section !== 'history' &&
       section !== 'cartdate')
 
-  const goDate = useCallback(() => {
-    dispatch(notebookTabDateClicked())
-  }, [dispatch])
-
   const goCart = useCallback(() => {
     dispatch(notebookTabCartClicked())
   }, [dispatch])
@@ -62,7 +57,6 @@ export const CalendarNotebookTabs: React.FC<Props> = ({
    * `cartdate`: chrome календаря как date, но закладка Cart остаётся active —
    * режим принадлежит корзине, не сборке.
    */
-  const tab1Active = !stripTabsNoneActive && section === 'date'
   const tab2Active =
     !stripTabsNoneActive &&
     (section === 'cart' || section === 'cartdate')
@@ -75,27 +69,8 @@ export const CalendarNotebookTabs: React.FC<Props> = ({
       <ul
         className={clsx(styles.list, variant === 'header' && styles.listHeader)}
         role="tablist"
-        aria-label="Calendar strip mode"
+        aria-label="Cart and history calendar"
       >
-        <li
-          role="tab"
-          aria-selected={tab1Active}
-          aria-label="Date"
-          tabIndex={0}
-          className={clsx(
-            styles.tab,
-            styles.tab1,
-            variant === 'header' && styles.tabHeader,
-            tab1Active && styles.tabActive,
-          )}
-          onClick={goDate}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault()
-              goDate()
-            }
-          }}
-        />
         <li
           role="tab"
           aria-selected={tab2Active}

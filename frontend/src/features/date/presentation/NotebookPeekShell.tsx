@@ -10,7 +10,7 @@ type Props = {
   section?: DateStripSection
 }
 
-/** Обёртка упрощённого центра: закладки Date / Cart / History + контент под ними. */
+/** Обёртка упрощённого центра: закладки Cart / History + контент под ними. */
 export const NotebookPeekShell: React.FC<Props> = ({ children, section }) => {
   const sectionFromStore = useDateStripSectionForNotebookTabs()
   const resolved = section ?? sectionFromStore

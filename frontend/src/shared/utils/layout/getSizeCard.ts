@@ -10,6 +10,39 @@ export const MOBILE_CARD_INNER_TOOLBAR_REM = 2.25
 /** Mobile factory shell: upper (section) + lower (scenario) toolbar rows. */
 export const MOBILE_FACTORY_TOOLBAR_ROW_COUNT = 2
 
+/** Keep in sync with `$section-inner-toolbar-height-desktop` in uiLayout.scss. */
+export const DESKTOP_FACTORY_TOOLBAR_ROW_REM = 2.25
+
+/** Desktop factory shell: upper (section) + lower (scenario) toolbar rows. */
+export const DESKTOP_FACTORY_TOOLBAR_ROW_COUNT = 2
+
+/** Gap between the two-row toolbar stack and the square section (notebook tabs). */
+export const DESKTOP_FACTORY_SECTION_GAP_REM = 1.25
+
+/** Two toolbar rows + 1px divider + gap above the square section. */
+export function getDesktopFactoryToolbarReservePx(remSize: number): number {
+  return Math.round(
+    (DESKTOP_FACTORY_TOOLBAR_ROW_COUNT * DESKTOP_FACTORY_TOOLBAR_ROW_REM +
+      DESKTOP_FACTORY_SECTION_GAP_REM) *
+      remSize +
+      1,
+  )
+}
+
+/** Largest square that fits in the desktop center slot under the factory toolbars. */
+export function getDesktopSquareWorkSide(
+  slot: { width: number; height: number },
+  remSize: number,
+): number {
+  const reserve = getDesktopFactoryToolbarReservePx(remSize)
+  return Math.max(
+    0,
+    roundTo.nearest(
+      Math.min(slot.width, Math.max(0, slot.height - reserve)),
+    ),
+  )
+}
+
 export type GetSizeCardOptions = {
   orientation?: LayoutOrientation
   aspectRatio?: number

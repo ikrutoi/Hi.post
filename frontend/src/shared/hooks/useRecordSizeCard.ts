@@ -6,6 +6,7 @@ import {
 import {
   getSizeMiniCard,
   getSizeCard,
+  getDesktopSquareWorkSide,
   scaleMeasuredHeightToUiScale,
 } from '@shared/utils/layout'
 import { useSizeFacade } from '@layout/application/facades'
@@ -102,11 +103,32 @@ export const useRecordSizeCard = (
           ),
         })
         const currentRemSize = remSize ? remSize : 16
-        let resultSizeCard = getSizeCard(
-          { width: widthForm, height: heightForm },
+        const slotEl = elementForm.parentElement ?? elementForm
+        const slotStyle = getComputedStyle(slotEl)
+        const slotPadX =
+          (Number.parseFloat(slotStyle.paddingLeft) || 0) +
+          (Number.parseFloat(slotStyle.paddingRight) || 0)
+        const slotPadY =
+          (Number.parseFloat(slotStyle.paddingTop) || 0) +
+          (Number.parseFloat(slotStyle.paddingBottom) || 0)
+        const workSide = getDesktopSquareWorkSide(
+          {
+            width: Math.max(0, slotEl.clientWidth - slotPadX),
+            height: Math.max(0, slotEl.clientHeight - slotPadY),
+          },
           currentRemSize,
-          viewportHeight,
         )
+        let resultSizeCard =
+          workSide > 0
+            ? {
+                width: workSide,
+                height: workSide,
+              }
+            : getSizeCard(
+                { width: widthForm, height: heightForm },
+                currentRemSize,
+                viewportHeight,
+              )
 
         if (resultSizeCard.width <= 0 || resultSizeCard.height <= 0) {
           resultSizeCard = calcSizeCard(
@@ -117,7 +139,11 @@ export const useRecordSizeCard = (
         }
 
         setSizeMiniCard(resultSizeMiniCard)
-        setSizeCard(resultSizeCard)
+        setSizeCard({
+          ...resultSizeCard,
+          orientation: sizeCard.orientation,
+          aspectRatio: sizeCard.aspectRatio,
+        })
 
         if (!remSize) return
         }
@@ -136,6 +162,9 @@ export const useRecordSizeCard = (
 
       resizeObserver = new ResizeObserver(() => updateSize())
       resizeObserver.observe(elementForm)
+      if (elementForm.parentElement) {
+        resizeObserver.observe(elementForm.parentElement)
+      }
       if (elementCardPanel) {
         resizeObserver.observe(elementCardPanel)
       } else if (skipPanelMeasure && elementForm.parentElement) {
