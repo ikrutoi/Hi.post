@@ -1,6 +1,5 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/mobileNotebookTabColors' as notebookTab;
-@use '@styles/mixins/toolbarIconButton' as iconButton;
 
 .button {
   container-type: size;
@@ -33,7 +32,6 @@
   align-self: center;
   width: 1.6rem;
   height: 3.6rem;
-  margin-top: iconButton.$toolbar-chrome-sidebar-key-gap;
   border-radius: 0.35rem;
   transition: width 0.2s ease;
 
@@ -138,7 +136,7 @@
   right: 50%;
   z-index: 2;
   color: $color-app-sidebar-icon;
-  font-size: 0.72rem;
+  font-size: 1.1rem;
   font-weight: 600;
   line-height: 1;
   pointer-events: none;

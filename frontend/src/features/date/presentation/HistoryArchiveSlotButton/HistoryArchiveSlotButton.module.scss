@@ -1,7 +1,6 @@
 @use 'sass:color';
 @use '@styles/config/colors' as *;
 @use '@styles/config/mobileNotebookTabColors' as notebookTab;
-@use '@styles/mixins/toolbarIconButton' as iconButton;
 
 $history-slot-motion-duration: 0.2s;
 $history-slot-active-width-scale: 1.25;
@@ -100,7 +99,6 @@ $empty-cardpie-border: color.adjust($color-app-inner, $lightness: -8%);
   align-self: center;
   width: 1.6rem;
   height: 3.6rem;
-  margin-top: iconButton.$toolbar-chrome-sidebar-key-gap;
   border-radius: 0.35rem;
   transition: width 0.2s ease;
 

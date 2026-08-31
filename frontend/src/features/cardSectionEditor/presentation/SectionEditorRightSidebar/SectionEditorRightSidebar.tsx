@@ -126,14 +126,16 @@ export const SectionEditorRightSidebar: React.FC<
       aria-label="Profile, cart, and history"
     >
       <div className={styles.toolbarSlot}>{toolbar}</div>
-      <CartArchiveSlotButton
-        layout="sidebar"
-        pinned={pinActiveTab === 'cart'}
-      />
-      <HistoryArchiveSlotButton
-        layout="sidebar"
-        pinned={pinActiveTab === 'history'}
-      />
+      <div className={styles.archiveSlots}>
+        <CartArchiveSlotButton
+          layout="sidebar"
+          pinned={pinActiveTab === 'cart'}
+        />
+        <HistoryArchiveSlotButton
+          layout="sidebar"
+          pinned={pinActiveTab === 'history'}
+        />
+      </div>
     </aside>
   )
 }
