@@ -8,6 +8,15 @@
 
   :global([data-shell-layout='desktop']) & {
     height: $section-inner-toolbar-height-desktop;
+
+    :global([class*='envelopeToolbarRow']) {
+      border-radius: 0;
+      background-color: transparent;
+      padding: 0;
+      height: 100%;
+      max-height: none;
+      min-height: 0;
+    }
   }
 
   :global([data-shell-layout='mobile']) & {

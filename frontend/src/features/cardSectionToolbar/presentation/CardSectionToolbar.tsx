@@ -108,10 +108,6 @@ export const CardSectionToolbar: React.FC = () => {
     [dispatch],
   )
 
-  if (activeSection === 'envelope' && !isMobileLayout) {
-    return null
-  }
-
   return (
     <div
       className={clsx(

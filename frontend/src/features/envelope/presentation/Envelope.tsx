@@ -10,7 +10,6 @@ import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiv
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
 import { EnvelopeMobileAddressForm } from './EnvelopeMobileAddressForm'
-import { EnvelopeInnerToolbar } from './EnvelopeInnerToolbar'
 import { EnvelopeMobileAddressViewToolbar } from './EnvelopeMobileAddressViewToolbar'
 import { useEnvelopeMobileAddressFocus } from './EnvelopeMobileAddressFocusContext'
 import { useArchiveEditPeekGate } from '@cardPanel/application/hooks/useArchiveEditPeekGate'
@@ -307,20 +306,6 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
       }
     >
       <div className={styles.envelopeViewWrap}>
-        {!isMobile &&
-          (envelopePeekMode ? (
-            <div
-              className={clsx(
-                styles.envelopeToolbarRow,
-                styles.envelopeToolbarRowEmpty,
-              )}
-              aria-hidden
-            />
-          ) : showMobileAddressForm ? null : (
-            showEnvelopeToolbar ? (
-              <EnvelopeInnerToolbar />
-            ) : null
-          ))}
         <EnvelopeMobileAddressViewToolbar enabled={showEnvelopeToolbar} />
         <div className={styles.envelopeViewContent}>
           {showMobileAddressForm && mobileFormRole != null ? (

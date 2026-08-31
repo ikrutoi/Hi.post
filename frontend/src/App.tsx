@@ -2384,9 +2384,9 @@ const App = () => {
                       rightPieAromaPeekNoToolbar ||
                       rightPieDatePeekNoToolbar ? (
                         <ArchivePeekUpperToolbar />
-                      ) : activeSection !== 'envelope' ? (
+                      ) : (
                         <CardSectionToolbar />
-                      ) : null}
+                      )}
                     </div>
                   ) : null}
                   <div ref={formRef} className={clsx(styles.mainForm)}>

@@ -10,7 +10,10 @@ type MobileInlineToolbarRowProps = {
   children: React.ReactNode
 }
 
-/** Desktop: inline toolbar row. Mobile: регистрирует содержимое в factory shell. */
+/**
+ * Mobile: регистрирует содержимое в нижний ряд factory shell.
+ * Desktop: секция без встроенного тулбара — ряд в карточке не рисуем.
+ */
 export const MobileInlineToolbarRow: React.FC<MobileInlineToolbarRowProps> = ({
   className,
   emptyClassName,
@@ -37,14 +40,5 @@ export const MobileInlineToolbarRow: React.FC<MobileInlineToolbarRowProps> = ({
 
   useMobileScenarioToolbar(mobileContent)
 
-  if (isMobileLayout) return null
-
-  return (
-    <div
-      className={clsx(className, !show && emptyClassName)}
-      aria-hidden={show ? undefined : true}
-    >
-      {show ? children : null}
-    </div>
-  )
+  return null
 }

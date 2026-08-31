@@ -228,11 +228,8 @@
   }
 
   :global([data-shell-layout='desktop']) & {
-    border-radius: 0.5rem;
-    border-left: none;
-    border-right: none;
-    border-bottom: none;
-    border-color: $color-section-light;
+    border: none;
+    border-radius: 0;
     background-color: #fff;
   }
 }

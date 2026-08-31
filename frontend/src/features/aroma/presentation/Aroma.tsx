@@ -1,6 +1,6 @@
 import React from 'react'
 import clsx from 'clsx'
-import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { useAppDispatch } from '@app/hooks'
 import { AromaTile } from './AromaTile/AromaTile'
 import { AROMA_LIST } from '@entities/aroma/domain/constants'
 import { useAromaFacade } from '../application/facades'
@@ -9,7 +9,6 @@ import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { AromaMobileLowerTint } from './AromaMobileLowerTint'
-import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { setCartItemCardAroma } from '@cart/infrastructure/state'
 import { getAromaImage } from '@entities/aroma/mappers/aromaImageMap'
 import styles from './Aroma.module.scss'
@@ -17,20 +16,11 @@ import type { AromaItem } from '@entities/aroma/domain/types'
 
 const AromaSectionShell: React.FC<{
   children: React.ReactNode
-  peekToolbar?: boolean
-}> = ({ children, peekToolbar = false }) => {
-  const isMobileLayout = useAppSelector(selectIsMobileLayout)
-
+}> = ({ children }) => {
   return (
     <div className={styles.aroma}>
       <AromaMobileLowerTint />
       <div className={styles.aromaViewWrap}>
-        {peekToolbar && !isMobileLayout ? (
-          <div
-            className={clsx(styles.aromaToolbarRow, styles.aromaToolbarRowEmpty)}
-            aria-hidden
-          />
-        ) : null}
         <div className={styles.aromaViewContent}>{children}</div>
       </div>
     </div>
@@ -47,7 +37,7 @@ function AromaFullSectionPeek({
   const notebookTabsOuter = useSectionEditorNotebookTabsOuter()
   const peekSrc = aroma != null ? getAromaImage(aroma.index) : null
   const peek = (
-    <AromaSectionShell key={peekKey} peekToolbar>
+    <AromaSectionShell key={peekKey}>
       <div className={clsx(styles.form, styles.formPeek)}>
         {peekSrc ? (
           <img
