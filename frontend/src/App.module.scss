@@ -117,6 +117,51 @@
   margin-bottom: 0.5rem;
 }
 
+.desktopPlanGutter {
+  --mobile-section-inset: 0.4rem;
+  --mobile-pie-gutter-mini-radius: 0.3rem;
+  width: 4.25rem;
+  height: 100%;
+  min-height: 0;
+  align-self: stretch;
+}
+
+.desktopCentralPieRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.desktopCentralPieWrap {
+  height: calc(100% - 0.5rem);
+  aspect-ratio: 1;
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+
+.desktopCentralPieToolbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  height: calc(100% - 0.5rem);
+  flex-shrink: 0;
+}
+
+.desktopCentralPieEmpty {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.35rem;
+  background-color: $color-app-inner;
+}
+
 .appMainContentCenter_mergedWithPie {
   grid-row: 2 / -1;
 
@@ -164,15 +209,10 @@
   margin-bottom: 0.5rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  border-radius: 0.75rem 0 0 0.75rem;
-  background-color: #fff;
-  border-top: 1px solid $color-app-strip;
-  border-left: 1px solid $color-app-strip;
-  border-bottom: 1px solid $color-app-strip;
-  transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease;
+  align-items: flex-end;
+  justify-content: stretch;
+  background-color: transparent;
+  border: none;
 }
 
 .appMainContentLeftPieSlot_active {
@@ -213,15 +253,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-radius: 0 0.75rem 0.75rem 0;
-  background-color: #fff;
-  border-top: 1px solid $color-app-strip;
-  border-right: 1px solid $color-app-strip;
-  border-bottom: 1px solid $color-app-strip;
-  transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease;
-  // border: solid 1px blue;
+  background-color: transparent;
+  border: none;
 }
 
 .appMainContentRightPieSlot_active {
@@ -468,6 +501,7 @@
   min-height: var(--desktop-factory-toolbar-stack-height);
   display: flex;
   flex-direction: column;
+  border: 1px solid $color-font-blue;
 }
 
 .mainCardSectionToolbarRow {

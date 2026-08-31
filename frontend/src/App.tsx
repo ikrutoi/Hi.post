@@ -22,7 +22,8 @@ import {
   selectOpenDayPanel,
   selectPostcardStatuses,
 } from '@date/calendar/infrastructure/selectors'
-import { MiniSectionsSlot } from './features/cardPanel/presentation/MiniSectionsSlot'
+import { MobileCardPieGutterMinis } from '@layout/presentation/MobileAppShell/MobileCardPieGutterMinis'
+import { useMobilePlanCardPies } from '@layout/presentation/MobileAppShell/useMobilePlanCardPies'
 import { CardSectionEditor } from '@features/cardSectionEditor/presentation/CardSectionEditor'
 import { CardSectionToolbar } from '@features/cardSectionToolbar/presentation/CardSectionToolbar'
 import { ArchivePeekUpperToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar/ArchivePeekUpperToolbar'
@@ -191,8 +192,6 @@ const App = () => {
   const mainRef = useRef<HTMLDivElement>(null)
   const formRef = useRef<HTMLDivElement>(null)
   const cardPanelRef = useRef<HTMLDivElement>(null)
-  const mergedTopChromeRef = useRef<HTMLDivElement>(null)
-  const leftPieWrapRef = useRef<HTMLDivElement>(null)
   const cardPieCopyClosedByEditRef = useRef(false)
   /** date pick включён через cardPieEdit (не dateEdit строки cartBlocked). */
   const cartDatePickOwnedByCardPieEditRef = useRef(false)
@@ -1937,9 +1936,6 @@ const App = () => {
     clearRightPieDatePeek,
   ])
 
-  const mergeLeft = false
-  const mergeRight = false
-
   useEffect(() => {
     if (!isMobileLayout) return
     const archiveRowSelected =
@@ -2132,13 +2128,6 @@ const App = () => {
   const handleEditorPieToolbarAction = useEditorPieAddCartHandler({
     onEditorPieToolbarAction: handleEditorPieToolbarPassthrough,
   })
-  const handlePanelMiniSectionsToolbarAction = useCallback(
-    (key: string) => {
-      if (key !== 'editLight') return
-      enterCardPieEditFactoryMode()
-    },
-    [enterCardPieEditFactoryMode],
-  )
   /** Без `active` — cardPieCopy visually stays enabled only (toggle by action). */
   const postcardPieCartToolbarStateOverride = undefined
 
@@ -2218,117 +2207,6 @@ const App = () => {
             <DateToolbarListDateBadgeSync />
             <RightSidebarHistoryBadgeSync />
             <CalendarModeToolbarBadgesSync />
-            {/* <div className={styles.appMainContentLeft}> */}
-            <div
-              className={clsx(
-                styles.appMainContentLeftPieSlot,
-                mergeLeft && styles.appMainContentLeftPieSlot_mergedWithCenter,
-                showTopCardStripFullSpan &&
-                  styles.appMainContentLeftPieSlot_copyLocked,
-                activePieSide === 'left'
-                  ? styles.appMainContentLeftPieSlot_active
-                  : styles.appMainContentLeftPieSlot_inactive,
-              )}
-            >
-              {mergeLeft ? (
-                <div
-                  ref={mergedTopChromeRef}
-                  className={clsx(
-                    styles.mergedTopChrome,
-                    mergeLeft && styles.mergedTopChrome_measuredToForm,
-                  )}
-                >
-                  <div className={styles.mergedTopChromePieRegion}>
-                    <div className={styles.appMainContentLeftPieRow}>
-                      <div
-                        ref={leftPieWrapRef}
-                        className={styles.appMainContentLeftPieWrap}
-                      >
-                        <CardPie
-                          isProcessed
-                          fillContainer
-                          station="left"
-                          onBeforeLeftPieSectorClick={
-                            handleBeforeLeftPieInteraction
-                          }
-                          onLeftPieCenterClick={handleLeftPieCenterClick}
-                          leftPieCenterClickable={
-                            activePieSide === 'right' &&
-                            !showTopCardStripFullSpan
-                          }
-                        />
-                      </div>
-                      <div className={styles.appMainContentLeftPieToolbar}>
-                        <Toolbar
-                          section="editorPie"
-                          onActionClick={handleEditorPieToolbarAction}
-                          mergedWithCenter={
-                            activePieSide === 'left' || showTopCardStripFullSpan
-                          }
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className={styles.mergedTopChromeMini}>
-                    <MiniSectionsSlot
-                      ref={cardPanelRef}
-                      embedded
-                      cardPieCopyStripActive={showTopCardStripFullSpan}
-                      onBeforeOpenMiniSection={exitRightPreviewForLeftMode}
-                      onPanelMiniSectionsToolbarAction={
-                        handlePanelMiniSectionsToolbarAction
-                      }
-                      onActivateSectionPeekNoToolbar={
-                        activateArchiveSectionPeek
-                      }
-                    />
-                  </div>
-                </div>
-              ) : (
-                sectionSize != null && (
-                  <div
-                    className={clsx(
-                      styles.mergedTopChrome,
-                      styles.mergedTopChrome_transparentBorder,
-                    )}
-                  >
-                    <div className={styles.mergedTopChromePieRegion}>
-                      <div className={styles.appMainContentLeftPieRow}>
-                        <div
-                          ref={leftPieWrapRef}
-                          className={styles.appMainContentLeftPieWrap}
-                        >
-                          <CardPie
-                            isProcessed
-                            fillContainer
-                            station="left"
-                            onBeforeLeftPieSectorClick={
-                              handleBeforeLeftPieInteraction
-                            }
-                            onLeftPieCenterClick={handleLeftPieCenterClick}
-                            leftPieCenterClickable={
-                              activePieSide === 'right' &&
-                              !showTopCardStripFullSpan
-                            }
-                          />
-                        </div>
-                        <div className={styles.appMainContentLeftPieToolbar}>
-                          <Toolbar
-                            section="editorPie"
-                            onActionClick={handleEditorPieToolbarAction}
-                            mergedWithCenter={
-                              activePieSide === 'left' ||
-                              showTopCardStripFullSpan
-                            }
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )
-              )}
-            </div>
-            {/* </div> */}
             <div
               className={clsx(
                 styles.appMainContentLeft,
@@ -2343,38 +2221,30 @@ const App = () => {
             </div>
             <RightListArchiveMiniProvider value={centerStripMirrorValue}>
               <div className={styles.rightListArchiveMiniSubtree}>
-                <div className={styles.appMainTopCenterPanel}>
-                  <div className={clsx(styles.mainCardPanel)}>
-                    <div
-                      className={clsx(
-                        styles.mainCardPanelEntryLeft,
-                        activePieSide === 'left'
-                          ? styles.mainCardPanelEntryLeft_active
-                          : styles.mainCardPanelEntryLeft_inactive,
-                      )}
-                    ></div>
-                    <MiniSectionsSlot
-                      ref={cardPanelRef}
-                      rightModeActive={activePieSide === 'right'}
-                      cardPieCopyStripActive={showTopCardStripFullSpan}
-                      onBeforeOpenMiniSection={exitRightPreviewForLeftMode}
-                      onPanelMiniSectionsToolbarAction={
-                        handlePanelMiniSectionsToolbarAction
-                      }
-                      onActivateSectionPeekNoToolbar={
-                        activateArchiveSectionPeek
-                      }
-                    />
-                    <div
-                      className={clsx(
-                        styles.mainCardPanelEntryRight,
-                        activePieSide === 'right'
-                          ? styles.mainCardPanelEntryRight_active
-                          : styles.mainCardPanelEntryRight_inactive,
-                      )}
-                    ></div>
-                  </div>
-                </div>
+                <DesktopFactoryTopRow
+                  activePieSide={activePieSide}
+                  showTopCardStripFullSpan={showTopCardStripFullSpan}
+                  cardPanelRef={cardPanelRef}
+                  rightListArchiveLocalId={rightListArchiveLocalId}
+                  rightListArchiveSource={rightListArchiveSource}
+                  rightArchivePiePostcardStatus={rightArchivePiePostcardStatus}
+                  showRightPostcardPieCartToolbar={
+                    showRightPostcardPieCartToolbar
+                  }
+                  listPanelOpen={listPanelOpen}
+                  historyListPanelOpen={historyListPanelOpen}
+                  onBeforeLeftPieInteraction={handleBeforeLeftPieInteraction}
+                  onLeftPieCenterClick={handleLeftPieCenterClick}
+                  onRightListPieSectorClick={handleRightListPieSectorClick}
+                  onRightPieCenterClick={rightPieOnCenterClick}
+                  rightPieCenterAffordance={rightPieCenterAffordance}
+                  onPostcardPieCartToolbarAction={
+                    handlePostcardPieCartToolbarAction
+                  }
+                  postcardPieCartToolbarStateOverride={
+                    postcardPieCartToolbarStateOverride
+                  }
+                />
                 <div className={clsx(styles.appMainContentCenter)}>
                   {!isMobileLayout ? (
                     <div className={styles.mainCardSectionToolbar}>
@@ -2405,150 +2275,6 @@ const App = () => {
                 </div>
               </div>
             </RightListArchiveMiniProvider>
-            <div
-              className={clsx(
-                styles.appMainContentRightPieSlot,
-                mergeRight &&
-                  styles.appMainContentRightPieSlot_mergedWithCenter,
-                activePieSide === 'right'
-                  ? styles.appMainContentRightPieSlot_active
-                  : styles.appMainContentRightPieSlot_inactive,
-              )}
-            >
-              {mergeRight ? (
-                <div
-                  ref={mergedTopChromeRef}
-                  className={clsx(
-                    styles.mergedTopChrome,
-                    mergeRight && styles.mergedTopChrome_measuredToFormRight,
-                  )}
-                >
-                  <div className={styles.mergedTopChromeMini}>
-                    <MiniSectionsSlot
-                      ref={cardPanelRef}
-                      embedded
-                      cardPieCopyStripActive={showTopCardStripFullSpan}
-                      onActivateSectionPeekNoToolbar={
-                        activateArchiveSectionPeek
-                      }
-                    />
-                  </div>
-                  {sectionSize != null && rightListArchiveLocalId != null && (
-                    <div className={styles.mergedTopChromePieRegion}>
-                      <div className={styles.appMainContentRightPieRow}>
-                        <div className={styles.appMainContentRightPieWrap}>
-                          <CardPie
-                            isProcessed={false}
-                            status={rightArchivePiePostcardStatus}
-                            id={String(rightListArchiveLocalId)}
-                            fillContainer
-                            station="right"
-                            rightListSource={rightListArchiveSource}
-                            onListArchiveSectorClick={
-                              handleRightListPieSectorClick
-                            }
-                            onRightPieCenterClick={rightPieOnCenterClick}
-                            rightPieCenterAffordance={rightPieCenterAffordance}
-                          />
-                        </div>
-                        {showRightPostcardPieCartToolbar && (
-                          <div className={styles.appMainContentRightPieToolbar}>
-                            <Toolbar
-                              section="postcardPieCart"
-                              onActionClick={handlePostcardPieCartToolbarAction}
-                              stateOverride={
-                                postcardPieCartToolbarStateOverride
-                              }
-                              mergedWithCenter={
-                                activePieSide === 'right' ||
-                                showTopCardStripFullSpan
-                              }
-                            />
-                          </div>
-                        )}
-                        {rightListArchiveSource === 'history' &&
-                          !showRightPostcardPieCartToolbar && (
-                          <div className={styles.appMainContentRightPieToolbar}>
-                            <Toolbar
-                              section="postcardPieHistory"
-                              onActionClick={handlePostcardPieCartToolbarAction}
-                            />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div
-                  className={clsx(
-                    styles.mergedTopChrome,
-                    styles.mergedTopChrome_transparentBorder,
-                    activePieSide === 'left' &&
-                      styles.mergedTopChrome_rightBorderBlue,
-                  )}
-                >
-                  <div className={styles.mergedTopChromePieRegion}>
-                    <div className={styles.appMainContentRightPieRow}>
-                      {sectionSize != null &&
-                        rightListArchiveLocalId != null && (
-                          <>
-                            <div className={styles.appMainContentRightPieWrap}>
-                              <CardPie
-                                isProcessed={false}
-                                status={rightArchivePiePostcardStatus}
-                                id={String(rightListArchiveLocalId)}
-                                fillContainer
-                                station="right"
-                                rightListSource={rightListArchiveSource}
-                                onListArchiveSectorClick={
-                                  handleRightListPieSectorClick
-                                }
-                                onRightPieCenterClick={rightPieOnCenterClick}
-                                rightPieCenterAffordance={
-                                  rightPieCenterAffordance
-                                }
-                              />
-                            </div>
-                            {showRightPostcardPieCartToolbar && (
-                              <div
-                                className={styles.appMainContentRightPieToolbar}
-                              >
-                                <Toolbar
-                                  section="postcardPieCart"
-                                  onActionClick={
-                                    handlePostcardPieCartToolbarAction
-                                  }
-                                  stateOverride={
-                                    postcardPieCartToolbarStateOverride
-                                  }
-                                  mergedWithCenter={
-                                    activePieSide === 'right' ||
-                                    showTopCardStripFullSpan
-                                  }
-                                />
-                              </div>
-                            )}
-                            {rightListArchiveSource === 'history' &&
-                              !showRightPostcardPieCartToolbar && (
-                              <div
-                                className={styles.appMainContentRightPieToolbar}
-                              >
-                                <Toolbar
-                                  section="postcardPieHistory"
-                                  onActionClick={
-                                    handlePostcardPieCartToolbarAction
-                                  }
-                                />
-                              </div>
-                            )}
-                          </>
-                        )}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
             <div
               className={clsx(
                 styles.appMainContentRight,
@@ -2591,6 +2317,178 @@ const App = () => {
         </div>
       </MarkStampYearDevProvider>
     </div>
+  )
+}
+
+type DesktopFactoryTopRowProps = {
+  activePieSide: 'left' | 'right'
+  showTopCardStripFullSpan: boolean
+  cardPanelRef: React.RefObject<HTMLDivElement | null>
+  rightListArchiveLocalId: number | null
+  rightListArchiveSource: 'cart' | 'history' | null
+  rightArchivePiePostcardStatus: ReturnType<
+    typeof selectCartItems
+  >[number]['status'] | undefined
+  showRightPostcardPieCartToolbar: boolean
+  listPanelOpen: boolean
+  historyListPanelOpen: boolean
+  onBeforeLeftPieInteraction: () => void
+  onLeftPieCenterClick: () => void
+  onRightListPieSectorClick: (section: CardSection) => void
+  onRightPieCenterClick: (() => void) | undefined
+  rightPieCenterAffordance: 'cycleForward' | 'cart' | 'history' | 'calendar' | null
+  onPostcardPieCartToolbarAction: (key: string) => boolean | void
+  postcardPieCartToolbarStateOverride: undefined
+}
+
+function DesktopFactoryTopRow({
+  activePieSide,
+  showTopCardStripFullSpan,
+  cardPanelRef,
+  rightListArchiveLocalId,
+  rightListArchiveSource,
+  rightArchivePiePostcardStatus,
+  showRightPostcardPieCartToolbar,
+  listPanelOpen,
+  historyListPanelOpen,
+  onBeforeLeftPieInteraction,
+  onLeftPieCenterClick,
+  onRightListPieSectorClick,
+  onRightPieCenterClick,
+  rightPieCenterAffordance,
+  onPostcardPieCartToolbarAction,
+  postcardPieCartToolbarStateOverride,
+}: DesktopFactoryTopRowProps) {
+  const {
+    planPies,
+    selectedPlanPie,
+    selectedPlanPieId,
+    assemblyOverviewPie,
+    selectPlanPie,
+  } = useMobilePlanCardPies()
+  const handleEditorPieToolbarAction = useEditorPieAddCartHandler({
+    planPies,
+    selectedPlanPie,
+    onEditorPieToolbarAction: (key) => {
+      if (key !== 'editLight' && key !== 'cardPie') return
+    },
+  })
+
+  const showArchivePie = rightListArchiveLocalId != null
+  const showEmptyArchive =
+    !showArchivePie && (listPanelOpen || historyListPanelOpen)
+  const keepPlanAccent = !showArchivePie && !showEmptyArchive
+  const highlightPlanPieId = keepPlanAccent
+    ? selectedPlanPieId ?? (planPies.length === 1 ? planPies[0]?.id ?? null : null)
+    : null
+  const highlightAllPlanPies =
+    keepPlanAccent && planPies.length > 1 && selectedPlanPieId == null
+
+  const handleSelectPlanPie = useCallback(
+    (id: string) => {
+      selectPlanPie(id)
+      onBeforeLeftPieInteraction()
+    },
+    [onBeforeLeftPieInteraction, selectPlanPie],
+  )
+
+  const assemblyPie = selectedPlanPie ?? assemblyOverviewPie
+
+  return (
+    <>
+      <div
+        className={clsx(
+          styles.appMainContentLeftPieSlot,
+          showTopCardStripFullSpan &&
+            styles.appMainContentLeftPieSlot_copyLocked,
+          activePieSide === 'left'
+            ? styles.appMainContentLeftPieSlot_active
+            : styles.appMainContentLeftPieSlot_inactive,
+        )}
+      >
+        <div className={styles.desktopPlanGutter}>
+          <MobileCardPieGutterMinis
+            layout="desktop"
+            planPies={planPies}
+            selectedPlanPieId={selectedPlanPieId}
+            highlightPlanPieId={highlightPlanPieId}
+            highlightAllPlanPies={highlightAllPlanPies}
+            onSelectPlanPie={handleSelectPlanPie}
+          />
+        </div>
+      </div>
+      <div ref={cardPanelRef} className={styles.appMainTopCenterPanel}>
+        <div className={styles.desktopCentralPieRow}>
+          <div className={styles.desktopCentralPieWrap}>
+            {showArchivePie ? (
+              <CardPie
+                isProcessed={false}
+                status={rightArchivePiePostcardStatus}
+                id={String(rightListArchiveLocalId)}
+                fillContainer
+                station="right"
+                rightListSource={rightListArchiveSource}
+                onListArchiveSectorClick={onRightListPieSectorClick}
+                onRightPieCenterClick={onRightPieCenterClick}
+                rightPieCenterAffordance={rightPieCenterAffordance}
+              />
+            ) : showEmptyArchive ? (
+              <div className={styles.desktopCentralPieEmpty} aria-hidden />
+            ) : (
+              <CardPie
+                isProcessed
+                fillContainer
+                station="left"
+                pieInner={assemblyPie.inner}
+                pieSections={assemblyPie.sections}
+                onBeforeLeftPieSectorClick={onBeforeLeftPieInteraction}
+                onLeftPieCenterClick={onLeftPieCenterClick}
+                leftPieCenterClickable={
+                  activePieSide === 'right' && !showTopCardStripFullSpan
+                }
+              />
+            )}
+          </div>
+          {showArchivePie ? (
+            showRightPostcardPieCartToolbar ? (
+              <div className={styles.desktopCentralPieToolbar}>
+                <Toolbar
+                  section="postcardPieCart"
+                  onActionClick={onPostcardPieCartToolbarAction}
+                  stateOverride={postcardPieCartToolbarStateOverride}
+                  mergedWithCenter
+                />
+              </div>
+            ) : rightListArchiveSource === 'history' ? (
+              <div className={styles.desktopCentralPieToolbar}>
+                <Toolbar
+                  section="postcardPieHistory"
+                  onActionClick={onPostcardPieCartToolbarAction}
+                />
+              </div>
+            ) : null
+          ) : !showEmptyArchive ? (
+            <div className={styles.desktopCentralPieToolbar}>
+              <Toolbar
+                section="editorPie"
+                onActionClick={handleEditorPieToolbarAction}
+                mergedWithCenter={
+                  activePieSide === 'left' || showTopCardStripFullSpan
+                }
+              />
+            </div>
+          ) : null}
+        </div>
+      </div>
+      <div
+        className={clsx(
+          styles.appMainContentRightPieSlot,
+          activePieSide === 'right'
+            ? styles.appMainContentRightPieSlot_active
+            : styles.appMainContentRightPieSlot_inactive,
+        )}
+      />
+    </>
   )
 }
 

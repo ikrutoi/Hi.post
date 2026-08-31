@@ -16,8 +16,8 @@ export const DESKTOP_FACTORY_TOOLBAR_ROW_REM = 2.25
 /** Desktop factory shell: upper (section) + lower (scenario) toolbar rows. */
 export const DESKTOP_FACTORY_TOOLBAR_ROW_COUNT = 2
 
-/** Gap between the two-row toolbar stack and the square section (notebook tabs). */
-export const DESKTOP_FACTORY_SECTION_GAP_REM = 1.25
+/** Gap between the two-row toolbar stack and the square section. */
+export const DESKTOP_FACTORY_SECTION_GAP_REM = 0.5
 
 /** Two toolbar rows + 1px divider + gap above the square section. */
 export function getDesktopFactoryToolbarReservePx(remSize: number): number {

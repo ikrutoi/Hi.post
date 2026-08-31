@@ -12,6 +12,7 @@ import type { MobilePlanCardPie } from './useMobilePlanCardPies'
 import styles from './MobileAppShell.module.scss'
 
 type MobileCardPieGutterMinisProps = {
+  layout?: 'mobile' | 'desktop'
   planPies: MobilePlanCardPie[]
   selectedPlanPieId: string | null
   /**
@@ -28,6 +29,7 @@ type MobileCardPieGutterMinisProps = {
 
 export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
   ({
+    layout = 'mobile',
     planPies,
     selectedPlanPieId,
     highlightPlanPieId,
@@ -109,7 +111,13 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
     const showThumb = thumbHeight > 0
 
     return (
-      <div className={styles.mobilePieGutterMiniShell} aria-label="Card pie plan">
+      <div
+        className={clsx(
+          styles.mobilePieGutterMiniShell,
+          layout === 'desktop' && styles.mobilePieGutterMiniShellDesktop,
+        )}
+        aria-label="Card pie plan"
+      >
         <div ref={listRef} className={styles.mobilePieGutterMiniList}>
           {planPies.map(({ id, inner, sections }) => (
             <button

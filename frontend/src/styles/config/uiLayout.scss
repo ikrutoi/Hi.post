@@ -9,7 +9,7 @@ $section-inner-toolbar-height-desktop: 2.25rem;
 /** Keep in sync with `DESKTOP_FACTORY_*` in getSizeCard.ts. */
 $desktop-factory-toolbar-row-count: 2;
 $desktop-factory-toolbar-divider: 1px;
-$desktop-factory-section-gap: 1.25rem;
+$desktop-factory-section-gap: 0.5rem;
 $desktop-factory-toolbar-stack-height: calc(
   #{$desktop-factory-toolbar-row-count} * #{$section-inner-toolbar-height-desktop} +
     #{$desktop-factory-toolbar-divider}
