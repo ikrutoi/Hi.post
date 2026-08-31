@@ -1,0 +1,159 @@
+@use 'sass:color';
+@use '@styles/config/colors' as *;
+@use '@styles/config/mobileNotebookTabColors' as notebookTab;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
+
+$history-slot-motion-duration: 0.2s;
+$history-slot-active-width-scale: 1.25;
+$pie-indicator-r: 1rem;
+$empty-cardpie-border: color.adjust($color-app-inner, $lightness: -8%);
+
+@keyframes history-slot-second-click-hint {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  12% {
+    transform: translate(-50%, -50%) scale(1.46);
+  }
+
+  28% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  40% {
+    transform: translate(-50%, -50%) scale(1.46);
+  }
+
+  56% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.button {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  border: none;
+  font: inherit;
+  color: inherit;
+  appearance: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  background: linear-gradient(
+    to bottom,
+    notebookTab.$mobile-notebook-history-tab-yellow 0 20%,
+    $color-preview-indicator-ready 20% 40%,
+    notebookTab.$mobile-notebook-history-tab-blue 40% 60%,
+    $color-preview-indicator-delivered 60% 80%,
+    $color-preview-indicator-error 80% 100%
+  );
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.06),
+    0 2px 3px rgba(0, 0, 0, 0.1),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.32);
+
+  &:focus-visible {
+    outline: 2px solid $color-font-enabled-light;
+    outline-offset: 1px;
+  }
+}
+
+.pieSlot {
+  justify-self: end;
+  width: 100%;
+  height: var(--mobile-pie-gutter-mini-side);
+  border-radius: var(--mobile-pie-gutter-mini-radius);
+  transition: width $history-slot-motion-duration ease;
+  pointer-events: auto;
+
+  &[aria-pressed='true'] {
+    width: calc(100% * #{$history-slot-active-width-scale});
+    z-index: 1;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      z-index: 3;
+      width: calc(2 * #{$pie-indicator-r});
+      height: calc(2 * #{$pie-indicator-r});
+      box-sizing: border-box;
+      border-radius: 50%;
+      background-color: $color-app-inner;
+      border: 1px solid $empty-cardpie-border;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  &:has(.indicator)::before {
+    display: none;
+  }
+}
+
+.sidebar {
+  flex-shrink: 0;
+  align-self: center;
+  width: 1.6rem;
+  height: 3.6rem;
+  margin-top: iconButton.$toolbar-chrome-sidebar-key-gap;
+  border-radius: 0.35rem;
+  transition: width 0.2s ease;
+
+  &[aria-pressed='true'] {
+    width: 2.25rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.indicator {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  z-index: 4;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background-color: $color-font-enabled-light;
+  border: 1px solid $empty-cardpie-border;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-app-inner;
+
+  .pieSlot & {
+    width: calc(2 * #{$pie-indicator-r});
+    height: calc(2 * #{$pie-indicator-r});
+  }
+
+  svg {
+    display: block;
+    width: 48%;
+    height: 48%;
+    color: inherit;
+
+    path {
+      stroke: currentColor;
+    }
+
+    [fill='currentColor'] {
+      fill: currentColor;
+    }
+  }
+}
+
+.indicatorHint {
+  animation: history-slot-second-click-hint 1.5s ease-in-out 1;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}

@@ -29,7 +29,6 @@ import {
   buildCartArchiveToggleCommands,
   buildHistoryArchiveToggleCommands,
   resolveCartArchiveViewMode,
-  resolveHistoryArchiveViewMode,
 } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 import { isCartOwnedNotebookStrip } from '@date/calendar/application/logic/calendarStripSection'
 import {
@@ -113,7 +112,8 @@ import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { AddressFields, CardSection, IconKey } from '@shared/config/constants'
 import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
 import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDevContext'
-import { IconCardPie, IconCart, IconHistoryV2, IconLogo, IconSectionMenuCardtext, IconSectionMenuDate, IconSectionMenuEnvelopeV2 } from '@shared/ui/icons'
+import { IconCardPie, IconCart, IconLogo, IconSectionMenuCardtext, IconSectionMenuDate, IconSectionMenuEnvelopeV2 } from '@shared/ui/icons'
+import { HistoryArchiveSlotButton } from '@date/presentation/HistoryArchiveSlotButton'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { useEditorPieAddCartHandler } from '@features/cardPie/application/hooks/useEditorPieAddCartHandler'
@@ -1133,9 +1133,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     [dispatch, clearMobileFactoryPeek],
   )
 
-  const historyStripActive =
-    historyListPanelOpen || notebookStripSection === 'history'
-
   const cartStripActive =
     cartListPanelOpen || isCartOwnedNotebookStrip(notebookStripSection)
 
@@ -1157,27 +1154,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     cartArchiveViewMode === 'list' &&
     !cartCalendarDatePickMode
 
-  const historyArchiveViewMode = resolveHistoryArchiveViewMode({
-    historyListPanelOpen,
-    notebookStripTab: notebookStripSection,
-    activeSection,
-    archiveSectionPeekActive:
-      mobileFactoryChromePeek && mirrorListArchiveSource === 'history',
-  })
-
-  const showHistorySlotHistoryIcon =
-    historyStripActive && historyArchiveViewMode === 'calendar'
-
-  const showHistorySlotDateIcon =
-    historyStripActive && historyArchiveViewMode === 'list'
-
   const cartModeIconVisible = showCartSlotDateIcon || showCartSlotCartIcon
-  const historyModeIconVisible =
-    showHistorySlotDateIcon || showHistorySlotHistoryIcon
   const cartSecondClickHint =
     useMobileArchiveSlotSecondClickHint(cartModeIconVisible)
-  const historySecondClickHint =
-    useMobileArchiveSlotSecondClickHint(historyModeIconVisible)
 
   const cardWidthStyle =
     sizeCard?.width != null && sizeCard.width > 0
@@ -1574,37 +1553,14 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                           </span>
                         ) : null}
                       </div>
-                      <button
-                        type="button"
-                        className={clsx(
-                          styles.mobilePieRightSlotItem,
-                          styles.mobilePieRightSlotItemHistory,
-                        )}
-                        aria-label="History postcards"
-                        aria-pressed={historyStripActive}
-                        onClick={(event) => {
-                          historySecondClickHint.onUserClick()
-                          handleHistorySlotClick(event)
-                        }}
-                      >
-                        {showHistorySlotDateIcon || showHistorySlotHistoryIcon ? (
-                          <span
-                            className={clsx(
-                              styles.mobilePieRightSlotActiveIndicatorIcon,
-                              historySecondClickHint.pulsing &&
-                                styles.mobilePieRightSlotActiveIndicatorIconHint,
-                            )}
-                            aria-hidden
-                            onAnimationEnd={historySecondClickHint.onPulseEnd}
-                          >
-                            {showHistorySlotDateIcon ? (
-                              <IconSectionMenuDate />
-                            ) : (
-                              <IconHistoryV2 />
-                            )}
-                          </span>
-                        ) : null}
-                      </button>
+                      <HistoryArchiveSlotButton
+                        layout="pieSlot"
+                        archiveSectionPeekActive={
+                          mobileFactoryChromePeek &&
+                          mirrorListArchiveSource === 'history'
+                        }
+                        onClick={handleHistorySlotClick}
+                      />
                     </div>
                 </div>
               </section>

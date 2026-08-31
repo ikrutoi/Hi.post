@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react'
 import { useAppSelector } from '@app/hooks'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
+import { CartArchiveSlotButton } from '@cart/presentation/CartArchiveSlotButton'
+import { HistoryArchiveSlotButton } from '@date/presentation/HistoryArchiveSlotButton'
 import {
   RIGHT_SIDEBAR_KEYS,
   RIGHT_SIDEBAR_TOOLBAR,
@@ -12,6 +14,11 @@ import type { ToolbarGroup } from '@toolbar/domain/types'
 import styles from './SectionEditorRightSidebar.module.scss'
 
 const MOBILE_HEADER_BAR_HIDDEN_KEYS = new Set<RightSidebarKey>([
+  'cart',
+  'history',
+])
+
+const DESKTOP_SIDEBAR_SLOT_HIDDEN_KEYS = new Set<RightSidebarKey>([
   'cart',
   'history',
 ])
@@ -65,12 +72,19 @@ export const SectionEditorRightSidebar: React.FC<
         ),
       }))
     }
-    if (variant !== 'headerBar') return undefined
+    if (variant === 'headerBar') {
+      return RIGHT_SIDEBAR_TOOLBAR.map((group) => ({
+        ...group,
+        icons: [...group.icons]
+          .filter((icon) => !MOBILE_HEADER_BAR_HIDDEN_KEYS.has(icon.key))
+          .reverse(),
+      }))
+    }
     return RIGHT_SIDEBAR_TOOLBAR.map((group) => ({
       ...group,
-      icons: [...group.icons]
-        .filter((icon) => !MOBILE_HEADER_BAR_HIDDEN_KEYS.has(icon.key))
-        .reverse(),
+      icons: group.icons.filter(
+        (icon) => !DESKTOP_SIDEBAR_SLOT_HIDDEN_KEYS.has(icon.key),
+      ),
     }))
   }, [variant])
 
@@ -112,6 +126,14 @@ export const SectionEditorRightSidebar: React.FC<
       aria-label="Profile, cart, and history"
     >
       <div className={styles.toolbarSlot}>{toolbar}</div>
+      <CartArchiveSlotButton
+        layout="sidebar"
+        pinned={pinActiveTab === 'cart'}
+      />
+      <HistoryArchiveSlotButton
+        layout="sidebar"
+        pinned={pinActiveTab === 'history'}
+      />
     </aside>
   )
 }

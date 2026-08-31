@@ -10,7 +10,9 @@
   .toolbarKey {
     position: relative;
     margin: 0 0.3rem;
-    &:not([data-icon-key='historyView']):not([data-icon-key='cardphotoReturn']) {
+    &:not([data-icon-key='historyView']):not([data-icon-key='cardphotoReturn']):not(
+        [data-icon-key='userLogin']
+      ) {
       @include iconButton.toolbar-icon-button-size-standard-shell(true);
     }
     background-color: white;
@@ -1637,12 +1639,15 @@
 
   .toolbarKey {
     margin: 0;
-    @include iconButton.toolbar-icon-button-size-sidebar-shell;
     border-radius: 0.75rem;
     background-color: $color-app-strip;
     transition:
       color 0.15s ease,
       background-color 0.15s ease;
+
+    &:not([data-icon-key='userLogin']) {
+      @include iconButton.toolbar-icon-button-size-sidebar-shell;
+    }
 
     &.toolbarKeyEnabled {
       color: $color-font-enabled-light;
@@ -2526,13 +2531,13 @@
       gap: iconButton.$toolbar-chrome-sidebar-key-gap;
     }
 
-    .toolbarKey {
+    .toolbarKey:not([data-icon-key='userLogin']) {
       @include iconButton.toolbar-icon-button-size-chrome-sidebar-desktop(true);
     }
   }
 }
 
-/* userLogin — same glyph size as IconLogo in sectionEditorSidebar (beats chrome sidebar svg mixins). */
+/* userLogin — same diameter as IconLogo in the left sidebar. */
 .toolbarRightSidebar .toolbarKey[data-icon-key='userLogin'] {
   @include iconButton.toolbar-icon-button-base(
     iconButton.$toolbar-logo-size-section-editor
@@ -2540,6 +2545,16 @@
   width: iconButton.$toolbar-logo-size-section-editor;
   height: iconButton.$toolbar-logo-size-section-editor;
   min-width: iconButton.$toolbar-logo-size-section-editor;
+  padding: 0;
+
+  svg {
+    display: block;
+    flex-shrink: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+  }
 
   .toolbarUserChromeGlyph {
     display: block;
