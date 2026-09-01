@@ -2207,6 +2207,9 @@ const App = () => {
             <DateToolbarListDateBadgeSync />
             <RightSidebarHistoryBadgeSync />
             <CalendarModeToolbarBadgesSync />
+            <div className={styles.appMainContentLeftListSlot} aria-hidden>
+              <div className={styles.appMainContentLeftListPlaceholder} />
+            </div>
             <div
               className={clsx(
                 styles.appMainContentLeft,

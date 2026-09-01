@@ -227,10 +227,8 @@
 }
 
 .appMainContentLeftPieSlot_active {
-  background-color: #fff;
-  border-top: 1px solid $color-app-strip;
-  border-left: 1px solid $color-app-strip;
-  border-bottom: 1px solid $color-app-strip;
+  background-color: transparent;
+  border-color: transparent;
 }
 
 .appMainContentLeftPieSlot_inactive {
@@ -380,6 +378,28 @@
   height: calc(100% - 0.5rem);
   aspect-ratio: 1;
   position: relative;
+}
+
+.appMainContentLeftListSlot {
+  grid-column: 1 / 5;
+  grid-row: 1 / -1;
+  z-index: 7;
+  min-height: 0;
+  margin-top: 1rem;
+  padding-left: 1rem;
+  padding-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+}
+
+.appMainContentLeftListPlaceholder {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  box-sizing: border-box;
+  border: 1px solid limegreen;
+  border-radius: 0.75rem;
 }
 
 .appMainContentLeft {
