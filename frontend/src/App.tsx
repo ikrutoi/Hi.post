@@ -2248,7 +2248,19 @@ const App = () => {
                   className={clsx(styles.appMainContentCenter)}
                   data-desktop-factory-slot="true"
                 >
-                  <div className={styles.mainCardFactoryStack}>
+                  <div
+                    className={styles.mainCardFactoryStack}
+                    data-desktop-factory-surface={
+                      activeSection === 'date'
+                        ? notebookStripTab === 'cart' ||
+                          notebookStripTab === 'cartdate'
+                          ? 'date-cart'
+                          : notebookStripTab === 'history'
+                            ? 'date-history'
+                            : 'date'
+                        : (activeSection ?? 'neutral')
+                    }
+                  >
                     {!isMobileLayout ? (
                       <div className={styles.mainCardSectionToolbar}>
                         <div className={styles.mainCardSectionToolbarRow}>

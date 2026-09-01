@@ -1,5 +1,7 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
+@use '@styles/config/mobileSectionGutter' as sectionGutter;
+@use '@styles/config/mobileNotebookTabColors' as notebookTab;
 @use '@styles/mixins/miniSectionsSlotChrome' as *;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
@@ -534,23 +536,102 @@
 }
 
 .mainCardFactoryStack {
+  --desktop-factory-stack-inset-inline: 4rem;
+  --desktop-factory-stack-fade-inline: 2rem;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: var(--desktop-factory-section-gap);
-  width: calc(
-    var(--card-width, 100%) + 2 * #{iconButton.$toolbar-factory-row-inset-inline}
-  );
+  width: calc(var(--card-width, 100%) + 2 * var(--desktop-factory-stack-inset-inline));
   max-width: 100%;
-  padding-inline: iconButton.$toolbar-factory-row-inset-inline;
+  padding-inline: var(--desktop-factory-stack-inset-inline);
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
   box-sizing: border-box;
-  // TEMP debug: factory stack (toolbar + section edit)
-  outline: 1px solid orange;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: var(
+      --desktop-factory-stack-bg,
+      var(--mobile-section-surface-bg, transparent)
+    );
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 var(--desktop-factory-stack-fade-inline),
+      #000 calc(100% - var(--desktop-factory-stack-fade-inline)),
+      transparent
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 var(--desktop-factory-stack-fade-inline),
+      #000 calc(100% - var(--desktop-factory-stack-fade-inline)),
+      transparent
+    );
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  &[data-desktop-factory-surface='cardphoto'] {
+    --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-cardphoto};
+    --desktop-factory-toolbar-bg: #{$color-cardphoto-input};
+  }
+
+  &[data-desktop-factory-surface='cardtext'] {
+    --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-cardtext};
+    --desktop-factory-toolbar-bg: #{$color-cardtext-input};
+  }
+
+  &[data-desktop-factory-surface='envelope'] {
+    --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-envelope};
+    --desktop-factory-toolbar-bg: #{$color-envelope-recipient-input};
+  }
+
+  &[data-desktop-factory-surface='aroma'] {
+    --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-aroma};
+    --desktop-factory-toolbar-bg: #{$color-aroma-input};
+  }
+
+  &[data-desktop-factory-surface='date'] {
+    --mobile-section-surface-bg: #{notebookTab.$mobile-notebook-date-tab-date};
+    --desktop-factory-toolbar-bg: #{$color-date-input};
+  }
+
+  &[data-desktop-factory-surface='date-cart'] {
+    --mobile-section-surface-bg: #{notebookTab.$mobile-notebook-cart-tab-top};
+    --desktop-factory-toolbar-bg: #{notebookTab.$mobile-notebook-cart-toolbar-fade};
+    --desktop-factory-stack-bg: linear-gradient(
+      0deg,
+      #{notebookTab.$mobile-notebook-cart-tab-top} 0%,
+      #{notebookTab.$mobile-notebook-cart-tab-bottom} 100%
+    );
+  }
+
+  &[data-desktop-factory-surface='date-history'] {
+    --mobile-section-surface-bg: #{notebookTab.$mobile-notebook-history-tab-yellow};
+    --desktop-factory-toolbar-bg: #{notebookTab.$mobile-notebook-history-toolbar-yellow};
+    --desktop-factory-stack-bg: linear-gradient(
+      to bottom,
+      #{notebookTab.$mobile-notebook-history-tab-yellow} 0 20%,
+      #{$color-preview-indicator-ready} 20% 40%,
+      #{notebookTab.$mobile-notebook-history-tab-blue} 40% 60%,
+      #{$color-preview-indicator-delivered} 60% 80%,
+      #{$color-preview-indicator-error} 80% 100%
+    );
+  }
 }
 
 .mainCardSectionToolbar {
+  position: relative;
   flex: 0 0 var(--desktop-factory-toolbar-stack-height);
   box-sizing: border-box;
   width: var(--card-width, 100%);
@@ -558,7 +639,37 @@
   min-height: var(--desktop-factory-toolbar-stack-height);
   display: flex;
   flex-direction: column;
-  border: 1px solid $color-font-blue;
+  border: none;
+  background-color: transparent;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: var(--desktop-factory-toolbar-bg, transparent);
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 var(--desktop-factory-stack-fade-inline),
+      #000 calc(100% - var(--desktop-factory-stack-fade-inline)),
+      transparent
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 var(--desktop-factory-stack-fade-inline),
+      #000 calc(100% - var(--desktop-factory-stack-fade-inline)),
+      transparent
+    );
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
 }
 
 .mainCardSectionToolbarRow {
@@ -575,7 +686,7 @@
   flex: 0 0 1px;
   width: calc(100% - 2 * #{iconButton.$toolbar-factory-row-inset-inline});
   margin-inline: iconButton.$toolbar-factory-row-inset-inline;
-  background-color: $color-section-light;
+  background-color: var(--mobile-section-surface-bg, $color-section-light);
 }
 
 .mainForm {

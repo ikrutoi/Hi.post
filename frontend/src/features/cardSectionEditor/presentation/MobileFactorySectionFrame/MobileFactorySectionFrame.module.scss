@@ -110,8 +110,6 @@
   border: var(--mobile-factory-content-border, none);
   background-color: var(--mobile-factory-content-bg, transparent);
   container-type: var(--mobile-factory-content-container-type, normal);
-  // TEMP debug: factory stack (toolbar + section edit)
-  outline: 1px solid orange;
 }
 
 .contentTemplateList {

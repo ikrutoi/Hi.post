@@ -99,9 +99,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  // TEMP debug: section edit canvas
-  outline: 2px solid red;
-  outline-offset: -2px;
 
   :global([data-shell-layout='desktop']) & {
     align-items: stretch;
