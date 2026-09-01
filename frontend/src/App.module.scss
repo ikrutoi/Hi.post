@@ -62,7 +62,7 @@
   min-height: 0;
   display: grid;
   grid-template-columns: repeat(14, 1fr);
-  grid-template-rows: 3fr 0.5fr 10fr;
+  grid-template-rows: 4fr 0.5fr 9fr;
   overflow: hidden;
   background-color: $color-app-inner;
   border-radius: 0.75rem;
@@ -114,8 +114,9 @@
   display: flex;
   justify-content: center;
   align-items: stretch;
+  box-sizing: border-box;
   margin-top: 1rem;
-  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 
 .desktopPlanGutter {
@@ -128,10 +129,10 @@
 }
 
 .desktopCentralPieRow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: stretch;
+  column-gap: 0.5rem;
   width: 100%;
   height: 100%;
   min-width: 0;
@@ -139,6 +140,7 @@
 }
 
 .desktopCentralPieWrap {
+  grid-column: 2;
   height: 100%;
   aspect-ratio: 1;
   position: relative;
@@ -147,13 +149,14 @@
 }
 
 .desktopCentralPieToolbar {
+  grid-column: 3;
+  justify-self: start;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 2.4rem;
   height: 100%;
-  flex-shrink: 0;
 }
 
 .desktopCentralPieEmpty {
@@ -540,6 +543,7 @@
   );
   max-width: 100%;
   padding-inline: iconButton.$toolbar-factory-row-inset-inline;
+  padding-top: 0.5rem;
   padding-bottom: 0.5rem;
   box-sizing: border-box;
   // TEMP debug: factory stack (toolbar + section edit)

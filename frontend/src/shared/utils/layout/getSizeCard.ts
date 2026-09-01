@@ -19,11 +19,15 @@ export const DESKTOP_FACTORY_TOOLBAR_ROW_COUNT = 2
 /** Gap between the two-row toolbar stack and the square section. */
 export const DESKTOP_FACTORY_SECTION_GAP_REM = 0.5
 
-/** Two toolbar rows + 1px divider + gap above the square section. */
+/** Orange factory stack padding above the blue toolbar and below the section. */
+export const DESKTOP_FACTORY_STACK_PAD_Y_REM = 0.5
+
+/** Two toolbar rows + 1px divider + gap + stack padding above/below. */
 export function getDesktopFactoryToolbarReservePx(remSize: number): number {
   return Math.round(
     (DESKTOP_FACTORY_TOOLBAR_ROW_COUNT * DESKTOP_FACTORY_TOOLBAR_ROW_REM +
-      DESKTOP_FACTORY_SECTION_GAP_REM) *
+      DESKTOP_FACTORY_SECTION_GAP_REM +
+      2 * DESKTOP_FACTORY_STACK_PAD_Y_REM) *
       remSize +
       1,
   )
