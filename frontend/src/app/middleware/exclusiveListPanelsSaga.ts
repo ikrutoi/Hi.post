@@ -193,24 +193,20 @@ function* closeOtherListPanels(action: {
     yield put(setDateListPanelOpen(false))
   }
   /**
-   * Списки слева (cardphoto, cardtext, адресная книга) не закрывают панель истории справа.
-   * Историю гасим при открытии даты / CardPie / корзины и т.п., но не при открытии этих списков.
+   * Правая колонка: корзина, история, фото, текст, адрес — один список за раз.
+   * Историю не гасим при открытии даты / CardPie (они остаются слева).
    */
   if (
     !openingHistory &&
     !openingCardPie &&
     !openingDate &&
-    !openingCardphoto &&
-    !openingCardtext &&
-    !openingAddressList &&
     !openingUserLogin
   ) {
     yield put(setHistoryListPanelOpen(false))
   }
   /** Правые списки не закрываем из тулбаров sectionEditorMenu/date. */
   /**
-   * Открытие корзины (правый сайдбар) не закрывает левые списки:
-   * cardpie, cardphoto, cardtext, адреса — они остаются как были.
+   * Открытие корзины / истории не закрывает список CardPie слева.
    */
   if (!openingCardPie && !openingCart && !openingHistory && !openingUserLogin) {
     yield put(setCardPieListPanelOpen(false))
@@ -218,8 +214,9 @@ function* closeOtherListPanels(action: {
 
   /**
    * Списки секций редактора (cardphoto, cardtext, адресная книга) запоминают
-   * open/closed отдельно: при переключении секции панель скрывается в UI,
-   * но флаг в slice не сбрасываем.
+   * open/closed отдельно друг от друга: при переключении секции панель
+   * скрывается в UI, но флаг в slice не сбрасываем. Корзина и история
+   * в той же правой колонке — закрывают эти списки.
    */
   const openingEditorSectionList =
     openingCardphoto || openingCardtext || openingAddressList
@@ -227,7 +224,6 @@ function* closeOtherListPanels(action: {
   if (
     !openingCardphoto &&
     !openingDate &&
-    !openingCart &&
     !openingUserLogin &&
     !openingEditorSectionList
   ) {
@@ -235,18 +231,17 @@ function* closeOtherListPanels(action: {
   }
   if (
     !openingCardtext &&
-    !openingCart &&
     !openingUserLogin &&
     !openingEditorSectionList
   ) {
     yield put(setCardtextListPanelOpen(false))
   }
 
-  if (!openingAddressList && !openingCart && !openingUserLogin && !openingEditorSectionList) {
+  if (!openingAddressList && !openingUserLogin && !openingEditorSectionList) {
     yield put(closeAddressList())
   }
 
-  if (openingUserLogin) {
+  if (openingUserLogin || openingEditorSectionList) {
     yield put(setCartListPanelOpen(false))
     yield put(setHistoryListPanelOpen(false))
   }

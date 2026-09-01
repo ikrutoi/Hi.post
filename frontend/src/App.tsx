@@ -2213,10 +2213,7 @@ const App = () => {
                 // activeSection === 'date' && styles.appMainContentRightDate,
               )}
             >
-              {activeSection === 'envelope' && <EnvelopeRightSlot />}
               {activeSection === 'date' && <DateRightSlot />}
-              {activeSection === 'cardtext' && <CardtextRightSlot />}
-              {activeSection === 'cardphoto' && <CardphotoRightSlot />}
               {cardPieListPanelOpen && <CardPieLeftSlot />}
             </div>
             <RightListArchiveMiniProvider value={centerStripMirrorValue}>
@@ -2281,7 +2278,6 @@ const App = () => {
                 // activeSection === 'date' && styles.appMainContentRightDate,
               )}
             >
-              {/* {activeSection === 'envelope' && <EnvelopeRightSlot />} */}
               {listPanelOpen && (
                 <CartListPanel
                   onSelectEntry={handleCartListSelectEntry}
@@ -2289,8 +2285,9 @@ const App = () => {
                 />
               )}
               <HistoryListRightSlot onSelectEntry={handleHistoryListSelectEntry} />
-              {/* {activeSection === 'cardtext' && <CardtextRightSlot />} */}
-              {/* {activeSection === 'cardphoto' && <CardphotoRightSlot />} */}
+              {activeSection === 'envelope' && <EnvelopeRightSlot />}
+              {activeSection === 'cardtext' && <CardtextRightSlot />}
+              {activeSection === 'cardphoto' && <CardphotoRightSlot />}
             </div>
             <div className={styles.appMainContentRightUserPanelSlot}>
               <UserLoginRightSlot />
@@ -2480,14 +2477,6 @@ function DesktopFactoryTopRow({
           ) : null}
         </div>
       </div>
-      <div
-        className={clsx(
-          styles.appMainContentRightPieSlot,
-          activePieSide === 'right'
-            ? styles.appMainContentRightPieSlot_active
-            : styles.appMainContentRightPieSlot_inactive,
-        )}
-      />
     </>
   )
 }
