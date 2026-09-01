@@ -1,9 +1,10 @@
 @use '@styles/config/colors' as *;
 
-/** Fade out / fade in aroma preview in the central CardPie when the slot changes. */
+/** Aroma cell image in the central CardPie slot. */
 .preview {
   position: absolute;
   inset: 0;
+  z-index: 1;
   width: 100%;
   height: 100%;
   display: flex;
@@ -13,7 +14,7 @@
   padding: 0.35rem;
   overflow: hidden;
   background-color: #fff;
-  opacity: 0;
+  opacity: 1;
 
   img {
     display: block;
@@ -23,28 +24,7 @@
   }
 }
 
-.fadeIn {
-  animation: aromaCardPiePreviewFadeIn 200ms ease forwards;
-}
-
 .fadeOut {
-  animation: aromaCardPiePreviewFadeOut 200ms ease forwards;
-}
-
-@keyframes aromaCardPiePreviewFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes aromaCardPiePreviewFadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
+  opacity: 0;
+  transition: opacity 200ms ease;
 }

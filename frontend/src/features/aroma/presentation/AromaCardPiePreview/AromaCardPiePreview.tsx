@@ -6,36 +6,22 @@ import styles from './AromaCardPiePreview.module.scss'
 export const AromaCardPiePreview: React.FC<{
   preview: AromaCardPiePreviewState
 }> = ({ preview }) => {
+  const image = preview.mounted ?? preview.target
+
   return (
     <div
       className={clsx(
         styles.preview,
-        preview.phase === 'in' && styles.fadeIn,
         preview.phase === 'out' && styles.fadeOut,
       )}
-      style={
-        preview.phase === 'shown'
-          ? { opacity: 1 }
-          : preview.phase === 'hidden'
-            ? { opacity: 0 }
-            : {
-                animationDuration: `${preview.fadeMs}ms`,
-              }
-      }
-      aria-label={
-        preview.mounted != null ? 'Selected aroma preview' : undefined
-      }
-      aria-hidden={preview.mounted == null ? true : undefined}
+      aria-label={image != null ? 'Selected aroma preview' : undefined}
+      aria-hidden={image == null ? true : undefined}
     >
-      {preview.mounted != null ? (
+      {image != null ? (
         <img
-          key={preview.mounted.index}
-          src={preview.mounted.src}
-          alt={
-            preview.mounted.index === 0
-              ? ''
-              : `Aroma slot ${preview.mounted.index}`
-          }
+          key={image.index}
+          src={image.src}
+          alt={image.index === 0 ? '' : `Aroma slot ${image.index}`}
           decoding="async"
           draggable={false}
         />

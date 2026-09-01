@@ -535,8 +535,12 @@
   flex-direction: column;
   align-items: stretch;
   gap: var(--desktop-factory-section-gap);
-  width: var(--card-width, 100%);
+  width: calc(
+    var(--card-width, 100%) + 2 * #{iconButton.$toolbar-factory-row-inset-inline}
+  );
   max-width: 100%;
+  padding-inline: iconButton.$toolbar-factory-row-inset-inline;
+  padding-bottom: 0.5rem;
   box-sizing: border-box;
   // TEMP debug: factory stack (toolbar + section edit)
   outline: 1px solid orange;
