@@ -103,7 +103,10 @@ export const useRecordSizeCard = (
           ),
         })
         const currentRemSize = remSize ? remSize : 16
-        const slotEl = elementForm.parentElement ?? elementForm
+        const slotEl =
+          elementForm.closest('[data-desktop-factory-slot]') ??
+          elementForm.parentElement ??
+          elementForm
         const slotStyle = getComputedStyle(slotEl)
         const slotPadX =
           (Number.parseFloat(slotStyle.paddingLeft) || 0) +
@@ -162,8 +165,11 @@ export const useRecordSizeCard = (
 
       resizeObserver = new ResizeObserver(() => updateSize())
       resizeObserver.observe(elementForm)
-      if (elementForm.parentElement) {
-        resizeObserver.observe(elementForm.parentElement)
+      const desktopSlot =
+        elementForm.closest('[data-desktop-factory-slot]') ??
+        elementForm.parentElement
+      if (desktopSlot instanceof HTMLElement) {
+        resizeObserver.observe(desktopSlot)
       }
       if (elementCardPanel) {
         resizeObserver.observe(elementCardPanel)

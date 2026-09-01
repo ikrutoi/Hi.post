@@ -902,7 +902,7 @@ function* preserveFormDraftFromViewOnClose(
   }
 }
 
-/** Сохранить адрес в viewDraft до пересинка книги (inList → outList). */
+/** Сохранить адрес в viewDraft и formDraft до пересинка книги (inList → outList). */
 function* preserveAddressViewDraftForOutList(
   section: 'senderView' | 'recipientView',
 ): SagaIterator {
@@ -913,10 +913,16 @@ function* preserveAddressViewDraftForOutList(
 
   if (section === 'senderView') {
     yield put(setSenderViewDraft(address))
+    if (addressFieldsHaveData(address)) {
+      yield put(setSenderFormDraft(address))
+    }
     return
   }
 
   yield put(setRecipientViewDraft(address))
+  if (addressFieldsHaveData(address)) {
+    yield put(setRecipientFormDraft(address))
+  }
   const recipientViewId: string | null = yield select(selectRecipientViewId)
   if (recipientViewId == null) return
 
@@ -1470,7 +1476,6 @@ function* handleEnvelopeToolbarAction(
         )
         yield put(incrementAddressTemplatesReloadVersion())
         yield put(incrementAddressBookReloadVersion())
-        yield put(clearSenderFormData())
         const isMobileLayout: boolean = yield select(selectIsMobileLayout)
         if (!isMobileLayout) {
           yield* ensureAddressListPanelOpen('sender')
@@ -1520,7 +1525,6 @@ function* handleEnvelopeToolbarAction(
         )
         yield put(incrementAddressTemplatesReloadVersion())
         yield put(incrementAddressBookReloadVersion())
-        yield put(clearRecipientFormData())
         const isMobileLayout: boolean = yield select(selectIsMobileLayout)
         if (!isMobileLayout) {
           yield* ensureAddressListPanelOpen('recipients')

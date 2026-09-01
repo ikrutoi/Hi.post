@@ -104,8 +104,8 @@ import { formatAddressPreviewLines } from '@envelope/addressBook/presentation/ad
 import { listStatusIsInQuickAddressBook } from '@envelope/domain/helpers'
 import { clearViewAroma } from '@aroma/infrastructure/state'
 import { selectViewAroma } from '@aroma/infrastructure/selectors'
-import { useMobileAromaPreviewGate } from '@aroma/application/hooks'
-import { getAromaImage } from '@entities/aroma/mappers/aromaImageMap'
+import { useAromaCardPiePreview } from '@aroma/application/hooks'
+import { AromaCardPiePreview } from '@aroma/presentation/AromaCardPiePreview/AromaCardPiePreview'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { dispatchCardPieToolbarIconState } from '@toolbar/application/syncCardPieToolbarIcons'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
@@ -314,7 +314,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const recipientView = useAppSelector(selectRecipientView)
   const senderEntries = useAppSelector(selectSenderEntriesState)
   const recipientEntries = useAppSelector(selectRecipientEntriesState)
-  const viewAroma = useAppSelector(selectViewAroma)
   const activeCartPostcardCount = useAppSelector(selectActiveCartPostcardCount)
   const blockedCartPostcardCount = useAppSelector(selectBlockedCartPostcardCount)
   const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
@@ -607,15 +606,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const mobileAddressPiePreview =
     mobileAddressListTemplatePreview ?? mobileRecipientsFormPreview
 
-  const mobileAromaPreview = useMemo(() => {
-    if (activeSection !== 'aroma') return null
-    if (!viewAroma) return null
-    const src = getAromaImage(viewAroma.index)
-    if (!src) return null
-    return { index: viewAroma.index, src }
-  }, [activeSection, viewAroma])
-
-  const mobileAromaPreviewGate = useMobileAromaPreviewGate(mobileAromaPreview)
+  const aromaCardPiePreview = useAromaCardPiePreview()
 
   const mobileCentralPieDisplay = useMemo(():
     | 'archive'
@@ -626,10 +617,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     | 'emptyArchive'
     | 'assembly' => {
     /** Same as left factory edit: selected aroma cell fills the central CardPie. */
-    if (
-      mobileAromaPreview != null ||
-      mobileAromaPreviewGate.mounted != null
-    ) {
+    if (aromaCardPiePreview.active) {
       return 'aromaPreview'
     }
     if (mobileCentralArchivePreview != null) return 'archive'
@@ -647,8 +635,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     }
     return 'assembly'
   }, [
-    mobileAromaPreview,
-    mobileAromaPreviewGate.mounted,
+    aromaCardPiePreview.active,
     mobileCentralArchivePreview,
     mobileCardphotoListTemplatePreview,
     mobileCardtextListChromeActive,
@@ -1357,48 +1344,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                           </div>
                         )
                       ) : mobileCentralPieDisplay === 'aromaPreview' ? (
-                        <div
-                          className={clsx(
-                            styles.mobileAromaPreview,
-                            mobileAromaPreviewGate.phase === 'in' &&
-                              styles.mobileAromaPreviewFadeIn,
-                            mobileAromaPreviewGate.phase === 'out' &&
-                              styles.mobileAromaPreviewFadeOut,
-                          )}
-                          style={
-                            mobileAromaPreviewGate.phase === 'shown'
-                              ? { opacity: 1 }
-                              : mobileAromaPreviewGate.phase === 'hidden'
-                                ? { opacity: 0 }
-                                : {
-                                    animationDuration: `${mobileAromaPreviewGate.fadeMs}ms`,
-                                  }
-                          }
-                          aria-label={
-                            mobileAromaPreviewGate.mounted != null
-                              ? 'Selected aroma preview'
-                              : undefined
-                          }
-                          aria-hidden={
-                            mobileAromaPreviewGate.mounted == null
-                              ? true
-                              : undefined
-                          }
-                        >
-                          {mobileAromaPreviewGate.mounted != null ? (
-                            <img
-                              key={mobileAromaPreviewGate.mounted.index}
-                              src={mobileAromaPreviewGate.mounted.src}
-                              alt={
-                                mobileAromaPreviewGate.mounted.index === 0
-                                  ? ''
-                                  : `Aroma slot ${mobileAromaPreviewGate.mounted.index}`
-                              }
-                              decoding="async"
-                              draggable={false}
-                            />
-                          ) : null}
-                        </div>
+                        <AromaCardPiePreview preview={aromaCardPiePreview} />
                       ) : mobileCentralPieDisplay === 'emptyArchive' ? (
                         <div
                           className={styles.mobileListArchiveEmptyPlaceholder}

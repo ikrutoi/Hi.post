@@ -279,9 +279,16 @@
 
 :global([data-shell-layout='mobile']) {
   .header {
-    left: var(--mobile-factory-toolbar-inset-inline, 0.5rem);
+    left: var(
+      --mobile-factory-toolbar-inset-inline,
+      #{iconButton.$toolbar-factory-row-inset-inline}
+    );
     width: calc(
-      100% - 2 * var(--mobile-factory-toolbar-inset-inline, 0.5rem)
+      100% - 2 *
+        var(
+          --mobile-factory-toolbar-inset-inline,
+          #{iconButton.$toolbar-factory-row-inset-inline}
+        )
     );
   }
 

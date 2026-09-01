@@ -24,6 +24,9 @@ import {
 } from '@date/calendar/infrastructure/selectors'
 import { MobileCardPieGutterMinis } from '@layout/presentation/MobileAppShell/MobileCardPieGutterMinis'
 import { useMobilePlanCardPies } from '@layout/presentation/MobileAppShell/useMobilePlanCardPies'
+import { useAromaCardPiePreview } from '@aroma/application/hooks'
+import { AromaCardPiePreview } from '@aroma/presentation/AromaCardPiePreview/AromaCardPiePreview'
+import { clearViewAroma } from '@aroma/infrastructure/state'
 import { CardSectionEditor } from '@features/cardSectionEditor/presentation/CardSectionEditor'
 import { FactoryUpperToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import {
@@ -2188,7 +2191,7 @@ const App = () => {
             ref={mainRef}
             className={styles.appMain}
             style={
-              sizeCard?.width != null
+              sizeCard?.width != null && sizeCard.width > 0
                 ? ({
                     '--card-width': `${sizeCard.width}px`,
                   } as React.CSSProperties)
@@ -2241,24 +2244,29 @@ const App = () => {
                     postcardPieCartToolbarStateOverride
                   }
                 />
-                <div className={clsx(styles.appMainContentCenter)}>
-                  {!isMobileLayout ? (
-                    <div className={styles.mainCardSectionToolbar}>
-                      <div className={styles.mainCardSectionToolbarRow}>
-                        <FactoryUpperToolbar />
+                <div
+                  className={clsx(styles.appMainContentCenter)}
+                  data-desktop-factory-slot="true"
+                >
+                  <div className={styles.mainCardFactoryStack}>
+                    {!isMobileLayout ? (
+                      <div className={styles.mainCardSectionToolbar}>
+                        <div className={styles.mainCardSectionToolbarRow}>
+                          <FactoryUpperToolbar />
+                        </div>
+                        <div
+                          className={styles.mainCardSectionToolbarDivider}
+                          aria-hidden
+                        />
+                        <div
+                          className={styles.mainCardSectionToolbarRow}
+                          aria-hidden
+                        />
                       </div>
-                      <div
-                        className={styles.mainCardSectionToolbarDivider}
-                        aria-hidden
-                      />
-                      <div
-                        className={styles.mainCardSectionToolbarRow}
-                        aria-hidden
-                      />
+                    ) : null}
+                    <div ref={formRef} className={clsx(styles.mainForm)}>
+                      <CardSectionEditor />
                     </div>
-                  ) : null}
-                  <div ref={formRef} className={clsx(styles.mainForm)}>
-                    <CardSectionEditor />
                   </div>
                 </div>
               </div>
@@ -2355,6 +2363,7 @@ function DesktopFactoryTopRow({
     assemblyOverviewPie,
     selectPlanPie,
   } = useMobilePlanCardPies()
+  const aromaCardPiePreview = useAromaCardPiePreview()
   const handleEditorPieToolbarAction = useEditorPieAddCartHandler({
     planPies,
     selectedPlanPie,
@@ -2381,6 +2390,7 @@ function DesktopFactoryTopRow({
       if (historyListPanelOpen) {
         dispatch(setHistoryListPanelOpen(false))
       }
+      dispatch(clearViewAroma())
       selectPlanPie(id)
       if (pie.dispatchDate != null) {
         dispatch(
@@ -2420,7 +2430,9 @@ function DesktopFactoryTopRow({
       <div ref={cardPanelRef} className={styles.appMainTopCenterPanel}>
         <div className={styles.desktopCentralPieRow}>
           <div className={styles.desktopCentralPieWrap}>
-            {showArchivePie ? (
+            {aromaCardPiePreview.active ? (
+              <AromaCardPiePreview preview={aromaCardPiePreview} />
+            ) : showArchivePie ? (
               <CardPie
                 isProcessed={false}
                 status={rightArchivePiePostcardStatus}

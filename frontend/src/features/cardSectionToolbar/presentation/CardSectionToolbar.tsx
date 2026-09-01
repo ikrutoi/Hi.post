@@ -94,8 +94,7 @@ export const CardSectionToolbar: React.FC = () => {
     showCalendarToolbar && !isMobileLayout
   const showMobileDateCalendarNav =
     showCalendarToolbar && isMobileLayout
-  const showMobileAromaUpperToolbar =
-    activeSection === 'aroma' && isMobileLayout
+  const showAromaUpperToolbar = activeSection === 'aroma'
 
   const handleCardphotoCreateReturn = useCallback(
     (key: IconKey) => {
@@ -173,7 +172,7 @@ export const CardSectionToolbar: React.FC = () => {
           <Toolbar section="cardtext" />
         </div>
       )}
-      {showMobileAromaUpperToolbar ? (
+      {showAromaUpperToolbar ? (
         <div
           className={clsx(
             styles.cardSectionToolbarAromaUpper,

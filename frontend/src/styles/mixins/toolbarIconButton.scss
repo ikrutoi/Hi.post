@@ -4,7 +4,7 @@
  */
 
 /** Desktop shell layout — scale toolbar glyphs + hit-areas (mobile keeps 100%). */
-$toolbar-desktop-scale: 0.8;
+$toolbar-desktop-scale: 0.9;
 
 $toolbar-hit-size-desktop: 1.7rem;
 $toolbar-icon-size-desktop: 0.85rem;
@@ -58,6 +58,48 @@ $toolbar-mobile-right-sidebar-stack-gap-authed: 0.5rem;
 
 /** Horizontal spacing between icon keys in mobile factory / section toolbars. */
 $toolbar-mobile-toolbar-key-margin-inline: 0.5rem;
+
+/** Factory upper/lower row inset from the container edge (edit + postcardEdit). */
+$toolbar-factory-row-inset-inline: 1rem;
+
+/**
+ * Factory upper/lower row inset — same for edit icons and postcardEdit (cardPieEdit).
+ * Row padding is the only edge inset; strip toolbar/key extra padding and margins.
+ */
+@mixin toolbar-factory-edge-key-insets {
+  padding-inline: var(
+    --mobile-factory-toolbar-inset-inline,
+    #{$toolbar-factory-row-inset-inline}
+  );
+  box-sizing: border-box;
+
+  :global(
+      [class*='toolbar']:not([class*='toolbarKey']):not(
+          [class*='toolbarGroup']
+        ):not([class*='toolbarBadge']):not([class*='toolbarIcon'])
+    ) {
+    padding-inline: 0;
+    margin-inline: 0;
+  }
+
+  :global(
+      [class*='toolbar']
+        [class*='toolbarGroup']:first-child
+        [class*='toolbarKey']:first-child
+    ) {
+    margin-left: 0;
+    margin-inline-start: 0;
+  }
+
+  :global(
+      [class*='toolbar']
+        [class*='toolbarGroup']:last-child
+        [class*='toolbarKey']:last-child
+    ) {
+    margin-right: 0;
+    margin-inline-end: 0;
+  }
+}
 /** Gap between keys in compact mobile toolbar rows (e.g. CardPie bottom bar). */
 $toolbar-mobile-toolbar-group-gap: 0.35rem;
 

@@ -127,6 +127,7 @@
 
   :global([data-shell-layout='desktop']) & {
     border-radius: 0.5rem 0.5rem 0 0;
+    padding-inline: 0;
   }
 
   > * {

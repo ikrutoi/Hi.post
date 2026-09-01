@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
 
 .shell {
   position: relative;
@@ -28,7 +29,6 @@
   display: flex;
   align-items: center;
   width: 100%;
-  padding-inline: var(--mobile-factory-toolbar-inset-inline, 0.5rem);
 }
 
 .rowLower {
@@ -53,6 +53,8 @@
     box-sizing: border-box;
   }
 
+  @include iconButton.toolbar-factory-edge-key-insets;
+
   // Только корень Toolbar (не toolbarKey / toolbarGroup / toolbarBadge).
   :global(
       [class*='toolbar']:not([class*='toolbarKey']):not(
@@ -70,7 +72,10 @@
 
 .rowDivider {
   flex: 0 0 1px;
-  margin-inline: 0.5rem;
+  margin-inline: var(
+    --mobile-factory-toolbar-inset-inline,
+    #{iconButton.$toolbar-factory-row-inset-inline}
+  );
   background-color: var(--mobile-section-surface-bg, $color-section-light);
 }
 
