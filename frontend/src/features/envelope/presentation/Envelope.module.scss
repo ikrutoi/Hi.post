@@ -21,6 +21,7 @@
     overflow: hidden;
     min-height: 0;
     box-shadow: none;
+    border: none;
   }
 
   :global([data-shell-layout='mobile']) &:not([data-envelope-mobile-form='true']) {

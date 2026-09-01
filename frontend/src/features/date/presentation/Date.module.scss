@@ -26,6 +26,7 @@ $mobile-date-calendar-chrome-gap: 0.125rem;
     overflow: hidden;
     min-height: 0;
     box-shadow: none;
+    border: none;
   }
 
   :global([data-shell-layout='mobile']) & {

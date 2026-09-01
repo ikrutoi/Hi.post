@@ -63,6 +63,7 @@
     padding: 0;
     overflow: hidden;
     box-shadow: none;
+    border: none;
   }
 
   :global([data-shell-layout='mobile']) & {
