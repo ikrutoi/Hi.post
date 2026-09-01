@@ -2,14 +2,23 @@ import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react'
 import clsx from 'clsx'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { isPostcardPieAllComplete } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
-import type { MobilePlanCardPie } from './useMobilePlanCardPies'
+import {
+  buildEmptyGutterPlanPie,
+  type MobilePlanCardPie,
+} from './useMobilePlanCardPies'
 import styles from './MobileAppShell.module.scss'
+
+/** 3×0.5rem insets + 1rem scroll gutter — matches desktop grid padding/gap. */
+const DESKTOP_MINI_INSET_REM = 0.5
+const DESKTOP_MINI_SCROLL_GUTTER_REM = 1
+const DESKTOP_MINI_COLUMNS = 3
 
 type MobileCardPieGutterMinisProps = {
   layout?: 'mobile' | 'desktop'
@@ -44,6 +53,25 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
     const trackRef = useRef<HTMLDivElement | null>(null)
     const [thumbHeight, setThumbHeight] = useState(0)
     const [thumbTop, setThumbTop] = useState(0)
+    const [desktopMiniSize, setDesktopMiniSize] = useState(0)
+
+    const displayPies = useMemo(
+      () => (planPies.length > 0 ? planPies : [buildEmptyGutterPlanPie()]),
+      [planPies],
+    )
+
+    const updateDesktopMiniSize = useCallback(() => {
+      const list = listRef.current
+      if (list == null || layout !== 'desktop') return
+      const rem =
+        parseFloat(getComputedStyle(document.documentElement).fontSize) || 16
+      const insets =
+        DESKTOP_MINI_INSET_REM * rem * DESKTOP_MINI_COLUMNS +
+        DESKTOP_MINI_SCROLL_GUTTER_REM * rem
+      setDesktopMiniSize(
+        Math.max(0, (list.clientWidth - insets) / DESKTOP_MINI_COLUMNS),
+      )
+    }, [layout])
 
     const updateThumb = useCallback(() => {
       const list = listRef.current
@@ -77,7 +105,8 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
 
     useLayoutEffect(() => {
       updateThumb()
-    }, [updateThumb, planPies])
+      updateDesktopMiniSize()
+    }, [updateThumb, updateDesktopMiniSize, displayPies])
 
     useEffect(() => {
       const list = listRef.current
@@ -90,6 +119,7 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
 
       const onResize = () => {
         updateThumb()
+        updateDesktopMiniSize()
       }
       window.addEventListener('resize', onResize)
 
@@ -97,6 +127,7 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
         typeof ResizeObserver !== 'undefined'
           ? new ResizeObserver(() => {
               updateThumb()
+              updateDesktopMiniSize()
             })
           : null
       resizeObserver?.observe(list)
@@ -106,20 +137,27 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
         window.removeEventListener('resize', onResize)
         resizeObserver?.disconnect()
       }
-    }, [updateThumb])
+    }, [updateThumb, updateDesktopMiniSize])
 
     const showThumb = thumbHeight > 0
 
     return (
-      <div
-        className={clsx(
-          styles.mobilePieGutterMiniShell,
-          layout === 'desktop' && styles.mobilePieGutterMiniShellDesktop,
-        )}
+        <div
+          className={clsx(
+            styles.mobilePieGutterMiniShell,
+            layout === 'desktop' && styles.mobilePieGutterMiniShellDesktop,
+          )}
+        style={
+          layout === 'desktop' && desktopMiniSize > 0
+            ? ({
+                '--desktop-left-mini-pie-size': `${desktopMiniSize}px`,
+              } as React.CSSProperties)
+            : undefined
+        }
         aria-label="Card pie plan"
       >
         <div ref={listRef} className={styles.mobilePieGutterMiniList}>
-          {planPies.map(({ id, inner, sections }) => (
+          {displayPies.map(({ id, inner, sections }) => (
             <button
               key={id}
               type="button"

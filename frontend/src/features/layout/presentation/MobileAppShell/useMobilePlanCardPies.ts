@@ -41,6 +41,19 @@ export type MobilePlanCardPie = {
   dispatchDate: DispatchDate | null
 }
 
+export const EMPTY_GUTTER_PLAN_PIE_ID = 'empty-gutter-pie'
+
+export function buildEmptyGutterPlanPie(): MobilePlanCardPie {
+  const inner = emptyCardPieInnerData()
+  return {
+    id: EMPTY_GUTTER_PLAN_PIE_ID,
+    dispatchBranchKey: null,
+    dispatchDate: null,
+    inner,
+    sections: buildPieSectionFlagsFromInner(inner, false),
+  }
+}
+
 function buildDefaultMobilePlanPie(
   baseInner: CardPieInnerData,
   envelopeComplete: boolean,
@@ -177,10 +190,9 @@ export function useMobilePlanCardPies() {
 
     if (mapped.length > 0) return mapped
 
-    return [assemblyOverviewPie]
+    return [buildEmptyGutterPlanPie()]
   }, [
     assemblyBase,
-    assemblyOverviewPie,
     entries,
     envelopeRecipients,
     recipientEntries,

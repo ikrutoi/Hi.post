@@ -2207,9 +2207,6 @@ const App = () => {
             <DateToolbarListDateBadgeSync />
             <RightSidebarHistoryBadgeSync />
             <CalendarModeToolbarBadgesSync />
-            <div className={styles.appMainContentLeftListSlot} aria-hidden>
-              <div className={styles.appMainContentLeftListPlaceholder} />
-            </div>
             <div
               className={clsx(
                 styles.appMainContentLeft,
@@ -2359,6 +2356,7 @@ function DesktopFactoryTopRow({
   onPostcardPieCartToolbarAction,
   postcardPieCartToolbarStateOverride,
 }: DesktopFactoryTopRowProps) {
+  const dispatch = useAppDispatch()
   const {
     planPies,
     selectedPlanPie,
@@ -2378,41 +2376,52 @@ function DesktopFactoryTopRow({
   const showEmptyArchive =
     !showArchivePie && (listPanelOpen || historyListPanelOpen)
   const keepPlanAccent = !showArchivePie && !showEmptyArchive
-  const highlightPlanPieId = keepPlanAccent
-    ? selectedPlanPieId ?? (planPies.length === 1 ? planPies[0]?.id ?? null : null)
-    : null
-  const highlightAllPlanPies =
-    keepPlanAccent && planPies.length > 1 && selectedPlanPieId == null
+  const highlightPlanPieId = keepPlanAccent ? selectedPlanPieId : null
 
   const handleSelectPlanPie = useCallback(
     (id: string) => {
-      selectPlanPie(id)
+      const pie = planPies.find((entry) => entry.id === id)
+      if (pie == null) return
+
       onBeforeLeftPieInteraction()
+      if (listPanelOpen) {
+        dispatch(setCartListPanelOpen(false))
+      }
+      if (historyListPanelOpen) {
+        dispatch(setHistoryListPanelOpen(false))
+      }
+      selectPlanPie(id)
+      if (pie.dispatchDate != null) {
+        dispatch(
+          updateLastViewedCalendarDate({
+            year: pie.dispatchDate.year,
+            month: pie.dispatchDate.month,
+          }),
+        )
+      }
     },
-    [onBeforeLeftPieInteraction, selectPlanPie],
+    [
+      dispatch,
+      historyListPanelOpen,
+      listPanelOpen,
+      onBeforeLeftPieInteraction,
+      planPies,
+      selectPlanPie,
+    ],
   )
 
   const assemblyPie = selectedPlanPie ?? assemblyOverviewPie
 
   return (
     <>
-      <div
-        className={clsx(
-          styles.appMainContentLeftPieSlot,
-          showTopCardStripFullSpan &&
-            styles.appMainContentLeftPieSlot_copyLocked,
-          activePieSide === 'left'
-            ? styles.appMainContentLeftPieSlot_active
-            : styles.appMainContentLeftPieSlot_inactive,
-        )}
-      >
-        <div className={styles.desktopPlanGutter}>
+      <div className={styles.appMainContentLeftListSlot}>
+        <div className={styles.appMainContentLeftListPlaceholder}>
           <MobileCardPieGutterMinis
             layout="desktop"
             planPies={planPies}
             selectedPlanPieId={selectedPlanPieId}
             highlightPlanPieId={highlightPlanPieId}
-            highlightAllPlanPies={highlightAllPlanPies}
+            highlightAllPlanPies={false}
             onSelectPlanPie={handleSelectPlanPie}
           />
         </div>
@@ -2436,6 +2445,7 @@ function DesktopFactoryTopRow({
               <div className={styles.desktopCentralPieEmpty} aria-hidden />
             ) : (
               <CardPie
+                key={selectedPlanPieId ?? 'assembly-overview'}
                 isProcessed
                 fillContainer
                 station="left"
