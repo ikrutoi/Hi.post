@@ -25,8 +25,7 @@ import {
 import { MobileCardPieGutterMinis } from '@layout/presentation/MobileAppShell/MobileCardPieGutterMinis'
 import { useMobilePlanCardPies } from '@layout/presentation/MobileAppShell/useMobilePlanCardPies'
 import { CardSectionEditor } from '@features/cardSectionEditor/presentation/CardSectionEditor'
-import { CardSectionToolbar } from '@features/cardSectionToolbar/presentation/CardSectionToolbar'
-import { ArchivePeekUpperToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar/ArchivePeekUpperToolbar'
+import { FactoryUpperToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import {
   CartListPanel,
   type CartListPanelItem,
@@ -2246,15 +2245,7 @@ const App = () => {
                   {!isMobileLayout ? (
                     <div className={styles.mainCardSectionToolbar}>
                       <div className={styles.mainCardSectionToolbarRow}>
-                        {rightPieCardphotoPeekNoToolbar ||
-                        rightPieCardtextPeekNoToolbar ||
-                        rightPieEnvelopePeekNoToolbar ||
-                        rightPieAromaPeekNoToolbar ||
-                        rightPieDatePeekNoToolbar ? (
-                          <ArchivePeekUpperToolbar />
-                        ) : (
-                          <CardSectionToolbar />
-                        )}
+                        <FactoryUpperToolbar />
                       </div>
                       <div
                         className={styles.mainCardSectionToolbarDivider}

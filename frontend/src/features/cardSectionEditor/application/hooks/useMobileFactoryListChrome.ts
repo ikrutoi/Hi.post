@@ -108,9 +108,9 @@ export function useMobileFactoryListChrome() {
   /**
    * Right cart envelope: peek chrome keeps cart strip/list context, but
    * session apply-peek / EnvelopeInnerToolbar match left (not list-row peek).
+   * Layout-agnostic so desktop factory upper toolbar can pick EnvelopeInner too.
    */
-  const archiveCartEnvelopeSimplifiedPeek =
-    isMobileLayout &&
+  const cartEnvelopeInnerPeekToolbar =
     activeSection === 'envelope' &&
     rightPieEnvelopePeekNoToolbar &&
     !cardPieEditEngaged &&
@@ -118,12 +118,14 @@ export function useMobileFactoryListChrome() {
       listRowPostcardStatus === 'cart' ||
       listRowPostcardStatus === 'cartBlocked')
 
+  const archiveCartEnvelopeSimplifiedPeek =
+    isMobileLayout && cartEnvelopeInnerPeekToolbar
+
   /**
    * Сборная (левый pie): applied cardtext на открытке → упрощённый peek chrome.
    * postcardEdit снимает applied → обычный cardtextView.
    */
   const assemblyCardtextSimplifiedPeek =
-    isMobileLayout &&
     activeSection === 'cardtext' &&
     activePieSide === 'left' &&
     !cardPieEditEngaged &&
@@ -141,7 +143,6 @@ export function useMobileFactoryListChrome() {
     cardphotoAssetData.id === cardphotoAppliedData.id
 
   const assemblyCardphotoSimplifiedPeek =
-    isMobileLayout &&
     activeSection === 'cardphoto' &&
     activePieSide === 'left' &&
     !cardPieEditEngaged &&
@@ -153,8 +154,7 @@ export function useMobileFactoryListChrome() {
    * После Apply recipient — postcardEdit. Left assembly + right cart envelope sandbox.
    */
   const assemblyRecipientSimplifiedPeek =
-    (isMobileLayout &&
-      activeSection === 'envelope' &&
+    (activeSection === 'envelope' &&
       activePieSide === 'left' &&
       !cardPieEditEngaged &&
       !mobileArchiveSectionPeek &&
@@ -172,8 +172,7 @@ export function useMobileFactoryListChrome() {
    * После Apply sender — postcardEdit. Left assembly + right cart envelope sandbox.
    */
   const assemblySenderSimplifiedPeek =
-    (isMobileLayout &&
-      activeSection === 'envelope' &&
+    (activeSection === 'envelope' &&
       activePieSide === 'left' &&
       !cardPieEditEngaged &&
       !mobileArchiveSectionPeek &&
@@ -189,7 +188,6 @@ export function useMobileFactoryListChrome() {
    * Сборная: после Apply aroma — картинка на всю секцию + postcardEdit.
    */
   const assemblyAromaSimplifiedPeek =
-    isMobileLayout &&
     activeSection === 'aroma' &&
     activePieSide === 'left' &&
     !cardPieEditEngaged &&
@@ -201,7 +199,6 @@ export function useMobileFactoryListChrome() {
    * Сборная: после Apply даты — peek даты + postcardEdit (без календаря/тулбаров).
    */
   const assemblyDateSimplifiedPeek =
-    isMobileLayout &&
     activeSection === 'date' &&
     activePieSide === 'left' &&
     !cardPieEditEngaged &&
@@ -212,7 +209,8 @@ export function useMobileFactoryListChrome() {
     assemblyCardtextSimplifiedPeek ||
     assemblyCardphotoSimplifiedPeek ||
     assemblyAromaSimplifiedPeek ||
-    assemblyDateSimplifiedPeek
+    assemblyDateSimplifiedPeek ||
+    assemblyRecipientSimplifiedPeek
 
   /**
    * postcardEdit / cardPieEdit in upper peek: left assembly apply-peek, or
@@ -400,6 +398,52 @@ export function useMobileFactoryListChrome() {
     [envelopeAddressListVisible],
   )
 
+  /**
+   * Upper-row picker (desktop + mobile). Overlay slots stay `showMobile*`.
+   */
+  const showAddressListFactoryUpperToolbar = useMemo(
+    () => activeSection === 'envelope' && addressListPanelOpen,
+    [activeSection, addressListPanelOpen],
+  )
+
+  const showCardphotoListFactoryUpperToolbar = useMemo(
+    () =>
+      activeSection === 'cardphoto' &&
+      cardphotoListPanelOpen &&
+      !rightPieCardphotoPeekNoToolbar &&
+      !mobileSectionSimplifiedPeek,
+    [
+      activeSection,
+      cardphotoListPanelOpen,
+      rightPieCardphotoPeekNoToolbar,
+      mobileSectionSimplifiedPeek,
+    ],
+  )
+
+  const showCardtextListFactoryUpperToolbar = useMemo(
+    () =>
+      activeSection === 'cardtext' &&
+      cardtextListPanelOpen &&
+      !rightPieCardtextPeekNoToolbar &&
+      !mobileSectionSimplifiedPeek,
+    [
+      activeSection,
+      cardtextListPanelOpen,
+      rightPieCardtextPeekNoToolbar,
+      mobileSectionSimplifiedPeek,
+    ],
+  )
+
+  const showCartListFactoryUpperToolbar = useMemo(
+    () => cartListPanelOpen && !mobileDateListChromePeek,
+    [cartListPanelOpen, mobileDateListChromePeek],
+  )
+
+  const showHistoryListFactoryUpperToolbar = useMemo(
+    () => historyListPanelOpen && !mobileDateListChromePeek,
+    [historyListPanelOpen, mobileDateListChromePeek],
+  )
+
   const showMobileTemplateListInCentralZone = useMemo(
     () =>
       showMobileSectionTemplateList ||
@@ -421,6 +465,12 @@ export function useMobileFactoryListChrome() {
     showMobileAddressListFactoryChrome,
     showMobileHistoryListFactoryChrome,
     showMobileCartListFactoryChrome,
+    showCardphotoListFactoryUpperToolbar,
+    showCardtextListFactoryUpperToolbar,
+    showAddressListFactoryUpperToolbar,
+    showCartListFactoryUpperToolbar,
+    showHistoryListFactoryUpperToolbar,
+    cartEnvelopeInnerPeekToolbar,
     hideUpperToolbar,
     mobileFactoryChromePeek,
     mobileDateListChromePeek,

@@ -8,6 +8,11 @@ import { setCardtextApplyPeekChrome, setCardtextAppliedData } from '@cardtext/in
 import { clearApply } from '@cardphoto/infrastructure/state'
 import { clearApplied as clearAromaApplied } from '@aroma/infrastructure/state'
 import { clearAppliedDates } from '@date/infrastructure/state'
+import { setRecipientApplied } from '@envelope/recipient/infrastructure/state'
+import { setArchiveRecipientApplied } from '@cardPanel/infrastructure/state'
+import {
+  selectArchiveEnvelopeSandboxActive,
+} from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { useCloseArchiveSectionPeek } from '../../application/hooks/useCloseArchiveSectionPeek'
 import { useMobileFactoryListChrome } from '../../application/hooks/useMobileFactoryListChrome'
@@ -24,7 +29,7 @@ const ARCHIVE_PEEK_UPPER_EDIT_TOOLBAR: ToolbarConfig = [
 
 /**
  * Верхний ряд factory toolbar в упрощённом режиме: только postcardEdit слева
- * (archive peek и сборная cardtext/cardphoto/aroma/date после Apply).
+ * (archive peek и сборная после Apply: cardtext / cardphoto / aroma / date / envelope).
  */
 export const ArchivePeekUpperToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -35,8 +40,10 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
     assemblyCardphotoSimplifiedPeek,
     assemblyAromaSimplifiedPeek,
     assemblyDateSimplifiedPeek,
+    assemblyRecipientSimplifiedPeek,
     showArchivePeekEditToolbar,
   } = useMobileFactoryListChrome()
+  const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
   const {
     requestSectionEditFromPeek,
     rightPieDatePeekNoToolbar,
@@ -56,7 +63,8 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
   const dateTint =
     assemblyDateSimplifiedPeek || rightPieDatePeekNoToolbar
   /** History/list-row envelope peek (cart uses EnvelopeInnerToolbar). */
-  const envelopeTint = rightPieEnvelopePeekNoToolbar
+  const envelopeTint =
+    rightPieEnvelopePeekNoToolbar || assemblyRecipientSimplifiedPeek
 
   const handleAction = useCallback(
     (key: IconKey) => {
@@ -79,6 +87,13 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
         } else if (assemblyDateSimplifiedPeek) {
           /** Peek = даты уже на открытке; postcardEdit снимает apply → календарь. */
           dispatch(clearAppliedDates())
+        } else if (assemblyRecipientSimplifiedPeek) {
+          /** Peek = recipient уже на открытке; postcardEdit снимает apply. */
+          if (sandboxActive) {
+            dispatch(setArchiveRecipientApplied(false))
+          } else {
+            dispatch(setRecipientApplied(false))
+          }
         }
         return false
       }
@@ -88,9 +103,11 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
       assemblyCardphotoSimplifiedPeek,
       assemblyCardtextSimplifiedPeek,
       assemblyDateSimplifiedPeek,
+      assemblyRecipientSimplifiedPeek,
       dispatch,
       isArchiveSectionPeekActive,
       requestSectionEditFromPeek,
+      sandboxActive,
     ],
   )
 

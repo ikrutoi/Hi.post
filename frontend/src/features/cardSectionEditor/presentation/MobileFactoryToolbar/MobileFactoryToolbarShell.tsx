@@ -18,16 +18,8 @@ import {
 import { isCardtextCreateComposerMode } from '@cardtext/domain/cardtextInteractionMode'
 import { useMobileFactoryListChrome } from '../../application/hooks/useMobileFactoryListChrome'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
-import { CardSectionToolbar } from '@features/cardSectionToolbar/presentation/CardSectionToolbar'
-import { CardphotoListMobileFactoryUpperToolbar } from '@cardphoto/presentation/CardphotoListMobileFactoryToolbar'
-import { CardtextListMobileFactoryUpperToolbar } from '@cardtext/presentation/CardtextListMobileFactoryToolbar'
-import { AddressListMobileFactoryUpperToolbar } from '@envelope/addressBook/presentation/AddressListMobileFactoryToolbar'
-import { HistoryListMobileFactoryUpperToolbar } from '@date/presentation/HistoryListMobileFactoryToolbar'
-import { CartListMobileFactoryUpperToolbar } from '@cart/presentation/CartListMobileFactoryToolbar'
-import { EnvelopeInnerToolbar } from '@envelope/presentation/EnvelopeInnerToolbar'
-import { ArchivePeekUpperToolbar } from './ArchivePeekUpperToolbar'
 import { ArchivePeekLowerToolbar } from './ArchivePeekLowerToolbar'
-import { MobileDateCalendarToolbarNav } from '@date/dateHeader/presentation/MobileDateCalendarToolbarNav'
+import { FactoryUpperToolbar } from './FactoryUpperToolbar'
 import { useMobileScenarioToolbarSnapshot } from './MobileScenarioToolbarContext'
 import styles from './MobileFactoryToolbarShell.module.scss'
 
@@ -60,7 +52,6 @@ export const MobileFactoryToolbarShell: React.FC = () => {
     hideUpperToolbar,
     mobileSectionSimplifiedPeek,
     mobileArchiveSectionPeek,
-    archiveCartEnvelopeSimplifiedPeek,
     showMobileCardphotoListFactoryChrome,
     showMobileCardtextListFactoryChrome,
     showMobileAddressListFactoryChrome,
@@ -132,27 +123,7 @@ export const MobileFactoryToolbarShell: React.FC = () => {
     <div className={styles.shell} aria-label="Section toolbars">
       {showUpperRow ? (
         <div className={styles.rowUpper}>
-          {showPeekEmptyToolbarShell ? (
-            archiveCartEnvelopeSimplifiedPeek ? (
-              <EnvelopeInnerToolbar />
-            ) : (
-              <ArchivePeekUpperToolbar />
-            )
-          ) : showMobileCardphotoListFactoryChrome ? (
-            <CardphotoListMobileFactoryUpperToolbar />
-          ) : showMobileCardtextListFactoryChrome ? (
-            <CardtextListMobileFactoryUpperToolbar />
-          ) : showMobileAddressListFactoryChrome ? (
-            <AddressListMobileFactoryUpperToolbar />
-          ) : showMobileCartListFactoryChrome ? (
-            <CartListMobileFactoryUpperToolbar />
-          ) : showMobileHistoryListFactoryChrome ? (
-            <HistoryListMobileFactoryUpperToolbar />
-          ) : showSectionUpperToolbar ? (
-            <CardSectionToolbar />
-          ) : showMobileDateCalendarNavRow ? (
-            <MobileDateCalendarToolbarNav />
-          ) : null}
+          <FactoryUpperToolbar includeDateCalendarNav />
         </div>
       ) : null}
       {showUpperRow ? (
