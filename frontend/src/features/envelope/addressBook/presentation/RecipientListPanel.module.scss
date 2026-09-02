@@ -1,8 +1,8 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
 
-$list-panel-stacked-band-section-toolbar: 4.25rem;
-$list-panel-compact-header-band-section-toolbar: 2.35rem;
+$list-panel-stacked-band-section-toolbar: $desktop-factory-toolbar-stack-height;
+$list-panel-compact-header-band-section-toolbar: $section-inner-toolbar-height-desktop;
 $list-panel-scroll-inset: 0.35rem;
 
 .panel {

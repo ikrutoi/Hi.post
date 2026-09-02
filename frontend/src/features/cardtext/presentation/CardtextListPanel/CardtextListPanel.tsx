@@ -94,6 +94,7 @@ export const CardtextListPanel: React.FC<Props> = ({
           leadIconKey="listCardtext"
           variant="sectionToolbar"
           cardPieListHeaderIcons
+          headerFade="cardtext"
           headerTopRow={
             !isMobileLayout ? (
               <CardtextListMobileFactoryUpperToolbar placement="listHeader" />

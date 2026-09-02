@@ -151,6 +151,7 @@ export const SenderListPanel: React.FC<Props> = ({
           leadIconKey="addressList"
           variant="sectionToolbar"
           cardPieListHeaderIcons
+          headerFade="envelope-sender"
           headerTopRow={
             !isMobileLayout ? (
               <AddressListMobileFactoryUpperToolbar placement="listHeader" />

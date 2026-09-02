@@ -16,6 +16,8 @@ export type ListPanelStackedHeaderProps = {
   headerTopCenter?: ReactNode | null | false
   /** Заменяет всю верхнюю строку (apply / title / return у списков шаблонов). */
   headerTopRow?: ReactNode | null | false
+  /** Section tint + edge fade on the header chrome (photo / text / address lists). */
+  headerFade?: 'cardphoto' | 'cardtext' | 'envelope-recipient' | 'envelope-sender'
   /** Second row under the divider; omit when the panel has no list toolbar. */
   toolbar?: ReactNode | null | false
   /**
@@ -42,6 +44,7 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
   leadIconOverride,
   headerTopCenter,
   headerTopRow,
+  headerFade,
   toolbar,
   showDividerWithoutToolbar = false,
   variant = 'default',
@@ -69,6 +72,7 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
     <div
       className={clsx(
         styles.header,
+        headerFade != null && styles.headerEdgeFade,
         variant === 'sectionToolbar' && styles.headerSectionToolbar,
         cardPieListHeaderIcons && styles.headerCardPieListArchive,
         !hasToolbar &&
@@ -76,6 +80,7 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
             ? styles.headerCompactWithDivider
             : styles.headerCompact),
       )}
+      {...(headerFade != null ? { 'data-header-fade': headerFade } : {})}
     >
       <div
         className={clsx(

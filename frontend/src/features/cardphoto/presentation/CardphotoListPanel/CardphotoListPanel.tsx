@@ -192,6 +192,7 @@ export const CardphotoListPanel: React.FC<Props> = ({
           leadIconKey="listCardphoto"
           variant="sectionToolbar"
           cardPieListHeaderIcons
+          headerFade="cardphoto"
           headerTopRow={
             !isMobileLayout ? (
               <CardphotoListMobileFactoryUpperToolbar placement="listHeader" />
