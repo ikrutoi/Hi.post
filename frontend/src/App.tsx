@@ -35,7 +35,6 @@ import {
   type CartListPanelItem,
 } from './features/cart/presentation/CartListPanel'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
-import { CardPieLeftSlot } from '@features/cardPie/presentation/CardPieLeftSlot'
 import { useEditorPieAddCartHandler } from '@features/cardPie/application/hooks/useEditorPieAddCartHandler'
 import { EditorPieListCardPieBadgeSync } from '@features/cardPie/presentation/EditorPieListCardPieBadgeSync'
 import { DateToolbarListDateBadgeSync } from '@date/presentation/DateToolbarListDateBadgeSync'
@@ -78,7 +77,6 @@ import {
   selectArchiveEnvelopeSandboxActive,
   selectArchiveSandboxRecipient,
 } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
-import { DateRightSlot } from '@date/presentation/DateRightSlot'
 import { HistoryListRightSlot } from '@date/presentation/HistoryListRightSlot'
 import type { HistoryListPanelItem } from '@date/presentation/HistoryListPanel'
 import { CardtextRightSlot } from '@cardtext/presentation/CardtextRightSlot'
@@ -2210,15 +2208,6 @@ const App = () => {
             <DateToolbarListDateBadgeSync />
             <RightSidebarHistoryBadgeSync />
             <CalendarModeToolbarBadgesSync />
-            <div
-              className={clsx(
-                styles.appMainContentLeft,
-                // activeSection === 'date' && styles.appMainContentRightDate,
-              )}
-            >
-              {activeSection === 'date' && <DateRightSlot />}
-              {cardPieListPanelOpen && <CardPieLeftSlot />}
-            </div>
             <RightListArchiveMiniProvider value={centerStripMirrorValue}>
               <div className={styles.rightListArchiveMiniSubtree}>
                 <DesktopFactoryTopRow

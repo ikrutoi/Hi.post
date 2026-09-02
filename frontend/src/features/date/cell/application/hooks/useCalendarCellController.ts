@@ -10,7 +10,6 @@ import {
 import {
   closeDayPanel,
   openDayPanel,
-  setCardPieListPanelOpen,
   setCartDatePickDraftDate,
   setHistoryListPanelOpen,
   setHistoryListSelectedLocalId,
@@ -21,7 +20,6 @@ import {
   selectCartCalendarDatePickMode,
   selectCartDatePickDraftDate,
   selectHistoryListSelectedLocalId,
-  selectIsCardPieListPanelOpen,
   selectIsDateListPanelOpen,
   selectIsHistoryListPanelOpen,
   selectNotebookStripTab,
@@ -41,7 +39,6 @@ import {
 import { resolveCartStripDayPostcardSelection, cartListStatusSegmentForLocalId } from '../../../calendar/application/logic/cartStripDayPostcardSelection'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
-import { dispatchCardPieToolbarIconState } from '@toolbar/application/syncCardPieToolbarIcons'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { shiftMonth } from '../../../calendar/application/helpers'
 import { useDateSwitcherController } from '../../../switcher/application/hooks'
@@ -73,7 +70,6 @@ export const useCalendarCellController = ({
   const openDayPanelState = useAppSelector(selectOpenDayPanel)
   const cartItems = useAppSelector(selectCartItems)
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
-  const cardPieListPanelOpen = useAppSelector(selectIsCardPieListPanelOpen)
   const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const postcardStatuses = useAppSelector(selectPostcardStatuses)
   const cartCalendarDatePickMode = useAppSelector(
@@ -93,35 +89,6 @@ export const useCalendarCellController = ({
 
   const { lastViewedCalendarDate } = useCalendarFacade()
   const { activeSection } = useSectionMenuFacade()
-
-  /** Режим «Дата» на полосе календаря: открыть список CardPie при выборе даты, если панель была закрыта. */
-  const maybeOpenCardPieListAfterDatePick = useCallback(
-    (clickRemovesSelection: boolean) => {
-      if (isMobileLayout) {
-        if (cardPieListPanelOpen) {
-          dispatch(setCardPieListPanelOpen(false))
-          dispatchCardPieToolbarIconState(dispatch, false)
-        }
-        return
-      }
-      if (
-        activeSection !== 'date' ||
-        notebookStripTab === 'cart' ||
-        cardPieListPanelOpen ||
-        clickRemovesSelection
-      ) {
-        return
-      }
-      dispatch(setCardPieListPanelOpen(true))
-    },
-    [
-      activeSection,
-      cardPieListPanelOpen,
-      dispatch,
-      isMobileLayout,
-      notebookStripTab,
-    ],
-  )
   const { actions: actionsSwitcherController } = useDateSwitcherController()
   const { decrementMonth, incrementMonth } = actionsSwitcherController
 
@@ -320,7 +287,6 @@ export const useCalendarCellController = ({
 
       if (applyDispatchDateSelection) {
         chooseDate(dispatchDate)
-        maybeOpenCardPieListAfterDatePick(clickRemovesSelection)
       }
 
       if (dateListPanelOpen) {
@@ -385,7 +351,6 @@ export const useCalendarCellController = ({
 
         if (applyDispatchDateSelection) {
           chooseDate(dispatchDate)
-          maybeOpenCardPieListAfterDatePick(clickRemovesSelection)
         }
 
         if (dateListPanelOpen) {
