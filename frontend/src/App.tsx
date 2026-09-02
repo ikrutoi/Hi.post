@@ -23,7 +23,12 @@ import {
   selectPostcardStatuses,
 } from '@date/calendar/infrastructure/selectors'
 import { MobileCardPieGutterMinis } from '@layout/presentation/MobileAppShell/MobileCardPieGutterMinis'
-import { useMobilePlanCardPies } from '@layout/presentation/MobileAppShell/useMobilePlanCardPies'
+import { resolvePlanPieGutterHighlight } from '@layout/presentation/MobileAppShell/resolvePlanPieGutterHighlight'
+import { runPlanPieCenterCycle } from '@layout/presentation/MobileAppShell/runPlanPieCenterCycle'
+import {
+  EMPTY_GUTTER_PLAN_PIE_ID,
+  useMobilePlanCardPies,
+} from '@layout/presentation/MobileAppShell/useMobilePlanCardPies'
 import { useAromaCardPiePreview } from '@aroma/application/hooks'
 import { AromaCardPiePreview } from '@aroma/presentation/AromaCardPiePreview/AromaCardPiePreview'
 import { clearViewAroma } from '@aroma/infrastructure/state'
@@ -2363,6 +2368,7 @@ function DesktopFactoryTopRow({
     selectedPlanPieId,
     assemblyOverviewPie,
     selectPlanPie,
+    cyclePlanPie,
   } = useMobilePlanCardPies()
   const aromaCardPiePreview = useAromaCardPiePreview()
   const handleEditorPieToolbarAction = useEditorPieAddCartHandler({
@@ -2377,7 +2383,18 @@ function DesktopFactoryTopRow({
   const showEmptyArchive =
     !showArchivePie && (listPanelOpen || historyListPanelOpen)
   const keepPlanAccent = !showArchivePie && !showEmptyArchive
-  const highlightPlanPieId = keepPlanAccent ? selectedPlanPieId : null
+  const canCyclePlanPies =
+    planPies.filter((pie) => pie.id !== EMPTY_GUTTER_PLAN_PIE_ID).length > 1
+  const { highlightPlanPieId, highlightAllPlanPies } = useMemo(
+    () =>
+      resolvePlanPieGutterHighlight({
+        keepAccent: keepPlanAccent,
+        planPieCount: planPies.length,
+        firstPlanPieId: planPies[0]?.id ?? null,
+        selectedPlanPieId,
+      }),
+    [keepPlanAccent, planPies, selectedPlanPieId],
+  )
 
   const handleSelectPlanPie = useCallback(
     (id: string) => {
@@ -2412,6 +2429,15 @@ function DesktopFactoryTopRow({
     ],
   )
 
+  const handleCentralPieCenterClick = useCallback(() => {
+    if (canCyclePlanPies) {
+      runPlanPieCenterCycle({ dispatch, planPies, cyclePlanPie })
+      return
+    }
+
+    onLeftPieCenterClick()
+  }, [canCyclePlanPies, cyclePlanPie, dispatch, onLeftPieCenterClick, planPies])
+
   const assemblyPie = selectedPlanPie ?? assemblyOverviewPie
 
   return (
@@ -2423,7 +2449,7 @@ function DesktopFactoryTopRow({
             planPies={planPies}
             selectedPlanPieId={selectedPlanPieId}
             highlightPlanPieId={highlightPlanPieId}
-            highlightAllPlanPies={false}
+            highlightAllPlanPies={highlightAllPlanPies}
             onSelectPlanPie={handleSelectPlanPie}
           />
         </div>
@@ -2456,9 +2482,11 @@ function DesktopFactoryTopRow({
                 pieInner={assemblyPie.inner}
                 pieSections={assemblyPie.sections}
                 onBeforeLeftPieSectorClick={onBeforeLeftPieInteraction}
-                onLeftPieCenterClick={onLeftPieCenterClick}
+                onLeftPieCenterClick={handleCentralPieCenterClick}
+                leftPieCenterPlanCycle={canCyclePlanPies}
                 leftPieCenterClickable={
-                  activePieSide === 'right' && !showTopCardStripFullSpan
+                  canCyclePlanPies ||
+                  (activePieSide === 'right' && !showTopCardStripFullSpan)
                 }
               />
             )}

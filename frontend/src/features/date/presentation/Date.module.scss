@@ -296,8 +296,9 @@ $mobile-date-calendar-chrome-gap: 0.125rem;
   container-type: inline-size;
   container-name: date-peek;
 
-  /** Без боковых inset — фоновые цифры доходят до краёв секции. */
-  :global([data-shell-layout='mobile']) & {
+  /** Без inset — фоновые цифры доходят до краёв секции. */
+  :global([data-shell-layout='mobile']) &,
+  :global([data-shell-layout='desktop']) & {
     padding: 0;
   }
 }

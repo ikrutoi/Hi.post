@@ -121,6 +121,8 @@ import { resolveEditorPieAddCartPayload } from '@features/cardPie/application/he
 import { useMobileCentralArchivePieGate } from '@features/cardPie/application/hooks/useMobileCentralArchivePieGate'
 import { MobileCardPieGutterMinis } from './MobileCardPieGutterMinis'
 import { MobileDateListSlotActionsProvider } from './MobileDateListSlotActionsContext'
+import { resolvePlanPieGutterHighlight } from './resolvePlanPieGutterHighlight'
+import { runPlanPieCenterCycle } from './runPlanPieCenterCycle'
 import { useMobilePlanCardPies } from './useMobilePlanCardPies'
 import { CardPieLeftSlot } from '@features/cardPie/presentation/CardPieLeftSlot'
 import { EditorPieListCardPieBadgeSync } from '@features/cardPie/presentation/EditorPieListCardPieBadgeSync'
@@ -654,18 +656,19 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     mobileCentralPieDisplay !== 'archive' &&
     mobileCentralPieDisplay !== 'emptyArchive'
 
-  const gutterHighlightPlanPieId = useMemo(() => {
-    if (!gutterKeepsPlanPieAccent) return null
-    if (planPies.length > 1) return selectedPlanPieId
-    if (selectedPlanPieId != null) return selectedPlanPieId
-    if (planPies.length === 1) return planPies[0]?.id ?? null
-    return null
-  }, [gutterKeepsPlanPieAccent, selectedPlanPieId, planPies])
-
-  const gutterHighlightAllPlanPies =
-    gutterKeepsPlanPieAccent &&
-    planPies.length > 1 &&
-    selectedPlanPieId == null
+  const {
+    highlightPlanPieId: gutterHighlightPlanPieId,
+    highlightAllPlanPies: gutterHighlightAllPlanPies,
+  } = useMemo(
+    () =>
+      resolvePlanPieGutterHighlight({
+        keepAccent: gutterKeepsPlanPieAccent,
+        planPieCount: planPies.length,
+        firstPlanPieId: planPies[0]?.id ?? null,
+        selectedPlanPieId,
+      }),
+    [gutterKeepsPlanPieAccent, planPies, selectedPlanPieId],
+  )
 
   const mobileCentralArchivePostcardStatus = useMemo(() => {
     if (mobileCentralArchivePreview == null) return undefined
@@ -841,22 +844,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     }
 
     if (canCyclePlanPies) {
-      if (selectViewAroma(store.getState())) {
-        dispatch(clearViewAroma())
-      }
-
-      const nextPlanPieId = cyclePlanPie()
-      if (nextPlanPieId == null) return
-
-      const pie = planPies.find((entry) => entry.id === nextPlanPieId)
-      if (pie?.dispatchDate != null) {
-        dispatch(
-          updateLastViewedCalendarDate({
-            year: pie.dispatchDate.year,
-            month: pie.dispatchDate.month,
-          }),
-        )
-      }
+      runPlanPieCenterCycle({ dispatch, planPies, cyclePlanPie })
       return
     }
 

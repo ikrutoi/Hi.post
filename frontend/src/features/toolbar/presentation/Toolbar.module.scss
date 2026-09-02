@@ -1526,7 +1526,7 @@
 
 .toolbarPostcardPieCart.toolbarMergedWithCenter {
   .toolbarKey {
-    background-color: #fff;
+    background-color: transparent;
     transition:
       color 0.15s ease,
       background-color 0.15s ease;
@@ -1536,7 +1536,7 @@
     }
 
     &.toolbarKeyEnabled:hover {
-      background-color: #fff;
+      background-color: transparent;
     }
 
     &.toolbarKeyActive {
@@ -1544,7 +1544,7 @@
 
       &:hover {
         color: $color-font-active;
-        background-color: #fff;
+        background-color: transparent;
       }
     }
 
@@ -1554,7 +1554,7 @@
 
       &:hover {
         color: $color-font-disabled;
-        background-color: #fff;
+        background-color: transparent;
       }
     }
   }
@@ -1562,7 +1562,7 @@
 
 .toolbarEditorPie.toolbarMergedWithCenter {
   .toolbarKey {
-    background-color: #fff;
+    background-color: transparent;
     transition:
       color 0.15s ease,
       background-color 0.15s ease;
@@ -1572,7 +1572,7 @@
     }
 
     &.toolbarKeyEnabled:hover {
-      background-color: #fff;
+      background-color: transparent;
     }
 
     &.toolbarKeyActive {
@@ -1580,7 +1580,7 @@
 
       &:hover {
         color: $color-font-active;
-        background-color: #fff;
+        background-color: transparent;
       }
     }
 
@@ -1619,7 +1619,7 @@
 
       &:hover {
         color: $color-font-disabled;
-        background-color: #fff;
+        background-color: transparent;
       }
     }
   }
@@ -2511,6 +2511,12 @@
 
 /* Desktop: chrome sidebars use scaled chrome tokens (section toolbars inherit shell from .toolbarKey). */
 :global([data-shell-layout='desktop']) {
+  /** editorPie cart badge: hang off the top-right like mobile. */
+  .toolbarEditorPie .toolbarBadgePlus {
+    top: calc(#{$toolbar-badge-position-offset} - 0.35rem);
+    right: calc(#{$toolbar-badge-position-offset} - 0.35rem);
+  }
+
   .toolbarSectionEditorMenu {
     .toolbarGroup {
       gap: iconButton.$toolbar-chrome-sidebar-key-gap;

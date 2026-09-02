@@ -1,10 +1,16 @@
 import { useCallback } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { addEditorPiePlanToCart } from '@date/infrastructure/state'
+import {
+  addEditorPiePlanToCart,
+  excludeDispatchBranch,
+} from '@date/infrastructure/state'
 import { useDispatchPlanListEntries } from '@date/application/hooks/useDispatchPlanListEntries'
 import { selectCardPieListSortDirection } from '@date/calendar/infrastructure/selectors'
 import type { IconKey } from '@shared/config/constants'
-import { resolveEditorPieAddCartPayload } from '../helpers/resolveEditorPieAddCartPayload'
+import {
+  resolveEditorPieAddCartPayload,
+  resolveEditorPieDeleteBranchKey,
+} from '../helpers/resolveEditorPieAddCartPayload'
 
 type PlanPieBranch = {
   dispatchBranchKey: string | null
@@ -40,6 +46,17 @@ export function useEditorPieAddCartHandler(options: {
           ),
         )
         return false
+      }
+
+      if (key === 'delete') {
+        const branchKey = resolveEditorPieDeleteBranchKey({
+          planPies,
+          selectedPlanPie,
+        })
+        if (branchKey != null) {
+          dispatch(excludeDispatchBranch({ branchKey }))
+          return false
+        }
       }
 
       return onEditorPieToolbarAction?.(key)

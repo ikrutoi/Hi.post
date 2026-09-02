@@ -895,6 +895,9 @@ export const CardPie: React.FC<CardPieProps> = ({
             e.stopPropagation()
             if (station === 'left') {
               triggerCenterPress()
+              if (leftPieCenterPlanCycle) {
+                onLeftPieCenterClick?.()
+              }
               return
             }
             if (station === 'right' && rightCenterActionEnabled) {
@@ -906,7 +909,7 @@ export const CardPie: React.FC<CardPieProps> = ({
           }}
           onClick={() => {
             if (station === 'left') {
-              if (leftCenterActionEnabled) {
+              if (leftCenterActionEnabled && !leftPieCenterPlanCycle) {
                 onLeftPieCenterClick?.()
               }
               return

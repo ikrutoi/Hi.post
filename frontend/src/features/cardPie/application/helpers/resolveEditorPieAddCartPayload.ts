@@ -47,3 +47,20 @@ export function resolveEditorPieAddCartPayload(input: {
     clearEditorAfterAdd: true,
   }
 }
+
+/**
+ * Delete on the central pie: drop only the selected factory branch when
+ * several minis exist and the pie shows that one entity (date × recipient).
+ * `null` → clear the whole factory (overview or last remaining mini).
+ */
+export function resolveEditorPieDeleteBranchKey(input: {
+  planPies: PlanPieBranch[]
+  selectedPlanPie: PlanPieBranch | null
+}): string | null {
+  const selectedKey = input.selectedPlanPie?.dispatchBranchKey
+  if (!selectedKey) return null
+  const branchCount = input.planPies.filter((pie) => pie.dispatchBranchKey)
+    .length
+  if (branchCount <= 1) return null
+  return selectedKey
+}
