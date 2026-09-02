@@ -10,7 +10,7 @@ type DateHeaderNavigationProps = {
   onIncrement: () => void
   className?: string
   switcherVariant?: 'default' | 'toolbar'
-  /** Mobile upper toolbar: month/year only; arrows live in the lower slider row. */
+  /** Upper factory toolbar: month/year only; arrows live in the lower slider row. */
   showArrows?: boolean
 }
 

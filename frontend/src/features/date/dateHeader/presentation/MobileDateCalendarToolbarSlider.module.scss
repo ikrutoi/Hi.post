@@ -89,3 +89,22 @@
   height: 100%;
   min-height: 0;
 }
+
+:global([data-shell-layout='desktop']) {
+  .navArrow {
+    @include iconButton.toolbar-icon-button-size-standard-shell(true);
+    background-color: transparent;
+
+    &:hover,
+    &:active,
+    &:focus,
+    &:focus-visible {
+      background-color: transparent;
+    }
+  }
+
+  .navArrowIcon {
+    width: iconButton.$toolbar-icon-size-standard * iconButton.$toolbar-desktop-scale;
+    height: iconButton.$toolbar-icon-size-standard * iconButton.$toolbar-desktop-scale;
+  }
+}

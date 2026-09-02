@@ -149,3 +149,33 @@
     cursor: default;
   }
 }
+
+:global([data-shell-layout='desktop']) {
+  .rootDateTint,
+  .rootCartTint,
+  .rootHistoryTint {
+    background-image: none;
+    background-color: transparent;
+  }
+
+  .modeIcon {
+    @include iconButton.toolbar-icon-button-size-standard-shell(true);
+    background: transparent;
+
+    &:hover,
+    &:active,
+    &:focus,
+    &:focus-visible {
+      background: transparent;
+    }
+  }
+
+  .root :global(button[class*='toolbarKey']) {
+    background-color: transparent !important;
+
+    &:hover,
+    &:active {
+      background-color: transparent !important;
+    }
+  }
+}

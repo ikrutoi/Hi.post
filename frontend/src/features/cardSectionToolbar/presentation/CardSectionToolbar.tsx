@@ -4,7 +4,6 @@ import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
   selectCardPieCopyStripExpanded,
 } from '@cart/infrastructure/selectors'
-import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import { EnvelopeInnerToolbar } from '@envelope/presentation/EnvelopeInnerToolbar'
 import { MobileDateCalendarToolbarNav } from '@date/dateHeader/presentation/MobileDateCalendarToolbarNav'
@@ -40,7 +39,6 @@ export const CardSectionToolbar: React.FC = () => {
   const { sizeMiniCard } = useSizeFacade()
   const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const cardPieCopyStripExpanded = useAppSelector(selectCardPieCopyStripExpanded)
-  const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const cardphotoAssetToolbar = useAppSelector(selectCardphotoAssetToolbar)
   const cardphotoAssetData = useAppSelector(selectCardphotoAssetData)
   const cardphotoViewReturnSnapshot = useAppSelector(
@@ -82,18 +80,8 @@ export const CardSectionToolbar: React.FC = () => {
     if (w == null || w <= 0) return undefined
     return { width: `${w}px` }
   }, [isMobileLayout, sizeMiniCard?.height])
-  const showCalendarToolbar =
+  const showDateCalendarNav =
     activeSection === 'date' || activeSection === 'history'
-  const calendarToolbarSection =
-    notebookStripTab === 'cart'
-      ? 'cart'
-      : notebookStripTab === 'history'
-        ? 'history'
-        : 'date'
-  const showMobileCalendarModeToolbar =
-    showCalendarToolbar && !isMobileLayout
-  const showMobileDateCalendarNav =
-    showCalendarToolbar && isMobileLayout
   const showAromaUpperToolbar = activeSection === 'aroma'
 
   const handleCardphotoCreateReturn = useCallback(
@@ -111,7 +99,7 @@ export const CardSectionToolbar: React.FC = () => {
     <div
       className={clsx(
         styles.cardSectionToolbar,
-        showMobileDateCalendarNav && styles.cardSectionToolbarDateNav,
+        showDateCalendarNav && styles.cardSectionToolbarDateNav,
         cardPieCopyStripExpanded && styles.cardSectionToolbarDisabled,
       )}
     >
@@ -157,10 +145,7 @@ export const CardSectionToolbar: React.FC = () => {
             <Toolbar section="cardphoto" />
           </div>
         ))}
-      {showMobileCalendarModeToolbar && (
-        <Toolbar section={calendarToolbarSection} />
-      )}
-      {showMobileDateCalendarNav && <MobileDateCalendarToolbarNav />}
+      {showDateCalendarNav && <MobileDateCalendarToolbarNav />}
       {activeSection === 'envelope' && <EnvelopeInnerToolbar />}
       {activeSection === 'cardtext' && (
         <div

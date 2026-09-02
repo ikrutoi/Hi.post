@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import clsx from 'clsx'
 import { MONTH_NAMES } from '@entities/date/constants'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
@@ -19,9 +19,7 @@ import {
 } from '@date/calendar/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { getCurrentDate } from '@shared/utils/date'
-import { DateHeader } from '../dateHeader/presentation/DateHeader'
 import { Calendar } from '../calendar/presentation/Calendar'
-import { Slider } from '../slider/presentation/Slider'
 import { useDateFacade } from '../application/facades/useDateFacade'
 import { useCalendarFacade } from '../calendar/application/facades'
 // import { useSizeFacade } from '@layout/application/facades'
@@ -147,7 +145,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
     isMobileFactoryChromePeek || assemblyDateSimplifiedPeek ? 'date' : section
   const currentDate = useMemo(() => getCurrentDate(), [])
   const cartItems = useAppSelector(selectCartItems)
-  const { flashParts, triggerFlash } = useFlashEffect()
+  const { triggerFlash } = useFlashEffect()
 
   const {
     // isHistoryMode,
@@ -213,18 +211,11 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
 
   useInitializeCalendarViewDate()
 
-  const { actions: actionsSwitcher, derived: derivedSwitcher } =
-    useDateSwitcherController({ triggerFlash })
-  const {
-    handleDecrementArrow,
-    handleIncrementArrow,
-    goToTodayDate,
-    goToSelectedDate,
-    decrementMonth,
-    incrementMonth,
-    setCalendarViewDate,
-  } = actionsSwitcher
-  const { isCurrentMonth } = derivedSwitcher
+  const { actions: actionsSwitcher } = useDateSwitcherController({
+    triggerFlash,
+  })
+  const { decrementMonth, incrementMonth, setCalendarViewDate } =
+    actionsSwitcher
 
   useAutoActivateDateSection()
 
@@ -440,27 +431,6 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
           tabIndex={0}
           aria-label="Calendar: left/right arrows - month, up/down - year"
         >
-        {!isMobileLayout ? (
-          <DateHeader
-            dateSection={section}
-            currentDate={currentDate}
-            calendarViewDate={calendarViewDate}
-            formattedSelectedDate={null}
-            isCurrentMonth={isCurrentMonth}
-            onDecrement={handleDecrementArrow}
-            onIncrement={handleIncrementArrow}
-            onGoToToday={goToTodayDate}
-            onGoToSelected={goToSelectedDate}
-            flashParts={flashParts}
-          />
-        ) : null}
-
-        {!isMobileLayout ? (
-          <div className={styles.slider}>
-            <Slider />
-          </div>
-        ) : null}
-
         <div className={styles.calendar}>
           <Calendar
             calendarViewDate={calendarViewDate}

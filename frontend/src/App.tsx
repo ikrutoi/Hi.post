@@ -29,6 +29,7 @@ import { AromaCardPiePreview } from '@aroma/presentation/AromaCardPiePreview/Aro
 import { clearViewAroma } from '@aroma/infrastructure/state'
 import { CardSectionEditor } from '@features/cardSectionEditor/presentation/CardSectionEditor'
 import { FactoryUpperToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
+import { DesktopDateCalendarToolbarSlider } from '@date/dateHeader/presentation/MobileDateCalendarToolbarSlider'
 import {
   CartListPanel,
   type CartListPanelItem,
@@ -2270,10 +2271,9 @@ const App = () => {
                           className={styles.mainCardSectionToolbarDivider}
                           aria-hidden
                         />
-                        <div
-                          className={styles.mainCardSectionToolbarRow}
-                          aria-hidden
-                        />
+                        <div className={styles.mainCardSectionToolbarRow}>
+                          <DesktopDateCalendarToolbarSlider />
+                        </div>
                       </div>
                     ) : null}
                     <div ref={formRef} className={clsx(styles.mainForm)}>

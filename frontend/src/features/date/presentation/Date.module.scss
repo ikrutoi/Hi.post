@@ -259,6 +259,10 @@ $mobile-date-calendar-chrome-gap: 0.125rem;
     box-sizing: border-box;
   }
 
+  :global([data-shell-layout='desktop']) & {
+    padding: 0.5rem;
+  }
+
   &:focus {
     outline: none;
   }
@@ -406,6 +410,10 @@ $mobile-date-calendar-chrome-gap: 0.125rem;
     flex: 1 1 auto;
     min-height: 0;
     width: 100%;
+  }
+
+  :global([data-shell-layout='desktop']) & {
+    margin-top: 0;
   }
 
   :global([data-shell-layout='mobile']) & {
