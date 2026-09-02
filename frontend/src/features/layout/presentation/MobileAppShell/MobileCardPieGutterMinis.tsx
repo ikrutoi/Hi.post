@@ -15,8 +15,8 @@ import {
 } from './useMobilePlanCardPies'
 import styles from './MobileAppShell.module.scss'
 
-/** 3×0.5rem insets + 1rem scroll gutter — matches desktop grid padding/gap. */
-const DESKTOP_MINI_INSET_REM = 0.5
+/** 3×1rem insets + 1rem scroll gutter — matches desktop grid padding/gap. */
+const DESKTOP_MINI_INSET_REM = 1
 const DESKTOP_MINI_SCROLL_GUTTER_REM = 1
 const DESKTOP_MINI_COLUMNS = 3
 

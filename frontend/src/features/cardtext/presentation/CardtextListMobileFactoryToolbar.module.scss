@@ -26,6 +26,23 @@
   }
 }
 
+.upperRowListHeader {
+  flex: 1 1 auto;
+  align-self: stretch;
+  background-image: none;
+  min-height: 100%;
+
+  .upperTitle {
+    width: auto;
+    max-width: calc(100% - 6.5rem);
+  }
+
+  .upperApply :global([class*='toolbarAromaUpperApply']),
+  .upperToolbar :global([class*='toolbarAromaUpperReturn']) {
+    margin-inline: 0;
+  }
+}
+
 .upperRow {
   position: relative;
   flex: 1 1 auto;

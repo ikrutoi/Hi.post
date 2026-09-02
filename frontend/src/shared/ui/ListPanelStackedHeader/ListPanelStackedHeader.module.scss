@@ -50,6 +50,10 @@
   justify-content: center;
 }
 
+.headerTopRowCustom {
+  pointer-events: auto;
+}
+
 .headerTopCenterSlot {
   position: absolute;
   inset-inline: 0;
@@ -235,6 +239,16 @@
 
     .closeBtn {
       margin-right: 0.3rem;
+    }
+  }
+
+  .headerTopRowCustom {
+    min-height: $card-pie-header-hit;
+
+    :global([class*='toolbarKey']):not(
+        :global([class*='toolbarKeyFontSizeIndicator'])
+      ):not(:global([class*='toolbarKeyCropQualityIndicator'])) {
+      @include iconButton.toolbar-icon-button-size-card-pie-list-header(true);
     }
   }
 

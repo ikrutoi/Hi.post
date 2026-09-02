@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
+import { AddressListMobileFactoryUpperToolbar } from './AddressListMobileFactoryToolbar'
 import {
   ListPanelCornerReturn,
   listPanelCornerReturnPanelProps,
@@ -150,6 +151,11 @@ export const SenderListPanel: React.FC<Props> = ({
           leadIconKey="addressList"
           variant="sectionToolbar"
           cardPieListHeaderIcons
+          headerTopRow={
+            !isMobileLayout ? (
+              <AddressListMobileFactoryUpperToolbar placement="listHeader" />
+            ) : null
+          }
           toolbar={
             combinedEntries.length > 0 ? (
               <Toolbar section="addressListSender" />

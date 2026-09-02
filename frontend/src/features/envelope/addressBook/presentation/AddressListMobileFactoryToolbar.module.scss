@@ -23,6 +23,19 @@
   }
 }
 
+.upperRowListHeader {
+  flex: 1 1 auto;
+  align-self: stretch;
+  background-image: none;
+  min-height: 100%;
+  @include address-list-toolbar-role-keys-clear;
+
+  .upperApply :global([class*='toolbarAromaUpperApply']),
+  .upperToolbar :global([class*='toolbarAromaUpperReturn']) {
+    margin-inline: 0;
+  }
+}
+
 .upperRow {
   position: relative;
   flex: 1 1 auto;

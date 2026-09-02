@@ -141,6 +141,18 @@
   }
 }
 
+/** Upper factory row: photo/text keys sit on the section tint, not a white chip. */
+.cardSectionToolbarPhotoTextKeys {
+  :global(button[class*='toolbarKey']) {
+    background-color: transparent !important;
+
+    &:hover,
+    &:active {
+      background-color: transparent !important;
+    }
+  }
+}
+
 .cardSectionToolbarCardtextTint {
   flex: 1 1 auto;
   align-self: stretch;

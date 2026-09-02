@@ -139,6 +139,7 @@ export const CardSectionToolbar: React.FC = () => {
         ) : (
           <div
             className={clsx(
+              styles.cardSectionToolbarPhotoTextKeys,
               isMobileLayout && styles.cardSectionToolbarCardphotoTint,
             )}
           >
@@ -151,6 +152,7 @@ export const CardSectionToolbar: React.FC = () => {
         <div
           className={clsx(
             styles.cardSectionToolbarHeader,
+            styles.cardSectionToolbarPhotoTextKeys,
             isMobileLayout && styles.cardSectionToolbarCardtextTint,
           )}
         >

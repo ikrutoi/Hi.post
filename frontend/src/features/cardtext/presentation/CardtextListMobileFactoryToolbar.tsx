@@ -89,8 +89,10 @@ export const CardtextListMobileFactoryLowerToolbar: React.FC = () => {
   return null
 }
 
-/** Mobile factory: верхний ряд — applyMedium слева, заголовок, return справа. */
-export const CardtextListMobileFactoryUpperToolbar: React.FC = () => {
+/** Mobile factory / desktop list header — applyMedium слева, заголовок, return справа. */
+export const CardtextListMobileFactoryUpperToolbar: React.FC<{
+  placement?: 'factory' | 'listHeader'
+}> = ({ placement = 'factory' }) => {
   const dispatch = useAppDispatch()
   const templates = useAppSelector(selectCardtextTemplatesListItems)
   const listEmpty = (templates?.length ?? 0) === 0
@@ -204,7 +206,12 @@ export const CardtextListMobileFactoryUpperToolbar: React.FC = () => {
   )
 
   return (
-    <div className={styles.upperRow}>
+    <div
+      className={clsx(
+        styles.upperRow,
+        placement === 'listHeader' && styles.upperRowListHeader,
+      )}
+    >
       <div className={styles.upperApply}>
         <Toolbar
           section="cardtext"
@@ -282,6 +289,7 @@ export const CardtextListMobileFactoryUpperToolbar: React.FC = () => {
         <Toolbar
           section="cardtextCreate"
           groupsOverride={CARDTEXT_LIST_FACTORY_UPPER_TOOLBAR}
+          className={toolbarStyles.toolbarAromaUpperReturn}
           onActionClick={handleAction}
         />
       </div>

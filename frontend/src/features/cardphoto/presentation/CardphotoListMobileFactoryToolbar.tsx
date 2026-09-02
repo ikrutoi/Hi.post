@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo } from 'react'
+import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
@@ -87,8 +88,10 @@ export const CardphotoListMobileFactoryLowerToolbar: React.FC = () => {
   return null
 }
 
-/** Mobile factory: верхний ряд — applyMedium слева, заголовок, return справа. */
-export const CardphotoListMobileFactoryUpperToolbar: React.FC = () => {
+/** Mobile factory / desktop list header — applyMedium слева, заголовок, return справа. */
+export const CardphotoListMobileFactoryUpperToolbar: React.FC<{
+  placement?: 'factory' | 'listHeader'
+}> = ({ placement = 'factory' }) => {
   const dispatch = useAppDispatch()
   const inlineTemplateCount = useAppSelector(selectCardphotoInlineTemplateCount)
   const listEmpty = inlineTemplateCount === 0
@@ -146,13 +149,20 @@ export const CardphotoListMobileFactoryUpperToolbar: React.FC = () => {
   )
 
   return (
-    <div className={styles.upperRow}>
-      <Toolbar
-        section="cardphoto"
-        groupsOverride={applyToolbar}
-        className={toolbarStyles.toolbarAromaUpperApply}
-        onActionClick={handleApplyAction}
-      />
+    <div
+      className={clsx(
+        styles.upperRow,
+        placement === 'listHeader' && styles.upperRowListHeader,
+      )}
+    >
+      <div className={styles.upperApply}>
+        <Toolbar
+          section="cardphoto"
+          groupsOverride={applyToolbar}
+          className={toolbarStyles.toolbarAromaUpperApply}
+          onActionClick={handleApplyAction}
+        />
+      </div>
       {centralTemplateTitle ? (
         <div className={styles.upperTitle} title={centralTemplateTitle}>
           {centralTemplateTitle}
@@ -162,6 +172,7 @@ export const CardphotoListMobileFactoryUpperToolbar: React.FC = () => {
         <Toolbar
           section="cardphotoCreate"
           groupsOverride={CARDPHOTO_LIST_FACTORY_UPPER_TOOLBAR}
+          className={toolbarStyles.toolbarAromaUpperReturn}
           onActionClick={handleAction}
         />
       </div>

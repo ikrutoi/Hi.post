@@ -744,7 +744,7 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   .mobilePieGutterMiniList {
     display: grid;
     /**
-     * (ширина слота − 3×0.5rem − 1rem) / 3 — размер задаёт JS,
+     * (ширина слота − 3×1rem − 1rem) / 3 — размер задаёт JS,
      * `--desktop-left-mini-pie-size`; до замера — три равные колонки.
      */
     grid-template-columns: repeat(
@@ -754,8 +754,8 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
     grid-auto-rows: var(--desktop-left-mini-pie-size, auto);
     align-content: start;
     justify-content: start;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem 0.5rem 0.5rem;
+    gap: 1rem;
+    padding: 1rem;
     overflow-x: visible;
     background-color: transparent;
     border-radius: inherit;
@@ -776,8 +776,8 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   }
 
   .mobilePieGutterMiniScrollTrack {
-    top: 0.5rem;
-    bottom: 0.5rem;
+    top: 1rem;
+    bottom: 1rem;
     right: calc((1rem - 4px) / 2);
     width: 4px;
   }

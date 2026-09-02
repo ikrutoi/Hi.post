@@ -23,6 +23,7 @@ import type { CardtextContent } from '@cardtext/domain/types'
 import { getCardtextTemplateDisplayTitle } from '@cardtext/application/helpers'
 import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import { CardtextListEntry } from './CardtextListEntry'
+import { CardtextListMobileFactoryUpperToolbar } from '../CardtextListMobileFactoryToolbar'
 import clsx from 'clsx'
 import styles from './CardtextListPanel.module.scss'
 
@@ -93,6 +94,11 @@ export const CardtextListPanel: React.FC<Props> = ({
           leadIconKey="listCardtext"
           variant="sectionToolbar"
           cardPieListHeaderIcons
+          headerTopRow={
+            !isMobileLayout ? (
+              <CardtextListMobileFactoryUpperToolbar placement="listHeader" />
+            ) : null
+          }
           toolbar={hasRows ? <Toolbar section="cardtextList" /> : false}
           showDividerWithoutToolbar={!hasRows}
           hideClose={isMobileLayout}

@@ -97,8 +97,10 @@ export const AddressListMobileFactoryLowerToolbar: React.FC = () => {
   return null
 }
 
-/** Mobile factory: верхний ряд — applyMedium слева, return справа. */
-export const AddressListMobileFactoryUpperToolbar: React.FC = () => {
+/** Mobile factory / desktop list header — applyMedium слева, return справа. */
+export const AddressListMobileFactoryUpperToolbar: React.FC<{
+  placement?: 'factory' | 'listHeader'
+}> = ({ placement = 'factory' }) => {
   const dispatch = useAppDispatch()
   const senderListOpen = useAppSelector(selectSenderListPanelOpen)
   const senderToolbar = useAppSelector(selectActiveSenderToolbarState)
@@ -151,7 +153,9 @@ export const AddressListMobileFactoryUpperToolbar: React.FC = () => {
     <div
       className={clsx(
         styles.upperRow,
-        senderListOpen ? styles.upperRowSender : styles.upperRowRecipient,
+        placement === 'listHeader' && styles.upperRowListHeader,
+        placement !== 'listHeader' &&
+          (senderListOpen ? styles.upperRowSender : styles.upperRowRecipient),
       )}
       data-address-list-toolbar-role={senderListOpen ? 'sender' : 'recipient'}
     >
@@ -167,6 +171,7 @@ export const AddressListMobileFactoryUpperToolbar: React.FC = () => {
         <Toolbar
           section={upperSection}
           groupsOverride={ADDRESS_LIST_FACTORY_UPPER_TOOLBAR}
+          className={toolbarStyles.toolbarAromaUpperReturn}
           onActionClick={handleAction}
         />
       </div>

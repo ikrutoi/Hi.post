@@ -24,6 +24,7 @@ import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import type { ImageMeta } from '@cardphoto/domain/types'
 import { CardphotoListThumb } from './CardphotoListThumb'
+import { CardphotoListMobileFactoryUpperToolbar } from '../CardphotoListMobileFactoryToolbar'
 import styles from './CardphotoListPanel.module.scss'
 import clsx from 'clsx'
 
@@ -191,6 +192,11 @@ export const CardphotoListPanel: React.FC<Props> = ({
           leadIconKey="listCardphoto"
           variant="sectionToolbar"
           cardPieListHeaderIcons
+          headerTopRow={
+            !isMobileLayout ? (
+              <CardphotoListMobileFactoryUpperToolbar placement="listHeader" />
+            ) : null
+          }
           toolbar={hasRows ? <Toolbar section="cardphotoList" /> : false}
           showDividerWithoutToolbar={!hasRows}
           hideClose={isMobileLayout}

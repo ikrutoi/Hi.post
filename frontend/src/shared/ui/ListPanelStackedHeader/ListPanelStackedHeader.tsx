@@ -14,6 +14,8 @@ export type ListPanelStackedHeaderProps = {
    * например переключатели сегментов в списке корзины.
    */
   headerTopCenter?: ReactNode | null | false
+  /** Заменяет всю верхнюю строку (apply / title / return у списков шаблонов). */
+  headerTopRow?: ReactNode | null | false
   /** Second row under the divider; omit when the panel has no list toolbar. */
   toolbar?: ReactNode | null | false
   /**
@@ -39,6 +41,7 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
   leadIconKey,
   leadIconOverride,
   headerTopCenter,
+  headerTopRow,
   toolbar,
   showDividerWithoutToolbar = false,
   variant = 'default',
@@ -53,8 +56,9 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
   const hasToolbar = toolbar != null && toolbar !== false
   const showDividerOnly = !hasToolbar && showDividerWithoutToolbar
   const hasTopCenter = headerTopCenter != null && headerTopCenter !== false
-  const showLeadIcon = !hideLeadIcon
-  const showClose = !hideClose
+  const hasCustomTopRow = headerTopRow != null && headerTopRow !== false
+  const showLeadIcon = !hideLeadIcon && !hasCustomTopRow
+  const showClose = !hideClose && !hasCustomTopRow
   const leadIconContent = leadIconOverride ?? getToolbarIcon({ key: leadIconKey })
   const leadIconClassName = clsx(
     styles.headerLead,
@@ -76,48 +80,55 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
       <div
         className={clsx(
           styles.headerTopRow,
-          !showLeadIcon && !showClose && styles.headerTopRowMinimal,
+          hasCustomTopRow && styles.headerTopRowCustom,
+          !showLeadIcon && !showClose && !hasCustomTopRow && styles.headerTopRowMinimal,
         )}
       >
-        {showLeadIcon ? (
-          onLeadIconClick != null ? (
-            <button
-              type="button"
-              className={leadIconClassName}
-              data-icon-state="enabled"
-              data-lead-icon={leadIconOverride ? undefined : leadIconKey}
-              onClick={onLeadIconClick}
-              aria-label={leadIconAriaLabel ?? 'Open calendar'}
-            >
-              {leadIconContent}
-            </button>
-          ) : (
+        {hasCustomTopRow ? (
+          headerTopRow
+        ) : (
+          <>
+            {showLeadIcon ? (
+              onLeadIconClick != null ? (
+                <button
+                  type="button"
+                  className={leadIconClassName}
+                  data-icon-state="enabled"
+                  data-lead-icon={leadIconOverride ? undefined : leadIconKey}
+                  onClick={onLeadIconClick}
+                  aria-label={leadIconAriaLabel ?? 'Open calendar'}
+                >
+                  {leadIconContent}
+                </button>
+              ) : (
+                <div
+                  className={leadIconClassName}
+                  aria-hidden
+                  data-icon-state="enabled"
+                  data-lead-icon={leadIconOverride ? undefined : leadIconKey}
+                >
+                  {leadIconContent}
+                </div>
+              )
+            ) : null}
             <div
-              className={leadIconClassName}
-              aria-hidden
-              data-icon-state="enabled"
-              data-lead-icon={leadIconOverride ? undefined : leadIconKey}
+              className={styles.headerTopCenterSlot}
+              {...(!hasTopCenter ? { 'aria-hidden': true as const } : {})}
             >
-              {leadIconContent}
+              {hasTopCenter ? headerTopCenter : null}
             </div>
-          )
-        ) : null}
-        <div
-          className={styles.headerTopCenterSlot}
-          {...(!hasTopCenter ? { 'aria-hidden': true as const } : {})}
-        >
-          {hasTopCenter ? headerTopCenter : null}
-        </div>
-        {showClose ? (
-          <button
-            type="button"
-            className={styles.closeBtn}
-            onClick={onClose}
-            aria-label={closeAriaLabel}
-          >
-            <IconX />
-          </button>
-        ) : null}
+            {showClose ? (
+              <button
+                type="button"
+                className={styles.closeBtn}
+                onClick={onClose}
+                aria-label={closeAriaLabel}
+              >
+                <IconX />
+              </button>
+            ) : null}
+          </>
+        )}
       </div>
       {hasToolbar ? (
         <>

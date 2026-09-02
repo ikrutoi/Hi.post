@@ -75,11 +75,11 @@ export const FactoryUpperToolbar: React.FC<{
     ) : (
       <ArchivePeekUpperToolbar />
     )
-  } else if (showCardphotoListFactoryUpperToolbar) {
+  } else if (isMobileLayout && showCardphotoListFactoryUpperToolbar) {
     content = <CardphotoListMobileFactoryUpperToolbar />
-  } else if (showCardtextListFactoryUpperToolbar) {
+  } else if (isMobileLayout && showCardtextListFactoryUpperToolbar) {
     content = <CardtextListMobileFactoryUpperToolbar />
-  } else if (showAddressListFactoryUpperToolbar) {
+  } else if (isMobileLayout && showAddressListFactoryUpperToolbar) {
     content = <AddressListMobileFactoryUpperToolbar />
   } else if (showCartListFactoryUpperToolbar) {
     content = <CartListMobileFactoryUpperToolbar />
