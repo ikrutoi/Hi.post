@@ -620,7 +620,14 @@
 
   &[data-desktop-factory-surface='date-history'] {
     --mobile-section-surface-bg: #{notebookTab.$mobile-notebook-history-tab-yellow};
-    --desktop-factory-toolbar-bg: #{notebookTab.$mobile-notebook-history-toolbar-yellow};
+    --desktop-factory-toolbar-bg: linear-gradient(
+      90deg,
+      #{notebookTab.$mobile-notebook-history-toolbar-yellow} 14%,
+      #{notebookTab.$mobile-notebook-history-toolbar-ready} 32%,
+      #{notebookTab.$mobile-notebook-history-toolbar-blue} 50%,
+      #{notebookTab.$mobile-notebook-history-toolbar-delivered} 68%,
+      #{notebookTab.$mobile-notebook-history-toolbar-error} 86%
+    );
     --desktop-factory-stack-bg: linear-gradient(
       to bottom,
       #{notebookTab.$mobile-notebook-history-tab-yellow} 0 20%,
@@ -686,8 +693,8 @@
 
 .mainCardSectionToolbarDivider {
   flex: 0 0 1px;
-  width: calc(100% - 2 * #{iconButton.$toolbar-factory-row-inset-inline});
-  margin-inline: iconButton.$toolbar-factory-row-inset-inline;
+  width: 100%;
+  margin-inline: 0;
   background-color: var(--mobile-section-surface-bg, $color-section-light);
 }
 

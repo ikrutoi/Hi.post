@@ -106,6 +106,12 @@ export const buildCartCalendarCommands = (): UnknownAction[] => [
   archiveCalendarViewEntered('cart'),
 ]
 
+/** Desktop: календарь корзины в центре + список открыток справа. */
+export const buildDesktopCartArchiveActivateCommands = (): UnknownAction[] => [
+  ...buildCartListCommands(),
+  archiveCalendarViewEntered('cart'),
+]
+
 /** Список корзины (desktop sidebar / mobile). */
 export const buildCartListCommands = (): UnknownAction[] => [
   setHistoryListPanelOpen(false),
@@ -166,6 +172,12 @@ export const buildHistoryCalendarCommandsDesktop = (): UnknownAction[] => [
   archiveCalendarViewEntered('history'),
 ]
 
+/** Desktop: календарь истории в центре + список открыток справа. */
+export const buildDesktopHistoryArchiveActivateCommands = (): UnknownAction[] => [
+  ...buildHistoryListCommands(),
+  archiveCalendarViewEntered('history'),
+]
+
 /** Список истории (desktop sidebar / mobile). */
 export const buildHistoryListCommands = (): UnknownAction[] => [
   setCartListPanelOpen(false),
@@ -189,6 +201,15 @@ export function buildCartArchiveToggleCommands(input: {
   lastActiveView?: ArchiveActiveView
 }): UnknownAction[] {
   const mode = resolveCartArchiveViewMode(input)
+
+  /** Desktop sidebar: включение — сразу календарь (центр) + список (справа). */
+  if (!input.isMobileLayout && mode === 'inactive') {
+    return [
+      setLastCartArchiveView('list'),
+      ...buildDesktopCartArchiveActivateCommands(),
+    ]
+  }
+
   const next = resolveNextArchiveViewOnClick(mode, input.lastActiveView)
   const remember = setLastCartArchiveView(next)
   if (next === 'list') {
@@ -211,6 +232,15 @@ export function buildHistoryArchiveToggleCommands(input: {
   lastActiveView?: ArchiveActiveView
 }): UnknownAction[] {
   const mode = resolveHistoryArchiveViewMode(input)
+
+  /** Desktop sidebar: включение — сразу календарь (центр) + список (справа). */
+  if (!input.isMobileLayout && mode === 'inactive') {
+    return [
+      setLastHistoryArchiveView('list'),
+      ...buildDesktopHistoryArchiveActivateCommands(),
+    ]
+  }
+
   const next = resolveNextArchiveViewOnClick(mode, input.lastActiveView)
   const remember = setLastHistoryArchiveView(next)
   if (next === 'list') {
@@ -286,10 +316,10 @@ export const buildNotebookSessionRestoreCommands = (
   tab: DateStripSection | null,
 ): UnknownAction[] => {
   if (tab === 'cart') {
-    return buildCartCalendarCommands()
+    return buildDesktopCartArchiveActivateCommands()
   }
   if (tab === 'history') {
-    return buildHistoryCalendarCommandsDesktop()
+    return buildDesktopHistoryArchiveActivateCommands()
   }
   return []
 }

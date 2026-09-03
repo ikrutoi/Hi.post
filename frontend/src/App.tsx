@@ -2246,14 +2246,16 @@ const App = () => {
                   <div
                     className={styles.mainCardFactoryStack}
                     data-desktop-factory-surface={
-                      activeSection === 'date'
-                        ? notebookStripTab === 'cart' ||
-                          notebookStripTab === 'cartdate'
-                          ? 'date-cart'
-                          : notebookStripTab === 'history'
-                            ? 'date-history'
+                      activeSection === 'history' ||
+                      (activeSection === 'date' &&
+                        notebookStripTab === 'history')
+                        ? 'date-history'
+                        : activeSection === 'date'
+                          ? notebookStripTab === 'cart' ||
+                            notebookStripTab === 'cartdate'
+                            ? 'date-cart'
                             : 'date'
-                        : (activeSection ?? 'neutral')
+                          : (activeSection ?? 'neutral')
                     }
                   >
                     {!isMobileLayout ? (

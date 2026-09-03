@@ -81,9 +81,9 @@ export const FactoryUpperToolbar: React.FC<{
     content = <CardtextListMobileFactoryUpperToolbar />
   } else if (isMobileLayout && showAddressListFactoryUpperToolbar) {
     content = <AddressListMobileFactoryUpperToolbar />
-  } else if (showCartListFactoryUpperToolbar) {
+  } else if (isMobileLayout && showCartListFactoryUpperToolbar) {
     content = <CartListMobileFactoryUpperToolbar />
-  } else if (showHistoryListFactoryUpperToolbar) {
+  } else if (isMobileLayout && showHistoryListFactoryUpperToolbar) {
     content = <HistoryListMobileFactoryUpperToolbar />
   } else if (suppressCalendarUpperRow) {
     content = <MobileDateCalendarToolbarNav />
