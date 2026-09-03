@@ -317,6 +317,23 @@
     opacity: 1;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
   }
+
+  .item.itemIconEnabled .icon,
+  .item.itemIconDisabled .icon,
+  .item.itemIconDisabled:active .icon,
+  .item.itemIconDisabled:disabled .icon {
+    color: $color-font-enabled-light;
+  }
+
+  .item.itemIconEnabled:active .icon {
+    color: $color-font-enabled;
+  }
+
+  .item.itemIconDisabled,
+  .item.itemIconDisabled:active,
+  .item.itemIconDisabled:focus-visible {
+    background-color: transparent;
+  }
 }
 
 /** Скрытые ячейки сетки: те же размеры колонки, что у «Готово», без участия в hit-test. */
