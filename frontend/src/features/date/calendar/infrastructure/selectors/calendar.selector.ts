@@ -175,6 +175,10 @@ export const selectHistoryListPanelDensity = (
   state: RootState,
 ): PanelDensity2Size => state.calendar.historyListPanelDensity ?? 1
 
+export const selectPlanMiniListDensity = (
+  state: RootState,
+): PanelDensity2Size => state.calendar.planMiniListDensity ?? 1
+
 export const selectCardPieListSortDirection = (
   state: RootState,
 ): 'asc' | 'desc' => state.calendar.cardPieListSortDirection ?? 'asc'

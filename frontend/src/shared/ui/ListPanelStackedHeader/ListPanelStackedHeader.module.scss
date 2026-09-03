@@ -290,11 +290,18 @@
     .headerTopRow,
     .headerToolbarRow {
       @include notebookTab.desktop-plan-mini-toolbar-role-fade;
+      padding-inline-start: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
+      padding-inline-end: $cart-list-entry-gutter-end;
+    }
+
+    .headerTopRow .headerLead {
+      margin-left: 0;
     }
   }
 
   &[data-header-fade='cart'],
-  &[data-header-fade='history'] {
+  &[data-header-fade='history'],
+  &[data-header-fade='plan'] {
     .headerLead {
       background-color: transparent;
     }

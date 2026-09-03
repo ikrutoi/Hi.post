@@ -102,6 +102,10 @@ type CalendarState = {
    * Плотность сетки списка истории (`panelDensity2`): 1 — 4 ячейки, 2 — 5 ячеек.
    */
   historyListPanelDensity: PanelDensity2Size
+  /**
+   * Desktop plan minis: 1 — 3 колонки, 2 — 4 колонки.
+   */
+  planMiniListDensity: PanelDensity2Size
   postcardStatusesCount: PostcardStatusesCount
   postcardStatuses: PostcardStatuses
   /**
@@ -152,6 +156,7 @@ const initialState: CalendarState = {
   cardPieListSortDirection: 'asc',
   historyListSortMode: 'dateAsc',
   historyListPanelDensity: 1,
+  planMiniListDensity: 1,
   postcardStatusesCount: {
     cart: null,
     cartBlocked: null,
@@ -248,6 +253,11 @@ const calendarSlice = createSlice({
       action: PayloadAction<PanelDensity2Size>,
     ) {
       state.historyListPanelDensity = action.payload
+    },
+
+    cyclePlanMiniListDensity(state) {
+      const d = state.planMiniListDensity
+      state.planMiniListDensity = d === 1 ? 2 : 1
     },
 
     setPostcardStatusesCount(
@@ -470,6 +480,7 @@ export const {
   setHistoryListSortMode,
   cycleHistoryListPanelDensity,
   setHistoryListPanelDensity,
+  cyclePlanMiniListDensity,
   setPostcardStatusesCount,
   setPostcardStatuses,
   togglePostcardStatus,

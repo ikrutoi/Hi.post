@@ -20,6 +20,7 @@ import {
   selectComputedNotebookStripTab,
   selectNotebookStripTab,
   selectOpenDayPanel,
+  selectPlanMiniListDensity,
   selectPostcardStatuses,
 } from '@date/calendar/infrastructure/selectors'
 import { MobileCardPieGutterMinis } from '@layout/presentation/MobileAppShell/MobileCardPieGutterMinis'
@@ -126,6 +127,7 @@ import {
   setNotebookStripTab,
   setNotebookStripDateOverCart,
   updateLastViewedCalendarDate,
+  cyclePlanMiniListDensity,
 } from '@date/calendar/infrastructure/state'
 import { resolveCartDatePickCalendarViewDate } from '@date/calendar/application/logic/cartDatePickCalendarView'
 import {
@@ -135,7 +137,7 @@ import {
 } from '@date/calendar/application/logic/cartDatePickListEntryOwnership'
 import { isCartOwnedNotebookStrip } from '@date/calendar/application/logic/calendarStripSection'
 import { calendarDayHasCards } from '@date/cell/domain/calendarDayContent'
-import { IconCardPie } from '@shared/ui/icons'
+import { IconCardPie, IconPanelDensity2 } from '@shared/ui/icons'
 import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { applyRightListArchiveToolbarVisuals } from '@toolbar/application/syncRightListArchiveToolbarVisuals'
@@ -2385,6 +2387,7 @@ function DesktopFactoryTopRow({
   })
 
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
+  const planMiniListDensity = useAppSelector(selectPlanMiniListDensity)
   const showArchivePie = rightListArchiveLocalId != null
   const showEmptyArchive =
     !showArchivePie &&
@@ -2455,10 +2458,15 @@ function DesktopFactoryTopRow({
       <div className={styles.appMainContentLeftListSlot}>
         <div className={styles.appMainContentLeftListPlaceholder}>
           <ListPanelStackedHeader
-            leadIconKey="cardPie"
-            hideLeadIcon
+            leadIconKey="panelDensity2"
+            leadIconOverride={
+              <IconPanelDensity2 activeSize={planMiniListDensity} />
+            }
+            cardPieListHeaderIcons
             hideClose
             headerFade="plan"
+            leadIconAriaLabel="Change plan mini size"
+            onLeadIconClick={() => dispatch(cyclePlanMiniListDensity())}
           />
           <MobileCardPieGutterMinis
             layout="desktop"
@@ -2466,6 +2474,7 @@ function DesktopFactoryTopRow({
             selectedPlanPieId={selectedPlanPieId}
             highlightPlanPieId={highlightPlanPieId}
             highlightAllPlanPies={highlightAllPlanPies}
+            density={planMiniListDensity}
             onSelectPlanPie={handleSelectPlanPie}
           />
         </div>
