@@ -94,7 +94,7 @@
 
     .item {
       border-radius: 0.5rem;
-      background-color: #fff;
+      background-color: rgb(255 255 255 / 36%);
       padding: 0.25rem;
       cursor: pointer;
     }
@@ -199,7 +199,7 @@
     touch-action: manipulation;
 
     &:active {
-      background-color: #fff;
+      background-color: rgb(255 255 255 / 36%);
     }
 
     &:focus {
@@ -208,7 +208,7 @@
 
     &:focus-visible {
       outline: none;
-      background-color: #fff;
+      background-color: rgb(255 255 255 / 36%);
     }
   }
 

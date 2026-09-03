@@ -770,9 +770,7 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   }
 
   .mobilePieGutterMiniItem[data-selected='true'] {
-    @include selectionAccent.list-entry-selection-accent(
-      $gap-color: $color-app-inner
-    );
+    @include selectionAccent.list-entry-selection-accent;
   }
 
   .mobilePieGutterMiniScrollTrack {

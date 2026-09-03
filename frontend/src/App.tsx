@@ -132,7 +132,9 @@ import {
   isCartDatePickListEntryOwned,
   releaseCartDatePickListEntryOwnership,
 } from '@date/calendar/application/logic/cartDatePickListEntryOwnership'
+import { isCartOwnedNotebookStrip } from '@date/calendar/application/logic/calendarStripSection'
 import { calendarDayHasCards } from '@date/cell/domain/calendarDayContent'
+import { IconCardPie } from '@shared/ui/icons'
 import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { applyRightListArchiveToolbarVisuals } from '@toolbar/application/syncRightListArchiveToolbarVisuals'
@@ -2381,9 +2383,14 @@ function DesktopFactoryTopRow({
     },
   })
 
+  const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const showArchivePie = rightListArchiveLocalId != null
   const showEmptyArchive =
-    !showArchivePie && (listPanelOpen || historyListPanelOpen)
+    !showArchivePie &&
+    (listPanelOpen ||
+      historyListPanelOpen ||
+      isCartOwnedNotebookStrip(notebookStripTab) ||
+      notebookStripTab === 'history')
   const keepPlanAccent = !showArchivePie && !showEmptyArchive
   const canCyclePlanPies =
     planPies.filter((pie) => pie.id !== EMPTY_GUTTER_PLAN_PIE_ID).length > 1
@@ -2474,7 +2481,9 @@ function DesktopFactoryTopRow({
                 rightPieCenterAffordance={rightPieCenterAffordance}
               />
             ) : showEmptyArchive ? (
-              <div className={styles.desktopCentralPieEmpty} aria-hidden />
+              <div className={styles.desktopCentralPieEmpty} aria-hidden>
+                <IconCardPie />
+              </div>
             ) : (
               <CardPie
                 key={selectedPlanPieId ?? 'assembly-overview'}

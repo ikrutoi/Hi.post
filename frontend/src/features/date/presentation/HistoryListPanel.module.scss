@@ -1,5 +1,6 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
+@use '@styles/config/mobileNotebookTabColors' as notebookTab;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
 /** Две строки хедера (icon row + toolbar) — `headerSectionToolbar` min-height. */
@@ -13,12 +14,12 @@ $list-panel-compact-header-band: calc(
   0.15rem + #{iconButton.$toolbar-hit-size-card-pie-list-header} + 0.2rem + 0.15rem
 );
 $list-panel-scroll-inset: 0.35rem;
-$list-panel-list-footer-gap: 1px;
+$list-panel-footer-bottom-inset: 0.5rem;
 @use '@styles/config/historyFooterChrome' as historyFooter;
 
 $list-panel-footer-row-band: historyFooter.$history-footer-row-band;
 $list-panel-footer-band: calc(
-  #{$list-panel-footer-row-band} + #{$list-panel-list-footer-gap}
+  #{$list-panel-footer-row-band} + #{$list-panel-footer-bottom-inset}
 );
 
 .panel {
@@ -73,9 +74,6 @@ $list-panel-footer-band: calc(
         padding-top: 0;
       }
 
-      .indicators {
-        border-top: none;
-      }
     }
 
     &.panelFactoryChrome .panelScrollTrack {
@@ -87,14 +85,14 @@ $list-panel-footer-band: calc(
 .panelEmptyNoToolbar {
   padding-top: $list-panel-compact-header-band;
   padding-bottom: calc(
-    #{$list-panel-compact-header-band} + #{$list-panel-list-footer-gap}
+    #{$list-panel-compact-header-band} + #{$list-panel-footer-bottom-inset}
   );
 
   .panelScrollTrack {
     top: calc(#{$list-panel-compact-header-band} - #{$list-panel-scroll-inset});
     bottom: calc(
-      #{$list-panel-compact-header-band} - #{$list-panel-scroll-inset} +
-        #{$list-panel-list-footer-gap}
+      #{$list-panel-compact-header-band} + #{$list-panel-footer-bottom-inset} -
+        #{$list-panel-scroll-inset}
     );
   }
 
@@ -107,8 +105,8 @@ $list-panel-footer-band: calc(
   position: absolute;
   top: calc(#{$list-panel-stacked-band} - #{$list-panel-scroll-inset});
   bottom: calc(
-    #{$list-panel-footer-row-band} - #{$list-panel-scroll-inset} +
-      #{$list-panel-list-footer-gap}
+    #{$list-panel-footer-row-band} + #{$list-panel-footer-bottom-inset} -
+      #{$list-panel-scroll-inset}
   );
   @include list-panel-scroll-track-right;
   width: 0.75rem;
@@ -227,10 +225,10 @@ $list-panel-footer-band: calc(
 .indicators {
   position: absolute;
   left: 0.5rem;
-  bottom: 0;
+  bottom: 0.5rem;
   z-index: 10;
   @include historyFooter.history-footer-indicators-shell-list;
-  border-top: 1px solid $color-cardphoto-input-border;
+  @include notebookTab.mobile-notebook-history-toolbar-role-fade;
 }
 
 .indicatorsInner {
