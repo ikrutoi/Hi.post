@@ -134,6 +134,11 @@
   );
 }
 
+@mixin list-panel-header-toolbar-row-insets {
+  padding-inline: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
+  box-sizing: border-box;
+}
+
 .headerEdgeFade {
   gap: 0;
 
@@ -141,6 +146,37 @@
     top: 0;
     padding-bottom: 0;
     min-height: $section-inner-toolbar-height-desktop;
+
+    .headerTopRowCustom {
+      @include list-panel-header-toolbar-row-insets;
+
+      :global([class*='upperApply'] [class*='toolbarKey']),
+      :global([class*='upperToolbar'] [class*='toolbarKey']) {
+        margin-inline: 0;
+      }
+    }
+
+    .headerToolbarRow {
+      @include list-panel-header-toolbar-row-insets;
+
+      :global(
+          [class*='toolbar']
+            [class*='toolbarGroup']:first-child
+            [class*='toolbarKey']:first-child
+        ) {
+        margin-left: 0;
+        margin-inline-start: 0;
+      }
+
+      :global(
+          [class*='toolbar']
+            [class*='toolbarGroup']:last-child
+            [class*='toolbarKey']:last-child
+        ) {
+        margin-right: 0;
+        margin-inline-end: 0;
+      }
+    }
 
     .headerTopRow,
     .headerTopRowCustom,

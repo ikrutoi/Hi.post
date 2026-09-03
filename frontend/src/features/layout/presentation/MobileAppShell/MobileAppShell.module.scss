@@ -918,7 +918,6 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   &[data-mobile-central-pie-mode='cardphotoTemplate'],
   &[data-mobile-central-pie-mode='cardtextTemplate'],
   &[data-mobile-central-pie-mode='addressTemplate'],
-  &[data-mobile-central-pie-mode='aromaPreview'],
   &[data-mobile-central-pie-mode='emptyArchive'] {
     border-radius: 0.5rem;
     overflow: hidden;
@@ -927,7 +926,6 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
 
   &[data-mobile-central-pie-mode='cardtextTemplate'],
   &[data-mobile-central-pie-mode='addressTemplate'],
-  &[data-mobile-central-pie-mode='aromaPreview'],
   &[data-mobile-central-pie-mode='emptyArchive'] {
     box-sizing: border-box;
     border: 1px solid darken($color-app-inner, 8%);
@@ -935,7 +933,6 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
 
   &[data-mobile-central-pie-mode='addressTemplate'],
   &[data-mobile-central-pie-mode='cardtextTemplate'],
-  &[data-mobile-central-pie-mode='aromaPreview'],
   &[data-mobile-central-pie-mode='emptyArchive'] {
     background-color: #fff;
   }
