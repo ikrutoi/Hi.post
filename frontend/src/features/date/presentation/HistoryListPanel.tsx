@@ -136,6 +136,7 @@ export const HistoryListPanel: React.FC<Props> = ({
         <ListPanelStackedHeader
           leadIconKey={leadIconKeyOverride ?? 'listHistory'}
           cardPieListHeaderIcons
+          headerFade="history"
           hideLeadIcon={hideListHeaderChrome}
           hideClose={hideListHeaderChrome}
           onLeadIconClick={

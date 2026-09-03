@@ -33,6 +33,26 @@ $list-panel-footer-band: calc(
   border: 1px solid $color-app-strip;
   border-radius: 0.75rem;
 
+  :global([data-shell-layout='desktop']) & {
+    padding-top: $desktop-factory-toolbar-stack-height;
+
+    &.panelEmptyNoToolbar {
+      padding-top: $section-inner-toolbar-height-desktop;
+    }
+
+    .panelScrollTrack {
+      top: calc(
+        #{$desktop-factory-toolbar-stack-height} - #{$list-panel-scroll-inset}
+      );
+    }
+
+    &.panelEmptyNoToolbar .panelScrollTrack {
+      top: calc(
+        #{$section-inner-toolbar-height-desktop} - #{$list-panel-scroll-inset}
+      );
+    }
+  }
+
   :global([data-shell-layout='mobile']) & {
     flex: 1 1 auto;
     height: 100%;

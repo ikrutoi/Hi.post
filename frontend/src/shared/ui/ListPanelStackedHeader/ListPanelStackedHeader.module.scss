@@ -1,5 +1,6 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
+@use '@styles/config/mobileNotebookTabColors' as notebookTab;
 @use '@styles/mixins/panelCloseButton' as *;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
@@ -196,10 +197,11 @@
       }
     }
 
+    &:not(.headerCompact):not(.headerCompactWithDivider),
     &.headerSectionToolbar:not(.headerCompact):not(
         .headerCompactWithDivider
       ),
-    &.headerCardPieListArchive.headerSectionToolbar:not(.headerCompact):not(
+    &.headerCardPieListArchive:not(.headerCompact):not(
         .headerCompactWithDivider
       ) {
       min-height: $desktop-factory-toolbar-stack-height;
@@ -257,6 +259,27 @@
     .headerTopRow,
     .headerToolbarRow {
       @include header-row-section-fade($color-envelope-sender-input);
+    }
+  }
+
+  &[data-header-fade='cart'] {
+    .headerTopRow,
+    .headerToolbarRow {
+      @include notebookTab.mobile-notebook-cart-toolbar-role-fade;
+    }
+  }
+
+  &[data-header-fade='history'] {
+    .headerTopRow,
+    .headerToolbarRow {
+      @include notebookTab.mobile-notebook-history-toolbar-role-fade;
+    }
+  }
+
+  &[data-header-fade='cart'],
+  &[data-header-fade='history'] {
+    .headerLead {
+      background-color: transparent;
     }
   }
 

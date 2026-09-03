@@ -356,6 +356,7 @@ export const CartListPanel: React.FC<Props> = ({
         <ListPanelStackedHeader
           leadIconKey={listLeadIconKey}
           cardPieListHeaderIcons
+          headerFade="cart"
           hideLeadIcon={hideListHeaderChrome}
           hideClose={hideListHeaderChrome}
           onLeadIconClick={
