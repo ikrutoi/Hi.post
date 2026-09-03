@@ -7,6 +7,10 @@ import type {
 } from '@entities/date/domain/types'
 import { getCurrentDate } from '@shared/utils/date'
 import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
+import {
+  readStoredFirstDayOfWeek,
+  writeStoredFirstDayOfWeek,
+} from '../firstDayOfWeek.storage'
 
 const initialState: DateState = {
   selectedDate: null,
@@ -16,7 +20,7 @@ const initialState: DateState = {
   multiGroupId: nanoid(),
   // isHistoryMode: false,
   isComplete: false,
-  firstDayOfWeek: 'Sun',
+  firstDayOfWeek: readStoredFirstDayOfWeek(),
   cachedSingleDate: null,
   cachedMultiDates: [],
   excludedDispatchBranches: [],
@@ -188,6 +192,7 @@ export const dateSlice = createSlice({
 
     setFirstDayOfWeek(state, action: PayloadAction<FirstDayOfWeekPreference>) {
       state.firstDayOfWeek = action.payload
+      writeStoredFirstDayOfWeek(action.payload)
     },
 
     hydrateDateFromSession(state, action: PayloadAction<DateState>) {
@@ -232,7 +237,12 @@ export const dateSlice = createSlice({
         state.appliedDates = []
       }
       state.isComplete = state.appliedDates.length > 0
-      state.firstDayOfWeek = s.firstDayOfWeek ?? 'Sun'
+      const nextFirstDay =
+        s.firstDayOfWeek === 'Mon' || s.firstDayOfWeek === 'Sun'
+          ? s.firstDayOfWeek
+          : state.firstDayOfWeek
+      state.firstDayOfWeek = nextFirstDay
+      writeStoredFirstDayOfWeek(nextFirstDay)
       state.cachedSingleDate =
         s.cachedSingleDate != null && !orderDisabled(s.cachedSingleDate)
           ? s.cachedSingleDate
