@@ -16,7 +16,7 @@ export type ListPanelStackedHeaderProps = {
   headerTopCenter?: ReactNode | null | false
   /** Заменяет всю верхнюю строку (apply / title / return у списков шаблонов). */
   headerTopRow?: ReactNode | null | false
-  /** Section tint + edge fade on the header chrome (photo / text / address / cart / history). */
+  /** Section tint + edge fade on the header chrome (photo / text / address / cart / history / plan). */
   headerFade?:
     | 'cardphoto'
     | 'cardtext'
@@ -24,6 +24,7 @@ export type ListPanelStackedHeaderProps = {
     | 'envelope-sender'
     | 'cart'
     | 'history'
+    | 'plan'
   /** Second row under the divider; omit when the panel has no list toolbar. */
   toolbar?: ReactNode | null | false
   /**

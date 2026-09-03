@@ -39,6 +39,7 @@ import {
   CartListPanel,
   type CartListPanelItem,
 } from './features/cart/presentation/CartListPanel'
+import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { useEditorPieAddCartHandler } from '@features/cardPie/application/hooks/useEditorPieAddCartHandler'
 import { EditorPieListCardPieBadgeSync } from '@features/cardPie/presentation/EditorPieListCardPieBadgeSync'
@@ -2453,6 +2454,12 @@ function DesktopFactoryTopRow({
     <>
       <div className={styles.appMainContentLeftListSlot}>
         <div className={styles.appMainContentLeftListPlaceholder}>
+          <ListPanelStackedHeader
+            leadIconKey="cardPie"
+            hideLeadIcon
+            hideClose
+            headerFade="plan"
+          />
           <MobileCardPieGutterMinis
             layout="desktop"
             planPies={planPies}

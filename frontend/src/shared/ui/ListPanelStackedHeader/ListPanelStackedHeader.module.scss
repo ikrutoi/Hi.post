@@ -224,7 +224,8 @@
     &[data-header-fade='cardphoto'],
     &[data-header-fade='cardtext'],
     &[data-header-fade='envelope-recipient'],
-    &[data-header-fade='envelope-sender'] {
+    &[data-header-fade='envelope-sender'],
+    &[data-header-fade='plan'] {
       top: 0.5rem;
     }
   }
@@ -282,6 +283,13 @@
     .headerTopRow,
     .headerToolbarRow {
       @include notebookTab.mobile-notebook-history-toolbar-role-fade;
+    }
+  }
+
+  &[data-header-fade='plan'] {
+    .headerTopRow,
+    .headerToolbarRow {
+      @include notebookTab.desktop-plan-mini-toolbar-role-fade;
     }
   }
 

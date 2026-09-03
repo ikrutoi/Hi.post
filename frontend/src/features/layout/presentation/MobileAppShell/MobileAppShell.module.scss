@@ -756,6 +756,9 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
     justify-content: start;
     gap: 1rem;
     padding: 1rem;
+    padding-top: calc(
+      0.5rem + #{$section-inner-toolbar-height-desktop} + 0.5rem
+    );
     overflow-x: visible;
     background-color: transparent;
     border-radius: inherit;
@@ -774,7 +777,7 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   }
 
   .mobilePieGutterMiniScrollTrack {
-    top: 1rem;
+    top: calc(0.5rem + #{$section-inner-toolbar-height-desktop} + 0.5rem);
     bottom: 1rem;
     right: calc((1rem - 4px) / 2);
     width: 4px;
