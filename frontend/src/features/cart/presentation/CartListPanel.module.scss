@@ -51,10 +51,6 @@ $cart-list-header-font-active: 1rem;
 $cart-list-header-font-inactive: 0.78rem;
 $cart-list-header-move-duration: 0.28s;
 $cart-list-header-move-ease: cubic-bezier(0.33, 1, 0.68, 1);
-$cart-list-header-segments-header-w: 30%;
-$cart-list-header-segments-header-w-container: 30cqw;
-$cart-list-header-segments-header-w-mobile: 40%;
-$cart-list-header-segments-header-w-container-mobile: 40cqw;
 /** Как правый padding списка: `0.25rem + scroll-gutter` из `list-panel-scroll-padding`. */
 $cart-list-panel-inline-end-inset: calc(
   0.25rem + #{$list-panel-scroll-gutter}
@@ -152,29 +148,15 @@ $cart-list-panel-inline-end-inset: calc(
   container-type: inline-size;
   container-name: cart-header-segments;
   position: relative;
-  flex: 0 0 $cart-list-header-segments-header-w;
-  width: $cart-list-header-segments-header-w;
-  min-width: $cart-list-header-segments-header-w;
+  flex: 0 0 auto;
+  /** Same box as calendar month/year `.segmentedCart` — do not change the calendar. */
+  width: var(--mobile-pie-size, 12.5rem);
+  min-width: 0;
+  max-width: 100%;
   height: $cart-list-header-active-height;
+  border-radius: $cart-list-header-corner-radius;
+  overflow: hidden;
   background-color: transparent;
-
-  @supports (width: 1cqw) {
-    flex-basis: $cart-list-header-segments-header-w-container;
-    width: $cart-list-header-segments-header-w-container;
-    min-width: $cart-list-header-segments-header-w-container;
-  }
-
-  :global([data-shell-layout='mobile']) & {
-    flex-basis: $cart-list-header-segments-header-w-mobile;
-    width: $cart-list-header-segments-header-w-mobile;
-    min-width: $cart-list-header-segments-header-w-mobile;
-
-    @supports (width: 1cqw) {
-      flex-basis: $cart-list-header-segments-header-w-container-mobile;
-      width: $cart-list-header-segments-header-w-container-mobile;
-      min-width: $cart-list-header-segments-header-w-container-mobile;
-    }
-  }
 }
 
 .cartHeaderSegmentsFactoryToolbar {

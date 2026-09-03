@@ -15,6 +15,7 @@ import {
   selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
 import { selectCanApplyDispatchDates } from '@date/infrastructure/selectors'
+import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { endCartCalendarDatePick } from '@date/calendar/infrastructure/state'
 import { releaseCartDatePickListEntryOwnership } from '@date/calendar/application/logic/cartDatePickListEntryOwnership'
 import {
@@ -46,6 +47,7 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
   const { triggerFlash } = useFlashEffect()
   const { lastViewedCalendarDate } = useCalendarFacade()
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
+  const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const canApplyAssemblyDates = useAppSelector(selectCanApplyDispatchDates)
   const canApplyCartdatePick = useAppSelector(selectCanApplyCartdatePick)
   const canApplyDispatchDates =
@@ -163,8 +165,10 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
 
   const onCurrentMonth = isCurrentMonth()
 
-  const modeIcon =
-    notebookStripTab === 'cart' || notebookStripTab === 'history' ? (
+  const showModeListIcon =
+    isMobileLayout &&
+    (notebookStripTab === 'cart' || notebookStripTab === 'history')
+  const modeIcon = showModeListIcon ? (
       <button
         ref={modeListButtonRef}
         type="button"

@@ -21,7 +21,6 @@ import {
   toggleCartListEntryChecked,
 } from '@cart/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
-import { notebookTabCartClicked } from '@date/calendar/application/orchestration/notebookOrchestration.events'
 import type { CartListStatusSegment } from '@cart/domain/types'
 import { listEntryPriceLine } from '@shared/utils/listEntryPriceLine'
 import { cartListTotalDisplayFromPostcards } from '@cart/application/logic/cartListTotalDisplay'
@@ -203,7 +202,6 @@ export const CartListPanel: React.FC<Props> = ({
   onSelectEntry,
   onDateEditEntry,
   leadIconKeyOverride,
-  hideListHeaderChrome = false,
   factoryChrome = false,
 }) => {
   const dispatch = useAppDispatch()
@@ -219,10 +217,7 @@ export const CartListPanel: React.FC<Props> = ({
     [checkedLocalIds],
   )
   const checkedTotalDisplay = useAppSelector(selectCartCheckedTotalDisplay)
-  const {
-    setCartListPanelOpen,
-    listSelectedLocalId,
-  } = useCartFacade()
+  const { listSelectedLocalId } = useCartFacade()
 
   const handleToggleEntryChecked = useCallback(
     (localId: number) => {
@@ -317,10 +312,6 @@ export const CartListPanel: React.FC<Props> = ({
     return cartListTotalDisplayFromPostcards(postcards)
   }, [checkedTotalDisplay, entries, sumCheckedOnly])
 
-  const handleCloseList = useCallback(() => {
-    setCartListPanelOpen(false)
-  }, [setCartListPanelOpen])
-
   /** Total footer only for billable cart; hidden for blocked segment from store. */
   const showCartFooter =
     entriesProp != null || listSegment === 'cart'
@@ -338,11 +329,6 @@ export const CartListPanel: React.FC<Props> = ({
     return CART_LIST_TOOLBAR.filter((group) => group.group !== 'cartList')
   }, [entriesProp, listSegment])
 
-  const handleLeadIconClick = useCallback(() => {
-    if (leadIconKeyOverride == null) return
-    dispatch(notebookTabCartClicked())
-  }, [dispatch, leadIconKeyOverride])
-
   return (
     <div
       className={clsx(
@@ -357,14 +343,8 @@ export const CartListPanel: React.FC<Props> = ({
           leadIconKey={listLeadIconKey}
           cardPieListHeaderIcons
           headerFade="cart"
-          hideLeadIcon={hideListHeaderChrome}
-          hideClose={hideListHeaderChrome}
-          onLeadIconClick={
-            !hideListHeaderChrome && leadIconKeyOverride != null
-              ? handleLeadIconClick
-              : undefined
-          }
-          leadIconAriaLabel="Cart calendar"
+          hideLeadIcon
+          hideClose
           headerTopCenter={
             entriesProp == null ? <CartHeaderSegments /> : undefined
           }
@@ -380,8 +360,6 @@ export const CartListPanel: React.FC<Props> = ({
             )
           }
           showDividerWithoutToolbar={!hasRows}
-          onClose={hideListHeaderChrome ? undefined : handleCloseList}
-          closeAriaLabel="Close cart list"
         />
       ) : null}
       <div className={styles.panelScrollTrack} aria-hidden />

@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo } from 'react'
-import { useAppDispatch, useAppSelector } from '@app/hooks'
+import React, { useMemo } from 'react'
+import { useAppSelector } from '@app/hooks'
 import { IconHistory } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
@@ -19,7 +19,6 @@ import {
   selectHistoryListSortMode,
 } from '@date/calendar/infrastructure/selectors'
 import { sortHistoryListEntries } from '@date/application/helpers/historyListSort'
-import { notebookTabHistoryClicked } from '@date/calendar/application/orchestration/notebookOrchestration.events'
 import { HISTORY_LIST_TOOLBAR } from '@toolbar/domain/types/historyList.types'
 
 export type HistoryListPanelItem = {
@@ -89,7 +88,6 @@ const HistoryListPanelRow: React.FC<{
 )
 
 export const HistoryListPanel: React.FC<Props> = ({
-  onClose,
   entries = [],
   listSelectedLocalId = null,
   onSelectEntry,
@@ -99,10 +97,8 @@ export const HistoryListPanel: React.FC<Props> = ({
   calendarFooterAlwaysEnabled = false,
   calendarCartHistoryFooter = false,
   leadIconKeyOverride,
-  hideListHeaderChrome = false,
   factoryChrome = false,
 }) => {
-  const dispatch = useAppDispatch()
   const { isMobileLayout } = useSizeFacade()
   const useFactoryChrome = factoryChrome && isMobileLayout
   const historyListPanelDensity = useAppSelector(selectHistoryListPanelDensity)
@@ -119,11 +115,6 @@ export const HistoryListPanel: React.FC<Props> = ({
       ? !hasRows
       : !hasUnderlyingHistoryEntries
 
-  const handleLeadIconClick = useCallback(() => {
-    if (leadIconKeyOverride == null) return
-    dispatch(notebookTabHistoryClicked())
-  }, [dispatch, leadIconKeyOverride])
-
   return (
     <div
       className={clsx(
@@ -137,14 +128,8 @@ export const HistoryListPanel: React.FC<Props> = ({
           leadIconKey={leadIconKeyOverride ?? 'listHistory'}
           cardPieListHeaderIcons
           headerFade="history"
-          hideLeadIcon={hideListHeaderChrome}
-          hideClose={hideListHeaderChrome}
-          onLeadIconClick={
-            !hideListHeaderChrome && leadIconKeyOverride != null
-              ? handleLeadIconClick
-              : undefined
-          }
-          leadIconAriaLabel="History calendar"
+          hideLeadIcon
+          hideClose
           headerTopCenter={
             <div className={styles.headerPostcardDots}>
               <div className={styles.headerPostcardDotsChrome}>
@@ -163,8 +148,6 @@ export const HistoryListPanel: React.FC<Props> = ({
             )
           }
           showDividerWithoutToolbar={!hasRows}
-          onClose={hideListHeaderChrome ? undefined : onClose}
-          closeAriaLabel="Close date list"
         />
       ) : null}
       <div className={styles.panelScrollTrack} aria-hidden />
