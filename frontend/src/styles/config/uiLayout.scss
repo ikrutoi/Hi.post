@@ -147,6 +147,8 @@ $history-list-toolbar-indicator-transition-duration: 0.18s;
 
 /** Cart list: segment counts, row price, footer total. */
 $cart-list-amount-font-size: 0.75rem;
+/** Desktop row: space after the postcard price (right gutter). */
+$cart-list-entry-gutter-end: 2rem;
 $cart-list-amount-font-size-mobile: 0.9rem;
 
 $ui-accent-glow-spread: 0.5rem; // 8px

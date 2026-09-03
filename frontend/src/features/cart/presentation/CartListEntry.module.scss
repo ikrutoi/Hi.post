@@ -6,7 +6,6 @@
 $list-entry-surface: $color-cart-list-surface;
 /** Левый gutter: чекбокс / dateEdit — шире, иконка по центру. */
 $cart-list-entry-gutter-start: 3rem;
-$cart-list-entry-gutter-end: 2rem;
 
 @mixin cart-list-entry-indicator-border($indicator-color) {
   border-color: $indicator-color;

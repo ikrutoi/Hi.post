@@ -34,21 +34,23 @@ $list-panel-footer-band: calc(
   border-radius: 0.75rem;
 
   :global([data-shell-layout='desktop']) & {
-    padding-top: $desktop-factory-toolbar-stack-height;
+    padding-top: calc(#{$desktop-factory-toolbar-stack-height} + 0.5rem);
 
     &.panelEmptyNoToolbar {
-      padding-top: $section-inner-toolbar-height-desktop;
+      padding-top: calc(#{$section-inner-toolbar-height-desktop} + 0.5rem);
     }
 
     .panelScrollTrack {
       top: calc(
-        #{$desktop-factory-toolbar-stack-height} - #{$list-panel-scroll-inset}
+        #{$desktop-factory-toolbar-stack-height} + 0.5rem -
+          #{$list-panel-scroll-inset}
       );
     }
 
     &.panelEmptyNoToolbar .panelScrollTrack {
       top: calc(
-        #{$section-inner-toolbar-height-desktop} - #{$list-panel-scroll-inset}
+        #{$section-inner-toolbar-height-desktop} + 0.5rem -
+          #{$list-panel-scroll-inset}
       );
     }
   }

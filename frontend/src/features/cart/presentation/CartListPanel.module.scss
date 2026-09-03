@@ -1,6 +1,7 @@
 @use 'sass:math';
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
+@use '@styles/config/mobileNotebookTabColors' as notebookTab;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
 /** Две строки хедера (icon row + toolbar) — `headerSectionToolbar` min-height. */
@@ -70,22 +71,37 @@ $cart-list-panel-inline-end-inset: calc(
   border-radius: 0.75rem;
 
   :global([data-shell-layout='desktop']) & {
-    padding-top: $desktop-factory-toolbar-stack-height;
+    padding-top: calc(#{$desktop-factory-toolbar-stack-height} + 0.5rem);
+    padding-bottom: calc(#{$section-inner-toolbar-height-desktop} + 0.5rem);
 
     &.panelEmptyNoToolbar {
-      padding-top: $section-inner-toolbar-height-desktop;
+      padding-top: calc(#{$section-inner-toolbar-height-desktop} + 0.5rem);
+    }
+
+    &.panelNoFooter {
+      padding-bottom: 0;
     }
 
     .panelScrollTrack {
       top: calc(
-        #{$desktop-factory-toolbar-stack-height} - #{$list-panel-scroll-inset}
+        #{$desktop-factory-toolbar-stack-height} + 0.5rem -
+          #{$list-panel-scroll-inset}
+      );
+      bottom: calc(
+        #{$section-inner-toolbar-height-desktop} + 0.5rem -
+          #{$list-panel-scroll-inset}
       );
     }
 
     &.panelEmptyNoToolbar .panelScrollTrack {
       top: calc(
-        #{$section-inner-toolbar-height-desktop} - #{$list-panel-scroll-inset}
+        #{$section-inner-toolbar-height-desktop} + 0.5rem -
+          #{$list-panel-scroll-inset}
       );
+    }
+
+    &.panelNoFooter .panelScrollTrack {
+      bottom: calc(0px - #{$list-panel-scroll-inset});
     }
   }
 
@@ -469,6 +485,18 @@ $cart-list-panel-inline-end-inset: calc(
   padding: 0;
   box-sizing: border-box;
   background-color: transparent;
+
+  :global([data-shell-layout='desktop']) & {
+    left: 0.5rem;
+    right: auto;
+    bottom: 0.5rem;
+    width: calc(100% - 0.75rem - 8px);
+    height: $section-inner-toolbar-height-desktop;
+    min-height: $section-inner-toolbar-height-desktop;
+    padding-inline-start: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
+    padding-inline-end: $cart-list-entry-gutter-end;
+    @include notebookTab.mobile-notebook-cart-toolbar-role-fade;
+  }
 }
 
 .footerAmount {
@@ -497,5 +525,14 @@ $cart-list-panel-inline-end-inset: calc(
 
   :global([data-shell-layout='mobile']) & {
     font-size: $cart-list-amount-font-size-mobile;
+  }
+
+  :global([data-shell-layout='desktop']) & {
+    height: auto;
+    min-height: 0;
+    padding: 0;
+    border-radius: 0;
+    background-color: transparent;
+    box-shadow: none;
   }
 }

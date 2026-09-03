@@ -49,26 +49,32 @@ $list-panel-scroll-inset: 0.35rem;
   }
 
   :global([data-shell-layout='desktop']) & {
+    padding-top: calc(
+      #{$list-panel-compact-header-band-section-toolbar} + 0.5rem
+    );
+
     &.panelToolbarBelow {
-      padding-top: $list-panel-stacked-band-section-toolbar;
+      padding-top: calc(#{$list-panel-stacked-band-section-toolbar} + 0.5rem);
     }
 
     .panelScrollTrack {
       top: calc(
-        #{$list-panel-compact-header-band-section-toolbar} - #{$list-panel-scroll-inset}
+        #{$list-panel-compact-header-band-section-toolbar} + 0.5rem -
+          #{$list-panel-scroll-inset}
       );
       height: calc(
-        100% - #{$list-panel-compact-header-band-section-toolbar} -
+        100% - #{$list-panel-compact-header-band-section-toolbar} - 0.5rem -
           #{$list-panel-scroll-inset}
       );
     }
 
     &.panelToolbarBelow .panelScrollTrack {
       top: calc(
-        #{$list-panel-stacked-band-section-toolbar} - #{$list-panel-scroll-inset}
+        #{$list-panel-stacked-band-section-toolbar} + 0.5rem -
+          #{$list-panel-scroll-inset}
       );
       height: calc(
-        100% - #{$list-panel-stacked-band-section-toolbar} -
+        100% - #{$list-panel-stacked-band-section-toolbar} - 0.5rem -
           #{$list-panel-scroll-inset}
       );
     }

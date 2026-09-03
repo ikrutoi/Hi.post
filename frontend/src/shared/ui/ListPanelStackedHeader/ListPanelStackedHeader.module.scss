@@ -218,6 +218,15 @@
     &.headerCardPieListArchive.headerSectionToolbar.headerCompactWithDivider {
       min-height: calc(#{$section-inner-toolbar-height-desktop} + 1px);
     }
+
+    &[data-header-fade='cart'],
+    &[data-header-fade='history'],
+    &[data-header-fade='cardphoto'],
+    &[data-header-fade='cardtext'],
+    &[data-header-fade='envelope-recipient'],
+    &[data-header-fade='envelope-sender'] {
+      top: 0.5rem;
+    }
   }
 
   .headerDivider {
