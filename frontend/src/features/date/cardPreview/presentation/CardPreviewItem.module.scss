@@ -86,7 +86,7 @@
 }
 
 .historyIndicatorStack {
-  --history-indicator-size: 0.55rem;
+  --history-indicator-size: 0.75rem;
   --history-indicator-step: calc(var(--history-indicator-size) * 0.75);
   --history-indicator-count: var(--indicator-count, 1);
   position: absolute;
@@ -131,8 +131,8 @@
   top: 0.15rem;
   left: 0.15rem;
   z-index: 2;
-  width: 0.55rem;
-  height: 0.55rem;
+  width: 0.75rem;
+  height: 0.75rem;
   border-radius: 50%;
   background-color: $color-preview-indicator-delivered;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
