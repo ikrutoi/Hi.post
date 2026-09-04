@@ -35,14 +35,6 @@ function readApplyState(raw: unknown): IconState {
   return 'disabled'
 }
 
-const ADDRESS_LIST_FACTORY_UPPER_TOOLBAR: ToolbarConfig = [
-  {
-    group: 'close',
-    icons: [{ key: 'return', state: 'enabled' }],
-    status: 'enabled',
-  },
-]
-
 /** Mobile factory: нижний ряд — addressListSender / addressListRecipients toolbar. */
 export const AddressListMobileFactoryLowerToolbar: React.FC = () => {
   const senderListOpen = useAppSelector(selectSenderListPanelOpen)
@@ -97,7 +89,7 @@ export const AddressListMobileFactoryLowerToolbar: React.FC = () => {
   return null
 }
 
-/** Mobile factory / desktop list header — applyMedium слева, return справа. */
+/** Mobile factory / desktop list header — applyMedium слева. */
 export const AddressListMobileFactoryUpperToolbar: React.FC<{
   placement?: 'factory' | 'listHeader'
 }> = ({ placement = 'factory' }) => {
@@ -109,7 +101,6 @@ export const AddressListMobileFactoryUpperToolbar: React.FC<{
   const applyState = readApplyState(
     senderListOpen ? senderToolbar.apply : recipientsToolbar.apply,
   )
-  const upperSection = senderListOpen ? 'senderView' : 'recipientView'
 
   const applyToolbar = useMemo((): ToolbarConfig => {
     return [
@@ -120,10 +111,6 @@ export const AddressListMobileFactoryUpperToolbar: React.FC<{
       },
     ]
   }, [applyState, senderListOpen])
-
-  const closeList = useCallback(() => {
-    dispatch(closeAddressList())
-  }, [dispatch])
 
   const handleApplyAction = useCallback(
     (key: IconKey) => {
@@ -138,15 +125,6 @@ export const AddressListMobileFactoryUpperToolbar: React.FC<{
       return false
     },
     [dispatch],
-  )
-
-  const handleAction = useCallback(
-    (key: IconKey) => {
-      if (key !== 'return') return
-      closeList()
-      return false
-    },
-    [closeList],
   )
 
   return (
@@ -165,14 +143,6 @@ export const AddressListMobileFactoryUpperToolbar: React.FC<{
           groupsOverride={applyToolbar}
           className={toolbarStyles.toolbarAromaUpperApply}
           onActionClick={handleApplyAction}
-        />
-      </div>
-      <div className={styles.upperToolbar}>
-        <Toolbar
-          section={upperSection}
-          groupsOverride={ADDRESS_LIST_FACTORY_UPPER_TOOLBAR}
-          className={toolbarStyles.toolbarAromaUpperReturn}
-          onActionClick={handleAction}
         />
       </div>
     </div>

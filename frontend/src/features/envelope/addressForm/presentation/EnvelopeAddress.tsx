@@ -219,12 +219,11 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
   useEffect(() => {
     if (role !== 'recipient') return
-    if (!isMobile || recipientsFormPreviewId == null) return
+    if (recipientsFormPreviewId == null) return
     if (showRecipientsEnvelopeList) return
     dispatch(clearRecipientsFormPreviewId())
   }, [
     dispatch,
-    isMobile,
     recipientsFormPreviewId,
     role,
     showRecipientsEnvelopeList,
@@ -431,38 +430,14 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
   const handleOpenRecipientFromList = (entry: AddressBookEntry) => {
     /**
-     * Mobile: keep the recipients grid; preview the card on the central
-     * CardPie (same pattern as the address template list).
+     * Keep the recipients grid; preview the card on the central CardPie
+     * (same pattern as the address template list).
      */
-    if (isMobile) {
-      dispatch(
-        setRecipientsFormPreviewId(
-          recipientsFormPreviewId === entry.id ? null : entry.id,
-        ),
-      )
-      if (recipientViewEditMode) {
-        dispatch(
-          closeAddressEditSession({ role: 'recipient', keepRecipientView: true }),
-        )
-      }
-      return
-    }
-
-    if (sandboxActive) {
-      dispatch(setArchiveRecipientViewId(entry.id))
-    } else {
-      dispatch(setRecipientViewId(entry.id))
-    }
-    ;(Object.entries(entry.address) as [keyof typeof value, string][]).forEach(
-      ([field, fieldValue]) => {
-        update(field as any, fieldValue)
-      },
+    dispatch(
+      setRecipientsFormPreviewId(
+        recipientsFormPreviewId === entry.id ? null : entry.id,
+      ),
     )
-    if (sandboxActive) {
-      dispatch(setArchiveRecipientView('recipientView'))
-    } else {
-      dispatch(setRecipientView('recipientView'))
-    }
     if (recipientViewEditMode) {
       dispatch(
         closeAddressEditSession({ role: 'recipient', keepRecipientView: true }),
@@ -796,7 +771,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                     entries={recipientsDisplayList}
                     onRemove={recipientFacade.removeFromList}
                     onOpenRecipient={handleOpenRecipientFromList}
-                    selectedId={isMobile ? recipientsFormPreviewId : null}
+                    selectedId={recipientsFormPreviewId}
                     scrollbarPortalTarget={
                       recipientScrollContainerReady
                         ? recipientFieldsetContainerScrollRef

@@ -41,14 +41,6 @@ function readApplyState(raw: unknown): IconState {
  */
 const TITLE_GESTURE_SAFETY_MS = 350
 
-const CARDTEXT_LIST_FACTORY_UPPER_TOOLBAR: ToolbarConfig = [
-  {
-    group: 'close',
-    icons: [{ key: 'return', state: 'enabled' }],
-    status: 'enabled',
-  },
-]
-
 /** Mobile factory: нижний ряд — cardtextList toolbar в общем shell. */
 export const CardtextListMobileFactoryLowerToolbar: React.FC = () => {
   const isOpen = useAppSelector(selectIsCardtextListPanelOpen)
@@ -89,7 +81,7 @@ export const CardtextListMobileFactoryLowerToolbar: React.FC = () => {
   return null
 }
 
-/** Mobile factory / desktop list header — applyMedium слева, заголовок, return справа. */
+/** Mobile factory / desktop list header — applyMedium слева, заголовок. */
 export const CardtextListMobileFactoryUpperToolbar: React.FC<{
   placement?: 'factory' | 'listHeader'
 }> = ({ placement = 'factory' }) => {
@@ -177,10 +169,6 @@ export const CardtextListMobileFactoryUpperToolbar: React.FC<{
     ]
   }, [applyState, listEmpty])
 
-  const closeList = useCallback(() => {
-    dispatch(setCardtextListPanelOpen(false))
-  }, [dispatch])
-
   const handleApplyAction = useCallback(
     (key: IconKey) => {
       if (key !== 'applyMedium') return
@@ -194,15 +182,6 @@ export const CardtextListMobileFactoryUpperToolbar: React.FC<{
       return false
     },
     [dispatch, listEmpty],
-  )
-
-  const handleAction = useCallback(
-    (key: IconKey) => {
-      if (key !== 'return') return
-      closeList()
-      return false
-    },
-    [closeList],
   )
 
   return (
@@ -285,14 +264,6 @@ export const CardtextListMobileFactoryUpperToolbar: React.FC<{
           </div>
         )
       ) : null}
-      <div className={styles.upperToolbar}>
-        <Toolbar
-          section="cardtextCreate"
-          groupsOverride={CARDTEXT_LIST_FACTORY_UPPER_TOOLBAR}
-          className={toolbarStyles.toolbarAromaUpperReturn}
-          onActionClick={handleAction}
-        />
-      </div>
     </div>
   )
 }

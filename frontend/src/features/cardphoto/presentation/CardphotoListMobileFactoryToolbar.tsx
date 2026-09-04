@@ -40,14 +40,6 @@ function selectCardphotoInlineTemplateCount(state: RootState): number {
   return typeof badge === 'number' && badge > 0 ? badge : 0
 }
 
-const CARDPHOTO_LIST_FACTORY_UPPER_TOOLBAR: ToolbarConfig = [
-  {
-    group: 'close',
-    icons: [{ key: 'return', state: 'enabled' }],
-    status: 'enabled',
-  },
-]
-
 /** Mobile factory: нижний ряд — cardphotoList toolbar в общем shell. */
 export const CardphotoListMobileFactoryLowerToolbar: React.FC = () => {
   const isOpen = useAppSelector(selectIsListPanelOpen)
@@ -88,7 +80,7 @@ export const CardphotoListMobileFactoryLowerToolbar: React.FC = () => {
   return null
 }
 
-/** Mobile factory / desktop list header — applyMedium слева, заголовок, return справа. */
+/** Mobile factory / desktop list header — applyMedium слева, заголовок. */
 export const CardphotoListMobileFactoryUpperToolbar: React.FC<{
   placement?: 'factory' | 'listHeader'
 }> = ({ placement = 'factory' }) => {
@@ -139,15 +131,6 @@ export const CardphotoListMobileFactoryUpperToolbar: React.FC<{
     [closeList, listEmpty],
   )
 
-  const handleAction = useCallback(
-    (key: IconKey) => {
-      if (key !== 'return') return
-      closeList()
-      return false
-    },
-    [closeList],
-  )
-
   return (
     <div
       className={clsx(
@@ -168,14 +151,6 @@ export const CardphotoListMobileFactoryUpperToolbar: React.FC<{
           {centralTemplateTitle}
         </div>
       ) : null}
-      <div className={styles.upperToolbar}>
-        <Toolbar
-          section="cardphotoCreate"
-          groupsOverride={CARDPHOTO_LIST_FACTORY_UPPER_TOOLBAR}
-          className={toolbarStyles.toolbarAromaUpperReturn}
-          onActionClick={handleAction}
-        />
-      </div>
     </div>
   )
 }

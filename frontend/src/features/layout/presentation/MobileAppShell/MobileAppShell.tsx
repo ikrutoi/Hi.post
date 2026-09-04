@@ -77,31 +77,23 @@ import {
 import { CardtextView } from '@cardtext/presentation/CardtextView/CardtextView'
 import {
   clearAddressListPreviewSnapshot,
-  clearRecipientsFormPreviewId,
   closeAddressList,
   requestClearMobileAddressFocus,
 } from '@envelope/infrastructure/state'
 import {
   selectRecipientListPanelOpen,
-  selectRecipientListPendingIds,
-  selectRecipientsFormPreviewId,
   selectSenderListPanelOpen,
-  selectSenderSelectedId,
 } from '@envelope/infrastructure/selectors'
 import {
-  selectRecipientEntriesState,
   selectRecipientView,
 } from '@envelope/recipient/infrastructure/selectors'
 import {
   setRecipientViewDraft,
   setRecipientViewId,
 } from '@envelope/recipient/infrastructure/state'
-import {
-  selectSenderEntriesState,
-} from '@envelope/sender/infrastructure/selectors'
 import { setSenderViewId } from '@envelope/sender/infrastructure/state'
-import { formatAddressPreviewLines } from '@envelope/addressBook/presentation/addressSummaryLines'
-import { listStatusIsInQuickAddressBook } from '@envelope/domain/helpers'
+import { useAddressCardPiePreview } from '@envelope/application/hooks'
+import { AddressCardPiePreview } from '@envelope/presentation/AddressCardPiePreview/AddressCardPiePreview'
 import { clearViewAroma } from '@aroma/infrastructure/state'
 import { selectViewAroma } from '@aroma/infrastructure/selectors'
 import { useAromaCardPiePreview } from '@aroma/application/hooks'
@@ -112,7 +104,7 @@ import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { AddressFields, CardSection, IconKey } from '@shared/config/constants'
 import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
 import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDevContext'
-import { IconCardPie, IconCart, IconLogo, IconSectionMenuCardtext, IconSectionMenuDate, IconSectionMenuEnvelopeV2 } from '@shared/ui/icons'
+import { IconCardPie, IconCart, IconLogo, IconSectionMenuCardtext, IconSectionMenuDate } from '@shared/ui/icons'
 import { HistoryArchiveSlotButton } from '@date/presentation/HistoryArchiveSlotButton'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
@@ -308,14 +300,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     pinTop:
       envelopeAddressCreateRole != null || cardtextComposeHideAppHeader,
   })
-  const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
-  const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
-  const senderSelectedId = useAppSelector(selectSenderSelectedId)
-  const recipientListPendingIds = useAppSelector(selectRecipientListPendingIds)
-  const recipientsFormPreviewId = useAppSelector(selectRecipientsFormPreviewId)
   const recipientView = useAppSelector(selectRecipientView)
-  const senderEntries = useAppSelector(selectSenderEntriesState)
-  const recipientEntries = useAppSelector(selectRecipientEntriesState)
+  const addressCardPiePreview = useAddressCardPiePreview()
   const activeCartPostcardCount = useAppSelector(selectActiveCartPostcardCount)
   const blockedCartPostcardCount = useAppSelector(selectBlockedCartPostcardCount)
   const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
@@ -339,12 +325,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       dispatchCardPieToolbarIconState(dispatch, false)
     }
   }, [showMobileCardPieListInFactory, cardPieListPanelOpen, dispatch])
-
-  useEffect(() => {
-    if (activeSection === 'envelope') return
-    if (recipientsFormPreviewId == null) return
-    dispatch(clearRecipientsFormPreviewId())
-  }, [activeSection, dispatch, recipientsFormPreviewId])
 
   useEffect(() => {
     if (
@@ -531,82 +511,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     !rightPieCardtextPeekNoToolbar &&
     !cardtextAssetMatchesApplied
 
-  const mobileAddressListChromeActive =
-    activeSection === 'envelope' &&
-    (senderListPanelOpen || recipientListPanelOpen)
-
-  const mobileAddressListTemplatePreview = useMemo(() => {
-    if (!mobileAddressListChromeActive) return null
-
-    if (senderListPanelOpen && senderSelectedId) {
-      const entry = senderEntries.find((e) => e.id === senderSelectedId)
-      if (!entry) return null
-      return {
-        role: 'sender' as const,
-        source: 'list' as const,
-        id: entry.id,
-        address: entry.address,
-        lines: formatAddressPreviewLines(entry),
-        inQuickList: listStatusIsInQuickAddressBook(entry.listStatus),
-      }
-    }
-
-    if (recipientListPanelOpen && recipientListPendingIds.length > 0) {
-      const lastId =
-        recipientListPendingIds[recipientListPendingIds.length - 1]
-      const entry = recipientEntries.find((e) => e.id === lastId)
-      if (!entry) return null
-      return {
-        role: 'recipient' as const,
-        source: 'list' as const,
-        id: entry.id,
-        address: entry.address,
-        lines: formatAddressPreviewLines(entry),
-        inQuickList: listStatusIsInQuickAddressBook(entry.listStatus),
-      }
-    }
-
-    return null
-  }, [
-    mobileAddressListChromeActive,
-    senderListPanelOpen,
-    senderSelectedId,
-    senderEntries,
-    recipientListPanelOpen,
-    recipientListPendingIds,
-    recipientEntries,
-  ])
-
-  const mobileRecipientsFormPreview = useMemo(() => {
-    if (activeSection !== 'envelope') return null
-    if (mobileAddressListChromeActive) return null
-    if (
-      recipientView === 'recipientView' ||
-      recipientView === 'recipientCreate'
-    ) {
-      return null
-    }
-    if (recipientsFormPreviewId == null) return null
-    const entry = recipientEntries.find((e) => e.id === recipientsFormPreviewId)
-    if (!entry) return null
-    return {
-      role: 'recipient' as const,
-      source: 'form' as const,
-      id: entry.id,
-      address: entry.address,
-      lines: formatAddressPreviewLines(entry),
-      inQuickList: listStatusIsInQuickAddressBook(entry.listStatus),
-    }
-  }, [
-    activeSection,
-    mobileAddressListChromeActive,
-    recipientView,
-    recipientsFormPreviewId,
-    recipientEntries,
-  ])
-
-  const mobileAddressPiePreview =
-    mobileAddressListTemplatePreview ?? mobileRecipientsFormPreview
+  const mobileAddressPiePreview = addressCardPiePreview.preview
 
   const aromaCardPiePreview = useAromaCardPiePreview()
 
@@ -625,7 +530,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     if (mobileCentralArchivePreview != null) return 'archive'
     if (mobileCardphotoListTemplatePreview != null) return 'cardphotoTemplate'
     if (mobileCardtextListChromeActive) return 'cardtextTemplate'
-    if (mobileAddressListChromeActive || mobileRecipientsFormPreview != null) {
+    if (addressCardPiePreview.showSurface) {
       return 'addressTemplate'
     }
     if (
@@ -641,8 +546,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     mobileCentralArchivePreview,
     mobileCardphotoListTemplatePreview,
     mobileCardtextListChromeActive,
-    mobileAddressListChromeActive,
-    mobileRecipientsFormPreview,
+    addressCardPiePreview.showSurface,
     mobileListArchiveSlotActive,
     notebookStripSection,
   ])
@@ -1298,39 +1202,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                           </div>
                         )
                       ) : mobileCentralPieDisplay === 'addressTemplate' ? (
-                        mobileAddressPiePreview != null ? (
-                        <div
-                          className={styles.mobileAddressListTemplatePreview}
-                          data-address-list-preview-role={
-                            mobileAddressPiePreview.role
-                          }
-                          aria-label="Selected address template preview"
-                        >
-                          <div className={styles.mobileAddressListTemplatePreviewLines}>
-                            {mobileAddressPiePreview.lines.map(
-                              (line) => (
-                                <div
-                                  key={line.field}
-                                  className={clsx(
-                                    styles.mobileAddressListTemplatePreviewLine,
-                                    line.isName &&
-                                      styles.mobileAddressListTemplatePreviewLineName,
-                                  )}
-                                >
-                                  {line.text}
-                                </div>
-                              ),
-                            )}
-                          </div>
-                        </div>
-                        ) : (
-                          <div
-                            className={styles.mobileAddressListTemplatePlaceholder}
-                            aria-hidden
-                          >
-                            <IconSectionMenuEnvelopeV2 />
-                          </div>
-                        )
+                        <AddressCardPiePreview
+                          preview={mobileAddressPiePreview}
+                        />
                       ) : mobileCentralPieDisplay === 'aromaPreview' ? (
                         <AromaCardPiePreview preview={aromaCardPiePreview} />
                       ) : mobileCentralPieDisplay === 'emptyArchive' ? (

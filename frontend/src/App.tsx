@@ -79,6 +79,8 @@ import {
   setCartListStatusSegment,
 } from '@cart/infrastructure/state'
 import { EnvelopeRightSlot } from '@envelope/presentation/EnvelopeRightSlot'
+import { AddressCardPiePreview } from '@envelope/presentation/AddressCardPiePreview/AddressCardPiePreview'
+import { useAddressCardPiePreview } from '@envelope/application/hooks'
 import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
 import {
   selectArchiveEnvelopeSandboxActive,
@@ -2377,6 +2379,7 @@ function DesktopFactoryTopRow({
     cyclePlanPie,
   } = useMobilePlanCardPies()
   const aromaCardPiePreview = useAromaCardPiePreview()
+  const addressCardPiePreview = useAddressCardPiePreview()
   const handleEditorPieToolbarAction = useEditorPieAddCartHandler({
     planPies,
     selectedPlanPie,
@@ -2513,6 +2516,8 @@ function DesktopFactoryTopRow({
               <div className={styles.desktopCentralPieEmpty} aria-hidden>
                 <IconCardPie />
               </div>
+            ) : addressCardPiePreview.showSurface ? (
+              <AddressCardPiePreview preview={addressCardPiePreview.preview} />
             ) : (
               <CardPie
                 key={selectedPlanPieId ?? 'assembly-overview'}
