@@ -161,52 +161,11 @@ $list-entry-bg-hover: #fafafa;
   }
 
   :global(svg) {
-    width: 0.95rem;
-    height: 0.95rem;
+    width: 1rem;
+    height: 1rem;
     flex-shrink: 0;
     display: block;
     color: currentColor;
-  }
-}
-
-/** Правый gutter: delete по центру по горизонтали, снизу. */
-.shellDeleteSlot {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 2;
-  display: flex;
-  width: $cart-list-entry-gutter-end;
-  align-items: flex-end;
-  justify-content: center;
-  padding-bottom: 0.15rem;
-  box-sizing: border-box;
-  pointer-events: none;
-
-  .shellDeleteBtn {
-    pointer-events: auto;
-  }
-}
-
-/** Как `AddressListRow` `.rowActionButton` (крупный размер): svg 0.82rem. */
-.shellDeleteBtn {
-  @include iconButton.list-row-icon-button;
-  margin: 0;
-  font: inherit;
-  appearance: none;
-  color: $color-font-enabled-light;
-  cursor: pointer;
-  transition: color 0.15s ease;
-
-  &:hover:not(:disabled) {
-    color: $color-font-enabled-light-hover;
-  }
-
-  &:disabled {
-    cursor: default;
-    opacity: 0.55;
-    color: $color-font-disabled;
   }
 }
 

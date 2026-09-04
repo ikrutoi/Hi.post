@@ -1404,7 +1404,13 @@
   }
 
   .toolbarKey {
+    @include iconButton.toolbar-icon-button-size-standard(true);
+    margin-inline: 0;
     background-color: $color-app-inner;
+
+    :global([data-shell-layout='desktop']) & {
+      @include iconButton.toolbar-icon-button-size-standard(true);
+    }
 
     &.toolbarKeyEnabled {
       color: $color-font-enabled-light;
@@ -1458,8 +1464,13 @@
   }
 
   .toolbarKey {
-    @include iconButton.toolbar-icon-button-size-standard-shell(true);
+    @include iconButton.toolbar-icon-button-size-standard(true);
+    margin-inline: 0;
     background-color: $color-app-inner;
+
+    :global([data-shell-layout='desktop']) & {
+      @include iconButton.toolbar-icon-button-size-standard(true);
+    }
 
     &.toolbarKeyEnabled {
       color: $color-font-enabled-light;
@@ -2216,6 +2227,12 @@
 
 /* Mobile: all toolbar keys — standard × $toolbar-mobile-toolbar-scale (0.95). */
 :global([data-shell-layout='mobile']) {
+  /** editorPie cart badge: hang a bit further up/right of the scaled cart glyph. */
+  .toolbarEditorPie .toolbarBadgePlus {
+    top: calc(#{$toolbar-badge-position-offset} - 0.32rem);
+    right: calc(#{$toolbar-badge-position-offset} - 0.32rem);
+  }
+
   .toolbarAroma {
     .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
       color: $color-font-enabled-light;

@@ -12,6 +12,7 @@ import {
 import {
   selectCartItems,
   selectCartListPanelOpen,
+  selectCartListSelectedLocalId,
   selectCartListStatusSegment,
 } from '@cart/infrastructure/selectors'
 import {

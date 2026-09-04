@@ -50,7 +50,6 @@ export type CartListPanelItem = {
   variant?: CartListEntryVariant
   previewStatus?: PostcardHydrated['status']
   previewIsProcessed?: boolean
-  onDelete?: () => void
 }
 
 export type { CartListStatusSegment }
@@ -144,7 +143,6 @@ const CartListPanelRow: React.FC<{
   isSelected?: boolean
   isChecked?: boolean
   onToggleChecked?: (localId: number) => void
-  hideRowDelete?: boolean
 }> = ({
   item,
   onSelectEntry,
@@ -152,20 +150,8 @@ const CartListPanelRow: React.FC<{
   isSelected = false,
   isChecked = false,
   onToggleChecked,
-  hideRowDelete = false,
 }) => {
-  const { removeItem } = useCartFacade()
   const hidePrice = item.variant === 'inactive'
-
-  const handleRemoveFromCart = useCallback(() => {
-    const lid = item.postcard?.localId
-    if (lid != null) removeItem(lid)
-  }, [item.postcard?.localId, removeItem])
-
-  const onDeleteRow = hideRowDelete
-    ? undefined
-    : (item.onDelete ??
-      (item.postcard?.localId != null ? handleRemoveFromCart : undefined))
 
   return (
     <CartListEntry
@@ -192,7 +178,6 @@ const CartListPanelRow: React.FC<{
           : undefined
       }
       isSelected={isSelected}
-      onDelete={onDeleteRow}
     />
   )
 }
@@ -385,7 +370,6 @@ export const CartListPanel: React.FC<Props> = ({
                     item={item}
                     onSelectEntry={onSelectEntry}
                     onDateEditEntry={onDateEditEntry}
-                    hideRowDelete={isMobileLayout}
                     isSelected={
                       item.postcard?.localId != null &&
                       item.postcard.localId === listSelectedLocalId
@@ -408,7 +392,6 @@ export const CartListPanel: React.FC<Props> = ({
                       item={item}
                       onSelectEntry={onSelectEntry}
                       onDateEditEntry={onDateEditEntry}
-                      hideRowDelete={isMobileLayout}
                       isSelected={
                         item.postcard?.localId != null &&
                         item.postcard.localId === listSelectedLocalId

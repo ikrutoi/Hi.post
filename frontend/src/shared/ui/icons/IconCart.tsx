@@ -5,10 +5,16 @@ const strokeRound = {
   strokeLinejoin: 'round' as const,
 }
 
-export const IconCart = (props: React.SVGProps<SVGSVGElement>) => (
+/** New art is 1600 viewBox vs older 1280 icons — scale so the glyph matches toolbar weight. */
+const CART_GLYPH_SCALE = 1.25
+
+export const IconCart = ({
+  style,
+  ...props
+}: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 1280 1280"
+    viewBox="0 0 1600 1600"
     fillRule="evenodd"
     clipRule="evenodd"
     imageRendering="optimizeQuality"
@@ -16,36 +22,34 @@ export const IconCart = (props: React.SVGProps<SVGSVGElement>) => (
     textRendering="geometricPrecision"
     fill="currentColor"
     {...props}
+    style={{
+      transform: `scale(${CART_GLYPH_SCALE})`,
+      transformOrigin: 'center',
+      ...style,
+    }}
   >
     <path
       fill="none"
       stroke="currentColor"
       strokeWidth={107.498}
       {...strokeRound}
-      d="M814 958H268c-43 0-78-35-78-78V334m0 0c0-43-35-78-78-78h-2m704 702h77M59 256h51"
+      d="M591 871V165c0-56 45-101 101-101h707c56 0 101 45 101 101v706c0 56-45 101-101 101H692c-56 0-101-45-101-101"
     />
-    <circle cx={344} cy={1168} r={104} fill="currentColor" />
-    <circle cx={737} cy={1168} r={104} fill="currentColor" />
+    <path
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={106.665}
+      {...strokeRound}
+      d="m591 720 253-253c47-45 105-45 152 0l252 253M1147 618l51-50c47-45 104-45 151 0l152 152"
+    />
+    <circle cx={671} cy={1468} r={125} fill="currentColor" />
+    <circle cx={1234} cy={1468} r={125} fill="currentColor" />
     <path
       fill="none"
       stroke="currentColor"
       strokeWidth={107.498}
       {...strokeRound}
-      d="M389 680V135c0-43 35-78 78-78h545c44 0 78 35 78 78v545c0 43-34 78-78 78H467c-43 0-78-35-78-78"
-    />
-    <path
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={106.666}
-      {...strokeRound}
-      d="m389 563 195-195c36-35 81-35 117 0l195 195"
-    />
-    <path
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={106.666}
-      {...strokeRound}
-      d="m818 485 39-39c36-35 81-35 117 0l117 117"
+      d="M243 493H99m144 0 207 695m546 0H450m546 0h77m-353 0h707"
     />
   </svg>
 )

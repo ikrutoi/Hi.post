@@ -158,7 +158,10 @@ import type { DateState } from '@entities/date/domain/types'
 import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
 import { syncCardphotoAddToolbarState } from './cardphotoToolbarSaga'
 import { CardSection } from '@shared/config/constants'
-import { shouldSyncUserOriginalOnRebuild } from '@cardphoto/application/helpers'
+import {
+  openCardphotoFromMiniStripSaga,
+  shouldSyncUserOriginalOnRebuild,
+} from '@cardphoto/application/helpers'
 import { syncCardphotoToolbarUiFlagsAfterSessionHydrate } from '@cardphoto/application/helpers/syncCardphotoToolbarUiFlagsAfterSessionHydrate'
 import { refreshRightSidebarBadgesFromPostcards } from './postcardCreateSaga'
 
@@ -774,73 +777,79 @@ export function* hydrateAppSession() {
         stockMeta ??
         null
 
-      if (!activeImage) return
-      const syncUserOriginal = shouldSyncUserOriginalOnRebuild(
-        activeImage,
-        applied ?? applyRec?.image ?? null,
-      )
+      if (activeImage) {
+        const syncUserOriginal = shouldSyncUserOriginalOnRebuild(
+          activeImage,
+          applied ?? applyRec?.image ?? null,
+        )
 
-      // const sizeCard: SizeCard = yield select(selectSizeCard)
+        let finalConfig: WorkingConfig
 
-      let finalConfig: WorkingConfig
+        const calculatedConfig: WorkingConfig = yield call(
+          rebuildConfigFromMeta,
+          activeImage,
+          syncUserOriginal,
+          assetConfig.card.orientation,
+        )
 
-      const calculatedConfig: WorkingConfig = yield call(
-        rebuildConfigFromMeta,
-        activeImage,
-        syncUserOriginal,
-        assetConfig.card.orientation,
-      )
-
-      if (syncUserOriginal) {
-        finalConfig = {
-          ...calculatedConfig,
-          image: {
-            ...calculatedConfig.image,
-            left: assetConfig.image.left,
-            top: assetConfig.image.top,
-            rotation: assetConfig.image.rotation,
-          },
-          crop: assetConfig.crop,
+        if (syncUserOriginal) {
+          finalConfig = {
+            ...calculatedConfig,
+            image: {
+              ...calculatedConfig.image,
+              left: assetConfig.image.left,
+              top: assetConfig.image.top,
+              rotation: assetConfig.image.rotation,
+            },
+            crop: assetConfig.crop,
+          }
+        } else {
+          finalConfig = calculatedConfig
         }
-      } else {
-        finalConfig = calculatedConfig
+
+        const allCrops: ImageMeta[] = yield call([
+          storeAdapters.cardphotoImages,
+          'getAll',
+        ])
+
+        yield call(
+          fuelAssetRegistry,
+          {
+            stock: stockMeta,
+            user: userResolved,
+            processed: processedMeta,
+            applied: finalApplied,
+          },
+          allCrops,
+        )
+
+        const editorAsset =
+          !finalApplied?.id
+            ? assetResolved != null && assetResolved.source !== 'original'
+              ? assetResolved
+              : null
+            : (assetResolved ?? finalApplied)
+
+        yield put(
+          hydrateEditor({
+            config: finalConfig,
+            isComplete: !!finalApplied,
+            appliedData: finalApplied,
+            assetData: editorAsset,
+            userOriginalData: userResolved,
+          }),
+        )
+
+        yield call(
+          syncCardphotoToolbarUiFlagsAfterSessionHydrate,
+          userResolved,
+          editorAsset,
+          allCrops,
+        )
+        yield call(syncCardphotoAddToolbarState)
+
+        yield call(syncCardphotoStatus)
       }
-
-      const allCrops: ImageMeta[] = yield call([
-        storeAdapters.cardphotoImages,
-        'getAll',
-      ])
-
-      yield call(
-        fuelAssetRegistry,
-        {
-          stock: stockMeta,
-          user: userResolved,
-          processed: processedMeta,
-          applied: finalApplied,
-        },
-        allCrops,
-      )
-
-      yield put(
-        hydrateEditor({
-          config: finalConfig,
-          isComplete: !!finalApplied,
-          appliedData: finalApplied,
-          assetData: assetResolved ?? activeImage,
-          userOriginalData: userResolved,
-        }),
-      )
-
-      yield call(
-        syncCardphotoToolbarUiFlagsAfterSessionHydrate,
-        userResolved,
-        assetResolved ?? activeImage,
-        allCrops,
-      )
-      yield call(syncCardphotoAddToolbarState)
-
-      yield call(syncCardphotoStatus)
     } else {
       const [rawApplyRec, rawUserRec, allCrops, sizeCard]: [
         { image: ImageMeta } | null,
@@ -864,45 +873,51 @@ export function* hydrateAppSession() {
       else if (userImg) bootstrap = 'user'
       else if (lastCrop) bootstrap = 'processed'
 
-      if (!bootstrap) return
-
       const activeImage =
         bootstrap === 'apply'
           ? applyImg
           : bootstrap === 'user'
             ? userImg
             : lastCrop
-      if (!activeImage) return
 
-      const syncUserOriginal = bootstrap === 'user'
+      if (bootstrap && activeImage) {
+        const syncUserOriginal = bootstrap === 'user'
 
-      const config: WorkingConfig = yield call(
-        rebuildConfigFromMeta,
-        activeImage,
-        syncUserOriginal,
-        sizeCard.orientation,
-      )
+        const config: WorkingConfig = yield call(
+          rebuildConfigFromMeta,
+          activeImage,
+          syncUserOriginal,
+          sizeCard.orientation,
+        )
 
-      yield call(
-        fuelAssetRegistry,
-        {
-          stock: null,
-          user: userImg,
-          processed: lastCrop,
-          applied: applyImg,
-        },
-        allCrops,
-      )
+        yield call(
+          fuelAssetRegistry,
+          {
+            stock: null,
+            user: userImg,
+            processed: lastCrop,
+            applied: applyImg,
+          },
+          allCrops,
+        )
 
-      yield put(
-        hydrateEditor({
-          config,
-          isComplete: !!applyImg,
-          appliedData: applyImg,
-          assetData: activeImage,
-          userOriginalData: userImg ?? null,
-        }),
-      )
+        const editorAsset =
+          bootstrap === 'user' && !applyImg
+            ? null
+            : lastCrop?.source === 'original' && !applyImg
+              ? null
+              : activeImage
+
+        yield put(
+          hydrateEditor({
+            config,
+            isComplete: !!applyImg,
+            appliedData: applyImg,
+            assetData: editorAsset,
+            userOriginalData: userImg ?? null,
+          }),
+        )
+      }
     }
 
     if (session.cardtextEditor != null) {
@@ -1035,6 +1050,11 @@ export function* hydrateAppSession() {
     if (currentActive == null) {
       yield put(setActiveSection('cardphoto'))
     }
+    /**
+     * Reload must match section-open: no applied → View + cardphoto toolbar.
+     * Hydrate otherwise restores leftover original as create chrome.
+     */
+    yield call(openCardphotoFromMiniStripSaga)
   }
 }
 

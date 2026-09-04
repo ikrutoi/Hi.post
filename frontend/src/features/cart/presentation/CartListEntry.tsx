@@ -41,7 +41,6 @@ export type CartListEntryProps = {
   /** `localId` открытки этой строки — нужен для адресного включения `cartCalendarDatePickMode`. */
   postcardLocalId?: number
   onSelect?: () => void
-  onDelete?: () => void
   /** Включение режима dateEdit (заблокированные): правый CardPie и данные строки. */
   onDateEditActivate?: () => void
   /** Сегмент «Корзина» (актуальные даты): чекбокс слева в gutter. */
@@ -62,7 +61,6 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
   cardId,
   postcardLocalId,
   onSelect,
-  onDelete,
   onDateEditActivate,
   isChecked = false,
   onCheckedChange,
@@ -74,7 +72,6 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
   /** В «Заблокированных» без серого `inactive`. */
   const inactive = variant === 'inactive' && !isBlockedEntry
   const showCartCheckbox = !isBlockedEntry && !inactive
-  const showDelete = Boolean(onDelete)
   const labelForAria = [detailLine ? `${dateLabel}, ${detailLine}` : dateLabel, priceLine]
     .filter(Boolean)
     .join(', ')
@@ -179,22 +176,6 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
             onClick={handleDateEditClick}
           >
             {getToolbarIcon({ key: 'dateEdit' })}
-          </button>
-        </div>
-      ) : null}
-      {showDelete ? (
-        <div className={styles.shellDeleteSlot}>
-          <button
-            type="button"
-            className={styles.shellDeleteBtn}
-            aria-label="Remove postcard row"
-            title="Remove postcard row"
-            onClick={(e) => {
-              e.stopPropagation()
-              onDelete?.()
-            }}
-          >
-            {getToolbarIcon({ key: 'delete' })}
           </button>
         </div>
       ) : null}
