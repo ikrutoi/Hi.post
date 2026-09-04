@@ -12,7 +12,7 @@ import {
 import {
   selectCartItems,
   selectCartListPanelOpen,
-  selectCartListSelectedLocalId,
+  selectCartListStatusSegment,
 } from '@cart/infrastructure/selectors'
 import {
   setHistoryListSelectedLocalId,
@@ -29,7 +29,7 @@ import { syncArchiveCenterPostcardCalendarView } from '@date/calendar/applicatio
 import type { DateStripSection } from '@date/presentation/dateStripSection.types'
 import {
   calendarViewDateForPostcard,
-  resolveDefaultCartStripPostcard,
+  resolveDefaultCartSegmentPostcard,
   shouldApplyCartStripDefaultSelection,
   shouldApplyHistoryStripDefaultSelection,
   HISTORY_STRIP_STATUS_PRIORITY,
@@ -47,11 +47,19 @@ export function* applyCartStripDefaultSelectionIfNeededSaga(): SagaIterator {
   if (!shouldApplyCartStripDefaultSelection(state)) return
 
   const cartItems: PostcardHydrated[] = yield select(selectCartItems)
-  const postcard = resolveDefaultCartStripPostcard(cartItems)
+  const segment: ReturnType<typeof selectCartListStatusSegment> = yield select(
+    selectCartListStatusSegment,
+  )
+  const postcard = resolveDefaultCartSegmentPostcard(cartItems, segment)
   if (postcard == null) return
 
-  const segment = cartListStatusSegmentForLocalId(cartItems, postcard.localId)
-  yield put(setCartListStatusSegment(segment))
+  const nextSegment = cartListStatusSegmentForLocalId(
+    cartItems,
+    postcard.localId,
+  )
+  if (nextSegment !== segment) {
+    yield put(setCartListStatusSegment(nextSegment))
+  }
   yield put(setCartListSelectedLocalId(postcard.localId))
   yield put(updateLastViewedCalendarDate(calendarViewDateForPostcard(postcard)))
   yield call(
@@ -104,6 +112,13 @@ function* handleCartListPanelOpenChanged(
   action: PayloadAction<boolean>,
 ): SagaIterator {
   if (!action.payload) return
+  yield* applyCartStripDefaultSelectionIfNeededSaga()
+}
+
+/** Первый заход в сегмент — первая строка; повторный — сохранённый выбор сегмента. */
+function* handleCartListStatusSegmentChanged(): SagaIterator {
+  const listOpen: boolean = yield select(selectCartListPanelOpen)
+  if (!listOpen) return
   yield* applyCartStripDefaultSelectionIfNeededSaga()
 }
 
@@ -185,6 +200,10 @@ function* handleArchiveCalendarViewEntered(
 export function* watchStripDefaultSelection(): SagaIterator {
   yield takeEvery(setNotebookStripTab.type, handleNotebookStripTabChanged)
   yield takeEvery(setCartListPanelOpen.type, handleCartListPanelOpenChanged)
+  yield takeEvery(
+    setCartListStatusSegment.type,
+    handleCartListStatusSegmentChanged,
+  )
   yield takeEvery(addItem.type, handleCartItemAdded)
   yield takeEvery(
     archiveCalendarViewEntered.type,

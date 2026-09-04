@@ -1232,8 +1232,6 @@ const App = () => {
       : null
 
   const exitRightPreviewForLeftMode = useCallback(() => {
-    dispatch(setCartListSelectedLocalId(null))
-    dispatch(setHistoryListSelectedLocalId(null))
     dispatch(closeDayPanel())
     releaseAssemblySessionLease()
   }, [dispatch, releaseAssemblySessionLease])

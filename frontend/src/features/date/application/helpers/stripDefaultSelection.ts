@@ -5,10 +5,13 @@ import type {
 } from '@entities/date/domain/types'
 import type { PostcardHydrated } from '@entities/postcard'
 import type { PostcardStatus } from '@entities/postcard/domain/types'
+import type { CartListStatusSegment } from '@cart/domain/types'
 import {
   selectCartItems,
   selectCartListSelectedLocalId,
+  selectCartListStatusSegment,
 } from '@cart/infrastructure/selectors'
+import { orderedStripPostcardsByDispatchDate } from '@date/application/helpers/calendarStripMonthCycle'
 import {
   selectCartCalendarDatePickMode,
   selectHistoryListSelectedLocalId,
@@ -96,13 +99,44 @@ export function isCartListSelectedLocalIdSaved(
   return cartItems.some((item) => item.localId === localId)
 }
 
-/** Первый вход в strip «Корзина» или выбор указывает на несуществующую открытку. */
+export function isCartSegmentSelectedLocalIdSaved(
+  localId: number | null,
+  cartItems: readonly PostcardHydrated[],
+  segment: CartListStatusSegment,
+): boolean {
+  if (localId == null) return false
+  return cartItems.some(
+    (item) => item.localId === localId && item.status === segment,
+  )
+}
+
+/** Первая строка сегмента — тот же порядок, что в списке корзины. */
+export function resolveFirstCartSegmentPostcard(
+  cartItems: readonly PostcardHydrated[],
+  segment: CartListStatusSegment,
+): PostcardHydrated | null {
+  return orderedStripPostcardsByDispatchDate(cartItems, segment)[0] ?? null
+}
+
+export function resolveDefaultCartSegmentPostcard(
+  cartItems: readonly PostcardHydrated[],
+  segment: CartListStatusSegment,
+  today: Pick<DispatchDate, 'year' | 'month' | 'day'> = getCurrentDate(),
+): PostcardHydrated | null {
+  if (segment === 'cartBlocked') {
+    return resolveFirstCartSegmentPostcard(cartItems, 'cartBlocked')
+  }
+  return resolveDefaultCartStripPostcard(cartItems, today)
+}
+
+/** Первый вход в текущий сегмент списка или выбор в нём невалиден. */
 export function shouldApplyCartStripDefaultSelection(state: RootState): boolean {
   if (selectCartCalendarDatePickMode(state)) return false
 
+  const segment = selectCartListStatusSegment(state)
   const localId = selectCartListSelectedLocalId(state)
   const cartItems = selectCartItems(state)
-  return !isCartListSelectedLocalIdSaved(localId, cartItems)
+  return !isCartSegmentSelectedLocalIdSaved(localId, cartItems, segment)
 }
 
 /** Первый вход в strip «История» или выбор не в текущем отсортированном списке. */
