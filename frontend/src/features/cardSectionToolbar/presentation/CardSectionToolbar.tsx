@@ -12,8 +12,7 @@ import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/
 import {
   selectCardphotoAssetData,
   selectCardphotoAssetToolbar,
-  selectCardphotoViewReturnSnapshot,
-  selectIsCardphotoViewEditMode,
+  selectIsCardphotoCreateSession,
 } from '@cardphoto/infrastructure/selectors'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { CARDPHOTO_CREATE_UPPER_APPLY_TOOLBAR, CARDPHOTO_CREATE_UPPER_RETURN_TOOLBAR } from '@toolbar/domain/types/cardphoto.types'
@@ -41,10 +40,9 @@ export const CardSectionToolbar: React.FC = () => {
   const cardPieCopyStripExpanded = useAppSelector(selectCardPieCopyStripExpanded)
   const cardphotoAssetToolbar = useAppSelector(selectCardphotoAssetToolbar)
   const cardphotoAssetData = useAppSelector(selectCardphotoAssetData)
-  const cardphotoViewReturnSnapshot = useAppSelector(
-    selectCardphotoViewReturnSnapshot,
+  const isCardphotoCreateSession = useAppSelector(
+    selectIsCardphotoCreateSession,
   )
-  const isCardphotoViewEditMode = useAppSelector(selectIsCardphotoViewEditMode)
   const cardphotoCreateApplyRaw = useAppSelector(
     (s) => s.toolbar?.cardphotoCreate?.applyMedium,
   )
@@ -60,9 +58,7 @@ export const CardSectionToolbar: React.FC = () => {
     activeSection === 'cardphoto' &&
     cardphotoAssetToolbar === 'cardphotoCreate' &&
     cardphotoAssetData != null &&
-    (cardphotoViewReturnSnapshot != null ||
-      isCardphotoViewEditMode ||
-      cardphotoAssetData.source === 'original')
+    isCardphotoCreateSession
   const cardphotoCreateUpperApplyToolbar = useMemo((): ToolbarConfig => {
     return CARDPHOTO_CREATE_UPPER_APPLY_TOOLBAR.map((group) => ({
       ...group,

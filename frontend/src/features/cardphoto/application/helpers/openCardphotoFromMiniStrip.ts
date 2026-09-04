@@ -3,7 +3,10 @@ import { call, fork, put, select } from 'redux-saga/effects'
 import { storeAdapters } from '@db/adapters/storeAdapters'
 import {
   clearCardphotoViewReturnSnapshot,
+  clearCurrentConfig,
+  setAssetData,
   setCardphotoViewEditMode,
+  setOriginalUploadReminderActive,
   setProcessedImage,
 } from '@cardphoto/infrastructure/state'
 import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
@@ -44,11 +47,36 @@ function* loadAppliedMetaForEditor(
   )
 }
 
-/** Мини-секция / CardPie → фабрика: показать фото с открытки (`appliedData`), если в слоте превью другой шаблон. */
+function* startCardphotoViewWithoutApply(
+  cardphotoState: CardphotoState | null,
+): SagaIterator {
+  yield put(setCardphotoViewEditMode(false))
+  yield put(clearCardphotoViewReturnSnapshot())
+  const assetData = cardphotoState?.assetData
+  /**
+   * Leftover create/original is not a selection. Empty View + cardphoto toolbar.
+   * inLine / processed / outLine stay as View.
+   */
+  if (assetData == null || assetData.source === 'original') {
+    if (assetData != null) {
+      yield put(setAssetData(null))
+      yield put(clearCurrentConfig())
+    }
+    if (cardphotoState?.userOriginalData) {
+      yield put(setOriginalUploadReminderActive(true))
+    }
+  }
+  yield fork(syncToolbarContext)
+}
+
+/** Мини-секция / CardPie → фабрика: applied на слот; иначе форма View и тулбар cardphoto. */
 export function* openCardphotoFromMiniStripSaga(): SagaIterator {
   const cardphotoState: CardphotoState | null = yield select(selectCardphotoState)
   const appliedData = cardphotoState?.appliedData
-  if (!appliedData?.id) return
+  if (!appliedData?.id) {
+    yield call(startCardphotoViewWithoutApply, cardphotoState)
+    return
+  }
 
   const assetData = cardphotoState?.assetData
   if (assetData?.id === appliedData.id) return

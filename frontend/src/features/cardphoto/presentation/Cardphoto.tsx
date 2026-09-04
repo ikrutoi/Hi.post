@@ -12,6 +12,7 @@ import {
 import {
   selectCardphotoTitle,
   selectCardphotoViewDismissIconKey,
+  selectIsCardphotoCreateSession,
 } from '@cardphoto/infrastructure/selectors'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { CARDPHOTO_CREATE_TOOLBAR, CARDPHOTO_VIEW_TOOLBAR } from '@toolbar/domain/types/cardphoto.types'
@@ -100,6 +101,9 @@ const CardphotoSessionEditor: React.FC = () => {
   const dispatch = useAppDispatch()
   const { isMobileLayout } = useSizeFacade()
   const { assemblyCardphotoSimplifiedPeek } = useMobileFactoryListChrome()
+  const isCardphotoCreateSession = useAppSelector(
+    selectIsCardphotoCreateSession,
+  )
   const { activeImage, assetToolbar } = useCardphotoFacade()
   const title = useAppSelector(selectCardphotoTitle)
   const createToolbarState = useAppSelector(
@@ -155,7 +159,10 @@ const CardphotoSessionEditor: React.FC = () => {
   }, [assetToolbar, viewDismissIconKey, viewToolbarState])
   /** После Apply в сборке — упрощённый peek: нижний ряд без иконок View. */
   const showAssetToolbar =
-    !!activeImage && !!assetToolbar && !assemblyCardphotoSimplifiedPeek
+    !!activeImage &&
+    !!assetToolbar &&
+    !assemblyCardphotoSimplifiedPeek &&
+    (assetToolbar !== 'cardphotoCreate' || isCardphotoCreateSession)
   const showTemplateTitleStrip = assetToolbar === 'cardphotoView' && !!activeImage
   const displayTitle = title.trim()
 

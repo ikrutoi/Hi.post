@@ -1,6 +1,10 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from '@app/state'
 import type { PanelDensity2Size } from '@shared/ui/icons'
+import {
+  selectCardphotoAppliedData,
+  selectCardphotoAssetData,
+} from './cardphotoSelectors'
 
 const selectCardphotoUi = (state: RootState) => state.cardphotoUi
 
@@ -63,6 +67,26 @@ export const selectIsCardphotoViewEditMode = createSelector(
 export const selectCardphotoViewReturnSnapshot = createSelector(
   [selectCardphotoUi],
   (ui) => ui.viewReturnSnapshot,
+)
+
+/**
+ * Активная сессия create/crop: новый оригинал, edit из View, или reopen original.
+ * Applied original без этих флагов — обычная секция cardphoto / peek, не chrome кропа.
+ */
+export const selectIsCardphotoCreateSession = createSelector(
+  [
+    selectCardphotoAssetData,
+    selectCardphotoAppliedData,
+    selectIsCardphotoViewEditMode,
+    selectCardphotoViewReturnSnapshot,
+  ],
+  (asset, applied, viewEdit, snapshot): boolean => {
+    if (viewEdit || snapshot != null) return true
+    if (asset?.source !== 'original') return false
+    const appliedMatch =
+      !!asset.id && !!applied?.id && asset.id === applied.id
+    return !appliedMatch
+  },
 )
 
 export const selectListCardphotoBadgePulseSeq = createSelector(

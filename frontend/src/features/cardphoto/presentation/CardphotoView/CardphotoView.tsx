@@ -4,6 +4,7 @@ import { useAppSelector } from '@app/hooks'
 import {
   selectActiveImage,
   selectCardphotoAssetToolbar,
+  selectIsCardphotoCreateSession,
 } from '@cardphoto/infrastructure/selectors'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
@@ -25,6 +26,9 @@ export const CardphotoView: React.FC<Props> = ({
 }) => {
   const activeImage = useAppSelector(selectActiveImage)
   const assetToolbar = useAppSelector(selectCardphotoAssetToolbar)
+  const isCardphotoCreateSession = useAppSelector(
+    selectIsCardphotoCreateSession,
+  )
   const createToolbarState = useAppSelector(
     selectToolbarSectionState('cardphotoCreate'),
   )
@@ -32,7 +36,9 @@ export const CardphotoView: React.FC<Props> = ({
   const isCreateCropActive = createToolbarState?.crop?.state === 'active'
   const showEmptyPlaceholder = !activeImage
   const showCreateOverlay =
-    assetToolbar === 'cardphotoCreate' && !!activeImage
+    assetToolbar === 'cardphotoCreate' &&
+    isCardphotoCreateSession &&
+    !!activeImage
   const showDeleteOverlay =
     !isMobileLayout &&
     !!onDelete &&
