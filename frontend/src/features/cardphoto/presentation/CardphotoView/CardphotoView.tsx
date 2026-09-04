@@ -4,7 +4,6 @@ import { useAppSelector } from '@app/hooks'
 import {
   selectActiveImage,
   selectCardphotoAssetToolbar,
-  selectCardphotoViewDismissIconKey,
 } from '@cardphoto/infrastructure/selectors'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
@@ -26,7 +25,6 @@ export const CardphotoView: React.FC<Props> = ({
 }) => {
   const activeImage = useAppSelector(selectActiveImage)
   const assetToolbar = useAppSelector(selectCardphotoAssetToolbar)
-  const viewDismissIconKey = useAppSelector(selectCardphotoViewDismissIconKey)
   const createToolbarState = useAppSelector(
     selectToolbarSectionState('cardphotoCreate'),
   )
@@ -35,30 +33,11 @@ export const CardphotoView: React.FC<Props> = ({
   const showEmptyPlaceholder = !activeImage
   const showCreateOverlay =
     assetToolbar === 'cardphotoCreate' && !!activeImage
-  const showViewOverlay = assetToolbar === 'cardphotoView' && !!activeImage
-  const viewDismissKey =
-    viewDismissIconKey ??
-    (activeImage?.status === 'inLine' ? 'close' : 'delete')
-  const canDismissView =
-    activeImage?.status === 'inLine' ||
-    activeImage?.status === 'outLine' ||
-    activeImage?.status === 'processed'
   const showDeleteOverlay =
     !isMobileLayout &&
     !!onDelete &&
-    ((showViewOverlay && canDismissView) ||
-      (showCreateOverlay && !isCreateCropActive))
-  const overlayIconKey = showCreateOverlay ? 'delete' : viewDismissKey
-  const overlayAriaLabel = showCreateOverlay
-    ? 'Delete image'
-    : viewDismissKey === 'close'
-      ? 'Clear selection'
-      : 'Delete image'
-  const overlayTitle = showCreateOverlay
-    ? 'Delete'
-    : viewDismissKey === 'close'
-      ? 'Clear'
-      : 'Delete'
+    showCreateOverlay &&
+    !isCreateCropActive
 
   return (
     <div
@@ -86,10 +65,10 @@ export const CardphotoView: React.FC<Props> = ({
               e.stopPropagation()
               onDelete?.()
             }}
-            aria-label={overlayAriaLabel}
-            title={overlayTitle}
+            aria-label="Delete image"
+            title="Delete"
           >
-            {getToolbarIcon({ key: overlayIconKey })}
+            {getToolbarIcon({ key: 'delete' })}
           </button>
         </div>
       ) : null}

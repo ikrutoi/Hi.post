@@ -134,6 +134,15 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
     () => uniqueSelectedCalendarMonths(draftDispatchDates),
     [draftDispatchDates],
   )
+  const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
+  const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
+  const isMobileLayout = useAppSelector(selectIsMobileLayout)
+  const archiveCalendarSurface =
+    cartListPanelOpen ||
+    historyListPanelOpen ||
+    section === 'cart' ||
+    section === 'history' ||
+    section === 'cartdate'
   const isMobileFactoryChromePeek =
     rightPieDatePeekNoToolbar ||
     rightPieCardphotoPeekNoToolbar ||
@@ -142,7 +151,11 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
     rightPieAromaPeekNoToolbar
   /** Peek фабрики из CardPie: боковые полосы секции «Дата», не strip корзины/истории. */
   const gutterStripSection: DateStripSection =
-    isMobileFactoryChromePeek || assemblyDateSimplifiedPeek ? 'date' : section
+    !archiveCalendarSurface &&
+    (isMobileFactoryChromePeek ||
+      (assemblyDateSimplifiedPeek && section === 'date'))
+      ? 'date'
+      : section
   const currentDate = useMemo(() => getCurrentDate(), [])
   const cartItems = useAppSelector(selectCartItems)
   const { triggerFlash } = useFlashEffect()
@@ -157,9 +170,6 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   // const { sizeItemCalendar } = useSizeFacade()
 
   const { lastViewedCalendarDate } = useCalendarFacade()
-  const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
-  const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
-  const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const { legendStatusCounts, historyUnderlyingPostcardCount } = useMemo(
     () => computeHistoryLegendStatusCounts(cartItems),
     [cartItems],
@@ -167,7 +177,10 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   const { legendStatusCounts: cartLegendStatusCounts, cartUnderlyingPostcardCount } =
     useMemo(() => computeCartLegendStatusCounts(cartItems), [cartItems])
   const showMobileSliderToolbar =
-    isMobileLayout && !rightPieDatePeekNoToolbar && !assemblyDateSimplifiedPeek
+    isMobileLayout &&
+    (archiveCalendarSurface ||
+      (!rightPieDatePeekNoToolbar &&
+        !(assemblyDateSimplifiedPeek && section === 'date')))
 
   /** Открытие/закрытие CartListPanel управляется явными действиями (toolbar/tabs/close), без авто-переоткрытия из центра. */
 
@@ -219,23 +232,26 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
 
   useAutoActivateDateSection()
 
+  const showAssemblyDatePeek =
+    assemblyDateSimplifiedPeek &&
+    section === 'date' &&
+    !archiveCalendarSurface
   const peekDispatchDate = useMemo(() => {
     if (
+      !archiveCalendarSurface &&
       rightPieDatePeekNoToolbar &&
-      (section === 'date' ||
-        section === 'cart' ||
-        section === 'history' ||
-        section === 'cartdate')
+      section === 'date'
     ) {
       return peekPrimaryDispatchDate(listRowInner)
     }
-    if (assemblyDateSimplifiedPeek && appliedDispatchDates.length > 0) {
+    if (showAssemblyDatePeek && appliedDispatchDates.length > 0) {
       return appliedDispatchDates[0] ?? null
     }
     return null
   }, [
+    archiveCalendarSurface,
     rightPieDatePeekNoToolbar,
-    assemblyDateSimplifiedPeek,
+    showAssemblyDatePeek,
     appliedDispatchDates,
     section,
     listRowInner,
@@ -364,14 +380,12 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   )
 
   if (
-    (rightPieDatePeekNoToolbar || assemblyDateSimplifiedPeek) &&
-    (section === 'date' ||
-      section === 'cart' ||
-      section === 'history' ||
-      section === 'cartdate')
+    !archiveCalendarSurface &&
+    (rightPieDatePeekNoToolbar || showAssemblyDatePeek) &&
+    section === 'date'
   ) {
     const peekDates =
-      assemblyDateSimplifiedPeek && appliedDispatchDates.length > 0
+      showAssemblyDatePeek && appliedDispatchDates.length > 0
         ? appliedDispatchDates
         : listRowInner?.dates ?? []
     const isMultiDatePeek = peekDates.length > 1

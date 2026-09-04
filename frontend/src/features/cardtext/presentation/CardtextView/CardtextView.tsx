@@ -6,8 +6,6 @@ import { STEP_TO_PX, clampCardtextFontSizeStep } from '../../domain/types'
 import type { CardtextValue, CardtextStyle } from '../../domain/types'
 import { renderLeaf } from '../renderLeaf'
 import { renderElement } from '../renderElement'
-import { getToolbarIcon } from '@shared/utils/icons'
-import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import styles from './CardtextView.module.scss'
 
 const COLOR_CLASS_MAP: Record<string, keyof typeof styles> = {
@@ -23,7 +21,6 @@ type Props = {
   contentKey?: string
   /** Tighter top padding when the floating title strip is in edit mode */
   titleStripEditing?: boolean
-  onDelete?: () => void
   /** Archive peek: стандартный кадр секции (как cardphoto viewContainer). */
   sectionFrame?: boolean
 }
@@ -33,10 +30,8 @@ export const CardtextView: React.FC<Props> = ({
   style,
   contentKey,
   titleStripEditing,
-  onDelete,
   sectionFrame = false,
 }) => {
-  const { isMobileLayout } = useSizeFacade()
   const slateKey =
     contentKey ??
     (value?.length
@@ -54,8 +49,6 @@ export const CardtextView: React.FC<Props> = ({
       ? value
       : [{ type: 'paragraph', align: 'left', children: [{ text: '' }] }]
   ) as Descendant[]
-  const showDelete = Boolean(onDelete) && !isMobileLayout
-
   return (
     <div
       className={clsx(
@@ -86,23 +79,6 @@ export const CardtextView: React.FC<Props> = ({
           />
         </Slate>
       </div>
-      {showDelete ? (
-        <div className={styles.viewOverlayActions}>
-          <button
-            type="button"
-            className={styles.viewDeleteBtn}
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={(e) => {
-              e.stopPropagation()
-              onDelete?.()
-            }}
-            aria-label="Delete text template"
-            title="Delete template"
-          >
-            {getToolbarIcon({ key: 'delete' })}
-          </button>
-        </div>
-      ) : null}
     </div>
   )
 }

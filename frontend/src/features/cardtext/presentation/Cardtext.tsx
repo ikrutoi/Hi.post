@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import clsx from 'clsx'
 import { CardEditor } from './CardEditor/CardEditor'
 import { CardtextView } from './CardtextView/CardtextView'
@@ -43,10 +43,6 @@ import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import styles from './Cardtext.module.scss'
 import viewStyles from './CardtextView/CardtextView.module.scss'
 import cardphotoViewStyles from '@cardphoto/presentation/CardphotoView/CardphotoView.module.scss'
-import { useAppDispatch } from '@app/hooks'
-import {
-  deleteCardtextFromViewRequested,
-} from '@cardtext/infrastructure/state'
 import { getToolbarIcon } from '@/shared/utils/icons'
 import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
@@ -142,7 +138,6 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
 
   // console.log('CARDTEXT STATE', state)
 
-  const dispatch = useAppDispatch()
   const { isMobileLayout } = useSizeFacade()
   const { assemblyCardtextSimplifiedPeek } = useMobileFactoryListChrome()
   const viewToolbarState = useAppSelector(
@@ -231,10 +226,6 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
   const displayTitle =
     title.trim() || suggestCardtextTemplateTitle(plainText)
 
-  const handleViewDelete = useCallback(() => {
-    dispatch(deleteCardtextFromViewRequested())
-  }, [dispatch])
-
   const factorySessionActive =
     state.assetData != null || state.isDraftEngaged === true
 
@@ -279,7 +270,6 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
         value={value}
         style={style}
         titleStripEditing={forceEditingTitle}
-        onDelete={isMobileLayout ? undefined : handleViewDelete}
       />
     </div>
   ) : (

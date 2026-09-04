@@ -126,6 +126,7 @@ import {
   setHistoryListSelectedLocalId,
   setNotebookStripTab,
   setNotebookStripDateOverCart,
+  setNotebookStripDateOverHistory,
   updateLastViewedCalendarDate,
   cyclePlanMiniListDensity,
 } from '@date/calendar/infrastructure/state'
@@ -2421,6 +2422,19 @@ function DesktopFactoryTopRow({
       if (historyListPanelOpen) {
         dispatch(setHistoryListPanelOpen(false))
       }
+      if (
+        isCartOwnedNotebookStrip(notebookStripTab) ||
+        notebookStripTab === 'history'
+      ) {
+        if (isCartOwnedNotebookStrip(notebookStripTab)) {
+          dispatch(setNotebookStripDateOverCart(true))
+        }
+        if (notebookStripTab === 'history') {
+          dispatch(setNotebookStripDateOverHistory(true))
+        }
+        dispatch(setNotebookStripTab('date'))
+        dispatch(setActiveSection('date'))
+      }
       dispatch(clearViewAroma())
       selectPlanPie(id)
       if (pie.dispatchDate != null) {
@@ -2436,6 +2450,7 @@ function DesktopFactoryTopRow({
       dispatch,
       historyListPanelOpen,
       listPanelOpen,
+      notebookStripTab,
       onBeforeLeftPieInteraction,
       planPies,
       selectPlanPie,

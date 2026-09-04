@@ -39,7 +39,9 @@ import {
   selectCartDatePickSessionActive,
   selectIsCardPieListPanelOpen,
   selectIsHistoryListPanelOpen,
+  selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
+import { isCartOwnedNotebookStrip } from '@date/calendar/application/logic/calendarStripSection'
 import { selectIsDateComplete } from '@date/infrastructure/selectors'
 import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
@@ -86,6 +88,12 @@ export function useMobileFactoryListChrome() {
   const aromaIsComplete = useAppSelector(selectIsAromaComplete)
   const selectedAroma = useAppSelector(selectSelectedAroma)
   const isDateComplete = useAppSelector(selectIsDateComplete)
+  const notebookStripTab = useAppSelector(selectNotebookStripTab)
+  const archiveCalendarOpen =
+    cartListPanelOpen ||
+    historyListPanelOpen ||
+    isCartOwnedNotebookStrip(notebookStripTab) ||
+    notebookStripTab === 'history'
   const {
     activePieSide,
     rightPieCardphotoPeekNoToolbar,
@@ -203,7 +211,8 @@ export function useMobileFactoryListChrome() {
     activePieSide === 'left' &&
     !cardPieEditEngaged &&
     !mobileArchiveSectionPeek &&
-    isDateComplete
+    isDateComplete &&
+    !archiveCalendarOpen
 
   const assemblySectionSimplifiedPeek =
     assemblyCardtextSimplifiedPeek ||

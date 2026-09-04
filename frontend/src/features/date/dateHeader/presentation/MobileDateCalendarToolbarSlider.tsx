@@ -3,6 +3,8 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import { useAppSelector } from '@app/hooks'
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
+import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
+import { selectIsHistoryListPanelOpen } from '@date/calendar/infrastructure/selectors'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { useDateSwitcherController } from '@date/switcher/application/hooks/useDateSwitcherController'
@@ -47,14 +49,17 @@ export const MobileDateCalendarToolbarSlider: React.FC = () => {
 export const DesktopDateCalendarToolbarSlider: React.FC = () => {
   const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const activeSection = useAppSelector(selectActiveSection)
+  const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
+  const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
   const { rightPieDatePeekNoToolbar } = useRightListArchiveMini()
   const { assemblyDateSimplifiedPeek } = useMobileFactoryListChrome()
 
   const show =
     !isMobileLayout &&
     (activeSection === 'date' || activeSection === 'history') &&
-    !rightPieDatePeekNoToolbar &&
-    !assemblyDateSimplifiedPeek
+    (cartListPanelOpen ||
+      historyListPanelOpen ||
+      (!rightPieDatePeekNoToolbar && !assemblyDateSimplifiedPeek))
 
   if (!show) return null
 

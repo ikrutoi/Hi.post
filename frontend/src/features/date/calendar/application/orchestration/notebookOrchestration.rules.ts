@@ -87,6 +87,7 @@ export const buildNotebookDateTabCommandsMobile = (): UnknownAction[] => [
 
 /** Календарь в режиме «Корзина», список закрыт (desktop sidebar / mobile). */
 export const buildCartCalendarCommands = (): UnknownAction[] => [
+  setNotebookStripDateOverCart(false),
   setHistoryListPanelOpen(false),
   closeDayPanel(),
   updateToolbarIcon({
@@ -114,6 +115,7 @@ export const buildDesktopCartArchiveActivateCommands = (): UnknownAction[] => [
 
 /** Список корзины (desktop sidebar / mobile). */
 export const buildCartListCommands = (): UnknownAction[] => [
+  setNotebookStripDateOverCart(false),
   setHistoryListPanelOpen(false),
   closeDayPanel(),
   updateToolbarIcon({
@@ -134,6 +136,7 @@ export const buildCartListCommands = (): UnknownAction[] => [
 
 /** Mobile header Cart tab: календарь в режиме «Корзина», без списка. */
 export const buildNotebookCartTabCommandsMobile = (): UnknownAction[] => [
+  setNotebookStripDateOverCart(false),
   setCartListPanelOpen(false),
   setHistoryListPanelOpen(false),
   closeDayPanel(),
@@ -145,6 +148,7 @@ export const buildNotebookCartTabCommandsMobile = (): UnknownAction[] => [
 
 /** Mobile header History tab: календарь в режиме «История», без списка. */
 export const buildNotebookHistoryTabCommandsMobile = (): UnknownAction[] => [
+  setNotebookStripDateOverHistory(false),
   setCartListPanelOpen(false),
   setHistoryListPanelOpen(false),
   closeDayPanel(),
@@ -159,6 +163,7 @@ export const buildNotebookCartTabCommands = (): UnknownAction[] =>
 
 /** Календарь в режиме «История», список закрыт (desktop). */
 export const buildHistoryCalendarCommandsDesktop = (): UnknownAction[] => [
+  setNotebookStripDateOverHistory(false),
   setCartListPanelOpen(false),
   updateToolbarIcon({
     section: 'rightSidebar',
@@ -180,6 +185,7 @@ export const buildDesktopHistoryArchiveActivateCommands = (): UnknownAction[] =>
 
 /** Список истории (desktop sidebar / mobile). */
 export const buildHistoryListCommands = (): UnknownAction[] => [
+  setNotebookStripDateOverHistory(false),
   setCartListPanelOpen(false),
   updateToolbarIcon({
     section: 'rightSidebar',
