@@ -81,11 +81,21 @@ export const CardtextListMobileFactoryLowerToolbar: React.FC = () => {
   return null
 }
 
+const CARDTEXT_LIST_FACTORY_UPPER_RETURN_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'close',
+    icons: [{ key: 'return', state: 'enabled' }],
+    status: 'enabled',
+  },
+]
+
 /** Mobile factory / desktop list header — applyMedium слева, заголовок. */
 export const CardtextListMobileFactoryUpperToolbar: React.FC<{
   placement?: 'factory' | 'listHeader'
 }> = ({ placement = 'factory' }) => {
   const dispatch = useAppDispatch()
+  const { isMobileLayout } = useSizeFacade()
+  const showReturn = isMobileLayout && placement === 'factory'
   const templates = useAppSelector(selectCardtextTemplatesListItems)
   const listEmpty = (templates?.length ?? 0) === 0
   const {
@@ -184,6 +194,15 @@ export const CardtextListMobileFactoryUpperToolbar: React.FC<{
     [dispatch, listEmpty],
   )
 
+  const handleReturnAction = useCallback(
+    (key: IconKey) => {
+      if (key !== 'return') return
+      dispatch(setCardtextListPanelOpen(false))
+      return false
+    },
+    [dispatch],
+  )
+
   return (
     <div
       className={clsx(
@@ -263,6 +282,16 @@ export const CardtextListMobileFactoryUpperToolbar: React.FC<{
             {centralTemplateTitle}
           </div>
         )
+      ) : null}
+      {showReturn ? (
+        <div className={styles.upperToolbar}>
+          <Toolbar
+            section="cardtextCreate"
+            groupsOverride={CARDTEXT_LIST_FACTORY_UPPER_RETURN_TOOLBAR}
+            className={toolbarStyles.toolbarAromaUpperReturn}
+            onActionClick={handleReturnAction}
+          />
+        </div>
       ) : null}
     </div>
   )

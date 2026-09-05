@@ -80,11 +80,21 @@ export const CardphotoListMobileFactoryLowerToolbar: React.FC = () => {
   return null
 }
 
+const CARDPHOTO_LIST_FACTORY_UPPER_RETURN_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'close',
+    icons: [{ key: 'return', state: 'enabled' }],
+    status: 'enabled',
+  },
+]
+
 /** Mobile factory / desktop list header — applyMedium слева, заголовок. */
 export const CardphotoListMobileFactoryUpperToolbar: React.FC<{
   placement?: 'factory' | 'listHeader'
 }> = ({ placement = 'factory' }) => {
   const dispatch = useAppDispatch()
+  const { isMobileLayout } = useSizeFacade()
+  const showReturn = isMobileLayout && placement === 'factory'
   const inlineTemplateCount = useAppSelector(selectCardphotoInlineTemplateCount)
   const listEmpty = inlineTemplateCount === 0
   const title = useAppSelector(selectCardphotoTitle)
@@ -131,6 +141,15 @@ export const CardphotoListMobileFactoryUpperToolbar: React.FC<{
     [closeList, listEmpty],
   )
 
+  const handleReturnAction = useCallback(
+    (key: IconKey) => {
+      if (key !== 'return') return
+      closeList()
+      return false
+    },
+    [closeList],
+  )
+
   return (
     <div
       className={clsx(
@@ -149,6 +168,16 @@ export const CardphotoListMobileFactoryUpperToolbar: React.FC<{
       {centralTemplateTitle ? (
         <div className={styles.upperTitle} title={centralTemplateTitle}>
           {centralTemplateTitle}
+        </div>
+      ) : null}
+      {showReturn ? (
+        <div className={styles.upperToolbar}>
+          <Toolbar
+            section="cardphotoCreate"
+            groupsOverride={CARDPHOTO_LIST_FACTORY_UPPER_RETURN_TOOLBAR}
+            className={toolbarStyles.toolbarAromaUpperReturn}
+            onActionClick={handleReturnAction}
+          />
         </div>
       ) : null}
     </div>

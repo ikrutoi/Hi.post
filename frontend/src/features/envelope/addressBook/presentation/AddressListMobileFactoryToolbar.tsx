@@ -89,12 +89,23 @@ export const AddressListMobileFactoryLowerToolbar: React.FC = () => {
   return null
 }
 
+const ADDRESS_LIST_FACTORY_UPPER_RETURN_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'close',
+    icons: [{ key: 'return', state: 'enabled' }],
+    status: 'enabled',
+  },
+]
+
 /** Mobile factory / desktop list header — applyMedium слева. */
 export const AddressListMobileFactoryUpperToolbar: React.FC<{
   placement?: 'factory' | 'listHeader'
 }> = ({ placement = 'factory' }) => {
   const dispatch = useAppDispatch()
+  const { isMobileLayout } = useSizeFacade()
+  const showReturn = isMobileLayout && placement === 'factory'
   const senderListOpen = useAppSelector(selectSenderListPanelOpen)
+  const upperReturnSection = senderListOpen ? 'senderView' : 'recipientView'
   const senderToolbar = useAppSelector(selectActiveSenderToolbarState)
   const recipientsToolbar = useAppSelector(selectActiveRecipientsToolbarState)
   const applySection = senderListOpen ? 'sender' : 'recipients'
@@ -127,6 +138,15 @@ export const AddressListMobileFactoryUpperToolbar: React.FC<{
     [dispatch],
   )
 
+  const handleReturnAction = useCallback(
+    (key: IconKey) => {
+      if (key !== 'return') return
+      dispatch(closeAddressList())
+      return false
+    },
+    [dispatch],
+  )
+
   return (
     <div
       className={clsx(
@@ -145,6 +165,16 @@ export const AddressListMobileFactoryUpperToolbar: React.FC<{
           onActionClick={handleApplyAction}
         />
       </div>
+      {showReturn ? (
+        <div className={styles.upperToolbar}>
+          <Toolbar
+            section={upperReturnSection}
+            groupsOverride={ADDRESS_LIST_FACTORY_UPPER_RETURN_TOOLBAR}
+            className={toolbarStyles.toolbarAromaUpperReturn}
+            onActionClick={handleReturnAction}
+          />
+        </div>
+      ) : null}
     </div>
   )
 }

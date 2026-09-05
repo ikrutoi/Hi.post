@@ -34,6 +34,7 @@ import { useAromaCardPiePreview } from '@aroma/application/hooks'
 import { AromaCardPiePreview } from '@aroma/presentation/AromaCardPiePreview/AromaCardPiePreview'
 import { clearViewAroma } from '@aroma/infrastructure/state'
 import { CardSectionEditor } from '@features/cardSectionEditor/presentation/CardSectionEditor'
+import { openEditorSectionTemplateList } from '@features/cardSectionEditor/application/helpers'
 import { FactoryUpperToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import { DesktopDateCalendarToolbarSlider } from '@date/dateHeader/presentation/MobileDateCalendarToolbarSlider'
 import {
@@ -1718,11 +1719,13 @@ const App = () => {
     dispatch(setArchiveFactoryEditActive(true))
     setActivePieSide('right')
     clearRightPiePeekChrome()
+    openEditorSectionTemplateList(dispatch, targetSection, isMobileLayout)
   }, [
     captureArchiveCenterReturnMode,
     captureAssemblyBranchFreeze,
     clearRightPiePeekChrome,
     dispatch,
+    isMobileLayout,
     resolveCardPieEditTargetSection,
   ])
 
@@ -1836,12 +1839,14 @@ const App = () => {
       dispatch(setArchiveFactoryEditActive(true))
       setActivePieSide('right')
       clearRightPiePeekChrome()
+      openEditorSectionTemplateList(dispatch, targetSection, isMobileLayout)
     })
   }, [
     captureArchiveCenterReturnMode,
     captureAssemblyBranchFreeze,
     clearRightPiePeekChrome,
     dispatch,
+    isMobileLayout,
     listRowInner,
     resolveCardPieEditTargetSection,
     rightArchivePiePostcardStatus,

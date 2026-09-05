@@ -15,6 +15,7 @@ import {
 } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
+import { openEditorSectionTemplateList } from '@features/cardSectionEditor/application/helpers'
 import { ENVELOPE_MOBILE_ADDRESS_VIEW_UPPER_RETURN_TOOLBAR } from '@toolbar/domain/types/addressView.types'
 import { RECIPIENTS_TOOLBAR_WITH_LIST_CLOSE } from '@toolbar/domain/types/envelope.types'
 import type { IconKey } from '@shared/config/constants'
@@ -147,9 +148,10 @@ export const EnvelopeInnerToolbar: React.FC = () => {
       } else {
         dispatch(setRecipientApplied(false))
       }
+      openEditorSectionTemplateList(dispatch, 'envelope', isMobile)
       return false
     },
-    [dispatch, sandboxActive],
+    [dispatch, isMobile, sandboxActive],
   )
 
   const showFocusReturn =

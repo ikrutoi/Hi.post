@@ -14,7 +14,7 @@
   cursor: default;
   padding: 0.35rem 0.3rem 0.28rem;
   background-color: #fff;
-  border: 1px solid $color-envelope-recipient-border;
+  border: 1px solid $color-app-substrate-border;
   border-radius: $list-entry-radius-lg;
   user-select: none;
   transition:
@@ -27,43 +27,23 @@
   }
 
   &[data-focused='true']:not([data-selected='true']) {
-    border-color: darken($color-envelope-recipient-border, 10%);
+    border-color: $color-app-substrate-border;
   }
 
   &[data-selected='true'] {
     @include selectionAccent.list-entry-selection-accent;
     background-color: #fff;
-    border-color: $color-envelope-recipient-border;
+    border-color: $color-app-substrate-border;
   }
 
   &[data-selected='true'][data-focused='true'] {
     @include selectionAccent.list-entry-selection-accent;
-    border-color: $color-envelope-recipient-border;
+    border-color: $color-app-substrate-border;
   }
 }
 
 .rootSender {
   background-color: #fff;
-  border-color: $color-envelope-sender-border;
-
-  &:hover {
-    background-color: #fff;
-  }
-
-  &[data-focused='true']:not([data-selected='true']) {
-    border-color: darken($color-envelope-sender-border, 10%);
-  }
-
-  &[data-selected='true'] {
-    @include selectionAccent.list-entry-selection-accent;
-    background-color: #fff;
-    border-color: $color-envelope-sender-border;
-  }
-
-  &[data-selected='true'][data-focused='true'] {
-    @include selectionAccent.list-entry-selection-accent;
-    border-color: $color-envelope-sender-border;
-  }
 }
 
 .root:not(.rootCardtext) {
@@ -110,26 +90,6 @@
   overflow: hidden;
   padding: 1px;
   background-color: #fff;
-  border-color: $color-cardtext-input-border;
-
-  &:hover {
-    background-color: #fff;
-  }
-
-  &[data-focused='true']:not([data-selected='true']) {
-    border-color: darken($color-cardtext-input-border, 8%);
-  }
-
-  &[data-selected='true'] {
-    @include selectionAccent.list-entry-selection-accent;
-    background-color: #fff;
-    border-color: $color-cardtext-input-border;
-  }
-
-  &[data-selected='true'][data-focused='true'] {
-    @include selectionAccent.list-entry-selection-accent;
-    border-color: $color-cardtext-input-border;
-  }
 
   .templateTextBlock {
     gap: 0.16rem;

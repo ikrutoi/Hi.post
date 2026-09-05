@@ -14,6 +14,8 @@ import {
   selectArchiveEnvelopeSandboxActive,
 } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
+import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
+import { openEditorSectionTemplateList } from '../../application/helpers'
 import { useCloseArchiveSectionPeek } from '../../application/hooks/useCloseArchiveSectionPeek'
 import { useMobileFactoryListChrome } from '../../application/hooks/useMobileFactoryListChrome'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
@@ -33,6 +35,7 @@ const ARCHIVE_PEEK_UPPER_EDIT_TOOLBAR: ToolbarConfig = [
  */
 export const ArchivePeekUpperToolbar: React.FC = () => {
   const dispatch = useAppDispatch()
+  const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const activeSection = useAppSelector(selectActiveSection)
   const { isArchiveSectionPeekActive } = useCloseArchiveSectionPeek()
   const {
@@ -78,9 +81,11 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
            */
           dispatch(setCardtextAppliedData(null))
           dispatch(setCardtextApplyPeekChrome(false))
+          openEditorSectionTemplateList(dispatch, 'cardtext', isMobileLayout)
         } else if (assemblyCardphotoSimplifiedPeek) {
           /** Peek = фото уже на открытке; postcardEdit снимает apply. */
           dispatch(clearApply())
+          openEditorSectionTemplateList(dispatch, 'cardphoto', isMobileLayout)
         } else if (assemblyAromaSimplifiedPeek) {
           /** Peek = aroma уже на открытке; postcardEdit снимает apply. */
           dispatch(clearAromaApplied())
@@ -94,6 +99,7 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
           } else {
             dispatch(setRecipientApplied(false))
           }
+          openEditorSectionTemplateList(dispatch, 'envelope', isMobileLayout)
         }
         return false
       }
@@ -106,6 +112,7 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
       assemblyRecipientSimplifiedPeek,
       dispatch,
       isArchiveSectionPeekActive,
+      isMobileLayout,
       requestSectionEditFromPeek,
       sandboxActive,
     ],
