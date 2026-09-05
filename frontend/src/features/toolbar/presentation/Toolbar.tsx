@@ -357,7 +357,7 @@ export const Toolbar = ({
     ? { width: `${sizeToolbarContour.width}px` }
     : {}
 
-  const sectionState = state as Record<
+  const sectionState = (state ?? {}) as Record<
     IconKey,
     { state: IconState; options?: IconOptions } | undefined
   >

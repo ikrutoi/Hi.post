@@ -126,13 +126,15 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
         <div className={styles.sideLeft}>
           <Toolbar
             section={
-              activeSection === 'cardphoto' ||
-              activeSection === 'cardtext' ||
-              activeSection === 'envelope' ||
-              activeSection === 'aroma' ||
-              activeSection === 'date'
-                ? activeSection
-                : 'cardphoto'
+              activeSection === 'cardtext'
+                ? 'cardtext'
+                : activeSection === 'envelope'
+                  ? 'recipients'
+                  : activeSection === 'aroma'
+                    ? 'aroma'
+                    : activeSection === 'date'
+                      ? 'date'
+                      : 'cardphoto'
             }
             groupsOverride={ARCHIVE_PEEK_UPPER_EDIT_TOOLBAR}
             onActionClick={handleAction}
