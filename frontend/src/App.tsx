@@ -315,6 +315,9 @@ const App = () => {
     selectCardPieCopyStripExpanded,
   )
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
+  const notebookStripDateOverHistory = useAppSelector(
+    (state) => state.calendar.notebookStripDateOverHistory,
+  )
   const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
   const computedNotebookStripTab = useAppSelector(selectComputedNotebookStripTab)
   const notebookDateTabPeekClearTick = useAppSelector(
@@ -2265,7 +2268,8 @@ const App = () => {
                     data-desktop-factory-surface={
                       activeSection === 'history' ||
                       (activeSection === 'date' &&
-                        notebookStripTab === 'history')
+                        notebookStripTab === 'history') ||
+                      (historyListPanelOpen && !notebookStripDateOverHistory)
                         ? 'date-history'
                         : activeSection === 'date'
                           ? notebookStripTab === 'cart' ||

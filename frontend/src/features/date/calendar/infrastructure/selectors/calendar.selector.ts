@@ -55,13 +55,15 @@ export const computeNotebookStripTabFromState = (
   if (activeSection === 'history') return 'history'
   if (
     state.calendar.historyListPanelOpen &&
-    (state.calendar.historyListSelectedLocalId != null ||
-      state.calendar.openDayPanel != null)
+    !state.calendar.notebookStripDateOverHistory
   ) {
-    if (state.calendar.notebookStripDateOverHistory) {
-      return 'date'
-    }
     return 'history'
+  }
+  if (
+    state.calendar.historyListPanelOpen &&
+    state.calendar.notebookStripDateOverHistory
+  ) {
+    return 'date'
   }
   if (activeSection === 'date') return 'date'
   return 'date'

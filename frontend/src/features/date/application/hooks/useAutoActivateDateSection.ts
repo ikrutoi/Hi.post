@@ -11,11 +11,8 @@ export const useAutoActivateDateSection = () => {
 
   useEffect(() => {
     if (!selectedDate) return
-    if (
-      activeSection == null ||
-      activeSection === 'date' ||
-      activeSection === 'history'
-    ) {
+    /** Do not override explicit archive modes (history) when a dispatch date exists. */
+    if (activeSection == null) {
       dispatch(setActiveSection('date'))
     }
   }, [activeSection, dispatch, selectedDate])
