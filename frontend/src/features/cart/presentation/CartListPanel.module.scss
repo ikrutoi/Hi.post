@@ -19,6 +19,7 @@ $list-panel-scroll-inset: 0.35rem;
 $list-panel-list-footer-gap: 0.35rem;
 /** Как левый padding списка (`.list` / `list-panel-scroll-padding`). */
 $cart-list-panel-inline-inset: 0.5rem;
+$cart-list-footer-bottom-inset-mobile: 0.35rem;
 /** Высота chip суммы — как ширина cart/history в mobilePieRightSlot (off). */
 $cart-list-footer-amount-h: iconButton.$toolbar-logo-size-mobile-right-sidebar;
 /** Бордер chip суммы — как пустой центральный CardPie (`mobilePieWrap` empty). */
@@ -56,6 +57,18 @@ $cart-list-header-move-ease: cubic-bezier(0.33, 1, 0.68, 1);
 $cart-list-panel-inline-end-inset: calc(
   0.25rem + #{$list-panel-scroll-gutter}
 );
+
+@mixin cart-list-footer-toolbar-band {
+  left: 0.5rem;
+  right: auto;
+  width: calc(100% - 0.75rem - 8px);
+  padding-inline: 0;
+  background-color: notebookTab.$desktop-cart-list-toolbar-fill;
+  background-image: none;
+  border-radius: 1rem;
+  overflow: hidden;
+  @include iconButton.toolbar-factory-edge-key-insets;
+}
 
 .panel {
   position: relative;
@@ -114,7 +127,8 @@ $cart-list-panel-inline-end-inset: calc(
     border-radius: 0.5rem;
     border: none;
     padding-bottom: calc(
-      #{$cart-list-panel-inline-inset} + #{$cart-list-footer-amount-h} +
+      #{$cart-list-footer-bottom-inset-mobile} +
+        var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop}) +
         #{$list-panel-list-footer-gap}
     );
 
@@ -417,6 +431,14 @@ $cart-list-panel-inline-end-inset: calc(
   overflow: hidden;
   z-index: 1;
   pointer-events: none;
+
+  :global([data-shell-layout='mobile']) & {
+    bottom: calc(
+      #{$cart-list-footer-bottom-inset-mobile} +
+        var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop}) -
+        #{$list-panel-scroll-inset} + #{$list-panel-list-footer-gap}
+    );
+  }
 }
 
 .listScrollArea {
@@ -471,6 +493,9 @@ $cart-list-panel-inline-end-inset: calc(
   color: $color-app-inner;
 }
 
+@include mobile-list-empty-icon-card-section;
+@include list-panel-empty-vertical-center;
+
 .footer {
   position: absolute;
   left: $cart-list-panel-inline-inset;
@@ -486,19 +511,18 @@ $cart-list-panel-inline-end-inset: calc(
   box-sizing: border-box;
   background-color: transparent;
 
+  :global([data-shell-layout='mobile']) & {
+    bottom: $cart-list-footer-bottom-inset-mobile;
+    height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
+    min-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
+    @include cart-list-footer-toolbar-band;
+  }
+
   :global([data-shell-layout='desktop']) & {
-    left: 0.5rem;
-    right: auto;
     bottom: 0.5rem;
-    width: calc(100% - 0.75rem - 8px);
     height: $section-inner-toolbar-height-desktop;
     min-height: $section-inner-toolbar-height-desktop;
-    padding-inline: 0;
-    background-color: notebookTab.$desktop-cart-list-toolbar-fill;
-    background-image: none;
-    border-radius: 1rem;
-    overflow: hidden;
-    @include iconButton.toolbar-factory-edge-key-insets;
+    @include cart-list-footer-toolbar-band;
   }
 }
 
@@ -527,7 +551,13 @@ $cart-list-panel-inline-end-inset: calc(
   text-overflow: ellipsis;
 
   :global([data-shell-layout='mobile']) & {
-    font-size: $cart-list-amount-font-size-mobile;
+    height: auto;
+    min-height: 0;
+    padding: 0;
+    border-radius: 0;
+    background-color: transparent;
+    box-shadow: none;
+    font-size: 0.95rem;
   }
 
   :global([data-shell-layout='desktop']) & {

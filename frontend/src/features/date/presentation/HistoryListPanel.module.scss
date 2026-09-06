@@ -15,6 +15,7 @@ $list-panel-compact-header-band: calc(
 );
 $list-panel-scroll-inset: 0.35rem;
 $list-panel-footer-bottom-inset: 0.5rem;
+$list-panel-footer-bottom-inset-mobile: 0.35rem;
 @use '@styles/config/historyFooterChrome' as historyFooter;
 
 $list-panel-footer-row-band: historyFooter.$history-footer-row-band;
@@ -64,6 +65,9 @@ $list-panel-footer-band: calc(
     background-color: #fff;
     border-radius: 0.5rem;
     border: none;
+    padding-bottom: calc(
+      #{$list-panel-footer-row-band} + #{$list-panel-footer-bottom-inset-mobile}
+    );
 
     &.panelFactoryChrome {
       padding-top: 0;
@@ -99,6 +103,19 @@ $list-panel-footer-band: calc(
   .indicators {
     height: $list-panel-compact-header-band;
   }
+
+  :global([data-shell-layout='mobile']) & {
+    padding-bottom: calc(
+      #{$list-panel-compact-header-band} + #{$list-panel-footer-bottom-inset-mobile}
+    );
+
+    .panelScrollTrack {
+      bottom: calc(
+        #{$list-panel-compact-header-band} +
+          #{$list-panel-footer-bottom-inset-mobile} - #{$list-panel-scroll-inset}
+      );
+    }
+  }
 }
 
 .panelScrollTrack {
@@ -115,6 +132,13 @@ $list-panel-footer-band: calc(
   z-index: 1;
   /* Не перехватывать hover/drag у кастомного скролла внутри `ScrollArea`. */
   pointer-events: none;
+
+  :global([data-shell-layout='mobile']) & {
+    bottom: calc(
+      #{$list-panel-footer-row-band} + #{$list-panel-footer-bottom-inset-mobile} -
+        #{$list-panel-scroll-inset}
+    );
+  }
 }
 
 .listScrollArea {
@@ -228,7 +252,13 @@ $list-panel-footer-band: calc(
   bottom: 0.5rem;
   z-index: 10;
   @include historyFooter.history-footer-indicators-shell-list;
-  @include notebookTab.mobile-notebook-history-toolbar-role-fade;
+
+  :global([data-shell-layout='mobile']) & {
+    bottom: $list-panel-footer-bottom-inset-mobile;
+    @include notebookTab.mobile-history-list-toolbar-role-fill;
+    border-radius: 1rem;
+    overflow: hidden;
+  }
 
   :global([data-shell-layout='desktop']) & {
     @include notebookTab.desktop-history-list-toolbar-role-fill;
