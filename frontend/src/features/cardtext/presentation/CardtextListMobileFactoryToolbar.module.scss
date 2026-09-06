@@ -56,7 +56,7 @@
 .upperApply {
   position: absolute;
   top: 0;
-  left: 0;
+  @include iconButton.mobile-factory-toolbar-edge-slot-left;
   bottom: 0;
   display: flex;
   align-items: center;
@@ -131,7 +131,7 @@
 .upperToolbar {
   position: absolute;
   top: 0;
-  right: 0;
+  @include iconButton.mobile-factory-toolbar-edge-slot-right;
   bottom: 0;
   display: flex;
   align-items: center;
@@ -174,7 +174,6 @@
   display: flex;
   align-items: center;
   border: none;
-  padding-inline: 0;
   box-sizing: border-box;
   border-radius: 0 0 1rem 1rem;
   overflow: hidden;
