@@ -98,7 +98,14 @@ import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { CardSection, IconKey } from '@shared/config/constants'
 import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
 import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDevContext'
-import { IconCardPie, IconCart, IconLogo, IconSectionMenuCardtext, IconSectionMenuDate } from '@shared/ui/icons'
+import {
+  IconCardPie,
+  IconCart,
+  IconLogo,
+  IconSectionMenuCardphoto,
+  IconSectionMenuCardtext,
+  IconSectionMenuDate,
+} from '@shared/ui/icons'
 import { HistoryArchiveSlotButton } from '@date/presentation/HistoryArchiveSlotButton'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
@@ -416,31 +423,26 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     mobileCentralArchivePreview?.source ?? null,
   )
 
+  const cardphotoAssetMatchesApplied =
+    cardphotoIsComplete &&
+    cardphotoAssetData?.id != null &&
+    cardphotoAppliedId != null &&
+    cardphotoAssetData.id === cardphotoAppliedId
+
+  const mobileCardphotoListChromeActive =
+    activeSection === 'cardphoto' &&
+    cardphotoListPanelOpen &&
+    !rightPieCardphotoPeekNoToolbar &&
+    !cardphotoAssetMatchesApplied
+
   const mobileCardphotoListTemplatePreview = useMemo(() => {
-    if (!cardphotoListPanelOpen || activeSection !== 'cardphoto') return null
-    if (rightPieCardphotoPeekNoToolbar) return null
-    /**
-     * Assembly simplified peek after Apply: list may briefly stay open in Redux;
-     * never keep full-bleed template preview over the CardPie with applied photo.
-     */
-    if (
-      cardphotoIsComplete &&
-      cardphotoAssetData?.id != null &&
-      cardphotoAppliedId != null &&
-      cardphotoAssetData.id === cardphotoAppliedId
-    ) {
-      return null
-    }
+    if (!mobileCardphotoListChromeActive) return null
     if (!cardphotoAssetPreviewUrl || !cardphotoAssetData?.id) return null
     return { id: cardphotoAssetData.id, previewUrl: cardphotoAssetPreviewUrl }
   }, [
-    activeSection,
-    cardphotoAppliedId,
     cardphotoAssetData?.id,
     cardphotoAssetPreviewUrl,
-    cardphotoIsComplete,
-    cardphotoListPanelOpen,
-    rightPieCardphotoPeekNoToolbar,
+    mobileCardphotoListChromeActive,
   ])
 
   const mobileCardtextListTemplatePreview = useMemo(() => {
@@ -492,7 +494,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       return 'aromaPreview'
     }
     if (mobileCentralArchivePreview != null) return 'archive'
-    if (mobileCardphotoListTemplatePreview != null) return 'cardphotoTemplate'
+    if (mobileCardphotoListChromeActive) return 'cardphotoTemplate'
     if (mobileCardtextListChromeActive) return 'cardtextTemplate'
     if (addressCardPiePreview.showSurface) {
       return 'addressTemplate'
@@ -508,7 +510,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   }, [
     aromaCardPiePreview.active,
     mobileCentralArchivePreview,
-    mobileCardphotoListTemplatePreview,
+    mobileCardphotoListChromeActive,
     mobileCardtextListChromeActive,
     addressCardPiePreview.showSurface,
     mobileListArchiveSlotActive,
@@ -1061,7 +1063,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                             />
                           )}
                         </div>
-                      ) : mobileCentralPieDisplay === 'cardphotoTemplate' &&
+                      ) : mobileCentralPieDisplay === 'cardphotoTemplate' ? (
                         mobileCardphotoListTemplatePreview != null ? (
                         <div
                           className={styles.mobileCardphotoListTemplatePreview}
@@ -1074,6 +1076,14 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                             decoding="async"
                           />
                         </div>
+                        ) : (
+                          <div
+                            className={styles.mobileCardphotoListTemplatePlaceholder}
+                            aria-hidden
+                          >
+                            <IconSectionMenuCardphoto />
+                          </div>
+                        )
                       ) : mobileCentralPieDisplay === 'cardtextTemplate' ? (
                         mobileCardtextListTemplatePreview != null ? (
                         <div

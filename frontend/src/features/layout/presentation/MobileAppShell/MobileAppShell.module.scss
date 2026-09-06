@@ -932,6 +932,7 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
     box-shadow: none;
   }
 
+  &[data-mobile-central-pie-mode='cardphotoTemplate'],
   &[data-mobile-central-pie-mode='cardtextTemplate'],
   &[data-mobile-central-pie-mode='addressTemplate'],
   &[data-mobile-central-pie-mode='emptyArchive'] {
@@ -939,6 +940,7 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
     border: 1px solid darken($color-app-inner, 8%);
   }
 
+  &[data-mobile-central-pie-mode='cardphotoTemplate'],
   &[data-mobile-central-pie-mode='addressTemplate'],
   &[data-mobile-central-pie-mode='cardtextTemplate'],
   &[data-mobile-central-pie-mode='emptyArchive'] {
@@ -965,6 +967,29 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   inset: 0;
   background-color: #fff;
   pointer-events: none;
+}
+
+// CardPie cardphoto sector empty placeholder in central pie preview.
+$mobile-central-pie-cardphoto-empty-icon-width: 40%;
+
+.mobileCardphotoListTemplatePlaceholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  pointer-events: none;
+  color: $color-app-inner;
+
+  svg {
+    flex-shrink: 0;
+    width: $mobile-central-pie-cardphoto-empty-icon-width;
+    height: auto;
+    aspect-ratio: 1;
+    fill: none;
+    stroke: currentColor;
+  }
 }
 
 // CardPie cardtext sector empty placeholder in central pie preview.
