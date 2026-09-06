@@ -81,7 +81,10 @@ import {
 } from '@cart/infrastructure/state'
 import { EnvelopeRightSlot } from '@envelope/presentation/EnvelopeRightSlot'
 import { AddressCardPiePreview } from '@envelope/presentation/AddressCardPiePreview/AddressCardPiePreview'
-import { useAddressCardPiePreview } from '@envelope/application/hooks'
+import {
+  useAddressCardPiePreview,
+  useAddressTemplatePreviewPieToolbar,
+} from '@envelope/application/hooks'
 import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
 import {
   selectArchiveEnvelopeSandboxActive,
@@ -2385,6 +2388,9 @@ function DesktopFactoryTopRow({
   } = useMobilePlanCardPies()
   const aromaCardPiePreview = useAromaCardPiePreview()
   const addressCardPiePreview = useAddressCardPiePreview()
+  const addressTemplatePreviewPieToolbar = useAddressTemplatePreviewPieToolbar(
+    addressCardPiePreview.preview,
+  )
   const handleEditorPieToolbarAction = useEditorPieAddCartHandler({
     planPies,
     selectedPlanPie,
@@ -2556,6 +2562,20 @@ function DesktopFactoryTopRow({
                 <Toolbar
                   section="postcardPieHistory"
                   onActionClick={onPostcardPieCartToolbarAction}
+                />
+              </div>
+            ) : null
+          ) : addressCardPiePreview.showSurface ? (
+            addressTemplatePreviewPieToolbar.showToolbar ? (
+              <div className={styles.desktopCentralPieToolbar}>
+                <Toolbar
+                  section="editorPie"
+                  groupsOverride={
+                    addressTemplatePreviewPieToolbar.groupsOverride
+                  }
+                  stateOverride={addressTemplatePreviewPieToolbar.stateOverride}
+                  onActionClick={addressTemplatePreviewPieToolbar.onActionClick}
+                  mergedWithCenter
                 />
               </div>
             ) : null

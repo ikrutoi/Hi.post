@@ -76,7 +76,6 @@ import {
 } from '@cardtext/application/helpers'
 import { CardtextView } from '@cardtext/presentation/CardtextView/CardtextView'
 import {
-  clearAddressListPreviewSnapshot,
   closeAddressList,
   requestClearMobileAddressFocus,
 } from '@envelope/infrastructure/state'
@@ -85,14 +84,9 @@ import {
   selectSenderListPanelOpen,
 } from '@envelope/infrastructure/selectors'
 import {
-  selectRecipientView,
-} from '@envelope/recipient/infrastructure/selectors'
-import {
-  setRecipientViewDraft,
-  setRecipientViewId,
-} from '@envelope/recipient/infrastructure/state'
-import { setSenderViewId } from '@envelope/sender/infrastructure/state'
-import { useAddressCardPiePreview } from '@envelope/application/hooks'
+  useAddressCardPiePreview,
+  useAddressTemplatePreviewPieToolbar,
+} from '@envelope/application/hooks'
 import { AddressCardPiePreview } from '@envelope/presentation/AddressCardPiePreview/AddressCardPiePreview'
 import { clearViewAroma } from '@aroma/infrastructure/state'
 import { selectViewAroma } from '@aroma/infrastructure/selectors'
@@ -101,7 +95,7 @@ import { AromaCardPiePreview } from '@aroma/presentation/AromaCardPiePreview/Aro
 import { toolbarAction } from '@toolbar/application/helpers'
 import { dispatchCardPieToolbarIconState } from '@toolbar/application/syncCardPieToolbarIcons'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
-import type { AddressFields, CardSection, IconKey } from '@shared/config/constants'
+import type { CardSection, IconKey } from '@shared/config/constants'
 import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
 import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDevContext'
 import { IconCardPie, IconCart, IconLogo, IconSectionMenuCardtext, IconSectionMenuDate } from '@shared/ui/icons'
@@ -198,38 +192,6 @@ const MOBILE_CARDTEXT_TEMPLATE_PREVIEW_PIE_STATE_ACTIVE = {
   edit: { state: 'enabled' as const },
 }
 
-const MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_TOOLBAR_INACTIVE: ToolbarConfig = [
-  {
-    group: 'main',
-    icons: [
-      { key: 'favorite', state: 'enabled' },
-      { key: 'edit', state: 'enabled' },
-    ],
-    status: 'enabled',
-  },
-]
-
-const MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_TOOLBAR_ACTIVE: ToolbarConfig = [
-  {
-    group: 'main',
-    icons: [
-      { key: 'favoriteFilled', state: 'active' },
-      { key: 'edit', state: 'enabled' },
-    ],
-    status: 'enabled',
-  },
-]
-
-const MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_STATE_INACTIVE = {
-  favorite: { state: 'enabled' as const },
-  edit: { state: 'enabled' as const },
-}
-
-const MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_STATE_ACTIVE = {
-  favoriteFilled: { state: 'active' as const },
-  edit: { state: 'enabled' as const },
-}
-
 export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   formRef,
   sizeCard,
@@ -300,7 +262,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     pinTop:
       envelopeAddressCreateRole != null || cardtextComposeHideAppHeader,
   })
-  const recipientView = useAppSelector(selectRecipientView)
   const addressCardPiePreview = useAddressCardPiePreview()
   const activeCartPostcardCount = useAppSelector(selectActiveCartPostcardCount)
   const blockedCartPostcardCount = useAppSelector(selectBlockedCartPostcardCount)
@@ -512,6 +473,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     !cardtextAssetMatchesApplied
 
   const mobileAddressPiePreview = addressCardPiePreview.preview
+  const addressTemplatePreviewPie = useAddressTemplatePreviewPieToolbar(
+    mobileAddressPiePreview,
+  )
 
   const aromaCardPiePreview = useAromaCardPiePreview()
 
@@ -613,15 +577,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     (mobileCentralPieDisplay === 'addressTemplate' &&
       mobileAddressPiePreview != null)
 
-  const addressTemplatePreviewPieToolbar = mobileAddressPiePreview?.inQuickList
-    ? MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_TOOLBAR_ACTIVE
-    : MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_TOOLBAR_INACTIVE
-
-  const addressTemplatePreviewPieState =
-    mobileAddressPiePreview?.inQuickList
-      ? MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_STATE_ACTIVE
-      : MOBILE_ADDRESS_TEMPLATE_PREVIEW_PIE_STATE_INACTIVE
-
   const cardphotoTemplateInQuickList =
     cardphotoAssetData?.status === 'inLine'
 
@@ -644,56 +599,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const handleTemplatePreviewPieToolbarAction = useCallback(
     (key: IconKey) => {
       if (mobileCentralPieDisplay === 'addressTemplate') {
-        const preview = mobileAddressPiePreview
-        if (!preview) return
-        if (key !== 'edit' && key !== 'favorite' && key !== 'favoriteFilled') {
-          return
-        }
-
-        const section =
-          preview.role === 'sender' ? 'senderView' : 'recipientView'
-
-        if (preview.role === 'sender') {
-          dispatch(setSenderViewId(preview.id))
-        } else {
-          dispatch(setRecipientViewId(preview.id))
-          if (preview.source === 'form') {
-            dispatch(setRecipientViewDraft(preview.address as AddressFields))
-          }
-        }
-
-        if (key === 'edit') {
-          if (preview.source === 'form') {
-            dispatch(
-              toolbarAction({
-                section,
-                key: 'edit',
-                payload: { returnToFormPreview: true },
-              }),
-            )
-            return false
-          }
-          // Avoid restore-on-close wiping the template we just selected for edit.
-          dispatch(clearAddressListPreviewSnapshot())
-          dispatch(closeAddressList())
-          dispatch(
-            toolbarAction({
-              section,
-              key: 'edit',
-              payload: { returnToList: true },
-            }),
-          )
-          return false
-        }
-
-        // Soft remove/add quick list: keep panel + preview; star outline/filled via listStatus.
-        dispatch(
-          toolbarAction({
-            section,
-            key: preview.inQuickList ? 'removeFromList' : 'addList',
-          }),
-        )
-        return false
+        return addressTemplatePreviewPie.onActionClick(key)
       }
 
       if (mobileCentralPieDisplay === 'cardtextTemplate') {
@@ -732,11 +638,11 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       }
     },
     [
+      addressTemplatePreviewPie,
       cardphotoTemplateInQuickList,
       cardtextSession.status,
       cardtextViewInQuickList,
       dispatch,
-      mobileAddressPiePreview,
       mobileCentralPieDisplay,
     ],
   )
@@ -1237,14 +1143,14 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                           section="editorPie"
                           groupsOverride={
                             mobileCentralPieDisplay === 'addressTemplate'
-                              ? addressTemplatePreviewPieToolbar
+                              ? addressTemplatePreviewPie.groupsOverride
                               : mobileCentralPieDisplay === 'cardtextTemplate'
                                 ? cardtextTemplatePreviewPieToolbar
                                 : cardphotoTemplatePreviewPieToolbar
                           }
                           stateOverride={
                             mobileCentralPieDisplay === 'addressTemplate'
-                              ? addressTemplatePreviewPieState
+                              ? addressTemplatePreviewPie.stateOverride
                               : mobileCentralPieDisplay === 'cardtextTemplate'
                                 ? cardtextTemplatePreviewPieState
                                 : cardphotoTemplatePreviewPieState
