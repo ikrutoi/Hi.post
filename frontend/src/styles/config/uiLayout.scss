@@ -83,8 +83,8 @@ $list-panel-header-chip-radius: calc(#{$list-entry-radius-lg} - 1px);
 
 /** PostcardIndicator в верхнем тулбаре списка истории (desktop + mobile). */
 $history-list-toolbar-indicator-size: 0.8rem;
-$history-list-toolbar-indicator-on-scale: 1.25;
-$history-list-toolbar-indicator-off-scale: 0.9;
+$history-list-toolbar-indicator-on-scale: 1.36;
+$history-list-toolbar-indicator-off-scale: 0.64;
 $history-list-toolbar-indicator-transition-duration: 0.18s;
 
 @mixin history-list-toolbar-postcard-indicator-dot-size($size) {

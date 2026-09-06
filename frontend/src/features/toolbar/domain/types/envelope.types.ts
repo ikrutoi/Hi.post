@@ -53,7 +53,6 @@ export const initialSenderToolbarState: EnvelopeToolbarState = {
 // }
 
 export const RECIPIENTS_KEYS = [
-  'listClose',
   'addressList',
   'apply',
   'addressAdd',
@@ -68,20 +67,6 @@ export const RECIPIENTS_TOOLBAR: ToolbarConfig = [
       { key: 'apply', state: 'enabled' },
       { key: 'addressAdd', state: 'enabled' },
       { key: 'addressList', state: 'enabled' },
-    ],
-    status: 'enabled',
-  },
-]
-
-/** Desktop recipients section: multi-select clear on the right. */
-export const RECIPIENTS_TOOLBAR_WITH_LIST_CLOSE: ToolbarConfig = [
-  {
-    group: 'recipients',
-    icons: [
-      { key: 'apply', state: 'enabled' },
-      { key: 'addressAdd', state: 'enabled' },
-      { key: 'addressList', state: 'enabled' },
-      { key: 'listClose', state: 'enabled' },
     ],
     status: 'enabled',
   },

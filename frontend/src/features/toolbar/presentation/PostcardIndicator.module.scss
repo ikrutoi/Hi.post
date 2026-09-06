@@ -1,4 +1,39 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as uiLayout;
+
+$indicator-on-scale: uiLayout.$history-list-toolbar-indicator-on-scale;
+$indicator-off-scale: uiLayout.$history-list-toolbar-indicator-off-scale;
+$indicator-on-overshoot-scale: $indicator-on-scale * 1.36;
+$indicator-off-undershoot-scale: $indicator-off-scale * 0.64;
+$indicator-toggle-bounce-duration: 0.32s;
+
+@keyframes postcard-indicator-enable-bounce {
+  0% {
+    transform: scale($indicator-off-scale);
+  }
+
+  45% {
+    transform: scale($indicator-on-overshoot-scale);
+  }
+
+  100% {
+    transform: scale($indicator-on-scale);
+  }
+}
+
+@keyframes postcard-indicator-disable-bounce {
+  0% {
+    transform: scale($indicator-on-scale);
+  }
+
+  45% {
+    transform: scale($indicator-off-undershoot-scale);
+  }
+
+  100% {
+    transform: scale($indicator-off-scale);
+  }
+}
 
 .postcardIndicatorContainer {
   position: relative;
@@ -55,22 +90,44 @@
   }
 
   &.postcardIndicatorOn {
-    width: calc(0.55rem * 1.25);
-    height: calc(0.55rem * 1.25);
+    width: calc(0.55rem * 1.36);
+    height: calc(0.55rem * 1.36);
 
     :global([data-shell-layout='mobile']) & {
-      width: calc(#{$mobile-calendar-preview-indicator-dot-size} * 1.25);
-      height: calc(#{$mobile-calendar-preview-indicator-dot-size} * 1.25);
+      width: calc(#{$mobile-calendar-preview-indicator-dot-size} * 1.36);
+      height: calc(#{$mobile-calendar-preview-indicator-dot-size} * 1.36);
     }
   }
 
   &.postcardIndicatorOff {
-    width: calc(0.55rem * 0.9);
-    height: calc(0.55rem * 0.9);
+    width: calc(0.55rem * 0.64);
+    height: calc(0.55rem * 0.64);
 
     :global([data-shell-layout='mobile']) & {
-      width: calc(#{$mobile-calendar-preview-indicator-dot-size} * 0.9);
-      height: calc(#{$mobile-calendar-preview-indicator-dot-size} * 0.9);
+      width: calc(#{$mobile-calendar-preview-indicator-dot-size} * 0.64);
+      height: calc(#{$mobile-calendar-preview-indicator-dot-size} * 0.64);
+    }
+  }
+
+  &.postcardIndicatorAnimEnable,
+  &.postcardIndicatorAnimDisable {
+    transition: none !important;
+  }
+
+  &.postcardIndicatorAnimEnable {
+    animation: postcard-indicator-enable-bounce $indicator-toggle-bounce-duration
+      ease-out both;
+  }
+
+  &.postcardIndicatorAnimDisable {
+    animation: postcard-indicator-disable-bounce $indicator-toggle-bounce-duration
+      ease-out both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &.postcardIndicatorAnimEnable,
+    &.postcardIndicatorAnimDisable {
+      animation: none;
     }
   }
 }

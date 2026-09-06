@@ -406,7 +406,9 @@ export const CartListPanel: React.FC<Props> = ({
               {entriesProp == null && listSegment === 'cartBlocked' ? (
                 <IconCardBlocked className={styles.listEmptyIcon} />
               ) : (
-                <IconCart className={styles.listEmptyIcon} />
+                <span className={styles.listEmptyIconCartWrap}>
+                  <IconCart className={styles.listEmptyIcon} />
+                </span>
               )}
             </div>
           )}
