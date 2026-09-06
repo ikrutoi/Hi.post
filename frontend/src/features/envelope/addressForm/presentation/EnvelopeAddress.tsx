@@ -429,6 +429,17 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   }
 
   const handleOpenRecipientFromList = (entry: AddressBookEntry) => {
+    if (!isMobile) {
+      if (recipientViewEditMode) {
+        dispatch(
+          closeAddressEditSession({
+            role: 'recipient',
+            keepRecipientView: true,
+          }),
+        )
+      }
+      return
+    }
     /**
      * Keep the recipients grid; preview the card on the central CardPie
      * (same pattern as the address template list).
@@ -771,7 +782,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                     entries={recipientsDisplayList}
                     onRemove={recipientFacade.removeFromList}
                     onOpenRecipient={handleOpenRecipientFromList}
-                    selectedId={recipientsFormPreviewId}
+                    selectedId={isMobile ? recipientsFormPreviewId : null}
                     scrollbarPortalTarget={
                       recipientScrollContainerReady
                         ? recipientFieldsetContainerScrollRef

@@ -32,6 +32,7 @@ import {
 import styles from './PostcardStatusLegend.module.scss'
 import { useCalendarFacade } from '../../calendar/application/facades/useCalendarFacade'
 import { PostcardStatus } from '@/entities/postcard/domain/types'
+import type { PostcardStatuses } from '@/entities/postcard/domain/types'
 
 export type PostcardStatusLegendProps = {
   spot: 'calendar' | 'historyList'
@@ -59,6 +60,17 @@ function isHistoryStripStatus(
   status: PostcardStatus,
 ): status is HistoryStripMonthCycleStatus {
   return (HISTORY_STRIP_STATUSES as readonly PostcardStatus[]).includes(status)
+}
+
+/** Upper header filter: cart toggles cart + cartBlocked together. */
+function isPostcardStatusFilterEnabled(
+  status: PostcardStatus,
+  postcardStatuses: PostcardStatuses,
+): boolean {
+  if (status === 'cart') {
+    return postcardStatuses.cart || postcardStatuses.cartBlocked
+  }
+  return postcardStatuses[status]
 }
 
 export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
@@ -212,6 +224,9 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
   )
 
   const isStatusLegendInteractive = (status: PostcardStatus): boolean => {
+    if (!isPostcardStatusFilterEnabled(status, postcardStatuses)) {
+      return false
+    }
     if (calendarFooterAlwaysEnabled) {
       return stripCycleItemCount(status) > 0
     }
@@ -266,11 +281,17 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
 
   const itemStateClass = (status: PostcardStatus) => {
     if (calendarFooterAlwaysEnabled) return styles.inactive
+    if (!isPostcardStatusFilterEnabled(status, postcardStatuses)) {
+      return styles.inactive
+    }
     return postcardStatuses[status] ? styles.active : styles.inactive
   }
 
   const itemVisualStateClass = (status: PostcardStatus) => {
     if (!calendarFooterAlwaysEnabled) return itemStateClass(status)
+    if (!isPostcardStatusFilterEnabled(status, postcardStatuses)) {
+      return styles.itemIconDisabled
+    }
     return stripCycleItemCount(status) > 0
       ? styles.itemIconEnabled
       : styles.itemIconDisabled

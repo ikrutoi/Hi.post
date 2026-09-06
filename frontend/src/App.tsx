@@ -38,6 +38,8 @@ import { openEditorSectionTemplateList } from '@features/cardSectionEditor/appli
 import { FactoryUpperToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import { DesktopDateCalendarToolbarSlider } from '@date/dateHeader/presentation/MobileDateCalendarToolbarSlider'
 import { DesktopEnvelopeAddressViewToolbar } from '@envelope/presentation/DesktopEnvelopeAddressViewToolbar'
+import { DesktopCardphotoViewToolbar } from '@cardphoto/presentation/DesktopCardphotoViewToolbar'
+import { DesktopCardtextViewToolbar } from '@cardtext/presentation/DesktopCardtextViewToolbar'
 import {
   CartListPanel,
   type CartListPanelItem,
@@ -2284,6 +2286,8 @@ const App = () => {
                         />
                         <div className={styles.mainCardSectionToolbarRow}>
                           <DesktopEnvelopeAddressViewToolbar />
+                          <DesktopCardphotoViewToolbar />
+                          <DesktopCardtextViewToolbar />
                           <DesktopDateCalendarToolbarSlider />
                         </div>
                       </div>

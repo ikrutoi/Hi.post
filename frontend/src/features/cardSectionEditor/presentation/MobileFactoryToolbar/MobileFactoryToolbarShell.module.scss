@@ -218,8 +218,6 @@
     background-color: #fff;
   }
 
-  :global([class*='cardphotoToolbarRow']),
-  :global([class*='cardtextToolbarRow']),
   :global([class*='envelopeToolbarRow']),
   :global([class*='cartListToolbarRow']),
   :global([class*='historyListToolbarRow']),
@@ -237,7 +235,9 @@
     @include mobile-factory-toolbar-row-full-bleed;
   }
 
-  /** Template lists + envelope View lower row: icon edge insets like upper factory row. */
+  /** View / template lists + envelope View lower row: icon edge insets like upper factory row. */
+  :global([class*='cardphotoToolbarRow']),
+  :global([class*='cardtextToolbarRow']),
   :global([class*='addressListToolbarRow']),
   :global([class*='cardtextListToolbarRow']),
   :global([class*='cardphotoListToolbarRow']),

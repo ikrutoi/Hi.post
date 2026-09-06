@@ -19,6 +19,7 @@ import {
   selectHistoryListSortMode,
 } from '@date/calendar/infrastructure/selectors'
 import { sortHistoryListEntries } from '@date/application/helpers/historyListSort'
+import { withDisabledToolbarGroups } from '@toolbar/domain/helpers'
 import { HISTORY_LIST_TOOLBAR } from '@toolbar/domain/types/historyList.types'
 
 export type HistoryListPanelItem = {
@@ -114,12 +115,19 @@ export const HistoryListPanel: React.FC<Props> = ({
     hasUnderlyingHistoryEntries === undefined
       ? !hasRows
       : !hasUnderlyingHistoryEntries
+  const listHeaderToolbarGroups = useMemo(
+    () =>
+      hasRows
+        ? HISTORY_LIST_TOOLBAR
+        : withDisabledToolbarGroups(HISTORY_LIST_TOOLBAR),
+    [hasRows],
+  )
 
   return (
     <div
       className={clsx(
         styles.panel,
-        !hasRows && styles.panelEmptyNoToolbar,
+        !hasRows && useFactoryChrome && styles.panelEmptyNoToolbar,
         useFactoryChrome && styles.panelFactoryChrome,
       )}
     >
@@ -138,16 +146,11 @@ export const HistoryListPanel: React.FC<Props> = ({
             </div>
           }
           toolbar={
-            hasRows ? (
-              <Toolbar
-                section="historyList"
-                groupsOverride={HISTORY_LIST_TOOLBAR}
-              />
-            ) : (
-              false
-            )
+            <Toolbar
+              section="historyList"
+              groupsOverride={listHeaderToolbarGroups}
+            />
           }
-          showDividerWithoutToolbar={!hasRows}
         />
       ) : null}
       <div className={styles.panelScrollTrack} aria-hidden />

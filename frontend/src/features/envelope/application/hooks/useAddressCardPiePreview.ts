@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
+import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { formatAddressPreviewLines } from '@envelope/addressBook/presentation/addressSummaryLines'
 import type { AddressPreviewLine } from '@envelope/addressBook/presentation/addressSummaryLines'
 import { listStatusIsInQuickAddressBook } from '@envelope/domain/helpers'
@@ -48,6 +49,7 @@ function toPreview(
 /** Selected address-book / recipients-grid template → central CardPie preview. */
 export function useAddressCardPiePreview() {
   const dispatch = useAppDispatch()
+  const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const activeSection = useAppSelector(selectActiveSection)
   const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
   const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
@@ -67,6 +69,12 @@ export function useAddressCardPiePreview() {
     if (recipientsFormPreviewId == null) return
     dispatch(clearRecipientsFormPreviewId())
   }, [activeSection, dispatch, recipientsFormPreviewId])
+
+  useEffect(() => {
+    if (isMobileLayout) return
+    if (recipientsFormPreviewId == null) return
+    dispatch(clearRecipientsFormPreviewId())
+  }, [dispatch, isMobileLayout, recipientsFormPreviewId])
 
   const listPreview = useMemo((): AddressCardPiePreviewModel | null => {
     if (!listChromeActive) return null
@@ -118,7 +126,9 @@ export function useAddressCardPiePreview() {
   ])
 
   const preview = listPreview ?? formPreview
-  const showSurface = listChromeActive || formPreview != null
+  /** Desktop keeps assembly CardPie; address preview is mobile-only. */
+  const showSurface =
+    isMobileLayout && (listChromeActive || formPreview != null)
 
   return {
     listChromeActive,
