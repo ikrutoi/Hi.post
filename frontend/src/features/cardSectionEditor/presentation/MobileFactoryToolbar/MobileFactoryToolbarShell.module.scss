@@ -221,7 +221,6 @@
   :global([class*='cardphotoToolbarRow']),
   :global([class*='cardtextToolbarRow']),
   :global([class*='envelopeToolbarRow']),
-  :global([class*='envelopeAddressViewToolbarRow']),
   :global([class*='cartListToolbarRow']),
   :global([class*='historyListToolbarRow']),
   :global([class*='aromaToolbarRow']),
@@ -238,10 +237,11 @@
     @include mobile-factory-toolbar-row-full-bleed;
   }
 
-  /** Template lists (photo / text / address): icon edge insets like View mode. */
+  /** Template lists + envelope View lower row: icon edge insets like upper factory row. */
   :global([class*='addressListToolbarRow']),
   :global([class*='cardtextListToolbarRow']),
-  :global([class*='cardphotoListToolbarRow']) {
+  :global([class*='cardphotoListToolbarRow']),
+  :global([class*='envelopeAddressViewToolbarRow']) {
     flex: 1 1 auto;
     align-self: stretch;
     width: 100%;

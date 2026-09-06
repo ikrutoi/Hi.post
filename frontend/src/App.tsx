@@ -37,6 +37,7 @@ import { CardSectionEditor } from '@features/cardSectionEditor/presentation/Card
 import { openEditorSectionTemplateList } from '@features/cardSectionEditor/application/helpers'
 import { FactoryUpperToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import { DesktopDateCalendarToolbarSlider } from '@date/dateHeader/presentation/MobileDateCalendarToolbarSlider'
+import { DesktopEnvelopeAddressViewToolbar } from '@envelope/presentation/DesktopEnvelopeAddressViewToolbar'
 import {
   CartListPanel,
   type CartListPanelItem,
@@ -2282,6 +2283,7 @@ const App = () => {
                           aria-hidden
                         />
                         <div className={styles.mainCardSectionToolbarRow}>
+                          <DesktopEnvelopeAddressViewToolbar />
                           <DesktopDateCalendarToolbarSlider />
                         </div>
                       </div>

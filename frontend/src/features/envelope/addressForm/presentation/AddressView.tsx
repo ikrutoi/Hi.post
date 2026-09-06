@@ -29,11 +29,7 @@ import {
 } from '@cardPanel/infrastructure/state'
 import { selectArchiveEnvelopeSandboxActive } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import { toolbarAction } from '@toolbar/application/helpers'
-import { listStatusIsInQuickAddressBook } from '@envelope/domain/helpers'
 import { applyTitleCaseInput } from '@shared/utils/helpers'
-import { TemplateFavoriteToggle } from '@shared/ui/TemplateFavoriteToggle/TemplateFavoriteToggle'
-import { useEnvelopeMobileAddressFocus } from '../../presentation/EnvelopeMobileAddressFocusContext'
-import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 
 type AddressViewRole = 'recipient' | 'sender'
 
@@ -65,24 +61,11 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   address,
 }) => {
   const dispatch = useAppDispatch()
-  const mobileFocus = useEnvelopeMobileAddressFocus()
-  const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const isEditMode =
     role === 'sender' ? senderViewEditMode : recipientViewEditMode
-  const templateInQuickList = useAppSelector((s) => {
-    const entries =
-      role === 'sender'
-        ? (s.addressBook?.senderEntries ?? [])
-        : (s.addressBook?.recipientEntries ?? [])
-    return entries.some(
-      (e) =>
-        e.id === templateId && listStatusIsInQuickAddressBook(e.listStatus),
-    )
-  })
-
   const [activeRow, setActiveRow] = useState<EditableRowKey>('name')
   const [cityZipFocus, setCityZipFocus] = useState<CityZipFocus>('zip')
   const containerRef = useRef<HTMLDivElement | null>(null)
@@ -353,19 +336,6 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     dispatch(toolbarAction({ section, key: 'edit' } as any))
   }
 
-  const toolbarSection =
-    role === 'sender' ? 'senderView' : 'recipientView'
-
-  const handleTemplateFavoriteToggle = () => {
-    mobileFocus?.triggerAddressListBadgePulse(role)
-    dispatch(
-      toolbarAction({
-        section: toolbarSection,
-        key: templateInQuickList ? 'removeFromList' : 'addList',
-      } as any),
-    )
-  }
-
   const savedAddressViewClassName = clsx(
     styles.savedAddressView,
     role === 'sender'
@@ -393,13 +363,6 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
           </div>
         ) : null}
       </div>
-      {!isMobileLayout ? (
-        <TemplateFavoriteToggle
-          active={templateInQuickList}
-          corner={role === 'recipient' ? 'top-left' : 'top-right'}
-          onToggle={handleTemplateFavoriteToggle}
-        />
-      ) : null}
     </div>
   )
 

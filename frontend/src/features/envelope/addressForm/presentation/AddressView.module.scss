@@ -314,6 +314,12 @@ $envelope-address-view-row-height: 1.625rem;
     background-color: transparent;
     border: none;
   }
+
+  &[data-envelope-address-view-mode='view'] {
+    .savedAddressViewCardWrap {
+      background-color: transparent;
+    }
+  }
 }
 
 /** Mobile envelope create: content inside the inset rounded role card. */
