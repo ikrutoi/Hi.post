@@ -680,6 +680,14 @@
   align-items: center;
   width: 100%;
   @include iconButton.toolbar-factory-edge-key-insets;
+
+  :global([data-shell-layout='desktop']) & {
+    :global([class*='sideLeft']) {
+      position: static;
+      left: auto;
+      margin-inline: 0;
+    }
+  }
 }
 
 .mainCardSectionToolbarDivider {

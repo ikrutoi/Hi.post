@@ -91,7 +91,6 @@
 
 .sideLeft {
   position: absolute;
-  @include iconButton.mobile-factory-toolbar-edge-slot-left;
   top: 0;
   bottom: 0;
   z-index: 1;
@@ -101,6 +100,16 @@
   min-width: 0;
   pointer-events: none;
 
+  :global([data-shell-layout='mobile']) & {
+    @include iconButton.mobile-factory-toolbar-edge-slot-left;
+  }
+
+  :global([data-shell-layout='desktop']) & {
+    position: static;
+    left: auto;
+    margin-inline: 0;
+  }
+
   > * {
     pointer-events: auto;
   }
@@ -109,7 +118,8 @@
   :global([class*='toolbarCardtext']),
   :global([class*='toolbarCardphoto']),
   :global([class*='toolbarAroma']),
-  :global([class*='toolbarEnvelope']) {
+  :global([class*='toolbarEnvelope']),
+  :global([class*='toolbarRecipients']) {
     width: auto;
     margin-inline: 0;
     justify-content: flex-start;
