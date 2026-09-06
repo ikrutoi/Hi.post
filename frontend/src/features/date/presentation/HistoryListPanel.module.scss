@@ -229,6 +229,14 @@ $list-panel-footer-band: calc(
   z-index: 10;
   @include historyFooter.history-footer-indicators-shell-list;
   @include notebookTab.mobile-notebook-history-toolbar-role-fade;
+
+  :global([data-shell-layout='desktop']) & {
+    @include notebookTab.desktop-history-list-toolbar-role-fill;
+    border-radius: 1rem;
+    overflow: hidden;
+    padding: 0;
+    @include iconButton.toolbar-factory-edge-key-insets;
+  }
 }
 
 .indicatorsInner {

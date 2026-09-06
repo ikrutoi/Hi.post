@@ -131,6 +131,25 @@ $desktop-plan-mini-toolbar-mid: color.mix(#ffffff, $color-toggle-active, 68%);
   );
 }
 
+/** Desktop cart list panel — solid toolbar band (no edge gradient). */
+$desktop-cart-list-toolbar-fill: $mobile-notebook-cart-toolbar-fade;
+
+/**
+ * Desktop history list chrome — same 5-color horizontal blend as
+ * `--desktop-factory-toolbar-bg` on `date-history` factory surface.
+ */
+@mixin desktop-history-list-toolbar-role-fill {
+  background-color: transparent;
+  background-image: linear-gradient(
+    90deg,
+    $mobile-notebook-history-toolbar-yellow 14%,
+    $mobile-notebook-history-toolbar-ready 32%,
+    $mobile-notebook-history-toolbar-blue 50%,
+    $mobile-notebook-history-toolbar-delivered 68%,
+    $mobile-notebook-history-toolbar-error 86%
+  );
+}
+
 /**
  * Cart calendar / cart list toolbars: edge blend into section surface
  * (frame gutter), then lift to lighter chrome fill in the middle.

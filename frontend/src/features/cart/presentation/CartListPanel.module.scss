@@ -493,9 +493,12 @@ $cart-list-panel-inline-end-inset: calc(
     width: calc(100% - 0.75rem - 8px);
     height: $section-inner-toolbar-height-desktop;
     min-height: $section-inner-toolbar-height-desktop;
-    padding-inline-start: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
-    padding-inline-end: $cart-list-entry-gutter-end;
-    @include notebookTab.mobile-notebook-cart-toolbar-role-fade;
+    padding-inline: 0;
+    background-color: notebookTab.$desktop-cart-list-toolbar-fill;
+    background-image: none;
+    border-radius: 1rem;
+    overflow: hidden;
+    @include iconButton.toolbar-factory-edge-key-insets;
   }
 }
 
