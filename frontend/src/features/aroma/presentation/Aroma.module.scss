@@ -23,6 +23,22 @@
   }
 }
 
+/** Mobile factory shell: solid section band (matches desktop factory chrome). */
+@mixin aroma-toolbar-role-fill {
+  background-color: $color-aroma-input;
+  background-image: none;
+  overflow: hidden;
+
+  :global(button[class*='toolbarKey']) {
+    background-color: transparent !important;
+
+    &:hover,
+    &:active {
+      background-color: transparent !important;
+    }
+  }
+}
+
 .aroma {
   display: flex;
   justify-content: center;
@@ -100,7 +116,7 @@
     flex: 0 0 var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
     min-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
     max-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
-    @include aroma-toolbar-role-fade;
+    @include aroma-toolbar-role-fill;
 
     :global([class*='toolbarAroma']) {
       justify-content: center;
@@ -128,7 +144,7 @@
   min-height: var(--mobile-factory-toolbar-row-height);
   max-height: var(--mobile-factory-toolbar-row-height);
   box-sizing: border-box;
-  @include aroma-toolbar-role-fade;
+  @include aroma-toolbar-role-fill;
 }
 
 .aromaToolbarRowEmpty {
@@ -142,7 +158,7 @@
     flex: 0 0 var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
     min-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
     max-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
-    @include aroma-toolbar-role-fade;
+    @include aroma-toolbar-role-fill;
   }
 
   :global([data-shell-layout='desktop']) & {

@@ -28,6 +28,26 @@
   }
 }
 
+/** Mobile factory shell: solid section band (matches desktop factory chrome). */
+@mixin cardtext-toolbar-role-fill {
+  background-color: $color-cardtext-input;
+  background-image: none;
+  overflow: hidden;
+
+  :global(button[class*='toolbarKey']) {
+    background-color: transparent !important;
+    background-image: none;
+
+    &:hover,
+    &:active,
+    &:focus,
+    &:focus-visible {
+      background-color: transparent !important;
+      background-image: none;
+    }
+  }
+}
+
 .cardtextContainer {
   position: relative;
   width: 100%;
@@ -112,6 +132,11 @@
   box-sizing: border-box;
   background-color: #fff;
 
+  :global([data-shell-layout='mobile']) & {
+    background-color: $color-cardtext-input;
+    background-image: none;
+  }
+
   :global([data-shell-layout='desktop']) & {
     border-radius: 0.5rem 0.5rem 0 0;
   }
@@ -143,7 +168,7 @@
     height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
     min-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
     max-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
-    @include cardtext-toolbar-role-fade;
+    @include cardtext-toolbar-role-fill;
   }
 }
 

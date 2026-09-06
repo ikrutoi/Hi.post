@@ -1,5 +1,25 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/mobileNotebookTabColors' as notebookTab;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
+
+/** Band fill spans toolbar slot width; row padding only insets icon keys. */
+@mixin mobile-factory-toolbar-row-full-bleed {
+  width: calc(
+    100% + 2 *
+      var(
+        --mobile-factory-toolbar-inset-inline,
+        #{iconButton.$toolbar-factory-row-inset-inline}
+      )
+  );
+  margin-inline: calc(
+    -1 *
+      var(
+        --mobile-factory-toolbar-inset-inline,
+        #{iconButton.$toolbar-factory-row-inset-inline}
+      )
+  );
+  box-sizing: border-box;
+}
 
 .shell {
   position: relative;
@@ -8,17 +28,14 @@
   width: 100%;
   box-sizing: border-box;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 1rem;
   /**
-   * Transparent: role-fade edges must show the real section gutter
-   * (solid or vertical cart gradient). A flat shell fill caused a hard
-   * L/R color seam against the frame.
+   * Transparent shell; row bands carry the section fill and 1rem corners.
    */
   background-color: transparent;
   display: flex;
   flex-direction: column;
-  /* visible: addressList badge pulse may paint past the upper row edge */
-  overflow: visible;
+  overflow: hidden;
 }
 
 .rowUpper,
@@ -32,12 +49,44 @@
 }
 
 .rowLower {
-  overflow: visible;
+  overflow: hidden;
+  z-index: 1;
+  border-radius: 0 0 1rem 1rem;
 }
 
 .rowUpper {
-  overflow: visible;
+  overflow: hidden;
   z-index: 2;
+  border-radius: 1rem 1rem 0 0;
+
+  &::before {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    top: 0;
+    bottom: 0;
+    left: calc(
+      -1 *
+        var(
+          --mobile-factory-toolbar-inset-inline,
+          #{iconButton.$toolbar-factory-row-inset-inline}
+        )
+    );
+    right: calc(
+      -1 *
+        var(
+          --mobile-factory-toolbar-inset-inline,
+          #{iconButton.$toolbar-factory-row-inset-inline}
+        )
+    );
+    pointer-events: none;
+    background-color: transparent;
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
 }
 
 .rowUpper,
@@ -67,6 +116,12 @@
     height: 100%;
     margin-inline: 0;
     padding-inline: 0;
+  }
+}
+
+.shell:not(:has(.rowLower > *)) {
+  .rowUpper {
+    border-radius: 1rem;
   }
 }
 
@@ -182,12 +237,16 @@
     display: flex;
     align-items: center;
     border: none;
-    background-color: transparent;
     padding-inline: 0;
+    @include mobile-factory-toolbar-row-full-bleed;
   }
 }
 
 .rowUpper {
+  :global([class*='upperRow']) {
+    @include mobile-factory-toolbar-row-full-bleed;
+  }
+
   :global([class*='toolbarCardphoto']) :global([class*='toolbarKey']),
   :global([class*='toolbarCardtext']) :global([class*='toolbarKey']),
   :global([class*='toolbarSender']) :global([class*='toolbarKey']),
@@ -254,7 +313,6 @@
     align-items: center;
     justify-content: flex-start;
     border: none;
-    background-color: transparent;
     padding-inline: 0;
     width: 100%;
     min-width: 0;
@@ -294,12 +352,99 @@
   }
 }
 
+/** Section upper band: full slot width; row padding keeps icon edge insets. */
+:global([data-mobile-factory-section-frame='true'][data-mobile-section-surface='cardphoto']) {
+  .rowUpper:has(:global([class*='cardSectionToolbar']))::before,
+  .rowUpper:has(:global([class*='upperRowCardphoto']))::before,
+  .rowUpper:has(:global([class*='upperRow']))::before {
+    background-color: $color-cardphoto-input;
+  }
+}
+
+:global([data-mobile-factory-section-frame='true'][data-mobile-section-surface='cardtext']) {
+  .rowUpper:has(:global([class*='cardSectionToolbar']))::before,
+  .rowUpper:has(:global([class*='upperRowCardtext']))::before,
+  .rowUpper:has(:global([class*='upperRow']))::before {
+    background-color: $color-cardtext-input;
+  }
+}
+
+:global([data-mobile-factory-section-frame='true'][data-mobile-section-surface='aroma']) {
+  .rowUpper:has(:global([class*='cardSectionToolbar']))::before,
+  .rowUpper:has(:global([class*='upperRowAroma']))::before {
+    background-color: $color-aroma-input;
+  }
+}
+
+:global([data-mobile-factory-section-frame='true'][data-mobile-section-surface='envelope']) {
+  .rowUpper:has(:global([class*='cardSectionToolbar']))::before,
+  .rowUpper:has(:global([class*='upperRowEnvelope']))::before,
+  .rowUpper:has(:global([class*='upperRowRecipient']))::before {
+    background-color: $color-envelope-recipient-input;
+  }
+
+  .rowUpper:has(:global([class*='upperRowSender']))::before {
+    background-color: $color-envelope-sender-input;
+  }
+}
+
+:global([data-mobile-factory-section-frame='true'][data-mobile-section-surface='envelope-sender']) {
+  .rowUpper:has(:global([class*='upperRowSender']))::before,
+  .rowUpper:has(:global([class*='cardSectionToolbar']))::before {
+    background-color: $color-envelope-sender-input;
+  }
+}
+
+:global([data-mobile-factory-section-frame='true'][data-mobile-section-surface='date']) {
+  .rowUpper:has(:global([data-mobile-factory-date-nav='true']))::before,
+  .rowUpper:has(:global([class*='cardSectionToolbar']))::before,
+  .rowUpper:has(:global([class*='upperRowDate']))::before {
+    background-color: $color-date-input;
+  }
+}
+
+:global([data-mobile-factory-section-frame='true'][data-mobile-section-surface='date-cart']) {
+  .rowUpper:has(:global([data-mobile-factory-date-nav='true']))::before,
+  .rowUpper:has(:global([class*='cardSectionToolbar']))::before,
+  .rowUpper:has(:global([class*='upperRow']))::before {
+    background-color: notebookTab.$mobile-notebook-cart-toolbar-fade;
+  }
+}
+
+:global([data-mobile-factory-section-frame='true'][data-mobile-section-surface='date-history']) {
+  .rowUpper:has(:global([data-mobile-factory-date-nav='true']))::before,
+  .rowUpper:has(:global([class*='cardSectionToolbar']))::before,
+  .rowUpper:has(:global([class*='upperRow']))::before {
+    background-color: transparent;
+    background-image: linear-gradient(
+      90deg,
+      #{notebookTab.$mobile-notebook-history-toolbar-yellow} 0%,
+      #{notebookTab.$mobile-notebook-history-toolbar-ready} 25%,
+      #{notebookTab.$mobile-notebook-history-toolbar-blue} 50%,
+      #{notebookTab.$mobile-notebook-history-toolbar-delivered} 75%,
+      #{notebookTab.$mobile-notebook-history-toolbar-error} 100%
+    );
+  }
+}
+
+.rowUpper :global([data-mobile-factory-date-nav='true']) {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  align-self: stretch;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
 .rowUpper :global([class*='cardSectionToolbar']) {
   box-sizing: border-box;
   flex: 1 1 auto;
   align-self: stretch;
   width: 100%;
   min-width: 0;
+  height: 100%;
+  min-height: 0;
   display: flex;
   align-items: stretch;
   background-color: transparent;
@@ -307,7 +452,8 @@
   border-radius: 0;
 
   > :global([class*='toolbar']),
-  :global([class*='cardSectionToolbarHeader']) {
+  :global([class*='cardSectionToolbarHeader']),
+  :global([class*='cardSectionToolbarAromaUpper']) {
     flex: 1 1 auto;
     align-self: stretch;
     width: 100%;

@@ -2,9 +2,10 @@
 @use '@styles/config/mobileNotebookTabColors' as notebookTab;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
-/** Same edge-fade as date section cart mode (blend into section gutter). */
-@mixin cart-list-toolbar-role-fade {
-  @include notebookTab.mobile-notebook-cart-toolbar-role-fade;
+/** Solid section band (matches desktop factory toolbar chrome). */
+@mixin cart-list-toolbar-role-fill {
+  background-color: notebookTab.$mobile-notebook-cart-toolbar-fade;
+  background-image: none;
 }
 
 @mixin cart-list-toolbar-role-keys-clear {
@@ -32,7 +33,7 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  @include cart-list-toolbar-role-fade;
+  @include cart-list-toolbar-role-fill;
   @include cart-list-toolbar-role-keys-clear;
 }
 
@@ -102,7 +103,7 @@
   border: none;
   padding-inline: 0;
   box-sizing: border-box;
-  @include cart-list-toolbar-role-fade;
+  @include cart-list-toolbar-role-fill;
   @include cart-list-toolbar-role-keys-clear;
 
   > * {

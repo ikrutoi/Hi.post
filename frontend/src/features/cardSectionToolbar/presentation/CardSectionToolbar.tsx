@@ -132,16 +132,17 @@ export const CardSectionToolbar: React.FC = () => {
               />
             </div>
           </div>
-        ) : (
-          <div
-            className={clsx(
-              styles.cardSectionToolbarPhotoTextKeys,
-              isMobileLayout && styles.cardSectionToolbarCardphotoTint,
-            )}
-          >
-            <Toolbar section="cardphoto" />
-          </div>
-        ))}
+      ) : (
+        <div
+          className={clsx(
+            styles.cardSectionToolbarHeader,
+            styles.cardSectionToolbarPhotoTextKeys,
+            isMobileLayout && styles.cardSectionToolbarCardphotoTint,
+          )}
+        >
+          <Toolbar section="cardphoto" />
+        </div>
+      ))}
       {showDateCalendarNav && <MobileDateCalendarToolbarNav />}
       {activeSection === 'envelope' && <EnvelopeInnerToolbar />}
       {activeSection === 'cardtext' && (

@@ -23,6 +23,11 @@
     transparent 100%
   );
 
+  :global([data-shell-layout='mobile']) & {
+    background-color: transparent;
+    background-image: none;
+  }
+
   .modeIcon {
     background: transparent !important;
 
@@ -48,6 +53,11 @@
 .rootCartTint {
   @include notebookTab.mobile-notebook-cart-toolbar-role-fade;
 
+  :global([data-shell-layout='mobile']) & {
+    background-color: transparent;
+    background-image: none;
+  }
+
   .modeIcon {
     background: transparent !important;
 
@@ -62,6 +72,11 @@
 
 .rootHistoryTint {
   @include notebookTab.mobile-notebook-history-toolbar-role-fade;
+
+  :global([data-shell-layout='mobile']) & {
+    background-color: transparent;
+    background-image: none;
+  }
 
   .modeIcon {
     background: transparent !important;

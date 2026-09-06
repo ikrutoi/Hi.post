@@ -23,6 +23,22 @@
   }
 }
 
+/** Mobile factory shell: solid section band (matches desktop factory chrome). */
+@mixin cardphoto-toolbar-role-fill {
+  background-color: $color-cardphoto-input;
+  background-image: none;
+  overflow: hidden;
+
+  :global(button[class*='toolbarKey']) {
+    background-color: transparent !important;
+
+    &:hover,
+    &:active {
+      background-color: transparent !important;
+    }
+  }
+}
+
 .cardphoto {
   display: flex;
   justify-content: center;
@@ -93,6 +109,11 @@
   padding: 0 0;
   background-color: #fff;
 
+  :global([data-shell-layout='mobile']) & {
+    background-color: $color-cardphoto-input;
+    background-image: none;
+  }
+
   > * {
     width: 100%;
     flex: 1 1 auto;
@@ -129,7 +150,7 @@
     height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
     min-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
     max-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
-    @include cardphoto-toolbar-role-fade;
+    @include cardphoto-toolbar-role-fill;
   }
 }
 

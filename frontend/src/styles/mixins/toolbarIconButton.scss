@@ -100,6 +100,22 @@ $toolbar-factory-row-inset-inline: 1rem;
     margin-inline-end: 0;
   }
 }
+
+/** Absolute edge slots on full-bleed factory rows (peek / list headers). */
+@mixin mobile-factory-toolbar-edge-slot-left {
+  left: var(
+    --mobile-factory-toolbar-inset-inline,
+    #{$toolbar-factory-row-inset-inline}
+  );
+}
+
+@mixin mobile-factory-toolbar-edge-slot-right {
+  right: var(
+    --mobile-factory-toolbar-inset-inline,
+    #{$toolbar-factory-row-inset-inline}
+  );
+}
+
 /** Gap between keys in compact mobile toolbar rows (e.g. CardPie bottom bar). */
 $toolbar-mobile-toolbar-group-gap: 0.35rem;
 

@@ -207,6 +207,7 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
 
   return (
     <div
+      data-mobile-factory-date-nav="true"
       className={clsx(
         styles.root,
         showDateApplyChrome && styles.rootDateTint,

@@ -105,6 +105,12 @@
   );
 }
 
+/** Mobile factory shell: solid section band (matches desktop factory chrome). */
+@mixin envelope-toolbar-role-fill($fill) {
+  background-color: $fill;
+  background-image: none;
+}
+
 .envelopeAddressViewToolbarRowSender {
   @include envelope-toolbar-role-fade($color-envelope-sender-input);
 }
@@ -224,9 +230,24 @@
     min-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
     max-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
     gap: 0;
-    background-color: transparent;
     padding: 0;
     justify-content: flex-start;
+    overflow: hidden;
+  }
+
+  .envelopeToolbarRowSender,
+  .envelopeAddressViewToolbarRowSender {
+    @include envelope-toolbar-role-fill($color-envelope-sender-input);
+  }
+
+  .envelopeToolbarRowRecipient,
+  .envelopeAddressViewToolbarRowRecipient {
+    @include envelope-toolbar-role-fill($color-envelope-recipient-input);
+  }
+
+  .envelopeToolbarRowComplete,
+  .envelopeAddressViewToolbarRowComplete {
+    @include envelope-toolbar-role-fill($color-envelope-recipient-input);
   }
 
   .envelopeToolbarSlotSender,
