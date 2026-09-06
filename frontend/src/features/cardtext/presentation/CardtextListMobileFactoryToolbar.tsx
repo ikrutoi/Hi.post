@@ -96,6 +96,7 @@ export const CardtextListMobileFactoryUpperToolbar: React.FC<{
   const dispatch = useAppDispatch()
   const { isMobileLayout } = useSizeFacade()
   const showReturn = isMobileLayout && placement === 'factory'
+  const showApply = placement !== 'listHeader'
   const templates = useAppSelector(selectCardtextTemplatesListItems)
   const listEmpty = (templates?.length ?? 0) === 0
   const {
@@ -211,12 +212,14 @@ export const CardtextListMobileFactoryUpperToolbar: React.FC<{
       )}
     >
       <div className={styles.upperApply}>
-        <Toolbar
-          section="cardtext"
-          groupsOverride={applyToolbar}
-          className={toolbarStyles.toolbarAromaUpperApply}
-          onActionClick={handleApplyAction}
-        />
+        {showApply ? (
+          <Toolbar
+            section="cardtext"
+            groupsOverride={applyToolbar}
+            className={toolbarStyles.toolbarAromaUpperApply}
+            onActionClick={handleApplyAction}
+          />
+        ) : null}
       </div>
       {centralTemplateTitle ? (
         isEditingTitle ? (

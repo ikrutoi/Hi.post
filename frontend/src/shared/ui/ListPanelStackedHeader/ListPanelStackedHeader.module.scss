@@ -135,6 +135,32 @@
   );
 }
 
+@mixin header-row-section-fill($fill) {
+  background-color: $fill;
+  background-image: none;
+}
+
+@mixin desktop-template-list-header-toolbar-rounding {
+  .headerTopRow,
+  .headerTopRowCustom {
+    border-radius: 1rem 1rem 0 0;
+    overflow: hidden;
+  }
+
+  .headerToolbarRow {
+    border-radius: 0 0 1rem 1rem;
+    overflow: hidden;
+  }
+
+  &.headerCompact,
+  &.headerCompactWithDivider {
+    .headerTopRow,
+    .headerTopRowCustom {
+      border-radius: 1rem;
+    }
+  }
+}
+
 @mixin list-panel-header-toolbar-row-insets {
   padding-inline: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
   box-sizing: border-box;
@@ -228,6 +254,16 @@
     &[data-header-fade='plan'] {
       top: 0.5rem;
     }
+
+    &[data-header-fade='cardphoto'],
+    &[data-header-fade='cardtext'],
+    &[data-header-fade='envelope-recipient'],
+    &[data-header-fade='envelope-sender'] {
+      .headerTopRowCustom,
+      .headerToolbarRow {
+        @include iconButton.toolbar-factory-edge-key-insets;
+      }
+    }
   }
 
   .headerDivider {
@@ -249,12 +285,30 @@
     .headerToolbarRow {
       @include header-row-section-fade($color-cardphoto-input);
     }
+
+    :global([data-shell-layout='desktop']) & {
+      .headerTopRow,
+      .headerToolbarRow {
+        @include header-row-section-fill($color-cardphoto-input);
+      }
+
+      @include desktop-template-list-header-toolbar-rounding;
+    }
   }
 
   &[data-header-fade='cardtext'] {
     .headerTopRow,
     .headerToolbarRow {
       @include header-row-section-fade($color-cardtext-input);
+    }
+
+    :global([data-shell-layout='desktop']) & {
+      .headerTopRow,
+      .headerToolbarRow {
+        @include header-row-section-fill($color-cardtext-input);
+      }
+
+      @include desktop-template-list-header-toolbar-rounding;
     }
   }
 
@@ -263,12 +317,30 @@
     .headerToolbarRow {
       @include header-row-section-fade($color-envelope-recipient-input);
     }
+
+    :global([data-shell-layout='desktop']) & {
+      .headerTopRow,
+      .headerToolbarRow {
+        @include header-row-section-fill($color-envelope-recipient-input);
+      }
+
+      @include desktop-template-list-header-toolbar-rounding;
+    }
   }
 
   &[data-header-fade='envelope-sender'] {
     .headerTopRow,
     .headerToolbarRow {
       @include header-row-section-fade($color-envelope-sender-input);
+    }
+
+    :global([data-shell-layout='desktop']) & {
+      .headerTopRow,
+      .headerToolbarRow {
+        @include header-row-section-fill($color-envelope-sender-input);
+      }
+
+      @include desktop-template-list-header-toolbar-rounding;
     }
   }
 

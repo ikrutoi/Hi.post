@@ -95,6 +95,7 @@ export const CardphotoListMobileFactoryUpperToolbar: React.FC<{
   const dispatch = useAppDispatch()
   const { isMobileLayout } = useSizeFacade()
   const showReturn = isMobileLayout && placement === 'factory'
+  const showApply = placement !== 'listHeader'
   const inlineTemplateCount = useAppSelector(selectCardphotoInlineTemplateCount)
   const listEmpty = inlineTemplateCount === 0
   const title = useAppSelector(selectCardphotoTitle)
@@ -158,12 +159,14 @@ export const CardphotoListMobileFactoryUpperToolbar: React.FC<{
       )}
     >
       <div className={styles.upperApply}>
-        <Toolbar
-          section="cardphoto"
-          groupsOverride={applyToolbar}
-          className={toolbarStyles.toolbarAromaUpperApply}
-          onActionClick={handleApplyAction}
-        />
+        {showApply ? (
+          <Toolbar
+            section="cardphoto"
+            groupsOverride={applyToolbar}
+            className={toolbarStyles.toolbarAromaUpperApply}
+            onActionClick={handleApplyAction}
+          />
+        ) : null}
       </div>
       {centralTemplateTitle ? (
         <div className={styles.upperTitle} title={centralTemplateTitle}>

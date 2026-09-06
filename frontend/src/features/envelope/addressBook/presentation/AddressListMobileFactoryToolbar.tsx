@@ -104,6 +104,7 @@ export const AddressListMobileFactoryUpperToolbar: React.FC<{
   const dispatch = useAppDispatch()
   const { isMobileLayout } = useSizeFacade()
   const showReturn = isMobileLayout && placement === 'factory'
+  const showApply = placement !== 'listHeader'
   const senderListOpen = useAppSelector(selectSenderListPanelOpen)
   const upperReturnSection = senderListOpen ? 'senderView' : 'recipientView'
   const senderToolbar = useAppSelector(selectActiveSenderToolbarState)
@@ -158,12 +159,14 @@ export const AddressListMobileFactoryUpperToolbar: React.FC<{
       data-address-list-toolbar-role={senderListOpen ? 'sender' : 'recipient'}
     >
       <div className={styles.upperApply}>
-        <Toolbar
-          section={applySection}
-          groupsOverride={applyToolbar}
-          className={toolbarStyles.toolbarAromaUpperApply}
-          onActionClick={handleApplyAction}
-        />
+        {showApply ? (
+          <Toolbar
+            section={applySection}
+            groupsOverride={applyToolbar}
+            className={toolbarStyles.toolbarAromaUpperApply}
+            onActionClick={handleApplyAction}
+          />
+        ) : null}
       </div>
       {showReturn ? (
         <div className={styles.upperToolbar}>
