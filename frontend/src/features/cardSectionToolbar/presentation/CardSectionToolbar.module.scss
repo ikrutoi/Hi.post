@@ -33,6 +33,10 @@
   justify-content: center;
   flex: 1 1 auto;
   align-self: stretch;
+
+  :global([data-shell-layout='desktop']) & {
+    justify-content: flex-start;
+  }
 }
 
 .cardSectionToolbarDisabled {

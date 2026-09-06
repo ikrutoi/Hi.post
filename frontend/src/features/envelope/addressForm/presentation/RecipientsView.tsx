@@ -15,7 +15,7 @@ export type RecipientsViewProps = {
   selectedId?: string | null
 }
 
-/** Multi recipients on the envelope: 4 square cells across the form. */
+/** Multi recipients on the envelope: 4 cells per row (mobile), 5 (desktop). */
 export const RecipientsView: React.FC<RecipientsViewProps> = ({
   entries,
   scrollbarPortalTarget,

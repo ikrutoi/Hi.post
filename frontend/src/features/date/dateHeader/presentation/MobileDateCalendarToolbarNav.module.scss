@@ -166,11 +166,32 @@
 }
 
 :global([data-shell-layout='desktop']) {
+  .root {
+    justify-content: flex-start;
+  }
+
   .rootDateTint,
   .rootCartTint,
   .rootHistoryTint {
     background-image: none;
     background-color: transparent;
+  }
+
+  .sideLeft {
+    position: static;
+    left: auto;
+    flex: 0 0 auto;
+  }
+
+  .center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .sideRight {
+    position: absolute;
+    right: 0;
   }
 
   .modeIcon {

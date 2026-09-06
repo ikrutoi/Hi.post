@@ -880,8 +880,7 @@ $envelope-address-view-row-height: 1.625rem;
 }
 
 /**
- * 4 square cells in a row: remaining form width after fieldset insets
- * and the scrollbar gutter, minus column gaps.
+ * Multi recipient cells per row (mobile: 4; desktop: 5).
  * LTR fill order; incomplete rows hug the right edge (envelope recipient anchor).
  */
 .recipientsViewGrid {
@@ -903,5 +902,12 @@ $envelope-address-view-row-height: 1.625rem;
     flex: 0 0 calc(25% - 0.375rem);
     max-width: calc(25% - 0.375rem);
     min-width: 0;
+  }
+
+  :global([data-shell-layout='desktop']) & {
+    > * {
+      flex: 0 0 calc(20% - 0.4rem);
+      max-width: calc(20% - 0.4rem);
+    }
   }
 }
