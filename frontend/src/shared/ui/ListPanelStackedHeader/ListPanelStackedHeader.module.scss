@@ -42,6 +42,8 @@
 
   .headerLead,
   .headerLeadClickable,
+  .headerLeadGroup,
+  .headerSecondLead,
   .closeBtn {
     position: relative;
     z-index: 2;
@@ -72,6 +74,27 @@
   }
 }
 
+.headerLeadGroup {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  .headerLead,
+  .headerSecondLead {
+    margin-inline: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
+  }
+
+  .headerLead {
+    margin-inline-start: 0;
+  }
+
+  .headerSecondLead:last-child {
+    margin-inline-end: 0;
+  }
+}
+
 .headerLead {
   @include iconButton.toolbar-icon-button-size-legacy-desktop-shell(true);
   flex-shrink: 0;
@@ -79,6 +102,16 @@
   background-color: #fff;
   color: $color-font-enabled;
   pointer-events: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.headerSecondLead {
+  flex-shrink: 0;
+  border-radius: 0.65rem;
+  background-color: #fff;
+  color: $color-font-enabled-light;
+  pointer-events: none;
+  overflow: visible;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -404,8 +437,21 @@
       padding-inline-end: $cart-list-entry-gutter-end;
     }
 
+    .headerTopRow .headerLeadGroup,
     .headerTopRow .headerLead {
       margin-left: 0;
+    }
+
+    .headerSecondLead[data-icon-key='cardPieNext'] {
+      color: $color-font-enabled-light;
+
+      svg {
+        color: $color-font-enabled-light;
+      }
+
+      svg path {
+        stroke: currentColor;
+      }
     }
 
     :global([data-shell-layout='desktop']) & {
@@ -432,7 +478,8 @@
   &[data-header-fade='cart'],
   &[data-header-fade='history'],
   &[data-header-fade='plan'] {
-    .headerLead {
+    .headerLead,
+    .headerSecondLead {
       background-color: transparent;
     }
   }
@@ -546,14 +593,22 @@
 .headerCardPieListArchive {
   $card-pie-header-hit: iconButton.$toolbar-hit-size-card-pie-list-header;
 
+  .headerLead,
+  .headerSecondLead {
+    color: $color-font-enabled-light;
+  }
+
   .headerLead {
     @include iconButton.toolbar-icon-button-size-card-pie-list-header(true);
-    color: $color-font-enabled-light;
 
     &[data-lead-icon='userLogin'] > svg {
       width: iconButton.$toolbar-icon-size-standard;
       height: iconButton.$toolbar-icon-size-standard;
     }
+  }
+
+  .headerSecondLead {
+    color: $color-font-enabled-light;
   }
 
   .closeBtn {
@@ -568,8 +623,12 @@
   .headerTopRow {
     min-height: $card-pie-header-hit;
 
-    .headerLead {
+    .headerLeadGroup {
       margin-left: 0.3rem;
+    }
+
+    .headerLead {
+      margin-left: 0;
     }
 
     .closeBtn {
@@ -646,8 +705,12 @@
   }
 
   .headerCardPieListArchive .headerTopRow {
-    .headerLead {
+    .headerLeadGroup {
       margin-left: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
+    }
+
+    .headerLead {
+      margin-left: 0;
     }
 
     .closeBtn {

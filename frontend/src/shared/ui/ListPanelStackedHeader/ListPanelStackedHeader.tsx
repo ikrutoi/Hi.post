@@ -42,6 +42,12 @@ export type ListPanelStackedHeaderProps = {
   hideLeadIcon?: boolean
   /** Скрыть кнопку закрытия (мобильные списки cart/history). */
   hideClose?: boolean
+  /** Вторая иконка слева, сразу после ведущей. */
+  secondLeadIconOverride?: ReactNode
+  onSecondLeadIconClick?: () => void
+  secondLeadIconAriaLabel?: string
+  secondLeadIconClassName?: string
+  secondLeadIconKey?: string
   onClose?: () => void
   closeAriaLabel?: string
 }
@@ -60,6 +66,11 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
   leadIconAriaLabel,
   hideLeadIcon = false,
   hideClose = false,
+  secondLeadIconOverride,
+  onSecondLeadIconClick,
+  secondLeadIconAriaLabel,
+  secondLeadIconClassName,
+  secondLeadIconKey,
   onClose,
   closeAriaLabel = 'Close list',
 }) => {
@@ -68,11 +79,18 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
   const hasTopCenter = headerTopCenter != null && headerTopCenter !== false
   const hasCustomTopRow = headerTopRow != null && headerTopRow !== false
   const showLeadIcon = !hideLeadIcon && !hasCustomTopRow
+  const showSecondLeadIcon =
+    secondLeadIconOverride != null && !hasCustomTopRow
   const showClose = !hideClose && !hasCustomTopRow
   const leadIconContent = leadIconOverride ?? getToolbarIcon({ key: leadIconKey })
   const leadIconClassName = clsx(
     styles.headerLead,
     onLeadIconClick != null && styles.headerLeadClickable,
+  )
+  const secondLeadIconClassNameResolved = clsx(
+    styles.headerSecondLead,
+    onSecondLeadIconClick != null && styles.headerLeadClickable,
+    secondLeadIconClassName,
   )
 
   return (
@@ -100,28 +118,56 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
           headerTopRow
         ) : (
           <>
-            {showLeadIcon ? (
-              onLeadIconClick != null ? (
-                <button
-                  type="button"
-                  className={leadIconClassName}
-                  data-icon-state="enabled"
-                  data-lead-icon={leadIconOverride ? undefined : leadIconKey}
-                  onClick={onLeadIconClick}
-                  aria-label={leadIconAriaLabel ?? 'Open calendar'}
-                >
-                  {leadIconContent}
-                </button>
-              ) : (
-                <div
-                  className={leadIconClassName}
-                  aria-hidden
-                  data-icon-state="enabled"
-                  data-lead-icon={leadIconOverride ? undefined : leadIconKey}
-                >
-                  {leadIconContent}
-                </div>
-              )
+            {showLeadIcon || showSecondLeadIcon ? (
+              <div className={styles.headerLeadGroup}>
+                {showLeadIcon ? (
+                  onLeadIconClick != null ? (
+                    <button
+                      type="button"
+                      className={leadIconClassName}
+                      data-icon-state="enabled"
+                      data-lead-icon={leadIconOverride ? undefined : leadIconKey}
+                      onClick={onLeadIconClick}
+                      aria-label={leadIconAriaLabel ?? 'Open calendar'}
+                    >
+                      {leadIconContent}
+                    </button>
+                  ) : (
+                    <div
+                      className={leadIconClassName}
+                      aria-hidden
+                      data-icon-state="enabled"
+                      data-lead-icon={leadIconOverride ? undefined : leadIconKey}
+                    >
+                      {leadIconContent}
+                    </div>
+                  )
+                ) : null}
+                {showSecondLeadIcon ? (
+                  onSecondLeadIconClick != null ? (
+                    <button
+                      type="button"
+                      className={secondLeadIconClassNameResolved}
+                      data-icon-state="enabled"
+                      {...(secondLeadIconKey != null
+                        ? { 'data-icon-key': secondLeadIconKey }
+                        : {})}
+                      onClick={onSecondLeadIconClick}
+                      aria-label={secondLeadIconAriaLabel ?? 'Next'}
+                    >
+                      {secondLeadIconOverride}
+                    </button>
+                  ) : (
+                    <div
+                      className={secondLeadIconClassNameResolved}
+                      aria-hidden
+                      data-icon-state="enabled"
+                    >
+                      {secondLeadIconOverride}
+                    </div>
+                  )
+                ) : null}
+              </div>
             ) : null}
             <div
               className={styles.headerTopCenterSlot}

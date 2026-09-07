@@ -147,7 +147,7 @@ import {
 } from '@date/calendar/application/logic/cartDatePickListEntryOwnership'
 import { isCartOwnedNotebookStrip } from '@date/calendar/application/logic/calendarStripSection'
 import { calendarDayHasCards } from '@date/cell/domain/calendarDayContent'
-import { IconCardPie, IconPanelDensity2 } from '@shared/ui/icons'
+import { IconCardPie, IconCardPieNext, IconPanelDensity2 } from '@shared/ui/icons'
 import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { applyRightListArchiveToolbarVisuals } from '@toolbar/application/syncRightListArchiveToolbarVisuals'
@@ -2499,11 +2499,18 @@ function DesktopFactoryTopRow({
             leadIconOverride={
               <IconPanelDensity2 activeSize={planMiniListDensity} />
             }
+            secondLeadIconOverride={
+              <IconCardPieNext className={styles.planMiniHeaderCardPieNextIcon} />
+            }
+            secondLeadIconClassName={styles.planMiniHeaderCardPieNextBtn}
+            secondLeadIconKey="cardPieNext"
             cardPieListHeaderIcons
             hideClose
             headerFade="plan"
             leadIconAriaLabel="Change plan mini size"
             onLeadIconClick={() => dispatch(cyclePlanMiniListDensity())}
+            secondLeadIconAriaLabel="Next plan pie"
+            onSecondLeadIconClick={handleCentralPieCenterClick}
           />
           <MobileCardPieGutterMinis
             layout="desktop"
