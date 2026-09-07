@@ -16,8 +16,8 @@ export type AromaCardPiePreviewState = MobileAromaPreviewGateResult & {
 }
 
 /**
- * Central CardPie aroma-cell preview (mobile + desktop).
- * Tile click sets `viewAroma`; this builds the image target and fade gate.
+ * Central CardPie aroma-cell preview (mobile factory).
+ * Tile click sets `viewAroma`; desktop keeps tile highlight in the aroma section only.
  */
 export function useAromaCardPiePreview(): AromaCardPiePreviewState {
   const activeSection = useAppSelector(selectActiveSection)

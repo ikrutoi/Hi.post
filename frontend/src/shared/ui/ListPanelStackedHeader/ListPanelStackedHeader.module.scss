@@ -115,6 +115,20 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+.headerSecondLeadDisabled,
+.headerSecondLead[data-icon-state='disabled'] {
+  color: $color-font-disabled;
+  cursor: default;
+
+  svg {
+    color: $color-font-disabled;
+  }
+
+  svg path {
+    stroke: currentColor;
+  }
+}
+
 .headerLeadClickable {
   pointer-events: auto;
   touch-action: manipulation;
@@ -451,6 +465,14 @@
 
       svg path {
         stroke: currentColor;
+      }
+
+      &[data-icon-state='disabled'] {
+        color: $color-font-disabled;
+
+        svg {
+          color: $color-font-disabled;
+        }
       }
     }
 

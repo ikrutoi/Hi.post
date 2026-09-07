@@ -48,6 +48,7 @@ export type ListPanelStackedHeaderProps = {
   secondLeadIconAriaLabel?: string
   secondLeadIconClassName?: string
   secondLeadIconKey?: string
+  secondLeadIconDisabled?: boolean
   onClose?: () => void
   closeAriaLabel?: string
 }
@@ -71,6 +72,7 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
   secondLeadIconAriaLabel,
   secondLeadIconClassName,
   secondLeadIconKey,
+  secondLeadIconDisabled = false,
   onClose,
   closeAriaLabel = 'Close list',
 }) => {
@@ -89,9 +91,13 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
   )
   const secondLeadIconClassNameResolved = clsx(
     styles.headerSecondLead,
-    onSecondLeadIconClick != null && styles.headerLeadClickable,
+    onSecondLeadIconClick != null &&
+      !secondLeadIconDisabled &&
+      styles.headerLeadClickable,
+    secondLeadIconDisabled && styles.headerSecondLeadDisabled,
     secondLeadIconClassName,
   )
+  const secondLeadIconState = secondLeadIconDisabled ? 'disabled' : 'enabled'
 
   return (
     <div
@@ -148,7 +154,8 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
                     <button
                       type="button"
                       className={secondLeadIconClassNameResolved}
-                      data-icon-state="enabled"
+                      data-icon-state={secondLeadIconState}
+                      disabled={secondLeadIconDisabled}
                       {...(secondLeadIconKey != null
                         ? { 'data-icon-key': secondLeadIconKey }
                         : {})}
@@ -161,7 +168,10 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
                     <div
                       className={secondLeadIconClassNameResolved}
                       aria-hidden
-                      data-icon-state="enabled"
+                      data-icon-state={secondLeadIconState}
+                      {...(secondLeadIconKey != null
+                        ? { 'data-icon-key': secondLeadIconKey }
+                        : {})}
                     >
                       {secondLeadIconOverride}
                     </div>

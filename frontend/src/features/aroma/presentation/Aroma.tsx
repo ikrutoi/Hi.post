@@ -74,7 +74,9 @@ export const Aroma: React.FC = () => {
   const useAssemblyPickFlow =
     cardPieEditEngaged || !centerStripListMirrorEnabled
 
-  /** Подсветка ячейки — только при превью в центральном CardPie. */
+  /**
+   * Tile highlight follows `viewAroma`; central CardPie preview is mobile-only.
+   */
   const tileHighlightAroma = useAssemblyPickFlow
     ? viewAroma
     : (mirrorInner?.aroma ?? null)

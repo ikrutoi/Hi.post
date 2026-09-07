@@ -446,6 +446,16 @@
   background-color: transparent;
   color: $color-font-enabled-light;
   overflow: visible;
+
+  &[data-icon-state='disabled'],
+  &:disabled {
+    color: $color-font-disabled;
+    cursor: default;
+
+    .planMiniHeaderCardPieNextIcon {
+      color: $color-font-disabled;
+    }
+  }
 }
 
 .planMiniHeaderCardPieNextIcon {

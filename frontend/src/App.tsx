@@ -30,8 +30,6 @@ import {
   EMPTY_GUTTER_PLAN_PIE_ID,
   useMobilePlanCardPies,
 } from '@layout/presentation/MobileAppShell/useMobilePlanCardPies'
-import { useAromaCardPiePreview } from '@aroma/application/hooks'
-import { AromaCardPiePreview } from '@aroma/presentation/AromaCardPiePreview/AromaCardPiePreview'
 import { clearViewAroma } from '@aroma/infrastructure/state'
 import { CardSectionEditor } from '@features/cardSectionEditor/presentation/CardSectionEditor'
 import { openEditorSectionTemplateList } from '@features/cardSectionEditor/application/helpers'
@@ -2396,7 +2394,6 @@ function DesktopFactoryTopRow({
     selectPlanPie,
     cyclePlanPie,
   } = useMobilePlanCardPies()
-  const aromaCardPiePreview = useAromaCardPiePreview()
   const addressCardPiePreview = useAddressCardPiePreview()
   const addressTemplatePreviewPieToolbar = useAddressTemplatePreviewPieToolbar(
     addressCardPiePreview.preview,
@@ -2511,6 +2508,7 @@ function DesktopFactoryTopRow({
             onLeadIconClick={() => dispatch(cyclePlanMiniListDensity())}
             secondLeadIconAriaLabel="Next plan pie"
             onSecondLeadIconClick={handleCentralPieCenterClick}
+            secondLeadIconDisabled={!canCyclePlanPies}
           />
           <MobileCardPieGutterMinis
             layout="desktop"
@@ -2526,9 +2524,7 @@ function DesktopFactoryTopRow({
       <div ref={cardPanelRef} className={styles.appMainTopCenterPanel}>
         <div className={styles.desktopCentralPieRow}>
           <div className={styles.desktopCentralPieWrap}>
-            {aromaCardPiePreview.active ? (
-              <AromaCardPiePreview preview={aromaCardPiePreview} />
-            ) : showArchivePie ? (
+            {showArchivePie ? (
               <CardPie
                 isProcessed={false}
                 status={rightArchivePiePostcardStatus}
