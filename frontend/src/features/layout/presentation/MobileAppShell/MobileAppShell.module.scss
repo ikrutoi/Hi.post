@@ -755,7 +755,7 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
     align-content: start;
     justify-content: start;
     gap: 1rem;
-    padding: 0.5rem;
+    @include list-panel-scroll-padding;
     padding-top: calc(
       0.5rem + #{$section-inner-toolbar-height-desktop} + 0.5rem
     );
@@ -786,7 +786,7 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   .mobilePieGutterMiniScrollTrack {
     top: calc(0.5rem + #{$section-inner-toolbar-height-desktop} + 0.5rem);
     bottom: 0.5rem;
-    right: calc((0.5rem - 4px) / 2);
+    right: calc((0.25rem + #{$list-panel-scroll-gutter} - 4px) / 2);
     width: 4px;
   }
 }

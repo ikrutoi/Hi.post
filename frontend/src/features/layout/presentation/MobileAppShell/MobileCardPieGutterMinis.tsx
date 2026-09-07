@@ -17,7 +17,10 @@ import type { PanelDensity2Size } from '@shared/ui/icons'
 import styles from './MobileAppShell.module.scss'
 
 /** Padding around the grid + gap between minis — keep in sync with desktop SCSS. */
-const DESKTOP_MINI_PADDING_REM = 0.5
+const DESKTOP_MINI_PADDING_BLOCK_REM = 0.5
+const DESKTOP_MINI_PADDING_INLINE_START_REM = 0.5
+/** Matches `list-panel-scroll-padding` inline-end (0.25rem + scroll gutter). */
+const DESKTOP_MINI_PADDING_INLINE_END_REM = 0.75
 const DESKTOP_MINI_GAP_REM = 1
 const DESKTOP_MINI_COLUMNS_BY_DENSITY: Record<PanelDensity2Size, number> = {
   1: 3,
@@ -75,7 +78,9 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
       const rem =
         parseFloat(getComputedStyle(document.documentElement).fontSize) || 16
       const insets =
-        DESKTOP_MINI_PADDING_REM * rem * 2 +
+        (DESKTOP_MINI_PADDING_INLINE_START_REM +
+          DESKTOP_MINI_PADDING_INLINE_END_REM) *
+          rem +
         DESKTOP_MINI_GAP_REM * rem * (desktopMiniColumns - 1)
       setDesktopMiniSize(
         Math.max(0, (list.clientWidth - insets) / desktopMiniColumns),
