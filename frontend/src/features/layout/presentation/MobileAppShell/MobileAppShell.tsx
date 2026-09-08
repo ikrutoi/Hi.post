@@ -19,8 +19,6 @@ import { CartArchiveSlotButton } from '@cart/presentation/CartArchiveSlotButton'
 import {
   selectCartListPanelOpen,
   selectCartListSelectedLocalId,
-  selectActiveCartPostcardCount,
-  selectBlockedCartPostcardCount,
   selectCartItems,
 } from '@cart/infrastructure/selectors'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
@@ -28,7 +26,6 @@ import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/
 import {
   buildCartArchiveToggleCommands,
   buildHistoryArchiveToggleCommands,
-  resolveCartArchiveViewMode,
 } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 import { isCartOwnedNotebookStrip } from '@date/calendar/application/logic/calendarStripSection'
 import {
@@ -44,7 +41,6 @@ import {
   selectIsHistoryListPanelOpen,
   selectHistoryListSelectedLocalId,
   selectNotebookStripTab,
-  selectCartCalendarDatePickMode,
   selectLastCartArchiveView,
   selectLastHistoryArchiveView,
 } from '@date/calendar/infrastructure/selectors'
@@ -100,10 +96,8 @@ import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selector
 import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDevContext'
 import {
   IconCardPie,
-  IconCart,
   IconSectionMenuCardphoto,
   IconSectionMenuCardtext,
-  IconSectionMenuDate,
 } from '@shared/ui/icons'
 import { HistoryArchiveSlotButton } from '@date/presentation/HistoryArchiveSlotButton'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
@@ -127,7 +121,6 @@ import { UserLoginRightSlot } from '@features/auth/presentation/UserLoginRightSl
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { useDateStripSectionForNotebookTabs } from '@date/presentation/useDateStripSectionForNotebookTabs'
 import { useMobileVisualViewport } from '@layout/application/hooks/useMobileVisualViewport'
-import { useMobileArchiveSlotSecondClickHint } from '@layout/application/hooks/useMobileArchiveSlotSecondClickHint'
 import type { MobileAppShellProps } from './mobileAppShell.types'
 import styles from './MobileAppShell.module.scss'
 
@@ -268,20 +261,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       envelopeAddressCreateRole != null || cardtextComposeHideAppHeader,
   })
   const addressCardPiePreview = useAddressCardPiePreview()
-  const activeCartPostcardCount = useAppSelector(selectActiveCartPostcardCount)
-  const blockedCartPostcardCount = useAppSelector(selectBlockedCartPostcardCount)
-  const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
-  const cartSlotVisualMode = useMemo(() => {
-    if (activeCartPostcardCount > 0 && blockedCartPostcardCount > 0) {
-      return 'mixed' as const
-    }
-    if (activeCartPostcardCount === 0 && blockedCartPostcardCount > 0) {
-      return 'blockedOnly' as const
-    }
-    return 'activeOnly' as const
-  }, [activeCartPostcardCount, blockedCartPostcardCount])
-
-  /** Mobile: CardPie list overlay только на вкладке «Дата»; сам CardPie всегда виден для переключения секций. */
   const showMobileCardPieListInFactory =
     notebookStripSection === 'date' && cardPieListPanelOpen
 
@@ -875,6 +854,47 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     }).branchKeys.length
   }, [planPies, selectedPlanPie, selectedPlanPieId])
 
+  const handleSectionsFooterClick = useCallback(
+    (event: React.MouseEvent) => {
+      event.stopPropagation()
+      clearMobileFactoryPeek()
+      onBeforeLeftPieInteraction()
+
+      const state = store.getState()
+      if (selectIsCardPieListPanelOpen(state)) {
+        dispatch(setCardPieListPanelOpen(false))
+        dispatchCardPieToolbarIconState(dispatch, false)
+      }
+      if (selectCartListPanelOpen(state)) {
+        dispatch(setCartListPanelOpen(false))
+      }
+      if (selectIsHistoryListPanelOpen(state)) {
+        dispatch(setHistoryListPanelOpen(false))
+      }
+
+      const notebookStripTab = selectNotebookStripTab(state)
+      if (isCartOwnedNotebookStrip(notebookStripTab)) {
+        dispatch(setNotebookStripDateOverCart(true))
+        dispatch(setNotebookStripTab('date'))
+      } else if (notebookStripTab === 'history') {
+        dispatch(setNotebookStripDateOverHistory(true))
+        dispatch(setNotebookStripTab('date'))
+      }
+
+      dispatch(setCardphotoListPanelOpen(false))
+      dispatch(
+        updateToolbarIcon({
+          section: 'cardphoto',
+          key: 'listCardphoto',
+          value: 'enabled',
+        }),
+      )
+      dispatch(openCardphotoFromMiniStripRequested())
+      dispatch(setActiveSection('cardphoto'))
+    },
+    [dispatch, clearMobileFactoryPeek, onBeforeLeftPieInteraction],
+  )
+
   const handleCartFooterClick = useCallback(
     (event: React.MouseEvent) => {
       event.stopPropagation()
@@ -919,74 +939,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     },
     [dispatch, clearMobileFactoryPeek],
   )
-
-  const handleCartSlotClick = useCallback(
-    (event: React.MouseEvent) => {
-      event.stopPropagation()
-      clearMobileFactoryPeek()
-      if (selectIsCardPieListPanelOpen(store.getState())) {
-        dispatch(setCardPieListPanelOpen(false))
-        dispatchCardPieToolbarIconState(dispatch, false)
-      }
-      const state = store.getState()
-      for (const command of buildCartArchiveToggleCommands({
-        cartListPanelOpen: selectCartListPanelOpen(state),
-        notebookStripTab: selectNotebookStripTab(state),
-        isMobileLayout: true,
-        lastActiveView: selectLastCartArchiveView(state),
-      })) {
-        dispatch(command)
-      }
-    },
-    [dispatch, clearMobileFactoryPeek],
-  )
-
-  const handleHistorySlotClick = useCallback(
-    (event: React.MouseEvent) => {
-      event.stopPropagation()
-      clearMobileFactoryPeek()
-      if (selectIsCardPieListPanelOpen(store.getState())) {
-        dispatch(setCardPieListPanelOpen(false))
-        dispatchCardPieToolbarIconState(dispatch, false)
-      }
-      const state = store.getState()
-      for (const command of buildHistoryArchiveToggleCommands({
-        historyListPanelOpen: selectIsHistoryListPanelOpen(state),
-        notebookStripTab: selectNotebookStripTab(state),
-        activeSection: selectActiveSection(state),
-        isMobileLayout: true,
-        lastActiveView: selectLastHistoryArchiveView(state),
-      })) {
-        dispatch(command)
-      }
-    },
-    [dispatch, clearMobileFactoryPeek],
-  )
-
-  const cartStripActive =
-    cartListPanelOpen || isCartOwnedNotebookStrip(notebookStripSection)
-
-  const cartArchiveViewMode = resolveCartArchiveViewMode({
-    cartListPanelOpen,
-    notebookStripTab: notebookStripSection,
-  })
-
-  /**
-   * Иконка на слоте = следующее состояние после клика (как left icon в тулбаре календаря/списка):
-   * календарь → cart/history (откроет список); список → date (откроет календарь).
-   */
-  const showCartSlotCartIcon =
-    cartStripActive &&
-    (cartArchiveViewMode === 'calendar' || cartCalendarDatePickMode)
-
-  const showCartSlotDateIcon =
-    cartStripActive &&
-    cartArchiveViewMode === 'list' &&
-    !cartCalendarDatePickMode
-
-  const cartModeIconVisible = showCartSlotDateIcon || showCartSlotCartIcon
-  const cartSecondClickHint =
-    useMobileArchiveSlotSecondClickHint(cartModeIconVisible)
 
   const cardWidthStyle =
     sizeCard?.width != null && sizeCard.width > 0
@@ -1227,93 +1179,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                       </div>
                     ) : null}
                   </div>
-                    <div className={styles.mobilePieRightSlot}>
-                      <div className={styles.mobilePieRightSlotCartShell}>
-                        <div className={styles.mobilePieRightSlotCartButtonFrame}>
-                          {showCartSlotDateIcon || showCartSlotCartIcon ? (
-                            <span
-                              className={clsx(
-                                styles.mobilePieRightSlotActiveIndicatorIcon,
-                                cartSecondClickHint.pulsing &&
-                                  styles.mobilePieRightSlotActiveIndicatorIconHint,
-                              )}
-                              aria-hidden
-                              onAnimationEnd={cartSecondClickHint.onPulseEnd}
-                            >
-                              {showCartSlotDateIcon ? (
-                                <IconSectionMenuDate />
-                              ) : (
-                                <IconCart />
-                              )}
-                            </span>
-                          ) : null}
-                          <button
-                            type="button"
-                            className={clsx(
-                              styles.mobilePieRightSlotItemCart,
-                              cartSlotVisualMode === 'activeOnly' &&
-                                styles.mobilePieRightSlotItemCartModeActiveOnly,
-                              cartSlotVisualMode === 'mixed' &&
-                                styles.mobilePieRightSlotItemCartModeMixed,
-                              cartSlotVisualMode === 'blockedOnly' &&
-                                styles.mobilePieRightSlotItemCartModeBlockedOnly,
-                            )}
-                            aria-label="Cart postcards"
-                            aria-pressed={
-                              cartListPanelOpen ||
-                              isCartOwnedNotebookStrip(notebookStripSection)
-                            }
-                            onClick={(event) => {
-                              cartSecondClickHint.onUserClick()
-                              handleCartSlotClick(event)
-                            }}
-                          >
-                            <div
-                              className={clsx(
-                                styles.mobilePieRightSlotCartHalf,
-                                styles.mobilePieRightSlotCartActive,
-                              )}
-                            />
-                            <div
-                              className={clsx(
-                                styles.mobilePieRightSlotCartHalf,
-                                styles.mobilePieRightSlotCartBlocked,
-                              )}
-                            />
-                          </button>
-                        </div>
-                        {activeCartPostcardCount > 0 ? (
-                          <span
-                            className={clsx(
-                              styles.mobilePieRightSlotCartCount,
-                              styles.mobilePieRightSlotCartCountActive,
-                            )}
-                            aria-hidden
-                          >
-                            {activeCartPostcardCount}
-                          </span>
-                        ) : null}
-                        {blockedCartPostcardCount > 0 ? (
-                          <span
-                            className={clsx(
-                              styles.mobilePieRightSlotCartCount,
-                              styles.mobilePieRightSlotCartCountBlocked,
-                            )}
-                            aria-hidden
-                          >
-                            {blockedCartPostcardCount}
-                          </span>
-                        ) : null}
-                      </div>
-                      <HistoryArchiveSlotButton
-                        layout="pieSlot"
-                        archiveSectionPeekActive={
-                          mobileFactoryChromePeek &&
-                          mirrorListArchiveSource === 'history'
-                        }
-                        onClick={handleHistorySlotClick}
-                      />
-                    </div>
                 </div>
               </section>
 
@@ -1355,7 +1220,15 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
 
           <footer className={styles.mobileFooter}>
             <div className={styles.mobileFooterActions} role="group" aria-label="App actions">
-              <button type="button" className={styles.mobileFooterActionBtn} aria-label="Action 1" />
+              <button
+                type="button"
+                className={clsx(
+                  styles.mobileFooterActionBtn,
+                  styles.mobileFooterActionBtnSections,
+                )}
+                aria-label="Sections"
+                onClick={handleSectionsFooterClick}
+              />
               <CartArchiveSlotButton
                 layout="footer"
                 onClick={handleCartFooterClick}
