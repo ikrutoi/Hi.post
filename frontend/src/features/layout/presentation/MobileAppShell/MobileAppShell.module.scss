@@ -118,8 +118,8 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   );
   --mobile-chrome-padding-y: 0.35rem;
   --mobile-section-inset: 0.75rem;
-  /** Зазор между toolbar и центральной секцией — половина бокового inset. */
-  --mobile-factory-toolbar-central-gap: calc(var(--mobile-section-inset) / 2);
+  /** Зазор над/под контейнером toolbar и до центральной рабочей зоны. */
+  --mobile-factory-toolbar-central-gap: 0.25rem;
   /** Высота factory toolbar shell (2 ряда + разделитель). */
   --mobile-factory-toolbar-shell-height: calc(
     2 * var(--mobile-factory-toolbar-row-height) + 1px
@@ -135,11 +135,10 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
     1rem + env(safe-area-inset-bottom, 0px)
   );
   --mobile-pie-size: min(52vw, 14rem, 28dvh);
-  --mobile-section-gap: clamp(0.5rem, 2.2dvh, 2.25rem);
   --mobile-factory-toolbar-gap: clamp(0.35rem, 1.2dvh, 0.5rem);
   --mobile-factory-toolbar-row-gap-share: calc(var(--mobile-factory-toolbar-gap) / 2);
   --mobile-factory-toolbar-inset-inline: 1rem;
-  --mobile-pie-padding-top: 0.15rem;
+  --mobile-pie-padding-top: 0.5rem;
   --mobile-pie-gutter-mini-radius: 0.3rem;
   /** Зазор между мини-паями и центральным CardPie (база — `--mobile-section-inset`). */
   --mobile-pie-gutter-mini-gap-to-center: calc(var(--mobile-section-inset) * 2);
@@ -165,9 +164,7 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   --mobile-right-sidebar-stack-gap-authed: #{iconButton.$toolbar-mobile-right-sidebar-stack-gap-authed};
   --mobile-section-toolbar-key-size: #{iconButton.$toolbar-hit-size-mobile-section};
   --mobile-section-toolbar-icon-size: #{iconButton.$toolbar-icon-size-mobile-section};
-  --mobile-app-header-height: calc(
-    env(safe-area-inset-top, 0px) + var(--mobile-chrome-band)
-  );
+  --mobile-app-chrome-top-inset: env(safe-area-inset-top, 0px);
 
   height: var(--mobile-vv-height, 100dvh);
   min-height: var(--mobile-vv-height, 100dvh);
@@ -195,7 +192,7 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   --mobile-factory-content-flex: 1 1 auto;
   --mobile-factory-content-gap: 0;
 
-  .mobileHeader {
+  .mobileFooter {
     display: none;
   }
 
@@ -368,7 +365,7 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   --mobile-factory-work-zone-display: flex;
   --mobile-factory-work-zone-flex-direction: column;
 
-  .mobileHeader {
+  .mobileFooter {
     display: none;
   }
 
@@ -525,9 +522,9 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   }
 }
 
-/* Edit compose: hide app header only (create uses full envelope-like chrome above). */
+/* Edit compose: hide app footer only (create uses full envelope-like chrome above). */
 .mobileShell[data-cardtext-compose='true'] {
-  .mobileHeader {
+  .mobileFooter {
     display: none;
   }
 }
@@ -541,7 +538,7 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   overflow: hidden;
 }
 
-.mobileHeader {
+.mobileFooter {
   position: relative;
   flex-shrink: 0;
   display: flex;
@@ -550,7 +547,9 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   gap: 0.5rem;
   min-height: var(--mobile-chrome-band);
   padding: var(--mobile-chrome-padding-y) var(--mobile-section-inset);
-  padding-top: calc(var(--mobile-chrome-padding-y) + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(
+    var(--mobile-chrome-padding-y) + env(safe-area-inset-bottom, 0px)
+  );
   background-color: $color-app-inner;
   box-sizing: border-box;
   overflow: visible;
@@ -626,7 +625,7 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   }
 }
 
-.mobileHeaderRight {
+.mobileFooterRight {
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -636,7 +635,7 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   margin-left: auto;
 }
 
-.mobileHeaderLeft {
+.mobileFooterLeft {
   position: relative;
   flex-shrink: 0;
   width: var(--mobile-toolbar-logo-size);
@@ -646,7 +645,7 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   pointer-events: none;
 }
 
-.mobileHeaderLogo {
+.mobileFooterLogo {
   position: relative;
   z-index: 1;
   flex-shrink: 0;
@@ -671,6 +670,16 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  padding-top: var(--mobile-app-chrome-top-inset);
+}
+
+.mobileShell[data-envelope-address-create='sender'],
+.mobileShell[data-envelope-address-create='recipient'],
+.mobileShell[data-cardtext-create='true'],
+.mobileShell[data-cardtext-compose='true'] {
+  .mobileMain {
+    padding-top: 0;
+  }
 }
 
 .mobileBody {
@@ -1818,7 +1827,7 @@ $mobile-central-pie-envelope-empty-icon-width: 40%;
 
 .mobileUserPanel {
   position: fixed;
-  top: var(--mobile-app-header-height);
+  top: var(--mobile-app-chrome-top-inset);
   left: 0;
   right: 0;
   bottom: 0;

@@ -977,21 +977,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     >
       <MarkStampYearDevProvider>
         <div className={styles.mobileSubstrate}>
-          <header className={styles.mobileHeader}>
-            <div className={styles.mobileHeaderLeft}>
-              <div className={styles.mobileHeaderLogo} aria-hidden>
-                <IconLogo />
-              </div>
-            </div>
-            <div className={styles.mobileHeaderRight}>
-              <CartHeaderTotal />
-              <SectionEditorRightSidebar
-                variant="headerStack"
-                pinActiveTab={pinActiveTab}
-              />
-            </div>
-          </header>
-
           <div className={styles.mobileMain}>
             <div className={styles.mobileBody} style={cardWidthStyle}>
               <EditorPieListCardPieBadgeSync />
@@ -1324,6 +1309,21 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
               </section>
             </div>
           </div>
+
+          <footer className={styles.mobileFooter}>
+            <div className={styles.mobileFooterLeft}>
+              <div className={styles.mobileFooterLogo} aria-hidden>
+                <IconLogo />
+              </div>
+            </div>
+            <div className={styles.mobileFooterRight}>
+              <CartHeaderTotal />
+              <SectionEditorRightSidebar
+                variant="headerStack"
+                pinActiveTab={pinActiveTab}
+              />
+            </div>
+          </footer>
         </div>
 
         {userLoginPanelOpen ? (
