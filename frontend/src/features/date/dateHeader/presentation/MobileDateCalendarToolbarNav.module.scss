@@ -107,8 +107,14 @@
 }
 
 .sideLeft {
-  @include iconButton.mobile-factory-toolbar-edge-slot-left;
+  left: 0;
   justify-content: flex-start;
+
+  .rootCartTint &,
+  .rootHistoryTint & {
+    left: auto;
+    @include iconButton.mobile-factory-toolbar-edge-slot-left;
+  }
 
   :global([class*='toolbarDate']),
   :global([class*='toolbarAromaUpperApply']) {
@@ -119,11 +125,29 @@
       justify-content: flex-start;
     }
   }
+
+  /** Date tab: tighter edge inset than cart/history/cardphoto list chrome. */
+  .rootDateTint & {
+    :global([class*='toolbarDate']),
+    :global([class*='toolbarAromaUpperApply']) {
+      margin-inline: 0;
+
+      :global([class*='toolbarKey']) {
+        margin-inline: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
+      }
+    }
+  }
 }
 
 .sideRight {
-  @include iconButton.mobile-factory-toolbar-edge-slot-right;
+  right: 0;
   justify-content: flex-end;
+
+  .rootCartTint &,
+  .rootHistoryTint & {
+    right: auto;
+    @include iconButton.mobile-factory-toolbar-edge-slot-right;
+  }
 }
 
 .center {
@@ -135,10 +159,8 @@
 }
 
 .modeIcon {
-  /** Как крайние ключи cardphoto upper row: 0.5rem после factory edge slot. */
   @include iconButton.toolbar-icon-button-size-mobile-toolbar;
-  margin-inline: 0;
-  margin-left: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
+  margin-inline: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
   color: $color-font-enabled-light;
   background: none;
   border: none;
@@ -162,8 +184,18 @@
 }
 
 .sideRight .modeIcon {
-  margin-left: 0;
-  margin-right: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
+  .rootCartTint &,
+  .rootHistoryTint & {
+    margin-inline: 0;
+    margin-right: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
+  }
+}
+
+/** Cart/history calendar: list icon sits in the factory edge slot. */
+.rootCartTint .sideLeft .modeIcon,
+.rootHistoryTint .sideLeft .modeIcon {
+  margin-inline: 0;
+  margin-left: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
 }
 
 :global([data-shell-layout='desktop']) {
