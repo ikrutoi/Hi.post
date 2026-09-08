@@ -219,8 +219,6 @@
   }
 
   :global([class*='envelopeToolbarRow']),
-  :global([class*='cartListToolbarRow']),
-  :global([class*='historyListToolbarRow']),
   :global([class*='aromaToolbarRow']),
   :global([class*='aromaToolbarBand']),
   :global([class*='dateToolbarRow']) {
@@ -241,6 +239,8 @@
   :global([class*='addressListToolbarRow']),
   :global([class*='cardtextListToolbarRow']),
   :global([class*='cardphotoListToolbarRow']),
+  :global([class*='cartListToolbarRow']),
+  :global([class*='historyListToolbarRow']),
   :global([class*='envelopeAddressViewToolbarRow']) {
     flex: 1 1 auto;
     align-self: stretch;

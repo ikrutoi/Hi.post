@@ -107,27 +107,22 @@
 }
 
 .sideLeft {
-  left: 0;
+  @include iconButton.mobile-factory-toolbar-edge-slot-left;
   justify-content: flex-start;
 
   :global([class*='toolbarDate']),
   :global([class*='toolbarAromaUpperApply']) {
     width: auto;
-    margin-inline: 0;
     justify-content: flex-start;
 
     :global([class*='toolbarGroup']) {
       justify-content: flex-start;
     }
-
-    :global([class*='toolbarKey']) {
-      margin-inline: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
-    }
   }
 }
 
 .sideRight {
-  right: 0;
+  @include iconButton.mobile-factory-toolbar-edge-slot-right;
   justify-content: flex-end;
 }
 
@@ -140,9 +135,10 @@
 }
 
 .modeIcon {
-  /** Как calendar в списках корзина/история и ключи нижнего тулбара. */
+  /** Как крайние ключи cardphoto upper row: 0.5rem после factory edge slot. */
   @include iconButton.toolbar-icon-button-size-mobile-toolbar;
-  margin-inline: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
+  margin-inline: 0;
+  margin-left: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
   color: $color-font-enabled-light;
   background: none;
   border: none;
@@ -163,6 +159,11 @@
     color: $color-font-disabled;
     cursor: default;
   }
+}
+
+.sideRight .modeIcon {
+  margin-left: 0;
+  margin-right: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
 }
 
 :global([data-shell-layout='desktop']) {

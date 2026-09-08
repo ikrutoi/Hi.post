@@ -39,7 +39,7 @@
 
 .sideLeft {
   position: absolute;
-  left: 0;
+  @include iconButton.mobile-factory-toolbar-edge-slot-left;
   top: 0;
   bottom: 0;
   z-index: 1;
@@ -55,9 +55,10 @@
 }
 
 .calendarIcon {
-  /** Как первая кнопка нижнего тулбара: hit/glyph + margin-inline. */
+  /** Как applyMedium в cardphoto list upper row: 1rem слот + 0.5rem ключ. */
   @include iconButton.toolbar-icon-button-size-mobile-toolbar;
-  margin-inline: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
+  margin-inline: 0;
+  margin-left: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
   color: $color-font-enabled-light;
   background: none;
   border: none;
@@ -101,7 +102,6 @@
   display: flex;
   align-items: center;
   border: none;
-  padding-inline: 0;
   box-sizing: border-box;
   @include cart-list-toolbar-role-fill;
   @include cart-list-toolbar-role-keys-clear;
