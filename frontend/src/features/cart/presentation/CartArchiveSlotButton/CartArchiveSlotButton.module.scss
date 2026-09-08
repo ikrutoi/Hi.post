@@ -75,9 +75,9 @@
   &.modeActiveOnly {
     .halfBlocked::after {
       clip-path: polygon(
-        calc(100% - 100cqh * tan(30deg)) 0,
         100% 0,
-        100% 100%
+        100% 100%,
+        calc(100% - 100cqh * tan(30deg)) 100%
       );
     }
   }
