@@ -22,7 +22,6 @@ import {
   selectBlockedCartPostcardCount,
   selectCartItems,
 } from '@cart/infrastructure/selectors'
-import { CartHeaderTotal } from '@cart/presentation/CartHeaderTotal'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import {
@@ -101,13 +100,11 @@ import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDev
 import {
   IconCardPie,
   IconCart,
-  IconLogo,
   IconSectionMenuCardphoto,
   IconSectionMenuCardtext,
   IconSectionMenuDate,
 } from '@shared/ui/icons'
 import { HistoryArchiveSlotButton } from '@date/presentation/HistoryArchiveSlotButton'
-import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { useEditorPieAddCartHandler } from '@features/cardPie/application/hooks/useEditorPieAddCartHandler'
 import { resolveEditorPieAddCartPayload } from '@features/cardPie/application/helpers/resolveEditorPieAddCartPayload'
@@ -203,7 +200,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   formRef,
   sizeCard,
   onAppClick,
-  pinActiveTab,
+  pinActiveTab: _pinActiveTab,
   activePieSide,
   showTopCardStripFullSpan,
   onBeforeLeftPieInteraction,
@@ -1311,17 +1308,10 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
           </div>
 
           <footer className={styles.mobileFooter}>
-            <div className={styles.mobileFooterLeft}>
-              <div className={styles.mobileFooterLogo} aria-hidden>
-                <IconLogo />
-              </div>
-            </div>
-            <div className={styles.mobileFooterRight}>
-              <CartHeaderTotal />
-              <SectionEditorRightSidebar
-                variant="headerStack"
-                pinActiveTab={pinActiveTab}
-              />
+            <div className={styles.mobileFooterActions} role="group" aria-label="App actions">
+              <button type="button" className={styles.mobileFooterActionBtn} aria-label="Action 1" />
+              <button type="button" className={styles.mobileFooterActionBtn} aria-label="Action 2" />
+              <button type="button" className={styles.mobileFooterActionBtn} aria-label="Action 3" />
             </div>
           </footer>
         </div>
