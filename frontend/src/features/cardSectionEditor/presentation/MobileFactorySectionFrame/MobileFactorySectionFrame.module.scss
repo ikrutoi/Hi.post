@@ -46,26 +46,39 @@
   );
 
   &[data-mobile-section-surface='cardphoto'] {
+    @include notebookTab.mobile-factory-sections-tab-frame-backdrop-cardphoto;
     --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-cardphoto};
   }
 
   &[data-mobile-section-surface='cardtext'] {
+    @include notebookTab.mobile-factory-sections-tab-frame-backdrop-cardtext;
     --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-cardtext};
   }
 
   &[data-mobile-section-surface='envelope'] {
+    @include notebookTab.mobile-factory-sections-tab-frame-backdrop-envelope;
     --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-envelope};
   }
 
   &[data-mobile-section-surface='envelope-sender'] {
+    @include notebookTab.mobile-factory-sections-tab-frame-backdrop-order(
+      sectionGutter.$mobile-section-gutter-envelope-sender,
+      sectionGutter.$mobile-section-gutter-envelope-sender,
+      notebookTab.$mobile-notebook-date-tab-aroma,
+      notebookTab.$mobile-notebook-date-tab-date,
+      notebookTab.$mobile-notebook-date-tab-cardphoto,
+      notebookTab.$mobile-notebook-date-tab-cardtext
+    );
     --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-envelope-sender};
   }
 
   &[data-mobile-section-surface='aroma'] {
+    @include notebookTab.mobile-factory-sections-tab-frame-backdrop-aroma;
     --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-aroma};
   }
 
   &[data-mobile-section-surface='date'] {
+    @include notebookTab.mobile-factory-sections-tab-frame-backdrop-date;
     --mobile-section-surface-bg: #{notebookTab.$mobile-notebook-date-tab-date};
   }
 
