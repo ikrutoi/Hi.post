@@ -15,6 +15,7 @@ import {
   selectCardphotoAppliedData,
 } from '@cardphoto/infrastructure/selectors'
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
+import { CartArchiveSlotButton } from '@cart/presentation/CartArchiveSlotButton'
 import {
   selectCartListPanelOpen,
   selectCartListSelectedLocalId,
@@ -874,6 +875,51 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     }).branchKeys.length
   }, [planPies, selectedPlanPie, selectedPlanPieId])
 
+  const handleCartFooterClick = useCallback(
+    (event: React.MouseEvent) => {
+      event.stopPropagation()
+      clearMobileFactoryPeek()
+      if (selectIsCardPieListPanelOpen(store.getState())) {
+        dispatch(setCardPieListPanelOpen(false))
+        dispatchCardPieToolbarIconState(dispatch, false)
+      }
+      const state = store.getState()
+      for (const command of buildCartArchiveToggleCommands({
+        cartListPanelOpen: selectCartListPanelOpen(state),
+        notebookStripTab: selectNotebookStripTab(state),
+        isMobileLayout: true,
+        lastActiveView: selectLastCartArchiveView(state),
+        inactiveOpensView: 'list',
+      })) {
+        dispatch(command)
+      }
+    },
+    [dispatch, clearMobileFactoryPeek],
+  )
+
+  const handleHistoryFooterClick = useCallback(
+    (event: React.MouseEvent) => {
+      event.stopPropagation()
+      clearMobileFactoryPeek()
+      if (selectIsCardPieListPanelOpen(store.getState())) {
+        dispatch(setCardPieListPanelOpen(false))
+        dispatchCardPieToolbarIconState(dispatch, false)
+      }
+      const state = store.getState()
+      for (const command of buildHistoryArchiveToggleCommands({
+        historyListPanelOpen: selectIsHistoryListPanelOpen(state),
+        notebookStripTab: selectNotebookStripTab(state),
+        activeSection: selectActiveSection(state),
+        isMobileLayout: true,
+        lastActiveView: selectLastHistoryArchiveView(state),
+        inactiveOpensView: 'list',
+      })) {
+        dispatch(command)
+      }
+    },
+    [dispatch, clearMobileFactoryPeek],
+  )
+
   const handleCartSlotClick = useCallback(
     (event: React.MouseEvent) => {
       event.stopPropagation()
@@ -1310,8 +1356,18 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
           <footer className={styles.mobileFooter}>
             <div className={styles.mobileFooterActions} role="group" aria-label="App actions">
               <button type="button" className={styles.mobileFooterActionBtn} aria-label="Action 1" />
-              <button type="button" className={styles.mobileFooterActionBtn} aria-label="Action 2" />
-              <button type="button" className={styles.mobileFooterActionBtn} aria-label="Action 3" />
+              <CartArchiveSlotButton
+                layout="footer"
+                onClick={handleCartFooterClick}
+              />
+              <HistoryArchiveSlotButton
+                layout="footer"
+                archiveSectionPeekActive={
+                  mobileFactoryChromePeek &&
+                  mirrorListArchiveSource === 'history'
+                }
+                onClick={handleHistoryFooterClick}
+              />
             </div>
           </footer>
         </div>

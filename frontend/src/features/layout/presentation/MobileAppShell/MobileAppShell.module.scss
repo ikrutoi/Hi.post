@@ -561,7 +561,7 @@ $mobile-pie-right-slot-active-indicator-fg: $color-app-inner;
 
 .mobileFooterActionBtn {
   flex-shrink: 0;
-  width: calc(2 * var(--mobile-toolbar-logo-size));
+  width: calc(2.5 * var(--mobile-toolbar-logo-size));
   height: var(--mobile-toolbar-logo-size);
   margin: 0;
   padding: 0;

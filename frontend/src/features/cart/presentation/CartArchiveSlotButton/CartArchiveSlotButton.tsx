@@ -12,14 +12,17 @@ import { toolbarAction } from '@toolbar/application/helpers'
 import styles from './CartArchiveSlotButton.module.scss'
 
 type CartArchiveSlotButtonProps = {
-  layout: 'sidebar'
+  layout: 'sidebar' | 'footer'
   /** Keep pressed while a cart postcard is pinned in the right pie. */
   pinned?: boolean
+  /** Mobile footer: same handler as the CardPie cart slot. */
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void
 }
 
 export const CartArchiveSlotButton: React.FC<CartArchiveSlotButtonProps> = ({
   layout,
   pinned = false,
+  onClick,
 }) => {
   const dispatch = useAppDispatch()
   const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
@@ -45,9 +48,13 @@ export const CartArchiveSlotButton: React.FC<CartArchiveSlotButtonProps> = ({
   const handleClick = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
       event.stopPropagation()
+      if (onClick) {
+        onClick(event)
+        return
+      }
       dispatch(toolbarAction({ section: 'rightSidebar', key: 'cart' }))
     },
-    [dispatch],
+    [dispatch, onClick],
   )
 
   return (
@@ -56,6 +63,7 @@ export const CartArchiveSlotButton: React.FC<CartArchiveSlotButtonProps> = ({
       className={clsx(
         styles.button,
         layout === 'sidebar' && styles.sidebar,
+        layout === 'footer' && styles.footer,
         visualMode === 'activeOnly' && styles.modeActiveOnly,
         visualMode === 'mixed' && styles.modeMixed,
         visualMode === 'blockedOnly' && styles.modeBlockedOnly,

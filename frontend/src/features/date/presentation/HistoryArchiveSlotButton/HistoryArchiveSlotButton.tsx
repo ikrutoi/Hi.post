@@ -19,7 +19,7 @@ import { store } from '@app/state/store'
 import styles from './HistoryArchiveSlotButton.module.scss'
 
 type HistoryArchiveSlotButtonProps = {
-  layout: 'pieSlot' | 'sidebar'
+  layout: 'pieSlot' | 'sidebar' | 'footer'
   /** Keep pressed while a history postcard is pinned in the right pie. */
   pinned?: boolean
   archiveSectionPeekActive?: boolean
@@ -94,7 +94,9 @@ export const HistoryArchiveSlotButton: React.FC<
       type="button"
       className={clsx(
         styles.button,
-        layout === 'pieSlot' ? styles.pieSlot : styles.sidebar,
+        layout === 'pieSlot' && styles.pieSlot,
+        layout === 'sidebar' && styles.sidebar,
+        layout === 'footer' && styles.footer,
       )}
       aria-label="History postcards"
       aria-pressed={historyStripActive}

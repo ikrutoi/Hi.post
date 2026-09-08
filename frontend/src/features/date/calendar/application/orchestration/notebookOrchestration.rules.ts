@@ -205,6 +205,8 @@ export function buildCartArchiveToggleCommands(input: {
   notebookStripTab: DateStripSection
   isMobileLayout: boolean
   lastActiveView?: ArchiveActiveView
+  /** Mobile footer: первое нажатие из inactive открывает список, не календарь. */
+  inactiveOpensView?: ArchiveActiveView
 }): UnknownAction[] {
   const mode = resolveCartArchiveViewMode(input)
 
@@ -216,7 +218,10 @@ export function buildCartArchiveToggleCommands(input: {
     ]
   }
 
-  const next = resolveNextArchiveViewOnClick(mode, input.lastActiveView)
+  const next =
+    mode === 'inactive' && input.inactiveOpensView != null
+      ? input.inactiveOpensView
+      : resolveNextArchiveViewOnClick(mode, input.lastActiveView)
   const remember = setLastCartArchiveView(next)
   if (next === 'list') {
     const openList = input.isMobileLayout
@@ -236,6 +241,8 @@ export function buildHistoryArchiveToggleCommands(input: {
   activeSection: CardMenuSection | null
   isMobileLayout: boolean
   lastActiveView?: ArchiveActiveView
+  /** Mobile footer: первое нажатие из inactive открывает список, не календарь. */
+  inactiveOpensView?: ArchiveActiveView
 }): UnknownAction[] {
   const mode = resolveHistoryArchiveViewMode(input)
 
@@ -247,7 +254,10 @@ export function buildHistoryArchiveToggleCommands(input: {
     ]
   }
 
-  const next = resolveNextArchiveViewOnClick(mode, input.lastActiveView)
+  const next =
+    mode === 'inactive' && input.inactiveOpensView != null
+      ? input.inactiveOpensView
+      : resolveNextArchiveViewOnClick(mode, input.lastActiveView)
   const remember = setLastHistoryArchiveView(next)
   if (next === 'list') {
     const openList = input.isMobileLayout

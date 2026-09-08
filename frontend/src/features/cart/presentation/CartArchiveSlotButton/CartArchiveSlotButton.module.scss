@@ -44,6 +44,63 @@
   }
 }
 
+.footer {
+  flex-shrink: 0;
+  grid-template-rows: none;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  --cart-diagonal-center-y: 50cqh;
+  width: calc(2.5 * var(--mobile-toolbar-logo-size, 1.75rem));
+  height: var(--mobile-toolbar-logo-size, 1.75rem);
+  border-radius: 0.35rem;
+
+  .half {
+    min-width: 0;
+  }
+
+  .count {
+    top: 50%;
+    right: auto;
+    font-size: 1rem;
+    transform: translate(-50%, -50%);
+  }
+
+  .countActive {
+    left: 25%;
+  }
+
+  .countBlocked {
+    left: 75%;
+  }
+
+  &.modeActiveOnly {
+    .halfBlocked::after {
+      clip-path: polygon(
+        calc(100% - 100cqh * tan(30deg)) 0,
+        100% 0,
+        100% 100%
+      );
+    }
+  }
+
+  &.modeMixed::before {
+    clip-path: polygon(
+      calc(50cqw - var(--cart-diagonal-center-y) * tan(-30deg)) 0,
+      100% 0,
+      100% 100%,
+      calc(50cqw + var(--cart-diagonal-center-y) * tan(-30deg)) 100%
+    );
+  }
+
+  &.modeBlockedOnly::before {
+    clip-path: polygon(
+      calc(100cqh * tan(30deg)) 0,
+      100% 0,
+      100% 100%,
+      0 100%
+    );
+  }
+}
+
 .half {
   min-height: 0;
   position: relative;
