@@ -334,3 +334,71 @@ $desktop-cart-list-toolbar-fill: $mobile-notebook-cart-toolbar-fade;
     $mobile-notebook-date-tab-aroma
   );
 }
+
+/** Desktop factory stack: полосатый фон через --desktop-factory-stack-bg. */
+@mixin desktop-factory-sections-stack-bg-order(
+  $stripe-1,
+  $stripe-2,
+  $stripe-3,
+  $stripe-4,
+  $stripe-5
+) {
+  --desktop-factory-stack-bg: linear-gradient(
+    to bottom,
+    #{$stripe-1} 0 20%,
+    #{$stripe-2} 20% 40%,
+    #{$stripe-3} 40% 60%,
+    #{$stripe-4} 60% 80%,
+    #{$stripe-5} 80% 100%
+  );
+}
+
+@mixin desktop-factory-sections-stack-bg-cardphoto {
+  @include desktop-factory-sections-stack-bg-order(
+    $mobile-notebook-date-tab-cardphoto,
+    $mobile-notebook-date-tab-cardtext,
+    $mobile-notebook-date-tab-envelope,
+    $mobile-notebook-date-tab-aroma,
+    $mobile-notebook-date-tab-date
+  );
+}
+
+@mixin desktop-factory-sections-stack-bg-cardtext {
+  @include desktop-factory-sections-stack-bg-order(
+    $mobile-notebook-date-tab-cardtext,
+    $mobile-notebook-date-tab-envelope,
+    $mobile-notebook-date-tab-aroma,
+    $mobile-notebook-date-tab-date,
+    $mobile-notebook-date-tab-cardphoto
+  );
+}
+
+@mixin desktop-factory-sections-stack-bg-envelope {
+  @include desktop-factory-sections-stack-bg-order(
+    $mobile-notebook-date-tab-envelope,
+    $mobile-notebook-date-tab-aroma,
+    $mobile-notebook-date-tab-date,
+    $mobile-notebook-date-tab-cardphoto,
+    $mobile-notebook-date-tab-cardtext
+  );
+}
+
+@mixin desktop-factory-sections-stack-bg-aroma {
+  @include desktop-factory-sections-stack-bg-order(
+    $mobile-notebook-date-tab-aroma,
+    $mobile-notebook-date-tab-date,
+    $mobile-notebook-date-tab-cardphoto,
+    $mobile-notebook-date-tab-cardtext,
+    $mobile-notebook-date-tab-envelope
+  );
+}
+
+@mixin desktop-factory-sections-stack-bg-date {
+  @include desktop-factory-sections-stack-bg-order(
+    $mobile-notebook-date-tab-date,
+    $mobile-notebook-date-tab-cardphoto,
+    $mobile-notebook-date-tab-cardtext,
+    $mobile-notebook-date-tab-envelope,
+    $mobile-notebook-date-tab-aroma
+  );
+}

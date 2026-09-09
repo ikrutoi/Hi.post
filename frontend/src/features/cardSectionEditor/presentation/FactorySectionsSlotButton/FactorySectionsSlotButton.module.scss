@@ -1,0 +1,44 @@
+@use '@styles/config/colors' as *;
+@use '@styles/config/mobileNotebookTabColors' as notebookTab;
+
+.button {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  border: none;
+  font: inherit;
+  color: inherit;
+  appearance: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.06),
+    0 2px 3px rgba(0, 0, 0, 0.1),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.32);
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-font-enabled-light;
+    outline-offset: 1px;
+  }
+}
+
+.sidebar {
+  flex-shrink: 0;
+  align-self: center;
+  width: 1.6rem;
+  height: 3.6rem;
+  border-radius: 0.35rem;
+  /** Высокая кнопка: полосы секций идут горизонтально (сверху вниз). */
+  background: linear-gradient(
+    to bottom,
+    notebookTab.$mobile-notebook-date-tab-cardphoto 0 20%,
+    notebookTab.$mobile-notebook-date-tab-cardtext 20% 40%,
+    notebookTab.$mobile-notebook-date-tab-envelope 40% 60%,
+    notebookTab.$mobile-notebook-date-tab-aroma 60% 80%,
+    notebookTab.$mobile-notebook-date-tab-date 80% 100%
+  );
+}

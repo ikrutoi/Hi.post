@@ -100,15 +100,6 @@ $empty-cardpie-border: color.adjust($color-app-inner, $lightness: -8%);
   width: 1.6rem;
   height: 3.6rem;
   border-radius: 0.35rem;
-  transition: width 0.2s ease;
-
-  &[aria-pressed='true'] {
-    width: 2.25rem;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-  }
 }
 
 .footer {

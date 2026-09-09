@@ -622,26 +622,31 @@
   }
 
   &[data-desktop-factory-surface='cardphoto'] {
+    @include notebookTab.desktop-factory-sections-stack-bg-cardphoto;
     --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-cardphoto};
     --desktop-factory-toolbar-bg: #{$color-cardphoto-input};
   }
 
   &[data-desktop-factory-surface='cardtext'] {
+    @include notebookTab.desktop-factory-sections-stack-bg-cardtext;
     --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-cardtext};
     --desktop-factory-toolbar-bg: #{$color-cardtext-input};
   }
 
   &[data-desktop-factory-surface='envelope'] {
+    @include notebookTab.desktop-factory-sections-stack-bg-envelope;
     --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-envelope};
     --desktop-factory-toolbar-bg: #{$color-envelope-recipient-input};
   }
 
   &[data-desktop-factory-surface='aroma'] {
+    @include notebookTab.desktop-factory-sections-stack-bg-aroma;
     --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-aroma};
     --desktop-factory-toolbar-bg: #{$color-aroma-input};
   }
 
   &[data-desktop-factory-surface='date'] {
+    @include notebookTab.desktop-factory-sections-stack-bg-date;
     --mobile-section-surface-bg: #{notebookTab.$mobile-notebook-date-tab-date};
     --desktop-factory-toolbar-bg: #{$color-date-input};
   }

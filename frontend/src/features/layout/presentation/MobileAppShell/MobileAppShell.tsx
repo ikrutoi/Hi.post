@@ -93,6 +93,7 @@ import { dispatchCardPieToolbarIconState } from '@toolbar/application/syncCardPi
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { CardSection, IconKey } from '@shared/config/constants'
 import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
+import { useOpenCardphotoFactory } from '@features/cardSectionEditor/application/hooks/useOpenCardphotoFactory'
 import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDevContext'
 import {
   IconCardPie,
@@ -854,45 +855,15 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     }).branchKeys.length
   }, [planPies, selectedPlanPie, selectedPlanPieId])
 
+  const openCardphotoFactory = useOpenCardphotoFactory()
+
   const handleSectionsFooterClick = useCallback(
     (event: React.MouseEvent) => {
-      event.stopPropagation()
       clearMobileFactoryPeek()
       onBeforeLeftPieInteraction()
-
-      const state = store.getState()
-      if (selectIsCardPieListPanelOpen(state)) {
-        dispatch(setCardPieListPanelOpen(false))
-        dispatchCardPieToolbarIconState(dispatch, false)
-      }
-      if (selectCartListPanelOpen(state)) {
-        dispatch(setCartListPanelOpen(false))
-      }
-      if (selectIsHistoryListPanelOpen(state)) {
-        dispatch(setHistoryListPanelOpen(false))
-      }
-
-      const notebookStripTab = selectNotebookStripTab(state)
-      if (isCartOwnedNotebookStrip(notebookStripTab)) {
-        dispatch(setNotebookStripDateOverCart(true))
-        dispatch(setNotebookStripTab('date'))
-      } else if (notebookStripTab === 'history') {
-        dispatch(setNotebookStripDateOverHistory(true))
-        dispatch(setNotebookStripTab('date'))
-      }
-
-      dispatch(setCardphotoListPanelOpen(false))
-      dispatch(
-        updateToolbarIcon({
-          section: 'cardphoto',
-          key: 'listCardphoto',
-          value: 'enabled',
-        }),
-      )
-      dispatch(openCardphotoFromMiniStripRequested())
-      dispatch(setActiveSection('cardphoto'))
+      openCardphotoFactory(event)
     },
-    [dispatch, clearMobileFactoryPeek, onBeforeLeftPieInteraction],
+    [clearMobileFactoryPeek, onBeforeLeftPieInteraction, openCardphotoFactory],
   )
 
   const handleCartFooterClick = useCallback(

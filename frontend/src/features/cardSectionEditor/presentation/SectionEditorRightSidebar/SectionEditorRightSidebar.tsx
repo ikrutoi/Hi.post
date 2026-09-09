@@ -3,6 +3,7 @@ import { useAppSelector } from '@app/hooks'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { CartArchiveSlotButton } from '@cart/presentation/CartArchiveSlotButton'
 import { HistoryArchiveSlotButton } from '@date/presentation/HistoryArchiveSlotButton'
+import { FactorySectionsSlotButton } from '@features/cardSectionEditor/presentation/FactorySectionsSlotButton'
 import {
   RIGHT_SIDEBAR_KEYS,
   RIGHT_SIDEBAR_TOOLBAR,
@@ -127,6 +128,10 @@ export const SectionEditorRightSidebar: React.FC<
     >
       <div className={styles.toolbarSlot}>{toolbar}</div>
       <div className={styles.archiveSlots}>
+        <FactorySectionsSlotButton
+          layout="sidebar"
+          pinned={pinActiveTab != null}
+        />
         <CartArchiveSlotButton
           layout="sidebar"
           pinned={pinActiveTab === 'cart'}
