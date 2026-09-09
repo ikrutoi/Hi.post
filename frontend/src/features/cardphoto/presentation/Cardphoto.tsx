@@ -1,23 +1,19 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import clsx from 'clsx'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
-import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { useAppSelector } from '@app/hooks'
 import { useCardphotoFacade } from '@cardphoto/application/facades'
 import { useCardphotoTitleStrip } from '@cardphoto/application/hooks'
 import { CARDPHOTO_TEMPLATE_TITLE_MAX_LENGTH } from '@cardphoto/application/helpers/cardphotoTemplateTitle'
 import { CardphotoView } from './CardphotoView/CardphotoView'
 import {
-  deleteCardphotoFromViewRequested,
-} from '@cardphoto/infrastructure/state'
-import {
   selectCardphotoTitle,
   selectCardphotoViewDismissIconKey,
   selectIsCardphotoCreateSession,
 } from '@cardphoto/infrastructure/selectors'
-import { toolbarAction } from '@toolbar/application/helpers'
-import { CARDPHOTO_CREATE_TOOLBAR, CARDPHOTO_VIEW_TOOLBAR } from '@toolbar/domain/types/cardphoto.types'
+import { CARDPHOTO_VIEW_TOOLBAR } from '@toolbar/domain/types/cardphoto.types'
+import { useCardphotoCreateToolbarGroups } from './useCardphotoCreateToolbarGroups'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
-import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
@@ -98,37 +94,20 @@ const CardphotoRightListMirror: React.FC = () => {
 }
 
 const CardphotoSessionEditor: React.FC = () => {
-  const dispatch = useAppDispatch()
-  const { isMobileLayout } = useSizeFacade()
   const { assemblyCardphotoSimplifiedPeek } = useMobileFactoryListChrome()
+  const createToolbarGroups = useCardphotoCreateToolbarGroups()
   const isCardphotoCreateSession = useAppSelector(
     selectIsCardphotoCreateSession,
   )
   const { activeImage, assetToolbar } = useCardphotoFacade()
   const title = useAppSelector(selectCardphotoTitle)
-  const createToolbarState = useAppSelector(
-    selectToolbarSectionState('cardphotoCreate'),
-  )
   const viewToolbarState = useAppSelector(
     selectToolbarSectionState('cardphotoView'),
   )
   const viewDismissIconKey = useAppSelector(selectCardphotoViewDismissIconKey)
-  const isCreateCropActive = createToolbarState?.crop?.state === 'active'
   const assetToolbarGroupsOverride = useMemo(() => {
-    if (assetToolbar === 'cardphotoCreate' && !isCreateCropActive) {
-      return [
-        ...CARDPHOTO_CREATE_TOOLBAR,
-        {
-          group: 'close' as const,
-          icons: [
-            {
-              key: (isMobileLayout ? 'delete' : 'close') as 'delete' | 'close',
-              state: 'enabled' as const,
-            },
-          ],
-          status: 'enabled' as const,
-        },
-      ]
+    if (assetToolbar === 'cardphotoCreate') {
+      return createToolbarGroups
     }
     if (assetToolbar === 'cardphotoView' && viewDismissIconKey === 'delete') {
       return CARDPHOTO_VIEW_TOOLBAR.map((group) =>
@@ -141,12 +120,7 @@ const CardphotoSessionEditor: React.FC = () => {
       )
     }
     return undefined
-  }, [
-    assetToolbar,
-    isCreateCropActive,
-    isMobileLayout,
-    viewDismissIconKey,
-  ])
+  }, [assetToolbar, createToolbarGroups, viewDismissIconKey])
   const assetToolbarStateOverride = useMemo(() => {
     if (
       assetToolbar === 'cardphotoView' &&
@@ -182,22 +156,6 @@ const CardphotoSessionEditor: React.FC = () => {
     id: activeImage?.id ?? null,
     imageStatus: activeImage?.status,
   })
-
-  const handleDismissView = useCallback(() => {
-    if (assetToolbar === 'cardphotoCreate') {
-      dispatch(
-        toolbarAction({ section: 'cardphotoCreate', key: 'delete' } as const),
-      )
-      return
-    }
-    if (viewDismissIconKey === 'close') {
-      dispatch(
-        toolbarAction({ section: 'cardphotoView', key: 'close' } as const),
-      )
-      return
-    }
-    dispatch(deleteCardphotoFromViewRequested())
-  }, [dispatch, assetToolbar, viewDismissIconKey])
 
   return (
     <div className={styles.cardphoto}>
@@ -293,10 +251,7 @@ const CardphotoSessionEditor: React.FC = () => {
                 </span>
               </div>
             ))}
-          <CardphotoView
-            onDelete={handleDismissView}
-            titleStripEditing={forceEditingTitle}
-          />
+          <CardphotoView titleStripEditing={forceEditingTitle} />
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 @use '@styles/config/colors' as *;
-@use '@styles/mixins/toolbarIconButton' as iconButton;
+
+$print-quality-printer-icon-width: 1.2rem;
 
 .root {
   display: flex;
@@ -20,34 +21,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: iconButton.$toolbar-hit-size-desktop;
+  width: auto;
   flex-shrink: 0;
   color: $color-font-enabled-light;
 
   > svg {
-    width: iconButton.$toolbar-icon-size-desktop;
+    width: $print-quality-printer-icon-width;
     height: auto;
-  }
-
-  :global([data-shell-layout='desktop']) & {
-    width: iconButton.$toolbar-hit-size-desktop * iconButton.$toolbar-desktop-scale;
-
-    > svg {
-      width: iconButton.$toolbar-icon-size-desktop * iconButton.$toolbar-desktop-scale;
-    }
   }
 }
 
 .printerDisabled {
   color: $color-font-disabled;
-}
-
-:global([data-shell-layout='mobile']) {
-  .printer {
-    width: iconButton.$toolbar-hit-size-standard;
-
-    > svg {
-      width: iconButton.$toolbar-icon-size-standard;
-    }
-  }
 }

@@ -36,6 +36,7 @@ import { openEditorSectionTemplateList } from '@features/cardSectionEditor/appli
 import { FactoryUpperToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import { DesktopDateCalendarToolbarSlider } from '@date/dateHeader/presentation/MobileDateCalendarToolbarSlider'
 import { DesktopEnvelopeAddressViewToolbar } from '@envelope/presentation/DesktopEnvelopeAddressViewToolbar'
+import { DesktopCardphotoCreateToolbar } from '@cardphoto/presentation/DesktopCardphotoCreateToolbar'
 import { DesktopCardphotoViewToolbar } from '@cardphoto/presentation/DesktopCardphotoViewToolbar'
 import { DesktopCardtextViewToolbar } from '@cardtext/presentation/DesktopCardtextViewToolbar'
 import {
@@ -2288,6 +2289,7 @@ const App = () => {
                         />
                         <div className={styles.mainCardSectionToolbarRow}>
                           <DesktopEnvelopeAddressViewToolbar />
+                          <DesktopCardphotoCreateToolbar />
                           <DesktopCardphotoViewToolbar />
                           <DesktopCardtextViewToolbar />
                           <DesktopDateCalendarToolbarSlider />

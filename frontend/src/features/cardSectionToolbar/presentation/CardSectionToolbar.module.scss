@@ -7,6 +7,10 @@
   // border: solid 1px red;
 
   :global([data-shell-layout='desktop']) & {
+    flex: 1 1 auto;
+    align-self: stretch;
+    width: 100%;
+    min-width: 0;
     height: $section-inner-toolbar-height-desktop;
 
     :global([class*='envelopeToolbarRow']) {
@@ -223,6 +227,23 @@
     &:hover,
     &:active {
       background-color: transparent !important;
+    }
+  }
+}
+
+/** Desktop factory upper row — same layout as mobile cardphoto create upper. */
+:global([data-shell-layout='desktop']) {
+  .cardSectionToolbarAromaUpper {
+    > .cardSectionToolbarUpperApply,
+    > .cardSectionToolbarUpperReturn {
+      flex: 0 0 auto;
+      width: auto;
+      min-width: 0;
+    }
+
+    > .cardSectionToolbarUpperCenter {
+      width: var(--card-width, 12.5rem);
+      max-width: calc(100% - 5.5rem);
     }
   }
 }
