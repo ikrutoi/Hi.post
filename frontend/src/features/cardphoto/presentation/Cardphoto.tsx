@@ -133,7 +133,7 @@ const CardphotoSessionEditor: React.FC = () => {
   }, [assetToolbar, viewDismissIconKey, viewToolbarState])
   /** После Apply в сборке — упрощённый peek: нижний ряд без иконок View. */
   const showAssetToolbar =
-    !!activeImage &&
+    (!!activeImage || isCardphotoCreateSession) &&
     !!assetToolbar &&
     !assemblyCardphotoSimplifiedPeek &&
     (assetToolbar !== 'cardphotoCreate' || isCardphotoCreateSession)

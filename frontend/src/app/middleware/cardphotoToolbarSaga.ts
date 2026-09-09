@@ -385,10 +385,6 @@ function* syncCardphotoToolbarAddAndBadgeSaga(): SagaIterator {
 
 function* handleDeleteCardphotoCreateUploadSaga(): SagaIterator {
   try {
-    const snapshot: CardphotoViewReturnSnapshot | null = yield select(
-      selectCardphotoViewReturnSnapshot,
-    )
-
     yield call(
       [storeAdapters.userImages, 'deleteById'],
       CURRENT_EDITOR_IMAGE_ID,
@@ -397,28 +393,9 @@ function* handleDeleteCardphotoCreateUploadSaga(): SagaIterator {
     yield put(clearSessionPendingProcessedId())
     yield put(setOriginalUploadReminderActive(false))
 
-    /**
-     * Delete original upload while View snapshot exists (template / processed) —
-     * return to that View instead of empty create.
-     */
-    if (snapshot?.assetData && snapshot?.assetConfig) {
-      yield call(restoreCardphotoViewFromReturnSnapshotSaga, snapshot)
-    } else {
-      const state: CardphotoState | null = yield select(selectCardphotoState)
-      const appliedMeta = state?.appliedData
-        ? hydrateMeta(state.appliedData)
-        : null
-      if (appliedMeta) {
-        yield put(setProcessedImage(prepareForRedux(appliedMeta)))
-        yield call(rebuildConfigFromMeta, appliedMeta, false)
-      } else {
-        yield put(setAssetData(null))
-        yield put(clearCurrentConfig())
-      }
-    }
-
-    yield put(setCardphotoViewEditMode(false))
-    yield put(clearCardphotoViewReturnSnapshot())
+    /** Stay in create/edit session: clear slot only; View restore stays on close/return. */
+    yield put(setAssetData(null))
+    yield put(clearCurrentConfig())
 
     const toolbarCreate: CardphotoToolbarState | undefined = yield select(
       selectToolbarSectionState('cardphotoCreate'),

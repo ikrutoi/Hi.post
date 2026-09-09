@@ -276,7 +276,7 @@ export const CardPie: React.FC<CardPieProps> = ({
         fillContainer
           ? leftPieCenterDiscColor != null
             ? ({
-                '--pie-center-logo-color-incomplete': leftPieCenterDiscColor,
+                '--pie-center-disc-fill-incomplete': leftPieCenterDiscColor,
               } as React.CSSProperties)
             : undefined
           : {
@@ -284,7 +284,7 @@ export const CardPie: React.FC<CardPieProps> = ({
               width: `${sizeMiniCard.height}px`,
               ...(leftPieCenterDiscColor != null
                 ? {
-                    '--pie-center-logo-color-incomplete': leftPieCenterDiscColor,
+                    '--pie-center-disc-fill-incomplete': leftPieCenterDiscColor,
                   }
                 : {}),
             }

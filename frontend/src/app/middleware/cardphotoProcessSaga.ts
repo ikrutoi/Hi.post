@@ -42,10 +42,12 @@ import {
   clearCardphotoViewReturnSnapshot,
   clearSessionPendingProcessedId,
   setOriginalUploadReminderActive,
+  setCardphotoViewReturnSnapshot,
 } from '@cardphoto/infrastructure/state'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { prepareForRedux, prepareConfigForRedux, hydrateMeta } from './cardphotoHelpers'
 import {
+  selectCardphotoAssetToolbar,
   selectCardphotoState,
   selectCardphotoWorkingCardLayer,
   selectCardphotoImageStageRect,
@@ -134,6 +136,22 @@ export function* onDownloadClick(): SagaIterator {
 
 function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
   try {
+    const stateBefore: CardphotoState | null = yield select(selectCardphotoState)
+    const assetToolbarBefore: ReturnType<typeof selectCardphotoAssetToolbar> =
+      yield select(selectCardphotoAssetToolbar)
+    if (
+      assetToolbarBefore === 'cardphotoView' &&
+      stateBefore?.assetData &&
+      stateBefore?.assetConfig
+    ) {
+      yield put(
+        setCardphotoViewReturnSnapshot({
+          assetData: prepareForRedux(stateBefore.assetData),
+          assetConfig: prepareConfigForRedux(stateBefore.assetConfig),
+        }),
+      )
+    }
+
     yield put(setOriginalUploadReminderActive(false))
     yield put(clearSessionPendingProcessedId())
 

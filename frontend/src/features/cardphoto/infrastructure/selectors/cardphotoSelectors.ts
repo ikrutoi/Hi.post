@@ -92,6 +92,15 @@ export const selectCardphotoAssetToolbar = (
 ): CardphotoAssetToolbar => {
   const s = state.cardphoto.state
   if (!s) return null
+  if (!s.assetData) {
+    if (
+      state.cardphotoUi.isCardphotoViewEditMode ||
+      state.cardphotoUi.viewReturnSnapshot != null
+    ) {
+      return 'cardphotoCreate'
+    }
+    return null
+  }
   if (state.cardphotoUi.isCardphotoViewEditMode && s.assetData) {
     const img = s.assetData
     const applied = s.appliedData

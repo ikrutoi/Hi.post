@@ -27,7 +27,6 @@ export function useCardphotoCreateToolbarContent({
 
   const show =
     enabled &&
-    !!activeImage &&
     assetToolbar === 'cardphotoCreate' &&
     isCardphotoCreateSession &&
     !assemblyCardphotoSimplifiedPeek

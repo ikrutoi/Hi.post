@@ -57,7 +57,6 @@ export const CardSectionToolbar: React.FC = () => {
   const showCardphotoCreateUpper =
     activeSection === 'cardphoto' &&
     cardphotoAssetToolbar === 'cardphotoCreate' &&
-    cardphotoAssetData != null &&
     isCardphotoCreateSession
   const cardphotoCreateUpperApplyToolbar = useMemo((): ToolbarConfig => {
     return CARDPHOTO_CREATE_UPPER_APPLY_TOOLBAR.map((group) => ({

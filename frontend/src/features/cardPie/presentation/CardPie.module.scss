@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/mobileNotebookTabColors' as notebookTab;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
 /** Shared center disc for left (logo) and right (status) CardPie. */
@@ -33,6 +34,7 @@ $pie-center-cart-blocked-inner-stop: (
   --pie-rect-fill-envelope: #{$color-envelope-recipient-input};
   --pie-center-icon-fill: #{$color-app-inner};
   --pie-center-button-fill: #{$color-app-header};
+  --pie-center-disc-fill-incomplete: #{notebookTab.$desktop-plan-mini-toolbar-fill};
   --pie-center-logo-color-incomplete: #{$color-app-substrate-border};
   // Fallback if a sector misses section classes (should not happen for empty patterns)
   --pie-rect-fill-empty: #{$color-app-header};
@@ -402,7 +404,7 @@ $pie-center-cart-blocked-inner-stop: (
   border-radius: 50%;
   border: 1px solid #fff;
   box-sizing: border-box;
-  background-color: var(--pie-center-logo-color-incomplete);
+  background-color: var(--pie-center-disc-fill-incomplete);
   pointer-events: none;
   z-index: 1;
 
