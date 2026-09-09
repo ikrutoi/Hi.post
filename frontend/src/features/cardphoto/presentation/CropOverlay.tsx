@@ -1,55 +1,11 @@
 import React from 'react'
+import { cropHoleInImageSpace } from '../application/helpers/cropMath'
 import styles from './CropOverlay.module.scss'
 import type { ImageLayer, CropLayer } from '../domain/types'
 
 interface CropOverlayProps {
   cropLayer: CropLayer
   imageLayer: ImageLayer
-}
-
-function cropHoleInImageSpace(
-  cropLayer: CropLayer,
-  imageLayer: ImageLayer,
-): { left: number; top: number; width: number; height: number } {
-  const dx =
-    cropLayer.x +
-    cropLayer.meta.width / 2 -
-    (imageLayer.left + imageLayer.meta.width / 2)
-  const dy =
-    cropLayer.y +
-    cropLayer.meta.height / 2 -
-    (imageLayer.top + imageLayer.meta.height / 2)
-
-  const size = { left: 0, top: 0, width: 0, height: 0 }
-
-  switch (imageLayer.rotation) {
-    case 90:
-      size.left = imageLayer.meta.width / 2 + dy - cropLayer.meta.height / 2
-      size.top = imageLayer.meta.height / 2 - dx - cropLayer.meta.width / 2
-      size.width = cropLayer.meta.height
-      size.height = cropLayer.meta.width
-      break
-    case 180:
-      size.left = imageLayer.meta.width / 2 - dx - cropLayer.meta.width / 2
-      size.top = imageLayer.meta.height / 2 - dy - cropLayer.meta.height / 2
-      size.width = cropLayer.meta.width
-      size.height = cropLayer.meta.height
-      break
-    case 270:
-      size.left = imageLayer.meta.width / 2 - dy - cropLayer.meta.height / 2
-      size.top = imageLayer.meta.height / 2 + dx - cropLayer.meta.width / 2
-      size.width = cropLayer.meta.height
-      size.height = cropLayer.meta.width
-      break
-    default:
-      size.left = imageLayer.meta.width / 2 + dx - cropLayer.meta.width / 2
-      size.top = imageLayer.meta.height / 2 + dy - cropLayer.meta.height / 2
-      size.width = cropLayer.meta.width
-      size.height = cropLayer.meta.height
-      break
-  }
-
-  return size
 }
 
 /**

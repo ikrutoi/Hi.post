@@ -392,24 +392,11 @@ export function* handleCropConfirm(): SagaIterator {
 
     const img: HTMLImageElement = yield call(loadAsyncImage, imageUrl)
 
-    const scaleX = img.naturalWidth / config.image.meta.width
-    const scaleY = img.naturalHeight / config.image.meta.height
-
-    const realCrop: CropLayer = {
-      ...config.crop,
-      x: roundTo(Math.abs((config.crop.x - config.image.left) * scaleX), 2),
-      y: roundTo(Math.abs((config.crop.y - config.image.top) * scaleY), 2),
-      meta: {
-        ...config.crop.meta,
-        width: Math.floor(config.crop.meta.width * scaleX),
-        height: Math.floor(config.crop.meta.height * scaleY),
-      },
-    }
-
-    const { full, thumb } = yield call(
+    const { full, thumb, outWidth, outHeight } = yield call(
       getCroppedImg,
       img,
-      realCrop,
+      config.crop,
+      config.image,
       thumbConfigSize,
     )
 
@@ -427,13 +414,13 @@ export function* handleCropConfirm(): SagaIterator {
       source: sourceAfterCrop,
       status: 'processed',
       url: fullUrl,
-      width: realCrop.meta.width,
-      height: realCrop.meta.height,
+      width: outWidth,
+      height: outHeight,
       full: {
         blob: full,
         url: fullUrl,
-        width: realCrop.meta.width,
-        height: realCrop.meta.height,
+        width: outWidth,
+        height: outHeight,
       },
       thumbnail: {
         blob: thumb,
@@ -441,7 +428,7 @@ export function* handleCropConfirm(): SagaIterator {
         width: thumbConfigSize,
         height: thumbConfigSize,
       },
-      imageAspectRatio: realCrop.meta.aspectRatio,
+      imageAspectRatio: outWidth / Math.max(1, outHeight),
       isCropped: true,
       timestamp: Date.now(),
       parentImageId: config.image.meta.id,

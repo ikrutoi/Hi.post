@@ -11,6 +11,79 @@ import type {
   WorkingConfig,
 } from '../../domain/types'
 
+/** Crop window in unrotated image-local coords (matches CropOverlay / CSS rotate). */
+export function cropHoleInImageSpace(
+  cropLayer: CropLayer,
+  imageLayer: ImageLayer,
+): { left: number; top: number; width: number; height: number } {
+  const dx =
+    cropLayer.x +
+    cropLayer.meta.width / 2 -
+    (imageLayer.left + imageLayer.meta.width / 2)
+  const dy =
+    cropLayer.y +
+    cropLayer.meta.height / 2 -
+    (imageLayer.top + imageLayer.meta.height / 2)
+
+  const size = { left: 0, top: 0, width: 0, height: 0 }
+
+  switch (imageLayer.rotation) {
+    case 90:
+      size.left = imageLayer.meta.width / 2 + dy - cropLayer.meta.height / 2
+      size.top = imageLayer.meta.height / 2 - dx - cropLayer.meta.width / 2
+      size.width = cropLayer.meta.height
+      size.height = cropLayer.meta.width
+      break
+    case 180:
+      size.left = imageLayer.meta.width / 2 - dx - cropLayer.meta.width / 2
+      size.top = imageLayer.meta.height / 2 - dy - cropLayer.meta.height / 2
+      size.width = cropLayer.meta.width
+      size.height = cropLayer.meta.height
+      break
+    case 270:
+      size.left = imageLayer.meta.width / 2 - dy - cropLayer.meta.height / 2
+      size.top = imageLayer.meta.height / 2 + dx - cropLayer.meta.width / 2
+      size.width = cropLayer.meta.height
+      size.height = cropLayer.meta.width
+      break
+    default:
+      size.left = imageLayer.meta.width / 2 + dx - cropLayer.meta.width / 2
+      size.top = imageLayer.meta.height / 2 + dy - cropLayer.meta.height / 2
+      size.width = cropLayer.meta.width
+      size.height = cropLayer.meta.height
+      break
+  }
+
+  return size
+}
+
+export function resolveNaturalCropOutputSize(
+  crop: CropLayer,
+  imageLayer: ImageLayer,
+  naturalWidth: number,
+  naturalHeight: number,
+): { outWidth: number; outHeight: number } {
+  const isSide = imageLayer.rotation === 90 || imageLayer.rotation === 270
+  if (isSide) {
+    return {
+      outWidth: Math.floor(
+        crop.meta.width * (naturalHeight / imageLayer.meta.height),
+      ),
+      outHeight: Math.floor(
+        crop.meta.height * (naturalWidth / imageLayer.meta.width),
+      ),
+    }
+  }
+  return {
+    outWidth: Math.floor(
+      crop.meta.width * (naturalWidth / imageLayer.meta.width),
+    ),
+    outHeight: Math.floor(
+      crop.meta.height * (naturalHeight / imageLayer.meta.height),
+    ),
+  }
+}
+
 export const applyBounds = (
   crop: CropLayer,
   imageLayer: ImageLayer,
