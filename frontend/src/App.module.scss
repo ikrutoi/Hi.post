@@ -433,13 +433,14 @@
   background-color: #fff;
 }
 
-/** Plan mini list header — CardPieNext glyph slightly above archive header icon scale. */
+/** Plan mini list header — CardPieNext glyph (1600×1280) slightly above archive header icon scale. */
 .planMiniHeaderCardPieNextBtn {
   $card-pie-next-icon-scale: 1.12;
 
-  @include iconButton.toolbar-icon-button-at-desktop-scale(
+  @include iconButton.toolbar-icon-button-height-only-at-desktop-scale(
     iconButton.$toolbar-hit-size-standard * $card-pie-next-icon-scale,
     iconButton.$toolbar-icon-size-standard * $card-pie-next-icon-scale,
+    iconButton.$toolbar-aroma-icon-aspect,
     true
   );
 
@@ -460,7 +461,11 @@
 
 .planMiniHeaderCardPieNextIcon {
   display: block;
+  flex-shrink: 0;
+  width: auto;
+  max-width: none;
   color: $color-font-enabled-light;
+  aspect-ratio: iconButton.$toolbar-aroma-icon-aspect;
 
   path {
     stroke: currentColor;
