@@ -1,56 +1,56 @@
 import React from 'react'
-import { cropHoleInImageSpace } from '../application/helpers/cropMath'
 import styles from './CropOverlay.module.scss'
-import type { ImageLayer, CropLayer } from '../domain/types'
+import type { CropLayer } from '../domain/types'
 
 interface CropOverlayProps {
   cropLayer: CropLayer
-  imageLayer: ImageLayer
+  stageWidth: number
+  stageHeight: number
 }
 
 /**
  * Dim around the crop window via four edge rects (no 5000px box-shadow).
- * Parent `.cropMask` is image-sized; hole is in image-local coords.
+ * Uses the same stage coordinates as `CropArea` so the hole tracks drag/resize.
  */
 export const CropOverlay: React.FC<CropOverlayProps> = ({
   cropLayer,
-  imageLayer,
+  stageWidth,
+  stageHeight,
 }) => {
-  const hole = cropHoleInImageSpace(cropLayer, imageLayer)
-  const imgW = imageLayer.meta.width
-  const imgH = imageLayer.meta.height
+  const { x, y, meta } = cropLayer
+  const { width, height } = meta
 
   return (
     <div className={styles.dim} aria-hidden>
       <div
         className={styles.edge}
-        style={{ left: 0, top: 0, width: imgW, height: Math.max(0, hole.top) }}
+        style={{ left: 0, top: 0, width: stageWidth, height: Math.max(0, y) }}
       />
       <div
         className={styles.edge}
         style={{
           left: 0,
-          top: hole.top,
-          width: Math.max(0, hole.left),
-          height: Math.max(0, hole.height),
+          top: y,
+          width: Math.max(0, x),
+          height: Math.max(0, height),
         }}
       />
       <div
         className={styles.edge}
         style={{
-          left: hole.left + hole.width,
-          top: hole.top,
-          width: Math.max(0, imgW - hole.left - hole.width),
-          height: Math.max(0, hole.height),
+          left: x + width,
+          top: y,
+          width: Math.max(0, stageWidth - x - width),
+          height: Math.max(0, height),
         }}
       />
       <div
         className={styles.edge}
         style={{
           left: 0,
-          top: hole.top + hole.height,
-          width: imgW,
-          height: Math.max(0, imgH - hole.top - hole.height),
+          top: y + height,
+          width: stageWidth,
+          height: Math.max(0, stageHeight - y - height),
         }}
       />
     </div>

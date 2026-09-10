@@ -170,14 +170,6 @@ export const CardphotoStage = () => {
       }
     : undefined
 
-  const maskStyle: React.CSSProperties | undefined =
-    imageLayer && imageStyle
-      ? {
-          ...imageStyle,
-          overflow: 'hidden',
-        }
-      : undefined
-
   const cropContainerStyle: React.CSSProperties = {
     width: '100%',
     height: '100%',
@@ -218,11 +210,6 @@ export const CardphotoStage = () => {
                   )}
                   style={imageStyle}
                 />
-                {tempCrop && cropToolbarState === 'active' && activeImage && (
-                  <div className={styles.cropMask} style={maskStyle}>
-                    <CropOverlay cropLayer={tempCrop} imageLayer={imageLayer} />
-                  </div>
-                )}
               </>
             )}
           </div>
@@ -230,10 +217,15 @@ export const CardphotoStage = () => {
             imageLayer &&
             cropToolbarState === 'active' &&
             tempCrop &&
-            activeImage && (
+            activeImage &&
+            stagePx && (
               <>
-                {activeImage && (
-                  <CropArea
+                <CropOverlay
+                  cropLayer={tempCrop}
+                  stageWidth={stagePx.width}
+                  stageHeight={stagePx.height}
+                />
+                <CropArea
                     cropLayer={tempCrop}
                     imageLayer={imageLayer}
                     orientation={sizeCard.orientation}
@@ -254,7 +246,6 @@ export const CardphotoStage = () => {
                       }
                     }}
                   />
-                )}
               </>
             )}
         </div>

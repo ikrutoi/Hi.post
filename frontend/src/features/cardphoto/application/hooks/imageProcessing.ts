@@ -1,84 +1,56 @@
-import {
-  cropHoleInImageSpace,
-  resolveNaturalCropOutputSize,
-} from '../helpers/cropMath'
 import type { CropLayer, ImageLayer } from '../../domain/types'
 
-function drawUprightCrop(
-  ctx: CanvasRenderingContext2D,
+function normalizeRotation(rotation: number): number {
+  return ((rotation % 360) + 360) % 360
+}
+
+function getVisualImageBounds(imageLayer: ImageLayer): {
+  vLeft: number
+  vTop: number
+  vWidth: number
+  vHeight: number
+} {
+  const rotation = normalizeRotation(imageLayer.rotation ?? 0)
+  const isSide = rotation === 90 || rotation === 270
+  const vWidth = isSide ? imageLayer.meta.height : imageLayer.meta.width
+  const vHeight = isSide ? imageLayer.meta.width : imageLayer.meta.height
+  const imgCenterX = imageLayer.left + imageLayer.meta.width / 2
+  const imgCenterY = imageLayer.top + imageLayer.meta.height / 2
+
+  return {
+    vLeft: imgCenterX - vWidth / 2,
+    vTop: imgCenterY - vHeight / 2,
+    vWidth,
+    vHeight,
+  }
+}
+
+/** Same clockwise rotation as CSS `rotate(Ndeg)` on the editor preview. */
+function renderRotatedNaturalImage(
   image: HTMLImageElement,
-  srcX: number,
-  srcY: number,
-  srcW: number,
-  srcH: number,
   rotation: number,
-  outW: number,
-  outH: number,
-): void {
-  const rot = ((rotation % 360) + 360) % 360
+): HTMLCanvasElement {
+  const rot = normalizeRotation(rotation)
+  const w = image.naturalWidth
+  const h = image.naturalHeight
+  const canvas = document.createElement('canvas')
 
-  ctx.save()
-  ctx.translate(outW / 2, outH / 2)
-
-  switch (rot) {
-    case 90:
-      ctx.rotate(-Math.PI / 2)
-      ctx.drawImage(
-        image,
-        srcX,
-        srcY,
-        srcW,
-        srcH,
-        -outH / 2,
-        -outW / 2,
-        outH,
-        outW,
-      )
-      break
-    case 180:
-      ctx.rotate(Math.PI)
-      ctx.drawImage(
-        image,
-        srcX,
-        srcY,
-        srcW,
-        srcH,
-        -outW / 2,
-        -outH / 2,
-        outW,
-        outH,
-      )
-      break
-    case 270:
-      ctx.rotate(Math.PI / 2)
-      ctx.drawImage(
-        image,
-        srcX,
-        srcY,
-        srcW,
-        srcH,
-        -outH / 2,
-        -outW / 2,
-        outH,
-        outW,
-      )
-      break
-    default:
-      ctx.drawImage(
-        image,
-        srcX,
-        srcY,
-        srcW,
-        srcH,
-        -outW / 2,
-        -outH / 2,
-        outW,
-        outH,
-      )
-      break
+  if (rot === 90 || rot === 270) {
+    canvas.width = h
+    canvas.height = w
+  } else {
+    canvas.width = w
+    canvas.height = h
   }
 
-  ctx.restore()
+  const ctx = canvas.getContext('2d')
+  if (!ctx) throw new Error('No 2d context')
+
+  ctx.translate(canvas.width / 2, canvas.height / 2)
+  ctx.rotate((rot * Math.PI) / 180)
+  ctx.drawImage(image, -w / 2, -h / 2, w, h)
+
+  return canvas
 }
 
 export const getCroppedImg = async (
@@ -87,20 +59,27 @@ export const getCroppedImg = async (
   imageLayer: ImageLayer,
   squareThumbSize: number = 360,
 ): Promise<{ full: Blob; thumb: Blob; outWidth: number; outHeight: number }> => {
-  const hole = cropHoleInImageSpace(crop, imageLayer)
-  const scaleX = imageElement.naturalWidth / imageLayer.meta.width
-  const scaleY = imageElement.naturalHeight / imageLayer.meta.height
-  const srcX = hole.left * scaleX
-  const srcY = hole.top * scaleY
-  const srcW = hole.width * scaleX
-  const srcH = hole.height * scaleY
+  const rotation = normalizeRotation(imageLayer.rotation ?? 0)
+  const { vLeft, vTop, vWidth, vHeight } = getVisualImageBounds(imageLayer)
+  const relX = crop.x - vLeft
+  const relY = crop.y - vTop
 
-  const { outWidth, outHeight } = resolveNaturalCropOutputSize(
-    crop,
-    imageLayer,
-    imageElement.naturalWidth,
-    imageElement.naturalHeight,
-  )
+  const sourceCanvas =
+    rotation === 0
+      ? null
+      : renderRotatedNaturalImage(imageElement, rotation)
+
+  const sourceWidth = sourceCanvas?.width ?? imageElement.naturalWidth
+  const sourceHeight = sourceCanvas?.height ?? imageElement.naturalHeight
+  const scaleX = sourceWidth / vWidth
+  const scaleY = sourceHeight / vHeight
+
+  const srcX = relX * scaleX
+  const srcY = relY * scaleY
+  const srcW = crop.meta.width * scaleX
+  const srcH = crop.meta.height * scaleY
+  const outWidth = Math.max(1, Math.round(srcW))
+  const outHeight = Math.max(1, Math.round(srcH))
 
   const canvas = document.createElement('canvas')
   canvas.width = outWidth
@@ -108,17 +87,21 @@ export const getCroppedImg = async (
   const ctx = canvas.getContext('2d')
   if (!ctx) throw new Error('No 2d context')
 
-  drawUprightCrop(
-    ctx,
-    imageElement,
-    srcX,
-    srcY,
-    srcW,
-    srcH,
-    imageLayer.rotation,
-    outWidth,
-    outHeight,
-  )
+  if (sourceCanvas) {
+    ctx.drawImage(sourceCanvas, srcX, srcY, srcW, srcH, 0, 0, outWidth, outHeight)
+  } else {
+    ctx.drawImage(
+      imageElement,
+      srcX,
+      srcY,
+      srcW,
+      srcH,
+      0,
+      0,
+      outWidth,
+      outHeight,
+    )
+  }
 
   const fullBlob = await new Promise<Blob>((res) =>
     canvas.toBlob((b) => res(b!), 'image/jpeg', 0.95),

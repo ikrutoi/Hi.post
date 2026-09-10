@@ -29,8 +29,8 @@ export function cropHoleInImageSpace(
 
   switch (imageLayer.rotation) {
     case 90:
-      size.left = imageLayer.meta.width / 2 + dy - cropLayer.meta.height / 2
-      size.top = imageLayer.meta.height / 2 - dx - cropLayer.meta.width / 2
+      size.left = imageLayer.meta.width / 2 - dy - cropLayer.meta.height / 2
+      size.top = imageLayer.meta.height / 2 + dx - cropLayer.meta.width / 2
       size.width = cropLayer.meta.height
       size.height = cropLayer.meta.width
       break
@@ -41,8 +41,8 @@ export function cropHoleInImageSpace(
       size.height = cropLayer.meta.height
       break
     case 270:
-      size.left = imageLayer.meta.width / 2 - dy - cropLayer.meta.height / 2
-      size.top = imageLayer.meta.height / 2 + dx - cropLayer.meta.width / 2
+      size.left = imageLayer.meta.width / 2 + dy - cropLayer.meta.height / 2
+      size.top = imageLayer.meta.height / 2 - dx - cropLayer.meta.width / 2
       size.width = cropLayer.meta.height
       size.height = cropLayer.meta.width
       break
