@@ -109,7 +109,10 @@ import { MobileCardPieGutterMinis } from './MobileCardPieGutterMinis'
 import { MobileDateListSlotActionsProvider } from './MobileDateListSlotActionsContext'
 import { resolvePlanPieGutterHighlight } from './resolvePlanPieGutterHighlight'
 import { runPlanPieCenterCycle } from './runPlanPieCenterCycle'
-import { useMobilePlanCardPies } from './useMobilePlanCardPies'
+import {
+  EMPTY_GUTTER_PLAN_PIE_ID,
+  useMobilePlanCardPies,
+} from './useMobilePlanCardPies'
 import { CardPieLeftSlot } from '@features/cardPie/presentation/CardPieLeftSlot'
 import { EditorPieListCardPieBadgeSync } from '@features/cardPie/presentation/EditorPieListCardPieBadgeSync'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
@@ -123,6 +126,10 @@ import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentat
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { useDateStripSectionForNotebookTabs } from '@date/presentation/useDateStripSectionForNotebookTabs'
 import { useMobileVisualViewport } from '@layout/application/hooks/useMobileVisualViewport'
+import {
+  computeCartLegendStatusCounts,
+  computeHistoryLegendStatusCounts,
+} from '@date/application/helpers/legendStatusCounts'
 import type { MobileAppShellProps } from './mobileAppShell.types'
 import styles from './MobileAppShell.module.scss'
 
@@ -346,7 +353,22 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     showMobileCardPieListInFactory,
   ])
 
-  const canCyclePlanPies = planPies.length > 1
+  const factoryPostcardCount = useMemo(
+    () =>
+      planPies.filter((pie) => pie.id !== EMPTY_GUTTER_PLAN_PIE_ID).length,
+    [planPies],
+  )
+  const canCyclePlanPies = factoryPostcardCount > 1
+  const showMobileCenterPlanCycleHint = factoryPostcardCount > 1
+
+  const { cartUnderlyingPostcardCount } = useMemo(
+    () => computeCartLegendStatusCounts(cartItems),
+    [cartItems],
+  )
+  const { historyUnderlyingPostcardCount } = useMemo(
+    () => computeHistoryLegendStatusCounts(cartItems),
+    [cartItems],
+  )
   /**
    * Mobile: один центральный CardPie вместо пары left/right на десктопе.
    * При открытом списке корзины/истории — archive pie выбранной строки;
@@ -496,6 +518,21 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     addressCardPiePreview.showSurface,
     mobileListArchiveSlotActive,
     notebookStripSection,
+  ])
+
+  const showMobileArchiveCenterCycleHint = useMemo(() => {
+    if (mobileCentralPieDisplay !== 'archive') return false
+    if (rightPieCenterAffordance !== 'cycleForward') return false
+    const source = mobileCentralArchivePreview?.source
+    if (source === 'cart') return cartUnderlyingPostcardCount > 1
+    if (source === 'history') return historyUnderlyingPostcardCount > 1
+    return false
+  }, [
+    mobileCentralPieDisplay,
+    rightPieCenterAffordance,
+    mobileCentralArchivePreview?.source,
+    cartUnderlyingPostcardCount,
+    historyUnderlyingPostcardCount,
   ])
 
   /**
@@ -1017,6 +1054,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                               rightPieCenterAffordance={
                                 rightPieCenterAffordance
                               }
+                              rightPieCenterArchiveCycleHint={
+                                showMobileArchiveCenterCycleHint
+                              }
                             />
                           ) : (
                             <div
@@ -1105,6 +1145,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                           onLeftPieSectorClick={handleLeftPieSectorClick}
                           onLeftPieCenterClick={handleLeftPieCenterPress}
                           leftPieCenterPlanCycle={canCyclePlanPies}
+                          leftPieCenterPlanCycleHint={showMobileCenterPlanCycleHint}
                           leftPieCenterClickable={canCyclePlanPies}
                         />
                       ) : null}

@@ -35,6 +35,11 @@ export interface CardPieProps {
   leftPieCenterOverviewBack?: boolean
   /** Левый пирог: клик по лого листает общий вид и мини-паи по кругу. */
   leftPieCenterPlanCycle?: boolean
+  /**
+   * Mobile assembly: двойная пульсация центра, когда в фабрике >1 открытки
+   * (подсказка plan cycle, как cart/history second-click hint).
+   */
+  leftPieCenterPlanCycleHint?: boolean
   /** Левый пирог: не рисовать центральный логотип (компактный превью). */
   hideLeftPieCenterLogo?: boolean
   /** Левый пирог: цветной круг в центре без логотипа (мини-паи). */
@@ -58,6 +63,11 @@ export interface CardPieProps {
   rightPieCenterAffordance?: 'cycleForward' | 'cart' | 'history' | 'calendar' | null
   /** Правый пирог: серый центр без индикатора статуса (пустой archive preview). */
   rightPieCenterEmpty?: boolean
+  /**
+   * Mobile cart/history archive: двойная пульсация центра, когда в списке >1 открытки
+   * (подсказка cycle forward, как factory plan cycle hint).
+   */
+  rightPieCenterArchiveCycleHint?: boolean
 }
 
 export interface CardPieRefs {

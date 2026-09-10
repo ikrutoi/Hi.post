@@ -378,6 +378,40 @@ $pie-center-cart-blocked-inner-stop: (
   animation: pieCenterLogoPress $pie-center-logo-press-duration ease-in-out;
 }
 
+/** Mobile factory: двойная пульсация центра (масштаб как ручной клик). */
+@keyframes pieCenterLogoDoublePressHint {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  12% {
+    transform: scale($pie-center-press-scale);
+  }
+
+  28% {
+    transform: scale(1);
+  }
+
+  40% {
+    transform: scale($pie-center-press-scale);
+  }
+
+  56% {
+    transform: scale(1);
+  }
+}
+
+.hubContainer:not(.hubContainerRight) .pieCenterIconDoublePressHint,
+.hubContainerRight .pieCenterIconDoublePressHint {
+  transform-origin: center center;
+  animation: pieCenterLogoDoublePressHint 1.5s ease-in-out 1;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
 @keyframes pieCenterIndicatorPress {
   0%,
   100% {

@@ -18,6 +18,7 @@ import type { DispatchDate } from '@entities/date'
 import { getCurrentDate } from '@shared/utils/date'
 import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
 import { useSizeFacade } from '@layout/application/facades'
+import { useMobileArchiveSlotSecondClickHint } from '@layout/application/hooks'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import { CardSection } from '@shared/config/constants'
 import { CardPieProps } from '../domain/types'
@@ -70,6 +71,7 @@ export const CardPie: React.FC<CardPieProps> = ({
   leftPieCenterClickable = false,
   leftPieCenterOverviewBack = false,
   leftPieCenterPlanCycle = false,
+  leftPieCenterPlanCycleHint = false,
   hideLeftPieCenterLogo = false,
   leftPieCenterDisc = false,
   leftPieCenterDiscColor,
@@ -80,6 +82,7 @@ export const CardPie: React.FC<CardPieProps> = ({
   onRightPieCenterClick,
   rightPieCenterAffordance = null,
   rightPieCenterEmpty = false,
+  rightPieCenterArchiveCycleHint = false,
 }) => {
   const pieDefsUid = React.useId().replace(/:/g, '')
   const [centerPressSeq, setCenterPressSeq] = React.useState(0)
@@ -258,6 +261,12 @@ export const CardPie: React.FC<CardPieProps> = ({
   const triggerCenterPress = React.useCallback(() => {
     setCenterPressSeq((seq) => seq + 1)
   }, [])
+  const centerPlanCycleHint = useMobileArchiveSlotSecondClickHint(
+    Boolean(leftPieCenterPlanCycleHint && station === 'left'),
+  )
+  const centerArchiveCycleHint = useMobileArchiveSlotSecondClickHint(
+    Boolean(rightPieCenterArchiveCycleHint && station === 'right'),
+  )
   const rightCenterActionEnabled = onRightPieCenterClick != null
 
   return (
@@ -894,6 +903,7 @@ export const CardPie: React.FC<CardPieProps> = ({
           onPointerDown={(e) => {
             e.stopPropagation()
             if (station === 'left') {
+              centerPlanCycleHint.onUserClick()
               triggerCenterPress()
               if (leftPieCenterPlanCycle) {
                 onLeftPieCenterClick?.()
@@ -901,6 +911,7 @@ export const CardPie: React.FC<CardPieProps> = ({
               return
             }
             if (station === 'right' && rightCenterActionEnabled) {
+              centerArchiveCycleHint.onUserClick()
               triggerCenterPress()
             }
           }}
@@ -932,15 +943,30 @@ export const CardPie: React.FC<CardPieProps> = ({
               allSectionsFilled && styles.pieCenterIconBrand,
               centerCompletePulsing && styles.pieCenterIconCompletePulse,
               !centerCompletePulsing &&
+                centerPlanCycleHint.pulsing &&
+                station === 'left' &&
+                styles.pieCenterIconDoublePressHint,
+              !centerCompletePulsing &&
+                centerArchiveCycleHint.pulsing &&
+                station === 'right' &&
+                styles.pieCenterIconDoublePressHint,
+              !centerCompletePulsing &&
+                !centerPlanCycleHint.pulsing &&
+                !centerArchiveCycleHint.pulsing &&
                 centerPressSeq > 0 &&
                 station === 'left' &&
                 styles.pieCenterIconPress,
               !centerCompletePulsing &&
+                !centerArchiveCycleHint.pulsing &&
                 centerPressSeq > 0 &&
                 station === 'right' &&
                 rightCenterActionEnabled &&
                 styles.pieCenterIconPress,
             )}
+            onAnimationEnd={(event) => {
+              centerPlanCycleHint.onPulseEnd(event)
+              centerArchiveCycleHint.onPulseEnd(event)
+            }}
           >
             {station === 'left' ? (
               <IconLogo aria-hidden />
