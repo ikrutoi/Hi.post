@@ -110,12 +110,6 @@
   left: 0;
   justify-content: flex-start;
 
-  .rootCartTint &,
-  .rootHistoryTint & {
-    left: auto;
-    @include iconButton.mobile-factory-toolbar-edge-slot-left;
-  }
-
   :global([class*='toolbarDate']),
   :global([class*='toolbarAromaUpperApply']) {
     width: auto;
@@ -142,12 +136,6 @@
 .sideRight {
   right: 0;
   justify-content: flex-end;
-
-  .rootCartTint &,
-  .rootHistoryTint & {
-    right: auto;
-    @include iconButton.mobile-factory-toolbar-edge-slot-right;
-  }
 }
 
 .center {
@@ -181,21 +169,6 @@
     color: $color-font-disabled;
     cursor: default;
   }
-}
-
-.sideRight .modeIcon {
-  .rootCartTint &,
-  .rootHistoryTint & {
-    margin-inline: 0;
-    margin-right: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
-  }
-}
-
-/** Cart/history calendar: list icon sits in the factory edge slot. */
-.rootCartTint .sideLeft .modeIcon,
-.rootHistoryTint .sideLeft .modeIcon {
-  margin-inline: 0;
-  margin-left: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
 }
 
 :global([data-shell-layout='desktop']) {

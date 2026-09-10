@@ -119,6 +119,7 @@ import { DateToolbarListDateBadgeSync } from '@date/presentation/DateToolbarList
 import { RightSidebarHistoryBadgeSync } from '@toolbar/presentation/RightSidebarHistoryBadgeSync'
 import { CalendarModeToolbarBadgesSync } from '@toolbar/presentation/CalendarModeToolbarBadgesSync'
 import { UserLoginRightSlot } from '@features/auth/presentation/UserLoginRightSlot'
+import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { useDateStripSectionForNotebookTabs } from '@date/presentation/useDateStripSectionForNotebookTabs'
 import { useMobileVisualViewport } from '@layout/application/hooks/useMobileVisualViewport'
@@ -195,7 +196,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   formRef,
   sizeCard,
   onAppClick,
-  pinActiveTab: _pinActiveTab,
+  pinActiveTab,
   activePieSide,
   showTopCardStripFullSpan,
   onBeforeLeftPieInteraction,
@@ -257,6 +258,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     cardtextCreateChromeActive ||
     (activeSection === 'cardtext' &&
       (cardtextEditorComposerVisible || cardtextDraftFocus))
+  const showMobileUserLoginChrome =
+    envelopeAddressCreateRole == null && !cardtextComposeHideAppHeader
   useMobileVisualViewport(shellRef, {
     pinTop:
       envelopeAddressCreateRole != null || cardtextComposeHideAppHeader,
@@ -943,6 +946,14 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     >
       <MarkStampYearDevProvider>
         <div className={styles.mobileSubstrate}>
+          {showMobileUserLoginChrome ? (
+            <div className={styles.mobileUserLoginChrome} aria-label="Account">
+              <SectionEditorRightSidebar
+                variant="headerStack"
+                pinActiveTab={pinActiveTab}
+              />
+            </div>
+          ) : null}
           <div className={styles.mobileMain}>
             <div className={styles.mobileBody} style={cardWidthStyle}>
               <EditorPieListCardPieBadgeSync />
