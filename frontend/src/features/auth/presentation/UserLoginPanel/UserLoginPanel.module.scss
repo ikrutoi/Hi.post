@@ -73,6 +73,27 @@ $list-panel-footer-stack-height: $user-panel-footer-band;
     border-radius: $user-panel-chrome-radius;
   }
 
+  &.panelWithChromePattern {
+    :global(
+        [class*='headerCardPieListArchive'][class*='headerSectionToolbar'][class*='headerCompact']
+      ) {
+      background-color: transparent;
+      background-image: none;
+    }
+
+    :global(
+        [class*='headerCardPieListArchive'][class*='headerCompact']
+          [class*='headerTopRow']
+      ) {
+      background-color: transparent;
+      background-image: none;
+    }
+
+    .footer {
+      background-color: transparent;
+    }
+  }
+
   :global([data-shell-layout='mobile']) & {
     flex: 1 1 auto;
     height: 100%;
@@ -459,6 +480,7 @@ $auth-mode-left-inactive-end: math.div(
   left: auto;
   bottom: auto;
   z-index: 2;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -473,6 +495,8 @@ $auth-mode-left-inactive-end: math.div(
 }
 
 .logoutButton {
+  position: relative;
+  z-index: 1;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;

@@ -1,8 +1,9 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
+import { resolveUserRegisteredElementColors } from '@shared/ui/icons'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
@@ -15,6 +16,7 @@ import {
   selectIsAuthenticated,
 } from '@features/auth/infrastructure/selectors/authSelectors'
 import { UserAvatarPicker } from './UserAvatarPicker'
+import { UserPanelChromePattern } from './UserPanelChromePattern'
 import {
   GuestAuthSection,
   type GuestAuthMode,
@@ -55,6 +57,14 @@ export const UserLoginPanel: React.FC = () => {
   const displayName = user?.name ?? user?.email ?? 'Signed in'
   const guestHeaderTitle =
     guestAuthMode === 'register' ? 'Create account' : 'Sign in'
+  const chromePatternColors = useMemo(
+    () =>
+      isAuthenticated && user?.id != null
+        ? resolveUserRegisteredElementColors(user.id, user.passportColors)
+        : null,
+    [isAuthenticated, user?.id, user?.passportColors],
+  )
+  const hasChromePattern = chromePatternColors != null
 
   return (
     <div
@@ -62,12 +72,18 @@ export const UserLoginPanel: React.FC = () => {
         styles.panel,
         !isAuthenticated && styles.panelNoFooter,
         styles.panelCompactNoToolbar,
+        hasChromePattern && styles.panelWithChromePattern,
       )}
     >
       <ListPanelStackedHeader
         leadIconKey="userLogin"
         variant="sectionToolbar"
         cardPieListHeaderIcons
+        chromeBackground={
+          hasChromePattern ? (
+            <UserPanelChromePattern elementColors={chromePatternColors} />
+          ) : undefined
+        }
         headerTopCenter={
           <div className={styles.headerUserNameWrap}>
             <span className={styles.headerUserName}>
@@ -101,6 +117,9 @@ export const UserLoginPanel: React.FC = () => {
       {isAuthenticated ? (
         <div className={styles.panelFooterStack}>
           <footer className={styles.footer}>
+            {hasChromePattern ? (
+              <UserPanelChromePattern elementColors={chromePatternColors} />
+            ) : null}
             <button
               type="button"
               className={styles.logoutButton}

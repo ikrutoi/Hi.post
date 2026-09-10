@@ -51,6 +51,8 @@ export type ListPanelStackedHeaderProps = {
   secondLeadIconDisabled?: boolean
   onClose?: () => void
   closeAriaLabel?: string
+  /** Absolute fill behind header rows (e.g. user panel mosaic). */
+  chromeBackground?: ReactNode
 }
 
 export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
@@ -75,6 +77,7 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
   secondLeadIconDisabled = false,
   onClose,
   closeAriaLabel = 'Close list',
+  chromeBackground,
 }) => {
   const hasToolbar = toolbar != null && toolbar !== false
   const showDividerOnly = !hasToolbar && showDividerWithoutToolbar
@@ -113,6 +116,9 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
       )}
       {...(headerFade != null ? { 'data-header-fade': headerFade } : {})}
     >
+      {chromeBackground != null ? (
+        <div className={styles.headerChromeBackground}>{chromeBackground}</div>
+      ) : null}
       <div
         className={clsx(
           styles.headerTopRow,

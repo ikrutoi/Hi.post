@@ -218,6 +218,53 @@ export function resolveUserRegisteredElementColors(
   return generateUserRegisteredElementColors(userId)
 }
 
+/** White share when softening passport fills for panel chrome (≈ Sass `color.mix(#fff, $c, 32%)`). */
+export const USER_REGISTERED_PASTEL_CHROME_WHITE_MIX = 0.68
+
+function parseHexColor(hex: string): { r: number; g: number; b: number } | null {
+  const normalized = hex.trim().replace(/^#/, '')
+  if (!/^[0-9a-fA-F]{6}$/.test(normalized)) return null
+
+  return {
+    r: Number.parseInt(normalized.slice(0, 2), 16),
+    g: Number.parseInt(normalized.slice(2, 4), 16),
+    b: Number.parseInt(normalized.slice(4, 6), 16),
+  }
+}
+
+function rgbToHex(r: number, g: number, b: number): string {
+  return `#${[r, g, b]
+    .map((channel) =>
+      Math.max(0, Math.min(255, channel)).toString(16).padStart(2, '0'),
+    )
+    .join('')}`
+}
+
+function mixHexWithWhite(hex: string, whiteMix: number): string {
+  const rgb = parseHexColor(hex)
+  if (rgb == null) return hex
+
+  const originalMix = 1 - whiteMix
+  return rgbToHex(
+    Math.round(rgb.r * originalMix + 255 * whiteMix),
+    Math.round(rgb.g * originalMix + 255 * whiteMix),
+    Math.round(rgb.b * originalMix + 255 * whiteMix),
+  )
+}
+
+/** Lighten passport palette for soft chrome backgrounds while keeping hue identity. */
+export function toPastelUserRegisteredElementColors(
+  colors: Partial<IconUserRegisteredElementColors>,
+  whiteMix: number = USER_REGISTERED_PASTEL_CHROME_WHITE_MIX,
+): Partial<IconUserRegisteredElementColors> {
+  return Object.fromEntries(
+    Object.entries(colors).map(([id, color]) => [
+      id,
+      mixHexWithWhite(color, whiteMix),
+    ]),
+  ) as Partial<IconUserRegisteredElementColors>
+}
+
 const PASSPORT_CODE_CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 const PASSPORT_CODE_PATTERN =
   /^Hi-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}$/

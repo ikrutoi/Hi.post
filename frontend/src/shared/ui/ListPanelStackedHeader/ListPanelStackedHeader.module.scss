@@ -23,6 +23,15 @@
   background-color: #fff;
 }
 
+.headerChromeBackground {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
 .headerCompact {
   min-height: 1.75rem;
 }
