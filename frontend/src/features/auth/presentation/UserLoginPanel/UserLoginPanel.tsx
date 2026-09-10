@@ -76,7 +76,6 @@ export const UserLoginPanel: React.FC = () => {
           </div>
         }
         toolbar={false}
-        showDividerWithoutToolbar
         onClose={handleClose}
         closeAriaLabel="Close account panel"
       />

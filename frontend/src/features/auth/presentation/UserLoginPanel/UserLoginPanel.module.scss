@@ -1,16 +1,29 @@
 @use 'sass:math';
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
+@use '@styles/config/mobileNotebookTabColors' as notebookTab;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
-/** Хедер / футер панели — как ряд factory toolbar (~2.5rem). */
-$list-panel-chrome-height: 2.5rem;
-$list-panel-compact-header-band: $list-panel-chrome-height;
+/** Хедер / футер панели — как desktop plan mini list header row. */
+$user-panel-chrome-height: $section-inner-toolbar-height-desktop;
+$user-panel-chrome-fill: notebookTab.$desktop-plan-mini-toolbar-fill;
+$user-panel-chrome-inset-inline: 0.5rem;
+$user-panel-chrome-inset-top: 0.35rem;
+$user-panel-chrome-inset-bottom: 0.35rem;
+/** Как `desktop-template-list-header-toolbar-rounding` у plan mini list header. */
+$user-panel-chrome-radius: 1rem;
+$user-panel-header-band: calc(
+  #{$user-panel-chrome-inset-top} + #{$user-panel-chrome-height}
+);
+$user-panel-footer-band: calc(
+  #{$user-panel-chrome-inset-bottom} + #{$user-panel-chrome-height}
+);
+$list-panel-compact-header-band: $user-panel-header-band;
 $list-panel-stacked-band: 3.75rem;
 $list-panel-stacked-band-section-toolbar: 4.25rem;
-$list-panel-compact-header-band-section-toolbar: $list-panel-chrome-height;
+$list-panel-compact-header-band-section-toolbar: $user-panel-header-band;
 $list-panel-scroll-inset: 0.35rem;
-$list-panel-footer-stack-height: $list-panel-chrome-height;
+$list-panel-footer-stack-height: $user-panel-footer-band;
 
 .panel {
   position: relative;
@@ -21,33 +34,43 @@ $list-panel-footer-stack-height: $list-panel-chrome-height;
   padding-top: $list-panel-stacked-band;
   padding-bottom: $list-panel-footer-stack-height;
   background-color: #fff;
-  /** Общий бордер и внутренние горизонтальные линии — один цвет. */
-  --user-panel-chrome-border: #{$color-app-strip};
-  border: 1px solid var(--user-panel-chrome-border);
+  border: 1px solid $color-app-strip;
   border-radius: 0.75rem;
   font-size: 0.875rem;
 
   :global([class*='headerDivider']) {
-    border-top-color: var(--user-panel-chrome-border);
+    display: none;
   }
 
   /**
-   * Compact header (divider, без toolbar): ровно `$list-panel-chrome-height`,
-   * без стандартных inset'ов ListPanelStackedHeader (0.15rem).
+   * Compact header без toolbar: высота как desktop plan mini list header,
+   * светлый фон вместо горизонтальной линии.
    */
   :global(
-      [class*='headerCardPieListArchive'][class*='headerSectionToolbar'][class*='headerCompactWithDivider']
+      [class*='headerCardPieListArchive'][class*='headerSectionToolbar'][class*='headerCompact']
     ) {
-    top: 0;
-    min-height: $list-panel-chrome-height;
+    top: $user-panel-chrome-inset-top;
+    left: $user-panel-chrome-inset-inline;
+    width: calc(100% - 2 * #{$user-panel-chrome-inset-inline});
+    min-height: $user-panel-chrome-height;
+    max-height: $user-panel-chrome-height;
     padding-bottom: 0;
+    background-color: $user-panel-chrome-fill;
+    background-image: none;
+    border-radius: $user-panel-chrome-radius;
+    overflow: hidden;
   }
 
   :global(
-      [class*='headerCardPieListArchive'][class*='headerCompactWithDivider']
+      [class*='headerCardPieListArchive'][class*='headerCompact']
         [class*='headerTopRow']
     ) {
-    min-height: $list-panel-chrome-height;
+    min-height: $user-panel-chrome-height;
+    height: $user-panel-chrome-height;
+    max-height: $user-panel-chrome-height;
+    background-color: $user-panel-chrome-fill;
+    background-image: none;
+    border-radius: $user-panel-chrome-radius;
   }
 
   :global([data-shell-layout='mobile']) & {
@@ -57,9 +80,9 @@ $list-panel-footer-stack-height: $list-panel-chrome-height;
     overflow: hidden;
     background-color: #fff;
     border-radius: 0.5rem;
-    --user-panel-chrome-border: #{$color-section-light};
-    border-color: var(--user-panel-chrome-border);
+    border-color: $color-section-light;
     box-shadow: none;
+
   }
 
   :global([data-shell-layout='desktop']) & {
@@ -135,6 +158,11 @@ $list-panel-footer-stack-height: $list-panel-chrome-height;
 }
 
 /** Лого в шапке: enabled-light, не почти чёрный `$color-font-enabled`. */
+.panel :global([class*='headerLead']),
+.panel :global([class*='closeBtn']) {
+  background-color: transparent;
+}
+
 .panel :global([class*='headerLead']) {
   color: $color-font-enabled-light;
 }
@@ -417,12 +445,13 @@ $auth-mode-left-inactive-end: math.div(
 
 .panelFooterStack {
   position: absolute;
-  left: 0.5rem;
-  bottom: 0;
+  left: $user-panel-chrome-inset-inline;
+  right: $user-panel-chrome-inset-inline;
+  bottom: $user-panel-chrome-inset-bottom;
   z-index: 2;
   display: flex;
   flex-direction: column;
-  @include list-panel-footer-width;
+  width: auto;
 }
 
 .footer {
@@ -434,11 +463,13 @@ $auth-mode-left-inactive-end: math.div(
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: $list-panel-chrome-height;
+  height: $user-panel-chrome-height;
+  min-height: $user-panel-chrome-height;
+  max-height: $user-panel-chrome-height;
   padding: 0 0.35rem;
   box-sizing: border-box;
-  border-top: 1px solid var(--user-panel-chrome-border);
-  background-color: #fff;
+  background-color: $user-panel-chrome-fill;
+  border-radius: $user-panel-chrome-radius;
 }
 
 .logoutButton {

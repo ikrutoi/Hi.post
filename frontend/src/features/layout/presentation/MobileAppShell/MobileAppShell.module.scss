@@ -33,6 +33,11 @@
   --mobile-form-padding-bottom: calc(
     1rem + env(safe-area-inset-bottom, 0px)
   );
+  /** Account panel overlay — aligned with factory form/list insets. */
+  --mobile-user-panel-padding-top: 0.5rem;
+  --mobile-user-panel-padding-bottom: calc(
+    0.5rem + env(safe-area-inset-bottom, 0px)
+  );
   --mobile-pie-size: min(52vw, 14rem, 28dvh);
   --mobile-factory-toolbar-gap: clamp(0.35rem, 1.2dvh, 0.5rem);
   --mobile-factory-toolbar-row-gap-share: calc(var(--mobile-factory-toolbar-gap) / 2);
@@ -1427,7 +1432,8 @@ $mobile-central-pie-envelope-empty-icon-width: 40%;
   min-height: 0;
   box-sizing: border-box;
   background-color: $color-app-inner;
-  padding: 0 var(--mobile-section-inset) var(--mobile-form-padding-bottom);
+  padding: var(--mobile-user-panel-padding-top) var(--mobile-section-inset)
+    var(--mobile-user-panel-padding-bottom);
   pointer-events: none;
 
   > * {
