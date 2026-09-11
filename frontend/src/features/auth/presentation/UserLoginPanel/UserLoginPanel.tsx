@@ -3,8 +3,12 @@ import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
-import { resolveUserRegisteredElementColors } from '@shared/ui/icons'
+import {
+  resolveGuestUserRegisteredElementColors,
+  resolveUserRegisteredElementColors,
+} from '@shared/ui/icons'
 import { getToolbarIcon } from '@shared/utils/icons'
+import { UserLoginToolbarIcon } from '@toolbar/presentation/UserLoginToolbarIcon'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
   clearAuthError,
@@ -61,10 +65,22 @@ export const UserLoginPanel: React.FC = () => {
     () =>
       isAuthenticated && user?.id != null
         ? resolveUserRegisteredElementColors(user.id, user.passportColors)
-        : null,
+        : resolveGuestUserRegisteredElementColors(),
     [isAuthenticated, user?.id, user?.passportColors],
   )
-  const hasChromePattern = chromePatternColors != null
+  const hasChromePattern = true
+  const leadIconOverride = useMemo(
+    () =>
+      isAuthenticated && user?.id != null ? (
+        <UserLoginToolbarIcon
+          userId={user.id}
+          passportColors={user.passportColors}
+        />
+      ) : (
+        <UserLoginToolbarIcon guest />
+      ),
+    [isAuthenticated, user?.id, user?.passportColors],
+  )
 
   return (
     <div
@@ -77,6 +93,7 @@ export const UserLoginPanel: React.FC = () => {
     >
       <ListPanelStackedHeader
         leadIconKey="userLogin"
+        leadIconOverride={leadIconOverride}
         variant="sectionToolbar"
         cardPieListHeaderIcons
         chromeBackground={

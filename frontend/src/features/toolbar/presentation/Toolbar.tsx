@@ -839,14 +839,15 @@ export const Toolbar = ({
           e.currentTarget.blur()
         }}
       >
-        {section === 'rightSidebar' &&
-        key === 'userLogin' &&
-        isAuthenticated &&
-        authUser != null ? (
-          <UserLoginToolbarIcon
-            userId={authUser.id}
-            passportColors={authUser.passportColors}
-          />
+        {section === 'rightSidebar' && key === 'userLogin' ? (
+          isAuthenticated && authUser != null ? (
+            <UserLoginToolbarIcon
+              userId={authUser.id}
+              passportColors={authUser.passportColors}
+            />
+          ) : (
+            <UserLoginToolbarIcon guest />
+          )
         ) : effectiveIconKey === 'apply' ? (
           <IconApplyBold style={{ color: applyIconColor }} />
         ) : (

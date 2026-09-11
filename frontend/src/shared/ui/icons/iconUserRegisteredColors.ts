@@ -82,6 +82,14 @@ export const USER_REGISTERED_SECTOR_CONFIG = {
   lightnessMax: 62,
 } as const
 
+/** Guest emblem: unique lightness slot per cell, random gray inside it. */
+export const USER_REGISTERED_GUEST_GRAY_CONFIG = {
+  lightnessMin: 34,
+  lightnessMax: 78,
+} as const
+
+const GUEST_GRAY_SESSION_STORAGE_KEY = 'hi.post.guestPassportGraySeed'
+
 function hashString(value: string): number {
   let hash = 2166136261
   for (let i = 0; i < value.length; i += 1) {
@@ -139,6 +147,17 @@ function hslToHex(h: number, s: number, l: number): string {
   return `#${[r, g, b].map((channel) => channel.toString(16).padStart(2, '0')).join('')}`
 }
 
+function pickGrayInSector(sectorIndex: number, random: () => number): string {
+  const { lightnessMin, lightnessMax } = USER_REGISTERED_GUEST_GRAY_CONFIG
+  const lightnessSpan = (lightnessMax - lightnessMin) / USER_REGISTERED_SECTOR_COUNT
+  const baseLightness = lightnessMin + sectorIndex * lightnessSpan
+  const lightness = Math.min(
+    lightnessMax,
+    baseLightness + random() * lightnessSpan,
+  )
+  return hslToHex(0, 0, lightness)
+}
+
 function pickColorInSector(
   sectorIndex: number,
   random: () => number,
@@ -179,6 +198,33 @@ function generateUserRegisteredElementColorsFromSeed(
     acc[id] = pickColorInSector(sectorIndex, random)
     return acc
   }, {} as IconUserRegisteredElementColors)
+}
+
+function generateGuestUserRegisteredElementColorsFromSeed(
+  seed: string,
+): IconUserRegisteredElementColors {
+  const sectorAssignments = shuffleSectorIndices(`${seed}:guest-gray`)
+
+  return ICON_USER_REGISTERED_ELEMENT_IDS.reduce((acc, id, index) => {
+    const random = createSeededRandom(`${seed}:${id}:guest-gray`)
+    const sectorIndex = sectorAssignments[index] ?? 0
+    acc[id] = pickGrayInSector(sectorIndex, random)
+    return acc
+  }, {} as IconUserRegisteredElementColors)
+}
+
+function readGuestGraySeed(): string {
+  if (typeof window === 'undefined') return 'guest'
+  const existing = window.sessionStorage.getItem(GUEST_GRAY_SESSION_STORAGE_KEY)
+  if (existing != null && existing.length > 0) return existing
+  const seed = `${Date.now()}:${Math.random()}`
+  window.sessionStorage.setItem(GUEST_GRAY_SESSION_STORAGE_KEY, seed)
+  return seed
+}
+
+/** Guest toolbar emblem: random gray mosaic, stable for the browser session. */
+export function resolveGuestUserRegisteredElementColors(): IconUserRegisteredElementColors {
+  return generateGuestUserRegisteredElementColorsFromSeed(readGuestGraySeed())
 }
 
 /** Deterministic passport colors: unique random sector per cell, then random shade inside it. */
