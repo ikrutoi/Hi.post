@@ -3,7 +3,10 @@ import type { SagaIterator } from 'redux-saga'
 import {
   setHoveredSection,
 } from '@entities/cardEditor/infrastructure/state'
+import { updateLastViewedCalendarDate } from '@date/calendar/infrastructure/state'
+import { resolveAssemblyCalendarViewDate } from '@date/calendar/application/logic/assemblyCalendarView'
 import { clearDate } from '@date/infrastructure/state'
+import { getCurrentDate } from '@shared/utils/date'
 import { clear as clearAroma } from '@aroma/infrastructure/state'
 import {
   clearSenderFormData,
@@ -79,4 +82,12 @@ export function* clearCardPieWorkspaceAfterCartAdd(): SagaIterator {
   yield put(closeAddressList())
   yield put(clearText())
   yield put(resetEditor())
+  yield put(
+    updateLastViewedCalendarDate(
+      resolveAssemblyCalendarViewDate({
+        currentDate: getCurrentDate(),
+        selectedDate: null,
+      }),
+    ),
+  )
 }

@@ -6,9 +6,14 @@ import {
   selectCartdateBranch,
   selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
+import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { selectCartListSelectedLocalId } from '@cart/infrastructure/selectors/cartSelectors'
-import { resolveCartdateBranch } from '@date/calendar/application/logic/calendarStripSection'
+import {
+  isDateCalendarStrip,
+  resolveCartdateBranch,
+} from '@date/calendar/application/logic/calendarStripSection'
+import { resolveAssemblyCalendarViewDate } from '@date/calendar/application/logic/assemblyCalendarView'
 import { useDateFacade } from '../facades'
 import { useCalendarFacade } from '../../calendar/application/facades'
 import { getInitialCalendarDate, getCurrentDate } from '@shared/utils/date'
@@ -18,6 +23,7 @@ import type { RootState } from '@app/state'
 
 export const useInitializeCalendarViewDate = () => {
   const { selectedDate } = useDateFacade()
+  const activeSection = useAppSelector(selectActiveSection)
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const cartdateBranch = useAppSelector(selectCartdateBranch)
   const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
@@ -33,6 +39,8 @@ export const useInitializeCalendarViewDate = () => {
   const { lastViewedCalendarDate, setCalendarViewDate } = useCalendarFacade()
 
   const initialized = useRef(false)
+  const calendarContextKeyRef = useRef<string | null>(null)
+  const prevSelectedDateRef = useRef(selectedDate)
 
   useEffect(() => {
     if (!initialized.current) {
@@ -77,12 +85,53 @@ export const useInitializeCalendarViewDate = () => {
           year: lastViewedCalendarDate.year,
           month: lastViewedCalendarDate.month,
         }
+      } else if (isDateCalendarStrip(activeSection, notebookStripTab)) {
+        /** Сборка: не lastViewed из корзины/истории — первая доступная дата. */
+        initial = resolveAssemblyCalendarViewDate({
+          currentDate: now,
+          selectedDate,
+        })
       } else {
-        /** Сборка / cartdate cart: месяц выбранной даты или lastViewed. */
+        /** cartdate cart: месяц выбранной даты или lastViewed. */
         initial = getInitialCalendarDate(selectedDate, lastViewedCalendarDate)
       }
       setCalendarViewDate(initial)
       initialized.current = true
     }
   }, [])
+
+  useEffect(() => {
+    const contextKey = `${activeSection ?? ''}:${notebookStripTab}`
+    const assemblyDateStrip = isDateCalendarStrip(
+      activeSection,
+      notebookStripTab,
+    )
+
+    if (!assemblyDateStrip) {
+      calendarContextKeyRef.current = contextKey
+      prevSelectedDateRef.current = selectedDate
+      return
+    }
+
+    const enteredAssembly = calendarContextKeyRef.current !== contextKey
+    const clearedSelection =
+      prevSelectedDateRef.current != null && selectedDate == null
+
+    if (enteredAssembly || clearedSelection) {
+      setCalendarViewDate(
+        resolveAssemblyCalendarViewDate({
+          currentDate: getCurrentDate(),
+          selectedDate,
+        }),
+      )
+    }
+
+    calendarContextKeyRef.current = contextKey
+    prevSelectedDateRef.current = selectedDate
+  }, [
+    activeSection,
+    notebookStripTab,
+    selectedDate,
+    setCalendarViewDate,
+  ])
 }
