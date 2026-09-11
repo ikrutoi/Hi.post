@@ -2107,7 +2107,7 @@ const App = () => {
 
   const handlePostcardPieCartToolbarAction = useCallback(
     (key: string) => {
-      if (key !== 'cardPieCopy') return false
+      if (key !== 'cardPieCopy') return
       const lid = rightListArchiveLocalId
       if (lid == null) return false
 
