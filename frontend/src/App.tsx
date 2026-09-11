@@ -111,9 +111,11 @@ import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors
 import { RightListArchiveMiniProvider } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { resolveCardPieDualMode } from '@cardPanel/application/helpers/resolveCardPieDualMode'
 import {
+  areAllEligibleMirrorSectionsApplied,
   isMirrorArchiveDateDisabledForOrder,
   listMirrorSectionsEligibleForApply,
 } from '@cardPanel/application/helpers/mirrorSectionEditorSync'
+import { selectMirrorSectionEditorSnapshot } from '@cardPanel/infrastructure/selectors/mirrorSectionEditorSnapshotSelectors'
 import type { CardPanelSection } from '@cardPanel/domain/types'
 import { selectMirrorSectionBackupSections } from '@cardPanel/infrastructure/selectors/mirrorSectionBackupSelectors'
 import {
@@ -286,6 +288,13 @@ const App = () => {
     dispatch(revertAllMirrorSectionsCopyRequested())
     dispatch(clearAssemblyBranchFreeze())
   }, [dispatch, endCardPieEditEngaged])
+
+  /** cardPieCopy toggle: revert factory backups when central archive postcard changes. */
+  const resetArchiveMirrorCopyToggle = useCallback(() => {
+    const backed = selectMirrorSectionBackupSections(store.getState())
+    if (backed.length === 0) return
+    dispatch(revertAllMirrorSectionsCopyRequested())
+  }, [dispatch])
 
   /**
    * Dual-mode: snapshot assembly CardPie before archive hydrates shared session.
@@ -1341,6 +1350,8 @@ const App = () => {
 
     prevListArchiveListContextRef.current = { localId, source }
 
+    resetArchiveMirrorCopyToggle()
+
     if (onlySelectedRowChangedInSameList) {
       return
     }
@@ -1354,7 +1365,13 @@ const App = () => {
     if (!cardPieEditEngagedRef.current) {
       releaseAssemblySessionLease()
     }
-  }, [rightListArchiveLocalId, rightListArchiveSource, releaseAssemblySessionLease, dispatch])
+  }, [
+    rightListArchiveLocalId,
+    rightListArchiveSource,
+    releaseAssemblySessionLease,
+    resetArchiveMirrorCopyToggle,
+    dispatch,
+  ])
 
   const showTopCardStripFullSpan =
     cardPieCopyStripExpanded && rightListArchiveLocalId != null
@@ -2109,13 +2126,20 @@ const App = () => {
         mirrorFlags,
         postcard.status,
       )
-      const backed = selectMirrorSectionBackupSections(state)
       /**
-       * Toggle like peek `copy`: if every eligible section already has a
-       * factory backup from mirror-copy, revert; otherwise apply all.
+       * Toggle like peek `copy`: revert only when factory already mirrors
+       * this postcard — not when backups belong to a previous selection.
        */
       const shouldRevert =
-        eligible.length > 0 && eligible.every((section) => backed.includes(section))
+        eligible.length > 0 &&
+        areAllEligibleMirrorSectionsApplied(
+          eligible,
+          mirrorInner,
+          mirrorFlags,
+          postcard,
+          selectMirrorSectionEditorSnapshot(state),
+          postcard.status,
+        )
 
       if (shouldRevert) {
         dispatch(revertAllMirrorSectionsCopyRequested())
