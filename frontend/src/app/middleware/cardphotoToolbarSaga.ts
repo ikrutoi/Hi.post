@@ -240,6 +240,9 @@ function* restoreCardphotoViewFromReturnSnapshotSaga(
 
 function* handleCloseCardphotoCreateSaga(): SagaIterator {
   try {
+    /** Save rotation/crop draft before any branch clears or rebuilds assetConfig. */
+    yield call(persistUserOriginalEditorDraftSaga)
+
     const snapshot: CardphotoViewReturnSnapshot | null = yield select(
       selectCardphotoViewReturnSnapshot,
     )
@@ -255,7 +258,6 @@ function* handleCloseCardphotoCreateSaga(): SagaIterator {
         yield put(setProcessedImage(prepareForRedux(appliedMeta)))
         yield call(rebuildConfigFromMeta, appliedMeta, false)
       } else {
-        yield call(persistUserOriginalEditorDraftSaga)
         yield put(setAssetData(null))
         yield put(clearCurrentConfig())
       }
