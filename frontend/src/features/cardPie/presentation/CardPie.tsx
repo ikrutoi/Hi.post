@@ -880,15 +880,19 @@ export const CardPie: React.FC<CardPieProps> = ({
           type="button"
           className={clsx(
             styles.pieCenterButton,
-            allSectionsFilled && styles.pieCenterButtonActive,
-            station === 'left' && styles.pieCenterButtonPointer,
+            allSectionsFilled &&
+              (station !== 'left' || leftCenterActionEnabled) &&
+              styles.pieCenterButtonActive,
+            station === 'left' &&
+              leftCenterActionEnabled &&
+              styles.pieCenterButtonPointer,
             station === 'right' &&
               onRightPieCenterClick != null &&
               styles.pieCenterButtonPointer,
           )}
           disabled={
             station === 'left'
-              ? false
+              ? !leftCenterActionEnabled
               : onRightPieCenterClick != null
                 ? false
                 : !allSectionsFilled
@@ -914,6 +918,7 @@ export const CardPie: React.FC<CardPieProps> = ({
           onPointerDown={(e) => {
             e.stopPropagation()
             if (station === 'left') {
+              if (!leftCenterActionEnabled) return
               centerPlanCycleHint.onUserClick()
               triggerCenterPress()
               if (leftPieCenterPlanCycle) {

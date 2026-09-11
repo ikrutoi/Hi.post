@@ -2556,10 +2556,7 @@ function DesktopFactoryTopRow({
                 onBeforeLeftPieSectorClick={onBeforeLeftPieInteraction}
                 onLeftPieCenterClick={handleCentralPieCenterClick}
                 leftPieCenterPlanCycle={canCyclePlanPies}
-                leftPieCenterClickable={
-                  canCyclePlanPies ||
-                  (activePieSide === 'right' && !showTopCardStripFullSpan)
-                }
+                leftPieCenterClickable={canCyclePlanPies}
               />
             )}
           </div>
