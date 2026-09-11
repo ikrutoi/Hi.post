@@ -46,12 +46,14 @@ import {
   removeUserImage,
   clearSessionPendingProcessedId,
   setOriginalUploadReminderActive,
+  clearUserOriginalDraftConfig,
 } from '@cardphoto/infrastructure/state'
 import {
   selectCardphotoListSortMode,
   selectCardphotoListTitleCoverage,
   selectIsCardphotoViewEditMode,
   selectCardphotoViewReturnSnapshot,
+  selectUserOriginalDraftConfig,
 } from '@cardphoto/infrastructure/selectors/cardphotoUiSelectors'
 import {
   selectActiveImage,
@@ -96,9 +98,10 @@ import {
   resolveCardphotoAddToolbarState,
   resolveCardphotoPendingProcessedIdSaga,
   readCardphotoAddToolbarVisual,
+  loadUserOriginalImageMetaSaga,
+  persistUserOriginalEditorDraftSaga,
 } from '@cardphoto/application/helpers'
 import { openCardphotoViewFromPendingProcessedSaga } from '@cardphoto/application/helpers/openCardphotoViewFromPendingProcessed'
-import { loadUserOriginalImageMetaSaga } from '@cardphoto/application/helpers/loadUserOriginalImageMeta'
 import { syncCardtextToolbarVisuals } from './cardtextHandlers'
 import {
   updateToolbarSection,
@@ -252,6 +255,7 @@ function* handleCloseCardphotoCreateSaga(): SagaIterator {
         yield put(setProcessedImage(prepareForRedux(appliedMeta)))
         yield call(rebuildConfigFromMeta, appliedMeta, false)
       } else {
+        yield call(persistUserOriginalEditorDraftSaga)
         yield put(setAssetData(null))
         yield put(clearCurrentConfig())
       }
@@ -295,11 +299,29 @@ function* reopenCardphotoCreateFromSavedOriginalSaga(): SagaIterator<boolean> {
       yield put(clearCardphotoViewReturnSnapshot())
     }
 
-    const config: WorkingConfig | null = yield call(
+    const draftConfig: WorkingConfig | null = yield select(
+      selectUserOriginalDraftConfig,
+    )
+
+    let config: WorkingConfig | null = yield call(
       buildWorkingConfigFromMeta,
       imageMeta,
+      imageMeta.rotation ?? 0,
     )
     if (!config) return false
+
+    if (draftConfig) {
+      config = {
+        ...config,
+        image: {
+          ...config.image,
+          left: draftConfig.image.left,
+          top: draftConfig.image.top,
+          rotation: draftConfig.image.rotation ?? config.image.rotation,
+        },
+        crop: draftConfig.crop,
+      }
+    }
 
     yield put(setCardphotoViewEditMode(false))
     yield put(clearSessionPendingProcessedId())
@@ -324,6 +346,7 @@ function* reopenCardphotoCreateFromSavedOriginalSaga(): SagaIterator<boolean> {
     )
     yield fork(persistGlobalSession)
     yield put(setOriginalUploadReminderActive(false))
+    yield put(clearUserOriginalDraftConfig())
     yield put(markLoaded())
     yield call(syncToolbarContext)
     yield call(syncCardphotoAddToolbarState)
@@ -392,6 +415,7 @@ function* handleDeleteCardphotoCreateUploadSaga(): SagaIterator {
     yield put(removeUserImage())
     yield put(clearSessionPendingProcessedId())
     yield put(setOriginalUploadReminderActive(false))
+    yield put(clearUserOriginalDraftConfig())
 
     /** Stay in create/edit session: clear slot only; View restore stays on close/return. */
     yield put(setAssetData(null))

@@ -49,14 +49,20 @@ export function* loadUserOriginalImageMetaSaga(): SagaIterator<ImageMeta | null>
   const base = fromIdb ?? persisted
   if (!base) return null
 
+  /** IDB blob is canonical; rotation lives in Redux/IDB meta after Close or rotate. */
+  const mergedBase: ImageMeta = {
+    ...base,
+    rotation: persisted?.rotation ?? fromIdb?.rotation ?? base.rotation ?? 0,
+  }
+
   const idbBlob = fromIdb?.full?.blob
   if (idbBlob instanceof Blob) {
-    return withBlob(base, idbBlob)
+    return withBlob(mergedBase, idbBlob)
   }
 
   const persistedBlob = persisted?.full?.blob
   if (persistedBlob instanceof Blob) {
-    return withBlob(base, persistedBlob)
+    return withBlob(mergedBase, persistedBlob)
   }
 
   const candidateUrl =
@@ -68,13 +74,19 @@ export function* loadUserOriginalImageMetaSaga(): SagaIterator<ImageMeta | null>
   if (candidateUrl) {
     const fetched: Blob | null = yield call(fetchBlobFromUrl, candidateUrl)
     if (fetched) {
-      return withBlob(base, fetched)
+      return withBlob(mergedBase, fetched)
     }
   }
 
-  return (
+  const hydrated =
     hydrateMeta(fromIdb) ??
     hydrateSessionImageMeta(persisted, fromIdb) ??
     hydrateMeta(persisted)
-  )
+
+  if (!hydrated) return null
+
+  return {
+    ...hydrated,
+    rotation: mergedBase.rotation,
+  }
 }

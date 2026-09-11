@@ -43,6 +43,7 @@ import {
   clearSessionPendingProcessedId,
   setOriginalUploadReminderActive,
   setCardphotoViewReturnSnapshot,
+  clearUserOriginalDraftConfig,
 } from '@cardphoto/infrastructure/state'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { prepareForRedux, prepareConfigForRedux, hydrateMeta } from './cardphotoHelpers'
@@ -52,8 +53,11 @@ import {
   selectCardphotoWorkingCardLayer,
   selectCardphotoImageStageRect,
 } from '@cardphoto/infrastructure/selectors'
-import { validateImageSize } from '@cardphoto/application/helpers'
-import { shouldSyncUserOriginalForState } from '@cardphoto/application/helpers'
+import {
+  validateImageSize,
+  shouldSyncUserOriginalForState,
+  persistUserOriginalRotationToIdbSaga,
+} from '@cardphoto/application/helpers'
 import { openCardphotoFromMiniStripSaga } from '@cardphoto/application/helpers/openCardphotoFromMiniStrip'
 import { setSizeCard } from '@layout/infrastructure/state'
 import { roundTo } from '@shared/utils/layout'
@@ -154,6 +158,7 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
 
     yield put(setOriginalUploadReminderActive(false))
     yield put(clearSessionPendingProcessedId())
+    yield put(clearUserOriginalDraftConfig())
 
     let imageMeta = action.payload
     // Prefer `full.blob` (kept on upload). Fallback: fetch blob: URL (may fail if revoked).
@@ -295,14 +300,16 @@ export function* rebuildConfigFromMeta(
     if (!newConfig) return null
 
     if (syncUserOriginal) {
+      const nextRotation = rotation ?? meta.rotation ?? 0
       const newOriginalMeta = {
         ...meta,
-        rotation: rotation ?? meta.rotation ?? 0,
+        rotation: nextRotation,
       }
 
       const serializableMeta = prepareForRedux(newOriginalMeta)
 
       yield put(setUserOriginalData(serializableMeta))
+      yield call(persistUserOriginalRotationToIdbSaga, nextRotation)
     }
 
     yield put(commitWorkingConfig(prepareConfigForRedux(newConfig)))

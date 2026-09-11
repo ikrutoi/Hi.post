@@ -31,6 +31,8 @@ export interface CardphotoUiState {
   sessionPendingProcessedId: string | null
   /** После addList / apply: точка на cardphotoAdd → reopen create с userOriginalData. */
   originalUploadReminderActive: boolean
+  /** Черновик create (rotation/crop) после Close без apply — reopen cardphotoAdd. */
+  userOriginalDraftConfig: WorkingConfig | null
   /** Upper listCardphoto badge pulse after View addList / removeFromList. */
   listCardphotoBadgePulseSeq: number
   listCardphotoBadgePulsing: boolean
@@ -49,6 +51,7 @@ const initialUiState: CardphotoUiState = {
   viewReturnSnapshot: null,
   sessionPendingProcessedId: null,
   originalUploadReminderActive: false,
+  userOriginalDraftConfig: null,
   listCardphotoBadgePulseSeq: 0,
   listCardphotoBadgePulsing: false,
 }
@@ -141,6 +144,17 @@ export const cardphotoUiSlice = createSlice({
       state.originalUploadReminderActive = action.payload
     },
 
+    setUserOriginalDraftConfig(
+      state,
+      action: PayloadAction<WorkingConfig | null>,
+    ) {
+      state.userOriginalDraftConfig = action.payload
+    },
+
+    clearUserOriginalDraftConfig(state) {
+      state.userOriginalDraftConfig = null
+    },
+
     pulseListCardphotoBadge(state) {
       state.listCardphotoBadgePulseSeq += 1
       state.listCardphotoBadgePulsing = true
@@ -177,6 +191,8 @@ export const {
   setSessionPendingProcessedId,
   clearSessionPendingProcessedId,
   setOriginalUploadReminderActive,
+  setUserOriginalDraftConfig,
+  clearUserOriginalDraftConfig,
   pulseListCardphotoBadge,
   clearListCardphotoBadgePulse,
   closeCardphotoViewRequested,

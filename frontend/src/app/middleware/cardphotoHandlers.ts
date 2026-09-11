@@ -21,6 +21,7 @@ import {
   setSessionPendingProcessedId,
   setOriginalUploadReminderActive,
   setCardphotoListPanelOpen,
+  clearUserOriginalDraftConfig,
 } from '@cardphoto/infrastructure/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import {
@@ -467,6 +468,7 @@ export function* handleCropConfirm(): SagaIterator {
     yield put(setProcessedImage(serializable))
     yield put(setSessionPendingProcessedId(id))
     yield put(setOriginalUploadReminderActive(false))
+    yield put(clearUserOriginalDraftConfig())
     yield call(rebuildConfigFromMeta, serializable, false)
 
     const rootAfter: RootState = yield select((s: RootState) => s)

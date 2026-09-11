@@ -69,6 +69,11 @@ export const selectCardphotoViewReturnSnapshot = createSelector(
   (ui) => ui.viewReturnSnapshot,
 )
 
+export const selectUserOriginalDraftConfig = createSelector(
+  [selectCardphotoUi],
+  (ui) => ui.userOriginalDraftConfig ?? null,
+)
+
 /**
  * Активная сессия create/crop: новый оригинал, edit из View, или reopen original.
  * Applied original без этих флагов — обычная секция cardphoto / peek, не chrome кропа.

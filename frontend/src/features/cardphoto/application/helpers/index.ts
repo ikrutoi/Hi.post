@@ -20,3 +20,7 @@ export * from './resolveCardphotoAddToolbarState'
 export * from './readCardphotoAddToolbarVisual'
 export * from './isCardphotoAssetFromUserOriginalWorkflow'
 export { loadUserOriginalImageMetaSaga } from './loadUserOriginalImageMeta'
+export {
+  persistUserOriginalEditorDraftSaga,
+  persistUserOriginalRotationToIdbSaga,
+} from './persistUserOriginalEditorDraft'
