@@ -44,6 +44,7 @@ $pie-center-cart-blocked-inner-stop: (
   height: 100%;
   border-radius: 0.5rem;
   overflow: visible;
+  pointer-events: none;
   // border: 1px solid $color-section-light;
   box-shadow: $shadow-card;
   // box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
@@ -115,6 +116,7 @@ $pie-center-cart-blocked-inner-stop: (
   overflow: hidden;
   border-radius: inherit;
   position: relative;
+  pointer-events: auto;
 }
 
 .pieContent svg {
@@ -244,6 +246,7 @@ $pie-center-cart-blocked-inner-stop: (
   border: none;
   padding: 0;
   margin: 0;
+  pointer-events: auto;
   display: flex;
   align-items: center;
   justify-content: center;

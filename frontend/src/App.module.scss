@@ -81,6 +81,8 @@
   --desktop-factory-section-gap: #{$desktop-factory-section-gap};
   grid-column: 5 / 11;
   grid-row: 2 / -1;
+  position: relative;
+  z-index: 6;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -119,6 +121,8 @@
   box-sizing: border-box;
   margin-top: 1rem;
   padding-bottom: 0.5rem;
+  /** CardPie overflow must not steal clicks from factory toolbars below. */
+  pointer-events: none;
 }
 
 .desktopPlanGutter {
@@ -148,6 +152,7 @@
   position: relative;
   min-width: 0;
   min-height: 0;
+  pointer-events: auto;
 }
 
 .desktopCentralPieToolbar {
