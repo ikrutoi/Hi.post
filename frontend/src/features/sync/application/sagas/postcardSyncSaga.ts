@@ -2,7 +2,10 @@ import { call, put, takeLatest } from 'redux-saga/effects'
 import type { SagaIterator } from 'redux-saga'
 import { postcardsAdapter } from '@db/adapters/storeAdapters/postcardsAdapter'
 import type { PostcardHydrated } from '@entities/postcard'
-import { cardListPreviewUrlFromCard } from '@entities/card/domain/helpers'
+import {
+  cardImageMetaLookupIdsFromCard,
+  cardRuntimePreviewUrlFromCard,
+} from '@entities/card/domain/helpers'
 import type { ImageAsset } from '@entities/assetRegistry/domain/types'
 import { setAssets } from '@entities/assetRegistry/infrastructure/state'
 import { setItems } from '@features/cart/infrastructure/state/cartSlice'
@@ -19,18 +22,22 @@ function cartPostcardPreviewAssets(postcards: PostcardHydrated[]): ImageAsset[] 
 
   for (const postcard of postcards) {
     const meta = postcard.card.cardphoto?.appliedData
-    const id = meta?.id
-    if (!id || seen.has(id)) continue
-
-    const preview = cardListPreviewUrlFromCard(postcard.card)
+    const preview = cardRuntimePreviewUrlFromCard(postcard.card)
     if (!preview) continue
-
-    seen.add(id)
-    assets.push({
-      id,
-      url: meta?.url?.trim() || preview,
-      thumbUrl: preview,
-    })
+    const lookupIds = cardImageMetaLookupIdsFromCard(
+      postcard.card,
+      postcard.postcard,
+    )
+    if (lookupIds.length === 0) continue
+    for (const id of lookupIds) {
+      if (seen.has(id)) continue
+      seen.add(id)
+      assets.push({
+        id,
+        url: meta?.url?.trim() || preview,
+        thumbUrl: preview,
+      })
+    }
   }
 
   return assets

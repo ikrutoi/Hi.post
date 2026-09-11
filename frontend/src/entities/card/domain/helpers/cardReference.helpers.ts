@@ -5,15 +5,50 @@ import type {
 } from '../types/cardReference.types'
 import type { Card } from '../types/card.types'
 import type { PostcardHydrated } from '@entities/postcard'
+import { cardImageMetaLookupIds } from './listPreviewDisplay'
 
-/** URL для списков / календаря. */
+function listPreviewUrlCandidate(url: string | null | undefined): string | null {
+  const t = typeof url === 'string' ? url.trim() : ''
+  if (!t) return null
+  /** Persisted blob: strings in postcard JSON — resolve via IDB/registry, not inline. */
+  if (t.startsWith('blob:')) return null
+  return t
+}
+
+/** URL для списков / календаря (http/data only; blobs via registry / calendarPreview cache). */
 export function cardListPreviewUrlFromCard(card: Card): string | null {
-  const thumb =
-    typeof card.thumbnailUrl === 'string' ? card.thumbnailUrl.trim() : ''
-  if (thumb !== '') return thumb
+  const fromThumb = listPreviewUrlCandidate(card.thumbnailUrl)
+  if (fromThumb) return fromThumb
   const meta = card.cardphoto?.appliedData ?? card.cardphoto?.assetData
-  const url = (meta?.thumbnail?.url || meta?.full?.url || meta?.url || '').trim()
-  return url !== '' ? url : null
+  return listPreviewUrlCandidate(
+    meta?.thumbnail?.url || meta?.full?.url || meta?.url || null,
+  )
+}
+
+/** После hydrate: свежие blob: из IDB для assetRegistry / calendar cache. */
+export function cardImageMetaLookupIdsFromCard(
+  card: Card,
+  postcardRefs?: { cardphoto?: string } | null,
+): string[] {
+  const applied = card.cardphoto?.appliedData?.id
+  const ids = new Set(cardImageMetaLookupIds(card.id, applied))
+  const refId = postcardRefs?.cardphoto?.trim()
+  if (refId) ids.add(refId)
+  return [...ids]
+}
+
+export function cardRuntimePreviewUrlFromCard(card: Card): string | null {
+  const persisted = cardListPreviewUrlFromCard(card)
+  if (persisted) return persisted
+  const meta = card.cardphoto?.appliedData ?? card.cardphoto?.assetData
+  const runtime = (
+    meta?.thumbnail?.url ||
+    meta?.url ||
+    meta?.full?.url ||
+    card.thumbnailUrl ||
+    ''
+  ).trim()
+  return runtime !== '' ? runtime : null
 }
 
 function cardphotoPreviewFromCard(card: Card): string {

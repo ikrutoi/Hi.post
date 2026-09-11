@@ -38,6 +38,7 @@ import { DesktopDateCalendarToolbarSlider } from '@date/dateHeader/presentation/
 import { DesktopEnvelopeAddressViewToolbar } from '@envelope/presentation/DesktopEnvelopeAddressViewToolbar'
 import { DesktopCardphotoCreateToolbar } from '@cardphoto/presentation/DesktopCardphotoCreateToolbar'
 import { DesktopCardphotoViewToolbar } from '@cardphoto/presentation/DesktopCardphotoViewToolbar'
+import { CardphotoFilePickerHost } from '@cardphoto/presentation/CardphotoFilePickerHost'
 import { DesktopCardtextViewToolbar } from '@cardtext/presentation/DesktopCardtextViewToolbar'
 import {
   CartListPanel,
@@ -2170,7 +2171,9 @@ const App = () => {
 
   if (isMobileLayout) {
     return (
-      <RightListArchiveMiniProvider value={centerStripMirrorValue}>
+      <>
+        <CardphotoFilePickerHost />
+        <RightListArchiveMiniProvider value={centerStripMirrorValue}>
         <MobileAppShell
           formRef={formRef}
           sizeCard={sizeCard}
@@ -2199,11 +2202,13 @@ const App = () => {
           rightPieCenterAffordance={rightPieCenterAffordance}
         />
       </RightListArchiveMiniProvider>
+      </>
     )
   }
 
   return (
     <div ref={appRef} className={styles.app} onClick={handleAppClick}>
+      <CardphotoFilePickerHost />
       <MarkStampYearDevProvider>
         <div className={styles.appSubstrate}>
         <div className={styles.appControlStrip}>

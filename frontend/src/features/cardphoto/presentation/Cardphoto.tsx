@@ -2,6 +2,7 @@ import React, { useMemo } from 'react'
 import clsx from 'clsx'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { useAppSelector } from '@app/hooks'
+import { useListCardPreviewUrl } from '@entities/card/application/hooks/useListCardPreviewUrl'
 import { useCardphotoFacade } from '@cardphoto/application/facades'
 import { useCardphotoTitleStrip } from '@cardphoto/application/hooks'
 import { CARDPHOTO_TEMPLATE_TITLE_MAX_LENGTH } from '@cardphoto/application/helpers/cardphotoTemplateTitle'
@@ -31,8 +32,13 @@ import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcard
 const CardphotoInnerPreviewOnly: React.FC<{
   inner: CardPieInnerData | null
 }> = ({ inner }) => {
-  const url =
+  const fallbackUrl =
     inner?.cardphoto?.factoryDisplayUrl ?? inner?.cardphoto?.previewUrl ?? null
+  const { displayUrl, onPreviewImgError } = useListCardPreviewUrl(
+    inner?.cardphoto?.id,
+    fallbackUrl,
+  )
+  const url = displayUrl
   const hasPhoto = url != null && url !== ''
 
   return (
@@ -64,6 +70,7 @@ const CardphotoInnerPreviewOnly: React.FC<{
                   src={url}
                   alt=""
                   className={styles.mirrorPreview}
+                  onError={onPreviewImgError}
                 />
               ) : (
                 <div className={viewStyles.emptyPlaceholderIcon} aria-hidden>

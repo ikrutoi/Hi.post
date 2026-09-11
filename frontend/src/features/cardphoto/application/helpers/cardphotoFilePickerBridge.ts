@@ -20,6 +20,10 @@ export function unregisterCardphotoFilePicker() {
   trackCancelFn = null
 }
 
+export function isCardphotoFilePickerRegistered(): boolean {
+  return input != null
+}
+
 export function getCardphotoFilePickerCancelGeneration(): number {
   return cancelGeneration
 }

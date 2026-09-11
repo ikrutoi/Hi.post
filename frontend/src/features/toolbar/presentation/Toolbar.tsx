@@ -40,6 +40,7 @@ import {
   clearListCardphotoBadgePulse,
   pulseListCardphotoBadge,
   markLoading as markCardphotoAddLoading,
+  cancelFileDialog,
 } from '@/features/cardphoto/infrastructure/state'
 import { selectIsLoading as selectCardphotoAddLoading } from '@cardphoto/infrastructure/selectors/cardphotoUiSelectors'
 import { openCardphotoFilePickerFromUserGesture } from '@cardphoto/application/helpers/cardphotoFilePickerBridge'
@@ -767,12 +768,19 @@ export const Toolbar = ({
           if (key === 'cardphotoAdd') {
             dispatch(markCardphotoAddLoading())
             if (
-              (section === 'cardphoto' ||
-                section === 'cardphotoCreate' ||
-                section === 'cardphotoProcessed') &&
-              shouldOpenCardphotoFilePickerSync(store.getState())
+              section === 'cardphoto' ||
+              section === 'cardphotoCreate' ||
+              section === 'cardphotoProcessed'
             ) {
-              openCardphotoFilePickerFromUserGesture()
+              const shouldOpenGallery = shouldOpenCardphotoFilePickerSync(
+                store.getState(),
+              )
+              if (
+                shouldOpenGallery &&
+                !openCardphotoFilePickerFromUserGesture()
+              ) {
+                dispatch(cancelFileDialog())
+              }
             }
           }
           if (

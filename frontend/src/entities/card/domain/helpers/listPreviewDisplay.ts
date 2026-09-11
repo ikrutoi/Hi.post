@@ -5,6 +5,19 @@ export function imageMetaIdFromCardId(cardId: string | undefined): string | null
   return imageMetaId || null
 }
 
+/** ID для IDB/registry: `appliedData.id` и префикс `card.id` могут расходиться после re-apply. */
+export function cardImageMetaLookupIds(
+  cardId: string | undefined,
+  appliedMetaId: string | null | undefined,
+): string[] {
+  const ids = new Set<string>()
+  const applied = appliedMetaId?.trim()
+  if (applied) ids.add(applied)
+  const prefix = imageMetaIdFromCardId(cardId)
+  if (prefix) ids.add(prefix)
+  return [...ids]
+}
+
 export function isPersistedBlobUrl(url: string | null | undefined): boolean {
   return typeof url === 'string' && url.startsWith('blob:')
 }
@@ -38,11 +51,12 @@ export function resolveListPreviewDisplayUrl(
   const cached = input.cachedUrl?.trim()
   if (cached) return cached
 
-  const allowBlob = input.allowBlobPreview ?? false
+  const allowPersistedBlob = input.allowBlobPreview ?? false
 
+  /** Registry blobs are recreated on hydrate — always usable in-session. */
   return (
-    pickPreviewUrl(input.registryThumbUrl, allowBlob) ||
-    pickPreviewUrl(input.registryUrl, allowBlob) ||
-    pickPreviewUrl(input.previewUrl, allowBlob)
+    pickPreviewUrl(input.registryThumbUrl, true) ||
+    pickPreviewUrl(input.registryUrl, true) ||
+    pickPreviewUrl(input.previewUrl, allowPersistedBlob)
   )
 }

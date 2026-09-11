@@ -34,6 +34,13 @@ export function* syncCardphotoToolbarUiFlagsAfterSessionHydrate(
     return
   }
 
+  /** Create resume after reload: no current slot — dot only, no stale IDB pending. */
+  if (!assetData) {
+    yield put(clearSessionPendingProcessedId())
+    yield put(setOriginalUploadReminderActive(true))
+    return
+  }
+
   const pending = allCardphotoImages
     .filter(
       (meta) =>

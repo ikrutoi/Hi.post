@@ -136,7 +136,7 @@ function cardphotoUrlsFromCard(card: Card): {
     previewUrl,
     factoryDisplayUrl,
     isComplete,
-    id: applied?.id ?? card.id,
+    id: card.id,
   }
 }
 

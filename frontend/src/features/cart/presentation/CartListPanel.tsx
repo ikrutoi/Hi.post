@@ -129,9 +129,7 @@ function cartPostcardsToEntries(
         priceLine: listEntryPriceLine(p),
         variant,
         previewStatus: p.status,
-        previewIsProcessed:
-          Boolean(p.card.isProcessed) ||
-          Boolean(p.card.cardphoto?.appliedData ?? p.card.cardphoto?.assetData),
+        previewIsProcessed: false,
       } satisfies CartListPanelItem
     })
 }

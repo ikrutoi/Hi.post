@@ -1,31 +1,36 @@
 import type { SagaIterator } from 'redux-saga'
-import { call, put, takeEvery } from 'redux-saga/effects'
+import { call, put, select, takeEvery } from 'redux-saga/effects'
+import { selectCartItems } from '@cart/infrastructure/selectors'
 import {
   requestCalendarPreview,
   setCalendarPreviewCached,
 } from '@entities/card/infrastructure/state'
+import { cardImageMetaLookupIdsFromCard } from '@entities/card/domain/helpers'
+import { cardImageMetaLookupIds } from '@entities/card/domain/helpers/listPreviewDisplay'
 import { resolveCardphotoPreviewUrlByMetaId } from './cardphotoHelpers'
+import type { PostcardHydrated } from '@entities/postcard'
 
 const inFlightCardIds = new Set<string>()
-
-const getImageMetaIdFromCardId = (cardId: string): string | null => {
-  const [imageMetaId] = cardId.split('__')
-  if (!imageMetaId || imageMetaId === 'current_session') return null
-  return imageMetaId
-}
 
 function* resolvePreviewUrl(
   cardId: string,
   fallbackPreviewUrl?: string,
 ): SagaIterator<string | null> {
-  const imageMetaId = getImageMetaIdFromCardId(cardId)
-  if (!imageMetaId) return null
-  const resolved: string | null = yield call(
-    resolveCardphotoPreviewUrlByMetaId,
-    imageMetaId,
-    fallbackPreviewUrl,
-  )
-  return resolved
+  const items: PostcardHydrated[] = yield select(selectCartItems)
+  const postcard = items.find((p) => p.card.id === cardId)
+  const lookupIds =
+    postcard != null
+      ? cardImageMetaLookupIdsFromCard(postcard.card, postcard.postcard)
+      : cardImageMetaLookupIds(cardId, undefined)
+  for (const imageMetaId of lookupIds) {
+    const resolved: string | null = yield call(
+      resolveCardphotoPreviewUrlByMetaId,
+      imageMetaId,
+      fallbackPreviewUrl,
+    )
+    if (resolved) return resolved
+  }
+  return null
 }
 
 function* requestCalendarPreviewWorker(

@@ -59,6 +59,7 @@ import {
   persistUserOriginalRotationToIdbSaga,
 } from '@cardphoto/application/helpers'
 import { openCardphotoFromMiniStripSaga } from '@cardphoto/application/helpers/openCardphotoFromMiniStrip'
+import { isCardphotoFilePickerRegistered } from '@cardphoto/application/helpers/cardphotoFilePickerBridge'
 import { setSizeCard } from '@layout/infrastructure/state'
 import { roundTo } from '@shared/utils/layout'
 import {
@@ -116,6 +117,11 @@ export function* onDownloadClick(): SagaIterator {
       value: 'disabled',
     }),
   )
+
+  if (!isCardphotoFilePickerRegistered()) {
+    yield put(markLoaded())
+    return
+  }
 
   yield put(markLoading())
 

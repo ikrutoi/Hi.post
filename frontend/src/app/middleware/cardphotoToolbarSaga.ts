@@ -360,6 +360,7 @@ function* reopenCardphotoCreateFromSavedOriginalSaga(): SagaIterator<boolean> {
     return true
   } catch (error) {
     console.error('reopenCardphotoCreateFromSavedOriginalSaga', error)
+    yield put(markLoaded())
     return false
   }
 }

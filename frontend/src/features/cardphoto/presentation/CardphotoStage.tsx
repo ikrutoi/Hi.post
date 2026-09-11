@@ -5,7 +5,6 @@ import { useAppDispatch, useAppSelector } from '@app/hooks'
 import type { RootState } from '@app/state/store'
 import {
   initCardphoto,
-  uploadUserImage,
   commitWorkingConfig,
   setCardphotoImageStageRect,
 } from '../infrastructure/state'
@@ -17,19 +16,9 @@ import {
 import { CropArea } from './CropArea'
 import { CropOverlay } from './CropOverlay'
 import { useSizeFacade } from '@layout/application/facades'
-import { useCardphotoUiFacade } from '../application/facades'
 import { useToolbarFacade } from '@toolbar/application/facades'
-import {
-  useImageUpload,
-  useFileDialog,
-  useCropState,
-} from '../application/hooks'
-import {
-  registerCardphotoFilePicker,
-  unregisterCardphotoFilePicker,
-} from '../application/helpers/cardphotoFilePickerBridge'
+import { useCropState } from '../application/hooks'
 import styles from './CardphotoStage.module.scss'
-import { ImageMeta } from '../domain/types'
 import { useAssetRegistryFacade } from '@entities/assetRegistry/application/facade/assetRegistryFacade'
 import {
   prepareForRedux,
@@ -52,10 +41,6 @@ export const CardphotoStage = () => {
   const assetConfig = useAppSelector(selectCardphotoAssetConfig)
 
   const init = () => dispatch(initCardphoto())
-  /** Keep `full.blob` so the saga does not depend on fetch(blob:) (revoked / missing URLs). */
-  const setUserImage = (meta: ImageMeta) => dispatch(uploadUserImage(meta))
-
-  const { actions: cardphotoUiActions } = useCardphotoUiFacade()
   const { getAssetById } = useAssetRegistryFacade()
 
   const assetToolbar = useAppSelector(selectCardphotoAssetToolbar)
@@ -123,20 +108,6 @@ export const CardphotoStage = () => {
   const src = asset?.url || activeImage?.url || null
   const imageReady = !!src && loadedSrc === src
 
-  const { inputRef, trackCancel } = useFileDialog()
-
-  useLayoutEffect(() => {
-    const input = inputRef.current
-    if (!input) return
-    registerCardphotoFilePicker(input, trackCancel)
-    return () => unregisterCardphotoFilePicker()
-  }, [trackCancel])
-
-  const handleFileChange = useImageUpload(
-    setUserImage,
-    cardphotoUiActions.markLoading,
-  )
-
   const alt = activeImage?.id
   const imageLayer = assetConfig?.image ?? null
 
@@ -180,14 +151,6 @@ export const CardphotoStage = () => {
 
   return (
     <div className={styles.cardphotoStage}>
-      <input
-        type="file"
-        accept="image/*"
-        ref={inputRef}
-        className={styles.imageInput}
-        onChange={handleFileChange}
-      />
-
       {showCropUi ? (
         <div
           key={containerKey}

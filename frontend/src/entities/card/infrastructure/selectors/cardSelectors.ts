@@ -79,9 +79,6 @@ function postcardToCalendarItem(
 ): CalendarCardItem {
   const c = p.card
   const previewUrl = cardListPreviewUrlFromCard(c) ?? ''
-  const hasSessionPreview =
-    Boolean(c.cardphoto?.appliedData ?? c.cardphoto?.assetData) ||
-    previewUrl.startsWith('blob:')
   return {
     cardId: c.id,
     rowKey: `postcard:${listSlotIndex}:${p.id}:${p.status}`,
@@ -90,7 +87,8 @@ function postcardToCalendarItem(
     previewUrl,
     status: p.status,
     isProcessed: Boolean(c.isProcessed),
-    previewAllowBlob: Boolean(c.isProcessed) || hasSessionPreview,
+    /** Persisted cart/history postcards: resolve preview from IDB, not dead blob: strings. */
+    previewAllowBlob: false,
   }
 }
 

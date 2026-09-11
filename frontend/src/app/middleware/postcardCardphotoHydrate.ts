@@ -1,8 +1,9 @@
 import type { Card } from '@entities/card/domain/types'
 import { postcardRefsFromCard, type PostcardHydrated } from '@entities/postcard'
 import type { ImageMeta } from '@cardphoto/domain/types'
-import { hydrateSessionImageMeta, prepareForRedux } from './cardphotoHelpers'
+import { cardImageMetaLookupIdsFromCard } from '@entities/card/domain/helpers'
 import { loadCardphotoImageMetaFromIdb } from '@cardphoto/application/helpers/loadCardphotoImageMetaFromIdb'
+import { hydrateSessionImageMeta, prepareForRedux } from './cardphotoHelpers'
 
 const isDeadBlobUrl = (u: string | null | undefined): boolean =>
   typeof u === 'string' && u.startsWith('blob:')
@@ -46,7 +47,11 @@ async function refreshOnePostcard(p: PostcardHydrated): Promise<PostcardHydrated
 
   if (!metaDead && !metaEmpty && !thumbDead) return p
 
-  const idbMeta = await loadCardphotoImageFromIdb(applied.id)
+  let idbMeta: ImageMeta | null = null
+  for (const lookupId of cardImageMetaLookupIdsFromCard(p.card, p.postcard)) {
+    idbMeta = await loadCardphotoImageFromIdb(lookupId)
+    if (idbMeta) break
+  }
   const merged = hydrateSessionImageMeta(applied, idbMeta)
 
   if (!merged) return p

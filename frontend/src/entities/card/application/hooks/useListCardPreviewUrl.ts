@@ -5,8 +5,10 @@ import {
   requestCalendarPreview,
 } from '@entities/card/infrastructure/state'
 import { selectCalendarPreviewDisplayUrlByCardId } from '@entities/card/infrastructure/selectors'
+import { selectCartItems } from '@cart/infrastructure/selectors'
+import { cardImageMetaLookupIdsFromCard } from '@entities/card/domain/helpers'
 import {
-  imageMetaIdFromCardId,
+  cardImageMetaLookupIds,
   isPersistedBlobUrl,
   resolveListPreviewDisplayUrl,
 } from '@entities/card/domain/helpers/listPreviewDisplay'
@@ -31,10 +33,21 @@ export function useListCardPreviewUrl(
   const cachedUrl = useAppSelector((state) =>
     selectCalendarPreviewDisplayUrlByCardId(state, id),
   )
-  const imageMetaId = imageMetaIdFromCardId(id)
-  const asset = useAppSelector((state) =>
-    imageMetaId ? state.assetRegistry.images[imageMetaId] : undefined,
-  )
+  const lookupIds = useAppSelector((state) => {
+    const postcard = selectCartItems(state).find((p) => p.card.id === id)
+    if (postcard) {
+      return cardImageMetaLookupIdsFromCard(postcard.card, postcard.postcard)
+    }
+    return cardImageMetaLookupIds(id, undefined)
+  })
+  const asset = useAppSelector((state) => {
+    const registry = state.assetRegistry.images
+    for (const metaId of lookupIds) {
+      const hit = registry[metaId]
+      if (hit) return hit
+    }
+    return undefined
+  })
   const [retryToken, setRetryToken] = useState(0)
 
   const requestHydrate = useCallback(() => {
