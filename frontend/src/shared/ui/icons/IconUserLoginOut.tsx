@@ -4,7 +4,8 @@ import React from 'react'
 export const IconUserLoginOut = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 1540 1282"
+    xmlSpace="preserve"
+    viewBox="0 0 1600 1280"
     fillRule="evenodd"
     clipRule="evenodd"
     imageRendering="optimizeQuality"
@@ -17,16 +18,16 @@ export const IconUserLoginOut = (props: React.SVGProps<SVGSVGElement>) => (
       fill="none"
       stroke="currentColor"
       strokeLinecap="round"
-      strokeWidth={107.673}
-      d="M984 888c-85 149-246 249-429 249-274 0-496-222-496-496s222-496 496-496c183 0 344 100 429 249"
+      strokeWidth={107.498}
+      d="M1130 1090c-101 83-230 133-370 133-322 0-583-261-583-583S438 57 760 57c140 0 269 50 370 133"
     />
     <path
       fill="none"
       stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
-      strokeWidth={107.673}
-      d="M1191 641h158m-474 0h1m473 0h132m-376 0h375m-247-247 247 247m0 0h-375zm0 0-247 247m248-247H730m0 0H555"
+      strokeWidth={107.498}
+      d="M1181 640h131m-394 0h1m393 0h111m-314 0h312m-205-206 205 206m0 0h-312zm0 0-205 206m207-206H798"
     />
   </svg>
 )
