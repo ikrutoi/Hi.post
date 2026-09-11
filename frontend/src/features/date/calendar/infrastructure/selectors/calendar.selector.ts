@@ -4,6 +4,7 @@ import type {
   PostcardStatusesCount,
 } from '@/entities/postcard/domain/types'
 import type { RootState } from '@app/state'
+import type { PostcardStatus } from '@entities/postcard/domain/types'
 import type { CalendarViewDate, DispatchDate } from '@entities/date/domain/types'
 import type { DateStripSection } from '@date/presentation/dateStripSection.types'
 import { createSelector } from '@reduxjs/toolkit'
@@ -209,6 +210,181 @@ export const selectHistoryOpenDayPanelArchiveLocalId = createSelector(
   },
 )
 
+function archivePostcardLocalIdExists(
+  cartItems: readonly { localId: number }[],
+  localId: number | null | undefined,
+): localId is number {
+  if (localId == null) return false
+  return cartItems.some((item) => item.localId === localId)
+}
+
+/** Та же приоритизация `localId`, что у archive CardPie в App / mobile shell. */
+export function resolveRightListArchivePostcardLocalId(input: {
+  cartListPanelOpen: boolean
+  cartListSelectedLocalId: number | null
+  historyListPanelOpen: boolean
+  historyListSelectedLocalId: number | null
+  historyOpenDayPanelArchiveLocalId: number | null
+  /** Raw `notebookStripTab` — не computed: иначе открытый список корзины «перебивает» history strip. */
+  notebookStripTab: DateStripSection
+  cartItems: readonly { localId: number }[]
+}): number | null {
+  const {
+    cartListPanelOpen,
+    cartListSelectedLocalId,
+    historyListPanelOpen,
+    historyListSelectedLocalId,
+    historyOpenDayPanelArchiveLocalId,
+    notebookStripTab,
+    cartItems,
+  } = input
+
+  const onCartStrip =
+    notebookStripTab === 'cart' || notebookStripTab === 'cartdate'
+  const onHistoryStrip = notebookStripTab === 'history'
+
+  /** Активная strip-закладка важнее «залипшего» open-флага другого списка. */
+  if (
+    onHistoryStrip &&
+    archivePostcardLocalIdExists(cartItems, historyListSelectedLocalId)
+  ) {
+    return historyListSelectedLocalId
+  }
+  if (
+    onCartStrip &&
+    archivePostcardLocalIdExists(cartItems, cartListSelectedLocalId)
+  ) {
+    return cartListSelectedLocalId
+  }
+
+  if (
+    archivePostcardLocalIdExists(cartItems, cartListSelectedLocalId) &&
+    (cartListPanelOpen || onCartStrip)
+  ) {
+    return cartListSelectedLocalId
+  }
+  if (
+    archivePostcardLocalIdExists(cartItems, historyListSelectedLocalId) &&
+    (historyListPanelOpen || onHistoryStrip)
+  ) {
+    return historyListSelectedLocalId
+  }
+
+  if (
+    cartListPanelOpen &&
+    archivePostcardLocalIdExists(cartItems, cartListSelectedLocalId)
+  ) {
+    return cartListSelectedLocalId
+  }
+  if (
+    historyListPanelOpen &&
+    archivePostcardLocalIdExists(cartItems, historyListSelectedLocalId)
+  ) {
+    return historyListSelectedLocalId
+  }
+  if (
+    archivePostcardLocalIdExists(
+      cartItems,
+      historyOpenDayPanelArchiveLocalId,
+    )
+  ) {
+    return historyOpenDayPanelArchiveLocalId
+  }
+  return null
+}
+
+/** Peek archive на date tab при `activePieSide === 'right'` (см. App.tsx). */
+export function resolveRightListArchivePostcardLocalIdWithPeek(input: {
+  cartListPanelOpen: boolean
+  cartListSelectedLocalId: number | null
+  historyListPanelOpen: boolean
+  historyListSelectedLocalId: number | null
+  historyOpenDayPanelArchiveLocalId: number | null
+  notebookStripTab: DateStripSection
+  cartItems: readonly { localId: number }[]
+  activePieSideRight: boolean
+}): number | null {
+  const base = resolveRightListArchivePostcardLocalId(input)
+  if (base != null) return base
+  if (!input.activePieSideRight) return null
+
+  if (
+    archivePostcardLocalIdExists(
+      input.cartItems,
+      input.historyListSelectedLocalId,
+    )
+  ) {
+    return input.historyListSelectedLocalId
+  }
+  if (
+    archivePostcardLocalIdExists(input.cartItems, input.cartListSelectedLocalId)
+  ) {
+    return input.cartListSelectedLocalId
+  }
+  return null
+}
+
+/** Источник archive CardPie для `localId` (корзина / история). */
+export function resolveRightListArchiveSourceForLocalId(
+  localId: number | null,
+  input: {
+    cartListSelectedLocalId: number | null
+    historyListSelectedLocalId: number | null
+    historyOpenDayPanelArchiveLocalId: number | null
+    cartItems: readonly { localId: number; status: PostcardStatus }[]
+  },
+): 'cart' | 'history' | null {
+  if (localId == null) return null
+  const postcard = input.cartItems.find((item) => item.localId === localId)
+  if (postcard == null) return null
+
+  if (input.historyListSelectedLocalId === localId) return 'history'
+  if (input.historyOpenDayPanelArchiveLocalId === localId) return 'history'
+  if (input.cartListSelectedLocalId === localId) return 'cart'
+
+  if (postcard.status === 'cart' || postcard.status === 'cartBlocked') {
+    return 'cart'
+  }
+  return 'history'
+}
+
+/** Тот же `localId`, что у archive CardPie на экране (store + peek). */
+export function readDisplayedRightListArchivePostcardLocalId(
+  state: RootState,
+  options: {
+    isMobileLayout: boolean
+    activePieSideRight: boolean
+    pinnedLocalId: number | null
+  },
+): number | null {
+  if (options.pinnedLocalId != null) return options.pinnedLocalId
+
+  const cartItems = selectCartItems(state)
+  if (options.isMobileLayout) {
+    if (selectCartListPanelOpen(state)) {
+      const cartId = selectCartListSelectedLocalId(state)
+      if (archivePostcardLocalIdExists(cartItems, cartId)) return cartId
+    }
+    if (selectIsHistoryListPanelOpen(state)) {
+      const historyId = selectHistoryListSelectedLocalId(state)
+      if (archivePostcardLocalIdExists(cartItems, historyId)) return historyId
+    }
+  }
+
+  return resolveRightListArchivePostcardLocalIdWithPeek({
+    cartListPanelOpen: selectCartListPanelOpen(state),
+    cartListSelectedLocalId: selectCartListSelectedLocalId(state),
+    historyListPanelOpen: selectIsHistoryListPanelOpen(state),
+    historyListSelectedLocalId: selectHistoryListSelectedLocalId(state),
+    historyOpenDayPanelArchiveLocalId: selectHistoryOpenDayPanelArchiveLocalId(
+      state,
+    ),
+    notebookStripTab: selectNotebookStripTab(state),
+    cartItems,
+    activePieSideRight: options.activePieSideRight,
+  })
+}
+
 /** `localId` открытки, выбранной в правом archive CardPie (корзина / история / день). */
 export const selectRightListArchivePostcardLocalId = createSelector(
   [
@@ -217,6 +393,8 @@ export const selectRightListArchivePostcardLocalId = createSelector(
     selectIsHistoryListPanelOpen,
     selectHistoryListSelectedLocalId,
     selectHistoryOpenDayPanelArchiveLocalId,
+    selectNotebookStripTab,
+    selectCartItems,
   ],
   (
     cartListPanelOpen,
@@ -224,18 +402,18 @@ export const selectRightListArchivePostcardLocalId = createSelector(
     historyListPanelOpen,
     historyListSelectedLocalId,
     historyOpenDayPanelArchiveLocalId,
-  ): number | null => {
-    if (cartListPanelOpen && cartListSelectedLocalId != null) {
-      return cartListSelectedLocalId
-    }
-    if (historyListPanelOpen && historyListSelectedLocalId != null) {
-      return historyListSelectedLocalId
-    }
-    if (historyOpenDayPanelArchiveLocalId != null) {
-      return historyOpenDayPanelArchiveLocalId
-    }
-    return null
-  },
+    notebookStripTab,
+    cartItems,
+  ): number | null =>
+    resolveRightListArchivePostcardLocalId({
+      cartListPanelOpen,
+      cartListSelectedLocalId,
+      historyListPanelOpen,
+      historyListSelectedLocalId,
+      historyOpenDayPanelArchiveLocalId,
+      notebookStripTab,
+      cartItems,
+    }),
 )
 
 function isPostcardDispatchFallbackDate(d: DispatchDate): boolean {
@@ -257,7 +435,7 @@ export const selectRightListArchiveCardPieHighlightDispatchDate = createSelector
     selectHistoryOpenDayPanelArchiveLocalId,
     selectIsHistoryListPanelOpen,
     selectHistoryListSelectedLocalId,
-    selectComputedNotebookStripTab,
+    selectNotebookStripTab,
     selectCartItems,
   ],
   (
@@ -269,21 +447,15 @@ export const selectRightListArchiveCardPieHighlightDispatchDate = createSelector
     notebookStripTab,
     cartItems,
   ): DispatchDate | null => {
-    const localId =
-      cartListPanelOpen && cartListSelectedLocalId != null
-        ? cartListSelectedLocalId
-        : historyListPanelOpen && historyListSelectedLocalId != null
-          ? historyListSelectedLocalId
-          : (notebookStripTab === 'cart' ||
-                notebookStripTab === 'cartdate') &&
-              cartListSelectedLocalId != null
-            ? cartListSelectedLocalId
-            : notebookStripTab === 'history' &&
-                historyListSelectedLocalId != null
-              ? historyListSelectedLocalId
-              : historyDayPanelArchiveLocalId != null
-                ? historyDayPanelArchiveLocalId
-                : null
+    const localId = resolveRightListArchivePostcardLocalId({
+      cartListPanelOpen,
+      cartListSelectedLocalId,
+      historyListPanelOpen,
+      historyListSelectedLocalId,
+      historyOpenDayPanelArchiveLocalId: historyDayPanelArchiveLocalId,
+      notebookStripTab,
+      cartItems,
+    })
     if (localId == null) return null
     const postcard = cartItems.find((p) => p.localId === localId)
     if (!postcard) return null

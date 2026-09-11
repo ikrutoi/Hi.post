@@ -19,6 +19,9 @@ import {
   selectNotebookDateTabPeekClearTick,
   selectComputedNotebookStripTab,
   selectNotebookStripTab,
+  resolveRightListArchivePostcardLocalIdWithPeek,
+  resolveRightListArchiveSourceForLocalId,
+  readDisplayedRightListArchivePostcardLocalId,
   selectOpenDayPanel,
   selectPlanMiniListDensity,
   selectPostcardStatuses,
@@ -77,6 +80,7 @@ import {
   selectCartListStatusSegment,
 } from '@cart/infrastructure/selectors'
 import {
+  removeCartPostcard,
   setCardPieCopyStripExpanded,
   setCartListPanelOpen,
   setCartListSelectedLocalId,
@@ -153,6 +157,11 @@ import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { applyRightListArchiveToolbarVisuals } from '@toolbar/application/syncRightListArchiveToolbarVisuals'
 import { notebookSessionRestored } from '@date/calendar/application/orchestration/notebookOrchestration.events'
 import { resolveCartArchiveViewMode, resolveHistoryArchiveViewMode } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
+import {
+  computeCartLegendStatusCounts,
+  computeHistoryLegendStatusCounts,
+} from '@date/application/helpers/legendStatusCounts'
+import { isArchiveCenterCycleHintEligible } from '@layout/application/hooks'
 import { SECTION_EDITOR_MENU_ICON_KEYS } from '@features/toolbar/domain/types/sectionEditorMenu.types'
 import { primaryDispatchDateFromPieInner } from '@features/cardPie/domain/primaryDispatchDateFromPieInner'
 import {
@@ -227,6 +236,8 @@ const App = () => {
   )
   const [colorToolbar, setColorToolbar] = useState<boolean | null>(null)
   const [activePieSide, setActivePieSide] = useState<'left' | 'right'>('left')
+  const activePieSideRef = useRef(activePieSide)
+  activePieSideRef.current = activePieSide
   /** After turning off cardPieCopy: switch to left pie and keep `cardPieEdit` enabled until clicked again. */
   const [
     suppressCardPieEditActiveAfterCopy,
@@ -505,116 +516,64 @@ const App = () => {
       return rightListArchivePinnedForLeftFactory.localId
     }
     /**
-     * Mobile: открытый список корзины/истории + выбранная строка → правый CardPie
-     * на месте центрального (не подмешивать в левый режим сборки).
+     * Mobile: открытый список корзины/истории + выбранная строка → archive CardPie.
      */
     if (isMobileLayout) {
-      if (listPanelOpen && listSelectedLocalId != null) {
+      if (
+        listPanelOpen &&
+        listSelectedLocalId != null &&
+        cartItems.some((item) => item.localId === listSelectedLocalId)
+      ) {
         return listSelectedLocalId
       }
-      if (historyListPanelOpen && historyListSelectedLocalId != null) {
+      if (
+        historyListPanelOpen &&
+        historyListSelectedLocalId != null &&
+        cartItems.some((item) => item.localId === historyListSelectedLocalId)
+      ) {
         return historyListSelectedLocalId
       }
     }
-    /**
-     * Peek корзины/истории: контекст открытки держим по `activePieSide === 'right'`,
-     * а не по открытому списку — иначе закрытие списка при клике по сектору сбрасывает CardPie.
-     */
-    if (activePieSide === 'right') {
-      if (notebookStripTab === 'history') {
-        if (historyListSelectedLocalId != null) return historyListSelectedLocalId
-        return null
-      }
-      if (notebookStripTab === 'cart' || notebookStripTab === 'cartdate') {
-        if (listSelectedLocalId != null) return listSelectedLocalId
-        return null
-      }
-      if (historyListSelectedLocalId != null) return historyListSelectedLocalId
-      if (listSelectedLocalId != null) return listSelectedLocalId
-    }
-    if (
-      listSelectedLocalId != null &&
-      (listPanelOpen ||
-        notebookStripTab === 'cart' ||
-        notebookStripTab === 'cartdate')
-    ) {
-      return listSelectedLocalId
-    }
-    if (
-      historyListSelectedLocalId != null &&
-      (historyListPanelOpen || notebookStripTab === 'history')
-    ) {
-      return historyListSelectedLocalId
-    }
-    if (historyOpenDayPanelArchiveLocalId != null) {
-      return historyOpenDayPanelArchiveLocalId
-    }
-    return null
+    return resolveRightListArchivePostcardLocalIdWithPeek({
+      cartListPanelOpen: listPanelOpen,
+      cartListSelectedLocalId: listSelectedLocalId,
+      historyListPanelOpen,
+      historyListSelectedLocalId,
+      historyOpenDayPanelArchiveLocalId,
+      notebookStripTab,
+      cartItems,
+      activePieSideRight: activePieSide === 'right',
+    })
   }, [
     rightListArchivePinnedForLeftFactory,
     isMobileLayout,
-    activePieSide,
-    listSelectedLocalId,
-    historyListSelectedLocalId,
     listPanelOpen,
-    notebookStripTab,
+    listSelectedLocalId,
     historyListPanelOpen,
+    historyListSelectedLocalId,
     historyOpenDayPanelArchiveLocalId,
+    notebookStripTab,
+    cartItems,
+    activePieSide,
   ])
 
   const rightListArchiveSource = useMemo((): 'cart' | 'history' | null => {
     if (rightListArchivePinnedForLeftFactory != null) {
       return rightListArchivePinnedForLeftFactory.source
     }
-    if (isMobileLayout) {
-      if (listPanelOpen && listSelectedLocalId != null) {
-        return 'cart'
-      }
-      if (historyListPanelOpen && historyListSelectedLocalId != null) {
-        return 'history'
-      }
-    }
-    if (activePieSide === 'right') {
-      if (notebookStripTab === 'history') {
-        if (historyListSelectedLocalId != null) return 'history'
-        return null
-      }
-      if (notebookStripTab === 'cart' || notebookStripTab === 'cartdate') {
-        if (listSelectedLocalId != null) return 'cart'
-        return null
-      }
-      if (historyListSelectedLocalId != null) return 'history'
-      if (listSelectedLocalId != null) return 'cart'
-    }
-    if (listPanelOpen && listSelectedLocalId != null) {
-      return 'cart'
-    }
-    if (
-      (notebookStripTab === 'cart' || notebookStripTab === 'cartdate') &&
-      listSelectedLocalId != null
-    ) {
-      return 'cart'
-    }
-    if (historyListPanelOpen && historyListSelectedLocalId != null) {
-      return 'history'
-    }
-    if (notebookStripTab === 'history' && historyListSelectedLocalId != null) {
-      return 'history'
-    }
-    if (historyOpenDayPanelArchiveLocalId != null) {
-      return 'history'
-    }
-    return null
+    return resolveRightListArchiveSourceForLocalId(rightListArchiveLocalId, {
+      cartListSelectedLocalId: listSelectedLocalId,
+      historyListSelectedLocalId,
+      historyOpenDayPanelArchiveLocalId,
+      cartItems,
+    })
   }, [
     rightListArchivePinnedForLeftFactory,
-    isMobileLayout,
-    activePieSide,
-    notebookStripTab,
-    listPanelOpen,
+    rightListArchiveLocalId,
     listSelectedLocalId,
-    historyOpenDayPanelArchiveLocalId,
-    historyListPanelOpen,
     historyListSelectedLocalId,
+    historyOpenDayPanelArchiveLocalId,
+    cartItems,
   ])
 
   useEffect(() => {
@@ -638,11 +597,11 @@ const App = () => {
     return cartItems.find((p) => p.localId === rightListArchiveLocalId)?.status
   }, [cartItems, rightListArchiveLocalId])
 
-  /** История: открытки со статусом `cart` — тулбар корзины (edit / copy / delete). */
+  /** Корзина / cartBlocked — тулбар `postcardPieCart`; остальная история — `postcardPieHistory`. */
   const showRightPostcardPieCartToolbar =
     rightListArchiveSource === 'cart' ||
-    (rightListArchiveSource === 'history' &&
-      rightArchivePiePostcardStatus === 'cart')
+    rightArchivePiePostcardStatus === 'cart' ||
+    rightArchivePiePostcardStatus === 'cartBlocked'
 
   const canShowRightListArchiveCardPie =
     sectionSize != null && rightListArchiveLocalId != null
@@ -1242,6 +1201,33 @@ const App = () => {
             : ('cart' as const)
         : ('cycleForward' as const)
       : null
+
+  const { cartUnderlyingPostcardCount } = useMemo(
+    () => computeCartLegendStatusCounts(cartItems),
+    [cartItems],
+  )
+  const { historyUnderlyingPostcardCount } = useMemo(
+    () => computeHistoryLegendStatusCounts(cartItems),
+    [cartItems],
+  )
+  const showArchiveCenterCycleHint = isArchiveCenterCycleHintEligible({
+    cycleForward: rightPieCenterAffordance === 'cycleForward',
+    source: rightListArchiveSource,
+    cartPostcardCount: cartUnderlyingPostcardCount,
+    historyPostcardCount: historyUnderlyingPostcardCount,
+  })
+  const archiveCenterCycleHintViewMode = useMemo(():
+    | 'list'
+    | 'calendar'
+    | null => {
+    if (rightListArchiveSource === 'cart') {
+      return cartArchiveViewMode === 'calendar' ? 'calendar' : 'list'
+    }
+    if (rightListArchiveSource === 'history') {
+      return historyArchiveViewMode === 'calendar' ? 'calendar' : 'list'
+    }
+    return null
+  }, [rightListArchiveSource, cartArchiveViewMode, historyArchiveViewMode])
 
   const exitRightPreviewForLeftMode = useCallback(() => {
     dispatch(closeDayPanel())
@@ -2005,29 +1991,17 @@ const App = () => {
       }
       const lid = item.postcard?.localId
       if (lid == null) return
-      const nextLid = listSelectedLocalId === lid ? null : lid
-      if (
-        nextLid == null ||
-        nextLid !== cartCalendarDatePickLocalId
-      ) {
+      if (lid !== cartCalendarDatePickLocalId) {
         releaseCartDatePickListEntryOwnership()
         cartDatePickOwnedByListEntryRef.current = false
         dispatch(endCartCalendarDatePick())
       }
-      if (nextLid != null) {
-        dispatch(
-          setCartListStatusSegment(
-            cartListStatusSegmentForLocalId(cartItems, nextLid),
-          ),
-        )
-      }
-      dispatch(setCartListSelectedLocalId(nextLid))
-      if (nextLid == null) {
-        endCardPieEditEngaged()
-        setActivePieSide('left')
-        dispatch(closeDayPanel())
-        return
-      }
+      dispatch(
+        setCartListStatusSegment(
+          cartListStatusSegmentForLocalId(cartItems, lid),
+        ),
+      )
+      dispatch(setCartListSelectedLocalId(lid))
       endCardPieEditEngaged()
       setSuppressCardPieEditActiveAfterCopy(true)
       setActivePieSide('right')
@@ -2040,7 +2014,7 @@ const App = () => {
         }
       }
     },
-    [dispatch, cartCalendarDatePickLocalId, listSelectedLocalId, cartItems, cardsByDateMap],
+    [dispatch, cartCalendarDatePickLocalId, cartItems, cardsByDateMap],
   )
 
   const handleHistoryListSelectEntry = useCallback(
@@ -2057,19 +2031,13 @@ const App = () => {
       }
       const lid = item.postcardLocalId
       if (lid == null) return
-      const nextLid = historyListSelectedLocalId === lid ? null : lid
-      dispatch(setHistoryListSelectedLocalId(nextLid))
-      if (nextLid == null) {
-        endCardPieEditEngaged()
-        setActivePieSide('left')
-        return
-      }
+      dispatch(setHistoryListSelectedLocalId(lid))
       endCardPieEditEngaged()
       setSuppressCardPieEditActiveAfterCopy(true)
       setActivePieSide('right')
       applyRightListArchiveToolbarVisuals(dispatch, store.getState, 'history')
     },
-    [dispatch, historyListSelectedLocalId],
+    [dispatch],
   )
 
   const handleCartListDateEditEntry = useCallback(
@@ -2105,13 +2073,31 @@ const App = () => {
     [dispatch, endCardPieEditEngaged],
   )
 
+  const readArchiveToolbarTargetLocalId = useCallback(
+    (state: ReturnType<typeof store.getState>) =>
+      readDisplayedRightListArchivePostcardLocalId(state, {
+        isMobileLayout,
+        activePieSideRight: activePieSideRef.current === 'right',
+        pinnedLocalId:
+          rightListArchivePinnedForLeftFactory?.localId ?? null,
+      }),
+    [isMobileLayout, rightListArchivePinnedForLeftFactory],
+  )
+
   const handlePostcardPieCartToolbarAction = useCallback(
     (key: string) => {
-      if (key !== 'cardPieCopy') return
-      const lid = rightListArchiveLocalId
-      if (lid == null) return false
-
       const state = store.getState()
+      const lid = readArchiveToolbarTargetLocalId(state)
+      if (key === 'delete') {
+        if (lid == null) return false
+        if (!selectCartItems(state).some((item) => item.localId === lid)) {
+          return false
+        }
+        dispatch(removeCartPostcard(lid))
+        return false
+      }
+      if (key !== 'cardPieCopy') return
+      if (lid == null) return false
       const postcard = selectCartItems(state).find((p) => p.localId === lid)
       if (postcard == null) return false
 
@@ -2146,7 +2132,7 @@ const App = () => {
       }
       return false
     },
-    [dispatch, rightListArchiveLocalId],
+    [dispatch, readArchiveToolbarTargetLocalId],
   )
   const handleEditorPieToolbarPassthrough = useCallback((key: string) => {
     if (key !== 'editLight' && key !== 'cardPie') return
@@ -2256,6 +2242,8 @@ const App = () => {
                   onRightListPieSectorClick={handleRightListPieSectorClick}
                   onRightPieCenterClick={rightPieOnCenterClick}
                   rightPieCenterAffordance={rightPieCenterAffordance}
+                  showArchiveCenterCycleHint={showArchiveCenterCycleHint}
+                  archiveCenterCycleHintViewMode={archiveCenterCycleHintViewMode}
                   onPostcardPieCartToolbarAction={
                     handlePostcardPieCartToolbarAction
                   }
@@ -2370,6 +2358,8 @@ type DesktopFactoryTopRowProps = {
   onRightListPieSectorClick: (section: CardSection) => void
   onRightPieCenterClick: (() => void) | undefined
   rightPieCenterAffordance: 'cycleForward' | 'cart' | 'history' | 'calendar' | null
+  showArchiveCenterCycleHint: boolean
+  archiveCenterCycleHintViewMode: 'list' | 'calendar' | null
   onPostcardPieCartToolbarAction: (key: string) => boolean | void
   postcardPieCartToolbarStateOverride: undefined
 }
@@ -2389,6 +2379,8 @@ function DesktopFactoryTopRow({
   onRightListPieSectorClick,
   onRightPieCenterClick,
   rightPieCenterAffordance,
+  showArchiveCenterCycleHint,
+  archiveCenterCycleHintViewMode,
   onPostcardPieCartToolbarAction,
   postcardPieCartToolbarStateOverride,
 }: DesktopFactoryTopRowProps) {
@@ -2542,6 +2534,10 @@ function DesktopFactoryTopRow({
                 onListArchiveSectorClick={onRightListPieSectorClick}
                 onRightPieCenterClick={onRightPieCenterClick}
                 rightPieCenterAffordance={rightPieCenterAffordance}
+                rightPieCenterArchiveCycleHint={showArchiveCenterCycleHint}
+                rightPieCenterArchiveCycleHintViewMode={
+                  archiveCenterCycleHintViewMode
+                }
               />
             ) : showEmptyArchive ? (
               <div className={styles.desktopCentralPieEmpty} aria-hidden>
@@ -2568,23 +2564,18 @@ function DesktopFactoryTopRow({
             )}
           </div>
           {showArchivePie ? (
-            showRightPostcardPieCartToolbar ? (
-              <div className={styles.desktopCentralPieToolbar}>
-                <Toolbar
-                  section="postcardPieCart"
-                  onActionClick={onPostcardPieCartToolbarAction}
-                  stateOverride={postcardPieCartToolbarStateOverride}
-                  mergedWithCenter
-                />
-              </div>
-            ) : rightListArchiveSource === 'history' ? (
-              <div className={styles.desktopCentralPieToolbar}>
-                <Toolbar
-                  section="postcardPieHistory"
-                  onActionClick={onPostcardPieCartToolbarAction}
-                />
-              </div>
-            ) : null
+            <div className={styles.desktopCentralPieToolbar}>
+              <Toolbar
+                section={
+                  showRightPostcardPieCartToolbar
+                    ? 'postcardPieCart'
+                    : 'postcardPieHistory'
+                }
+                onActionClick={onPostcardPieCartToolbarAction}
+                stateOverride={postcardPieCartToolbarStateOverride}
+                mergedWithCenter
+              />
+            </div>
           ) : addressCardPiePreview.showSurface ? (
             addressTemplatePreviewPieToolbar.showToolbar ? (
               <div className={styles.desktopCentralPieToolbar}>

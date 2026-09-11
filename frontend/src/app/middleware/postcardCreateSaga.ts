@@ -3,8 +3,15 @@ import { PayloadAction } from '@reduxjs/toolkit'
 import { call, delay, put, select } from 'redux-saga/effects'
 import { postcardLocalDataChanged } from '@features/sync/store/postcardSync.actions'
 import { clearCardPieWorkspaceAfterCartAdd } from './editorPieHandlers'
-import { buildCartCalendarCommands } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
-import { updateLastViewedCalendarDate } from '@date/calendar/infrastructure/state'
+import {
+  buildCartListCommands,
+  buildMobileCartSlotOpenCommands,
+} from '@date/calendar/application/orchestration/notebookOrchestration.rules'
+import {
+  setLastCartArchiveView,
+  updateLastViewedCalendarDate,
+} from '@date/calendar/infrastructure/state'
+import { selectIsMobileLayout } from '@layout/infrastructure/selectors'
 import { store } from '@app/state/store'
 import { postcardsAdapter, storeAdapters } from '@db/adapters/storeAdapters'
 import {
@@ -438,14 +445,19 @@ function* maybeClearCardPieWorkspaceAfterSingleAdd(
 }
 
 /**
- * После «в корзину» из Card pie: закладка Cart + календарь на месяц отправки
- * и фокус центрального CardPie на добавленной (или уже существующей) открытке.
+ * После «в корзину» из Card pie: список корзины + фокус на добавленной
+ * (или уже существующей) открытке; месяц календаря — по дате отправки.
  */
 function* focusCartNotebookOnAddedPostcard(
   date: DispatchDate,
   localId: number,
 ): SagaIterator {
-  for (const command of buildCartCalendarCommands()) {
+  const isMobileLayout: boolean = yield select(selectIsMobileLayout)
+  yield put(setLastCartArchiveView('list'))
+  const openListCommands = isMobileLayout
+    ? buildMobileCartSlotOpenCommands()
+    : buildCartListCommands()
+  for (const command of openListCommands) {
     yield put(command)
   }
   /**

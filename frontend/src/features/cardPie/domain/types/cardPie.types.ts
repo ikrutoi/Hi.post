@@ -64,10 +64,12 @@ export interface CardPieProps {
   /** Правый пирог: серый центр без индикатора статуса (пустой archive preview). */
   rightPieCenterEmpty?: boolean
   /**
-   * Mobile cart/history archive: двойная пульсация центра, когда в списке >1 открытки
+   * Cart/history archive: двойная пульсация центра, когда в списке >1 открытки
    * (подсказка cycle forward, как factory plan cycle hint).
    */
   rightPieCenterArchiveCycleHint?: boolean
+  /** list / calendar — часть ключа «одна подсказка на режим + форму». */
+  rightPieCenterArchiveCycleHintViewMode?: 'list' | 'calendar' | null
 }
 
 export interface CardPieRefs {

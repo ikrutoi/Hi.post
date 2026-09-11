@@ -113,13 +113,9 @@ export const HistoryListRightSlot: React.FC<HistoryListRightSlotProps> = ({
       }
       const lid = item.postcardLocalId
       if (lid == null) return
-      dispatch(
-        setHistoryListSelectedLocalId(
-          historyListSelectedLocalId === lid ? null : lid,
-        ),
-      )
+      dispatch(setHistoryListSelectedLocalId(lid))
     },
-    [dispatch, historyListSelectedLocalId, onSelectEntryProp],
+    [dispatch, onSelectEntryProp],
   )
 
   if (!historyListPanelOpen) return null

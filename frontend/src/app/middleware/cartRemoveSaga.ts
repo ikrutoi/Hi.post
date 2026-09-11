@@ -16,6 +16,9 @@ import {
 } from '@cart/infrastructure/state'
 import { resolveArchiveSelectionAdvance } from '@date/application/helpers/archiveSelectionAfterRemove'
 import { syncArchiveCenterPostcardCalendarView } from '@date/calendar/application/logic/archiveCenterCalendarSync'
+import {
+  selectHistoryListSelectedLocalId,
+} from '@date/calendar/infrastructure/selectors'
 import { setHistoryListSelectedLocalId } from '@date/calendar/infrastructure/state'
 import { applyRightListArchiveToolbarVisuals } from '@toolbar/application/syncRightListArchiveToolbarVisuals'
 import { refreshRightSidebarBadgesFromPostcards } from './postcardCreateSaga'
@@ -77,6 +80,11 @@ function* handleRemoveCartPostcard(
 
   if (selectionAdvance != null) {
     yield* applyArchiveSelectionAdvance(selectionAdvance)
+  } else {
+    const stateAfterRemove: RootState = yield select()
+    if (selectHistoryListSelectedLocalId(stateAfterRemove) === localId) {
+      yield put(setHistoryListSelectedLocalId(null))
+    }
   }
 
   yield call(refreshRightSidebarBadgesFromPostcards)

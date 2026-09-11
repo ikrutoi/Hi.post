@@ -4,4 +4,8 @@ export { useLayoutUi } from './useLayoutUi'
 export { useToolbarClickReset } from './useToolbarClickReset'
 export { useViewportInit } from './useViewportInit'
 export { useMobileVisualViewport } from './useMobileVisualViewport'
-export { useMobileArchiveSlotSecondClickHint } from './useMobileArchiveSlotSecondClickHint'
+export {
+  isArchiveCenterCycleHintEligible,
+  useArchiveCenterCycleClickHint,
+  useMobileArchiveSlotSecondClickHint,
+} from './useMobileArchiveSlotSecondClickHint'

@@ -154,11 +154,13 @@
   grid-column: 3;
   justify-self: start;
   position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 2.4rem;
   height: 100%;
+  pointer-events: auto;
 }
 
 .desktopCentralPieEmpty {

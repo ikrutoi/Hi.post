@@ -18,7 +18,10 @@ import type { DispatchDate } from '@entities/date'
 import { getCurrentDate } from '@shared/utils/date'
 import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
 import { useSizeFacade } from '@layout/application/facades'
-import { useMobileArchiveSlotSecondClickHint } from '@layout/application/hooks'
+import {
+  useArchiveCenterCycleClickHint,
+  useMobileArchiveSlotSecondClickHint,
+} from '@layout/application/hooks'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import { CardSection } from '@shared/config/constants'
 import { CardPieProps } from '../domain/types'
@@ -83,6 +86,7 @@ export const CardPie: React.FC<CardPieProps> = ({
   rightPieCenterAffordance = null,
   rightPieCenterEmpty = false,
   rightPieCenterArchiveCycleHint = false,
+  rightPieCenterArchiveCycleHintViewMode = null,
 }) => {
   const pieDefsUid = React.useId().replace(/:/g, '')
   const [centerPressSeq, setCenterPressSeq] = React.useState(0)
@@ -264,9 +268,16 @@ export const CardPie: React.FC<CardPieProps> = ({
   const centerPlanCycleHint = useMobileArchiveSlotSecondClickHint(
     Boolean(leftPieCenterPlanCycleHint && station === 'left'),
   )
-  const centerArchiveCycleHint = useMobileArchiveSlotSecondClickHint(
-    Boolean(rightPieCenterArchiveCycleHint && station === 'right'),
-  )
+  const archivePostcardLocalId =
+    station === 'right' && id != null && id !== '' && !Number.isNaN(Number(id))
+      ? Number(id)
+      : null
+  const centerArchiveCycleHint = useArchiveCenterCycleClickHint({
+    enabled: Boolean(rightPieCenterArchiveCycleHint && station === 'right'),
+    source: listArchiveSource,
+    viewMode: rightPieCenterArchiveCycleHintViewMode,
+    postcardLocalId: archivePostcardLocalId,
+  })
   const rightCenterActionEnabled = onRightPieCenterClick != null
 
   return (

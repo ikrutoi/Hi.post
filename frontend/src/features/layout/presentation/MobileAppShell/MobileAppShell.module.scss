@@ -817,6 +817,7 @@
   position: absolute;
   inset: 0;
   opacity: 0;
+  pointer-events: none;
   transition-property: opacity;
   transition-timing-function: ease;
   will-change: opacity;
@@ -824,6 +825,7 @@
 
 .mobileArchivePieRevealOpaque {
   opacity: 1;
+  pointer-events: auto;
 }
 
 .mobileArchivePieRevealBlank {
@@ -1034,6 +1036,7 @@ $mobile-central-pie-envelope-empty-icon-width: 40%;
   left: calc(100% + 0.35rem);
   top: 0;
   bottom: 0;
+  z-index: 4;
   width: var(--mobile-section-toolbar-key-size, #{iconButton.$toolbar-hit-size-standard});
   display: flex;
   align-items: center;

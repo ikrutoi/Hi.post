@@ -26,6 +26,8 @@ import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/
 import {
   buildCartArchiveToggleCommands,
   buildHistoryArchiveToggleCommands,
+  resolveCartArchiveViewMode,
+  resolveHistoryArchiveViewMode,
 } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 import { isCartOwnedNotebookStrip } from '@date/calendar/application/logic/calendarStripSection'
 import {
@@ -43,6 +45,9 @@ import {
   selectNotebookStripTab,
   selectLastCartArchiveView,
   selectLastHistoryArchiveView,
+  selectHistoryOpenDayPanelArchiveLocalId,
+  resolveRightListArchivePostcardLocalIdWithPeek,
+  resolveRightListArchiveSourceForLocalId,
 } from '@date/calendar/infrastructure/selectors'
 import {
   setCardtextListPanelOpen,
@@ -125,7 +130,10 @@ import { UserLoginRightSlot } from '@features/auth/presentation/UserLoginRightSl
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { useDateStripSectionForNotebookTabs } from '@date/presentation/useDateStripSectionForNotebookTabs'
-import { useMobileVisualViewport } from '@layout/application/hooks/useMobileVisualViewport'
+import {
+  isArchiveCenterCycleHintEligible,
+  useMobileVisualViewport,
+} from '@layout/application/hooks'
 import {
   computeCartLegendStatusCounts,
   computeHistoryLegendStatusCounts,
@@ -227,6 +235,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const cartListSelectedLocalId = useAppSelector(selectCartListSelectedLocalId)
   const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
   const historyListSelectedLocalId = useAppSelector(selectHistoryListSelectedLocalId)
+  const historyOpenDayPanelArchiveLocalId = useAppSelector(
+    selectHistoryOpenDayPanelArchiveLocalId,
+  )
   const cartItems = useAppSelector(selectCartItems)
   const notebookStripSection = useDateStripSectionForNotebookTabs()
   const activeSection = useAppSelector(selectActiveSection)
@@ -379,25 +390,25 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     localId: number
     source: 'cart' | 'history'
   } | null => {
-    if (cartListPanelOpen) {
-      return cartListSelectedLocalId != null
-        ? { localId: cartListSelectedLocalId, source: 'cart' }
-        : null
-    }
-    if (historyListPanelOpen) {
-      return historyListSelectedLocalId != null
-        ? { localId: historyListSelectedLocalId, source: 'history' }
-        : null
-    }
-    if (isCartOwnedNotebookStrip(notebookStripSection)) {
-      return cartListSelectedLocalId != null
-        ? { localId: cartListSelectedLocalId, source: 'cart' }
-        : null
-    }
-    if (notebookStripSection === 'history') {
-      return historyListSelectedLocalId != null
-        ? { localId: historyListSelectedLocalId, source: 'history' }
-        : null
+    const localId = resolveRightListArchivePostcardLocalIdWithPeek({
+      cartListPanelOpen,
+      cartListSelectedLocalId,
+      historyListPanelOpen,
+      historyListSelectedLocalId,
+      historyOpenDayPanelArchiveLocalId,
+      notebookStripTab: notebookStripSection,
+      cartItems,
+      activePieSideRight: activePieSide === 'right',
+    })
+    if (localId != null) {
+      const source =
+        resolveRightListArchiveSourceForLocalId(localId, {
+          cartListSelectedLocalId,
+          historyListSelectedLocalId,
+          historyOpenDayPanelArchiveLocalId,
+          cartItems,
+        }) ?? 'cart'
+      return { localId, source }
     }
     if (
       activePieSide === 'right' &&
@@ -412,10 +423,12 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     return null
   }, [
     activePieSide,
+    cartItems,
     cartListPanelOpen,
     cartListSelectedLocalId,
     historyListPanelOpen,
     historyListSelectedLocalId,
+    historyOpenDayPanelArchiveLocalId,
     mirrorTargetLocalId,
     mirrorListArchiveSource,
     notebookStripSection,
@@ -520,20 +533,54 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     notebookStripSection,
   ])
 
-  const showMobileArchiveCenterCycleHint = useMemo(() => {
-    if (mobileCentralPieDisplay !== 'archive') return false
-    if (rightPieCenterAffordance !== 'cycleForward') return false
+  const mobileArchiveCenterCycleHintViewMode = useMemo(():
+    | 'list'
+    | 'calendar'
+    | null => {
     const source = mobileCentralArchivePreview?.source
-    if (source === 'cart') return cartUnderlyingPostcardCount > 1
-    if (source === 'history') return historyUnderlyingPostcardCount > 1
-    return false
+    if (source === 'cart') {
+      return resolveCartArchiveViewMode({
+        cartListPanelOpen,
+        notebookStripTab: notebookStripSection,
+      }) === 'calendar'
+        ? 'calendar'
+        : 'list'
+    }
+    if (source === 'history') {
+      return resolveHistoryArchiveViewMode({
+        historyListPanelOpen,
+        notebookStripTab: notebookStripSection,
+        activeSection,
+      }) === 'calendar'
+        ? 'calendar'
+        : 'list'
+    }
+    return null
   }, [
-    mobileCentralPieDisplay,
-    rightPieCenterAffordance,
     mobileCentralArchivePreview?.source,
-    cartUnderlyingPostcardCount,
-    historyUnderlyingPostcardCount,
+    cartListPanelOpen,
+    notebookStripSection,
+    historyListPanelOpen,
+    activeSection,
   ])
+
+  const showMobileArchiveCenterCycleHint = useMemo(
+    () =>
+      mobileCentralPieDisplay === 'archive' &&
+      isArchiveCenterCycleHintEligible({
+        cycleForward: rightPieCenterAffordance === 'cycleForward',
+        source: mobileCentralArchivePreview?.source ?? null,
+        cartPostcardCount: cartUnderlyingPostcardCount,
+        historyPostcardCount: historyUnderlyingPostcardCount,
+      }),
+    [
+      mobileCentralPieDisplay,
+      rightPieCenterAffordance,
+      mobileCentralArchivePreview?.source,
+      cartUnderlyingPostcardCount,
+      historyUnderlyingPostcardCount,
+    ],
+  )
 
   /**
    * Multi-date minis: all accented in overview; only the cycled pie while browsing.
@@ -576,13 +623,12 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     mobileCentralArchivePostcardStatus === 'cart' ||
     mobileCentralArchivePostcardStatus === 'cartBlocked'
 
-  const showMobileCentralPostcardPieCartToolbar =
-    mobileCentralPieDisplay === 'archive' && isCartArchivePiePostcardStatus
-
-  const showMobileCentralPostcardPieHistoryToolbar =
+  const showMobileCentralArchiveDeleteToolbar =
     mobileCentralPieDisplay === 'archive' &&
-    mobileCentralArchivePostcardStatus != null &&
-    !isCartArchivePiePostcardStatus
+    mobileCentralArchivePreview != null
+
+  const showMobileCentralPostcardPieCartToolbar =
+    showMobileCentralArchiveDeleteToolbar && isCartArchivePiePostcardStatus
 
   const canFavoriteCardphotoTemplatePreview =
     cardphotoAssetData?.status === 'inLine' ||
@@ -1057,6 +1103,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                               rightPieCenterArchiveCycleHint={
                                 showMobileArchiveCenterCycleHint
                               }
+                              rightPieCenterArchiveCycleHintViewMode={
+                                mobileArchiveCenterCycleHintViewMode
+                              }
                             />
                           ) : (
                             <div
@@ -1182,21 +1231,16 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                         />
                       </div>
                     ) : null}
-                    {showMobileCentralPostcardPieCartToolbar ? (
+                    {showMobileCentralArchiveDeleteToolbar ? (
                       <div className={styles.mobilePieToolbar}>
                         <Toolbar
-                          section="postcardPieCart"
+                          section={
+                            showMobileCentralPostcardPieCartToolbar
+                              ? 'postcardPieCart'
+                              : 'postcardPieHistory'
+                          }
                           onActionClick={onPostcardPieCartToolbarAction}
                           stateOverride={postcardPieCartToolbarStateOverride}
-                          mergedWithCenter
-                        />
-                      </div>
-                    ) : null}
-                    {showMobileCentralPostcardPieHistoryToolbar ? (
-                      <div className={styles.mobilePieToolbar}>
-                        <Toolbar
-                          section="postcardPieHistory"
-                          onActionClick={onPostcardPieCartToolbarAction}
                           mergedWithCenter
                         />
                       </div>

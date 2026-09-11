@@ -10,9 +10,10 @@ import {
 } from '@date/application/helpers/historyListPanelEntries'
 import { cartListStatusSegmentForLocalId } from '@date/calendar/application/logic/cartStripDayPostcardSelection'
 import {
+  readDisplayedRightListArchivePostcardLocalId,
   selectHistoryListSelectedLocalId,
-  selectRightListArchivePostcardLocalId,
 } from '@date/calendar/infrastructure/selectors'
+import { selectIsMobileLayout } from '@layout/infrastructure/selectors'
 
 export type ArchiveSelectionAdvance = {
   cart?: { segment: CartListStatusSegment; localId: number | null }
@@ -20,7 +21,7 @@ export type ArchiveSelectionAdvance = {
   archiveSource?: 'cart' | 'history'
 }
 
-/** Следующая строка списка после удаления: тот же индекс или предыдущая. */
+/** Следующая строка списка после удаления: тот же индекс; последняя → первая. */
 export function nextLocalIdAfterRemoval(
   orderedLocalIds: readonly number[],
   removedLocalId: number,
@@ -31,6 +32,9 @@ export function nextLocalIdAfterRemoval(
   const remaining = orderedLocalIds.filter((id) => id !== removedLocalId)
   if (remaining.length === 0) return null
 
+  if (idx === orderedLocalIds.length - 1) {
+    return remaining[0] ?? null
+  }
   return remaining[Math.min(idx, remaining.length - 1)] ?? null
 }
 
@@ -65,8 +69,18 @@ export function resolveArchiveSelectionAdvance(
     result.archiveSource ??= 'history'
   }
 
+  const displayedBeforeRemove = readDisplayedRightListArchivePostcardLocalId(
+    state,
+    {
+      isMobileLayout: selectIsMobileLayout(state),
+      /** Peek archive не в Redux — при удалении смотрим с peek. */
+      activePieSideRight: true,
+      pinnedLocalId: null,
+    },
+  )
+
   if (
-    selectRightListArchivePostcardLocalId(state) === removedLocalId &&
+    displayedBeforeRemove === removedLocalId &&
     result.cart == null &&
     result.historyLocalId === undefined
   ) {
