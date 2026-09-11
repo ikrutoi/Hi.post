@@ -38,7 +38,9 @@ import {
 import {
   clearListCardphotoBadgePulse,
   pulseListCardphotoBadge,
+  markLoading as markCardphotoAddLoading,
 } from '@/features/cardphoto/infrastructure/state'
+import { selectIsLoading as selectCardphotoAddLoading } from '@cardphoto/infrastructure/selectors/cardphotoUiSelectors'
 import { getCardphotoListSortIconForMode } from '@cardphoto/application/helpers/cardphotoListSort'
 import {
   getHistoryListSortIconForMode,
@@ -151,6 +153,7 @@ export const Toolbar = ({
   const listCardtextBadgePulsing = useAppSelector(
     selectListCardtextBadgePulsing,
   )
+  const cardphotoAddLoading = useAppSelector(selectCardphotoAddLoading)
   const cardtextPlainText = useAppSelector(selectCardtextPlainText)
   const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
   const sandboxSender = useAppSelector(selectArchiveSandboxSender)
@@ -594,6 +597,12 @@ export const Toolbar = ({
 
     const badgeDot =
       mergedOptions?.badgeDot ?? (rawData as any)?.options?.badgeDot
+    const showCardphotoAddSpinner =
+      key === 'cardphotoAdd' && cardphotoAddLoading
+    const showBadgeDot = Boolean(badgeDot) && !showCardphotoAddSpinner
+    if (showCardphotoAddSpinner) {
+      buttonStatus = 'enabled'
+    }
 
     const applyIconColor =
       effectiveIconKey === 'apply'
@@ -726,21 +735,34 @@ export const Toolbar = ({
           effectiveIconKey === 'favoriteFilled' &&
             buttonStatus === 'active' &&
             styles.toolbarKeyFavoriteActive,
+          showCardphotoAddSpinner && styles.toolbarKeyCardphotoAddLoading,
           groupStatus === 'disabled' && styles.toolbarKeyDisabled,
         )}
         style={forcedIconColor != null ? { color: forcedIconColor } : undefined}
         data-icon-key={effectiveIconKey}
         data-icon-state={buttonStatus}
-        disabled={buttonStatus === 'disabled' || groupStatus === 'disabled'}
+        disabled={
+          showCardphotoAddSpinner
+            ? false
+            : buttonStatus === 'disabled' || groupStatus === 'disabled'
+        }
+        aria-busy={showCardphotoAddSpinner ? true : undefined}
         onPointerDown={(e) => {
           /** Touch + open keyboard: act on pointerdown before viewport reflow steals the tap. */
           if (e.pointerType === 'mouse' && e.button !== 0) return
+          if (key === 'cardphotoAdd' && cardphotoAddLoading) {
+            e.preventDefault()
+            return
+          }
           if (groupStatus === 'disabled' || buttonStatus === 'disabled') {
             e.preventDefault()
             return
           }
 
           e.preventDefault()
+          if (key === 'cardphotoAdd') {
+            dispatch(markCardphotoAddLoading())
+          }
           if (
             (key === 'addList' || key === 'removeFromList') &&
             (section === 'senderView' || section === 'recipientView')
@@ -808,7 +830,11 @@ export const Toolbar = ({
         ) : effectiveIconKey === 'apply' ? (
           <IconApplyBold style={{ color: applyIconColor }} />
         ) : (
-          getToolbarIcon({
+          <>
+            {showCardphotoAddSpinner && (
+              <span className={styles.toolbarKeySpinnerRing} aria-hidden />
+            )}
+            {getToolbarIcon({
             key:
               historyListPanelOpen &&
               (section === 'rightSidebar' || section === 'history') &&
@@ -841,7 +867,8 @@ export const Toolbar = ({
                           key === 'panelDensity2'
                         ? recipientAddressListPanelDensity
                         : undefined,
-          })
+            })}
+          </>
         )}
 
         {hasBadge && (
@@ -856,7 +883,7 @@ export const Toolbar = ({
             <span className={styles.toolbarBadgeValue}>{badge}</span>
           </span>
         )}
-        {Boolean(badgeDot) && (
+        {showBadgeDot && (
           <span
             className={styles.toolbarBadgeDot}
             title="Return to unsaved address"

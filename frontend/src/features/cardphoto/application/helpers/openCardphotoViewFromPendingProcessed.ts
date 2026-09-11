@@ -6,6 +6,7 @@ import {
   clearSessionPendingProcessedId,
   setCardphotoViewEditMode,
   setProcessedImage,
+  markLoaded,
 } from '@cardphoto/infrastructure/state'
 import {
   selectCardphotoAssetToolbar,
@@ -98,6 +99,7 @@ export function* openCardphotoViewFromPendingProcessedSaga(): SagaIterator<boole
   yield put(clearCardphotoViewReturnSnapshot())
   yield put(setProcessedImage(prepareForRedux(processedMeta)))
   yield call(rebuildConfigFromMeta, processedMeta, false)
+  yield put(markLoaded())
   yield fork(syncToolbarContext)
   yield call(syncCardphotoAddToolbarState)
 

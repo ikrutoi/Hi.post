@@ -366,6 +366,49 @@
       background-color: $color-font-disabled;
     }
   }
+
+  .toolbarKeyCardphotoAddLoading {
+    pointer-events: none;
+
+    > svg {
+      position: relative;
+      z-index: 2;
+    }
+  }
+
+  .toolbarKeySpinnerRing {
+    position: absolute;
+    top: $toolbar-badge-position-offset;
+    right: $toolbar-badge-position-offset;
+    width: calc(#{$toolbar-badge-height} - 1px);
+    height: calc(#{$toolbar-badge-height} - 1px);
+    min-width: calc(#{$toolbar-badge-height} - 1px);
+    border-radius: 50%;
+    background: conic-gradient(
+      from 0deg,
+      $color-app-sidebar-icon-active 0deg 75deg,
+      rgba(127, 127, 127, 0.4) 75deg 360deg
+    );
+    mask: radial-gradient(
+      farthest-side,
+      transparent calc(100% - 2px),
+      #000 calc(100% - 2px)
+    );
+    -webkit-mask: radial-gradient(
+      farthest-side,
+      transparent calc(100% - 2px),
+      #000 calc(100% - 2px)
+    );
+    animation: toolbarKeySpinnerRing 0.75s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  @keyframes toolbarKeySpinnerRing {
+    to {
+      transform: rotate(360deg);
+    }
+  }
 }
 
 .toolbarCardphotoProcessed,
@@ -2377,6 +2420,14 @@
     height: $toolbar-badge-dot-size-mobile;
     top: $toolbar-badge-dot-offset-mobile;
     right: $toolbar-badge-dot-offset-mobile;
+  }
+
+  .toolbar .toolbarKeySpinnerRing {
+    top: $toolbar-badge-position-offset;
+    right: $toolbar-badge-position-offset;
+    width: calc(#{$toolbar-badge-height} - 1px);
+    height: calc(#{$toolbar-badge-height} - 1px);
+    min-width: calc(#{$toolbar-badge-height} - 1px);
   }
 
   // Uniform horizontal spacing: factory, template lists, address lists, aroma, …

@@ -3,11 +3,20 @@ export function resolveCardphotoAddToolbarState(params: {
   hasPendingProcessed: boolean
   /** Оригинал загрузки в памяти, create закрыт — кружок-напоминание. */
   shouldShowOriginalDot: boolean
+  /** Gallery / reopen / IDB prep in progress — block repeat taps. */
+  isLoading?: boolean
 }): {
-  state: 'enabled'
+  state: 'enabled' | 'disabled'
   options: { badge: number | null; badgeDot: boolean }
 } {
-  const { hasPendingProcessed, shouldShowOriginalDot } = params
+  const { hasPendingProcessed, shouldShowOriginalDot, isLoading } = params
+
+  if (isLoading) {
+    return {
+      state: 'disabled',
+      options: { badge: null, badgeDot: false },
+    }
+  }
 
   return {
     state: 'enabled',

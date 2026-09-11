@@ -239,6 +239,7 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
 
 function* onCancelFileDialog(): SagaIterator {
   yield put(markLoaded())
+  yield call(syncCardphotoAddToolbarState)
 
   yield put(
     updateGroupStatus({

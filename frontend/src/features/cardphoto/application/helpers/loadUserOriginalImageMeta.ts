@@ -40,6 +40,7 @@ function* fetchBlobFromUrl(url: string): SagaIterator<Blob | null> {
 export function* loadUserOriginalImageMetaSaga(): SagaIterator<ImageMeta | null> {
   const state = yield select(selectCardphotoState)
   const persisted: ImageMeta | null = state?.userOriginalData ?? null
+  if (!persisted?.id) return null
 
   const record: ImageRecord | null = yield call(
     [storeAdapters.userImages, 'getById'] as const,

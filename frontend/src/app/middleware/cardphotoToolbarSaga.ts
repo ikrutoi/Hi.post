@@ -54,6 +54,7 @@ import {
   selectIsCardphotoViewEditMode,
   selectCardphotoViewReturnSnapshot,
   selectUserOriginalDraftConfig,
+  selectIsLoading as selectCardphotoIsLoading,
 } from '@cardphoto/infrastructure/selectors/cardphotoUiSelectors'
 import {
   selectActiveImage,
@@ -238,10 +239,14 @@ function* restoreCardphotoViewFromReturnSnapshotSaga(
   yield call(rebuildConfigFromMeta, assetMeta, false)
 }
 
-function* handleCloseCardphotoCreateSaga(): SagaIterator {
+function* handleCloseCardphotoCreateSaga(options?: {
+  skipDraftPersist?: boolean
+}): SagaIterator {
   try {
     /** Save rotation/crop draft before any branch clears or rebuilds assetConfig. */
-    yield call(persistUserOriginalEditorDraftSaga)
+    if (!options?.skipDraftPersist) {
+      yield call(persistUserOriginalEditorDraftSaga)
+    }
 
     const snapshot: CardphotoViewReturnSnapshot | null = yield select(
       selectCardphotoViewReturnSnapshot,
@@ -368,10 +373,12 @@ export function* syncCardphotoAddToolbarState(): SagaIterator {
   const shouldShowOriginalDot: boolean = yield select(
     selectCardphotoOriginalReminderActive,
   )
+  const isLoading: boolean = yield select(selectCardphotoIsLoading)
 
   const { state: addState, options } = resolveCardphotoAddToolbarState({
     hasPendingProcessed,
     shouldShowOriginalDot,
+    isLoading,
   })
 
   yield put(
@@ -392,10 +399,12 @@ function* buildCardphotoAddToolbarPatch(): SagaIterator<
   const shouldShowOriginalDot: boolean = yield select(
     selectCardphotoOriginalReminderActive,
   )
+  const isLoading: boolean = yield select(selectCardphotoIsLoading)
 
   return resolveCardphotoAddToolbarState({
     hasPendingProcessed: !!pendingProcessedId,
     shouldShowOriginalDot,
+    isLoading,
   })
 }
 
@@ -419,7 +428,14 @@ function* handleDeleteCardphotoCreateUploadSaga(): SagaIterator {
     yield put(setOriginalUploadReminderActive(false))
     yield put(clearUserOriginalDraftConfig())
 
-    /** Stay in create/edit session: clear slot only; View restore stays on close/return. */
+    const isMobileLayout: boolean = yield select(selectIsMobileLayout)
+    if (isMobileLayout) {
+      /** Mobile: leave create after removing the uploaded original (restore View if needed). */
+      yield call(handleCloseCardphotoCreateSaga, { skipDraftPersist: true })
+      return
+    }
+
+    /** Desktop: stay in create/edit session — clear slot only. */
     yield put(setAssetData(null))
     yield put(clearCurrentConfig())
 
@@ -573,9 +589,16 @@ export function* handleCardphotoToolbarAction(
       section === 'cardphotoCreate' ||
       section === 'cardphotoProcessed'
     ) {
+      const isLoading: boolean = yield select(selectCardphotoIsLoading)
       const addVisual: ReturnType<typeof readCardphotoAddToolbarVisual> =
         yield select(readCardphotoAddToolbarVisual)
-      if (!addVisual.enabled) return
+      /** Toolbar may disable Add for spinner before saga runs — still proceed. */
+      if (!addVisual.enabled && !isLoading) return
+
+      if (!isLoading) {
+        yield put(markLoading())
+      }
+      yield call(syncCardphotoAddToolbarState)
 
       const originalReminderActive: boolean = yield select(
         selectCardphotoOriginalReminderActive,
@@ -586,14 +609,6 @@ export function* handleCardphotoToolbarAction(
           reopenCardphotoCreateFromSavedOriginalSaga,
         )
         if (reopened) return
-      } else {
-        const userOriginal: ImageMeta | null = yield select(selectUserImage)
-        if (userOriginal) {
-          const reopened: boolean = yield call(
-            reopenCardphotoCreateFromSavedOriginalSaga,
-          )
-          if (reopened) return
-        }
       }
 
       const pendingProcessedId: string | null = yield call(

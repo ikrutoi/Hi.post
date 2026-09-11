@@ -1,8 +1,10 @@
 import { useRef } from 'react'
+import { useAppSelector } from '@app/hooks'
 import { TOOLBAR_SECTIONS } from '@toolbar/domain/types'
 import { handleMouseLeaveBtn } from '../helpers'
 import { useToolbarFacade } from '../facades'
 import { CardphotoToolbarState } from '../../domain/types'
+import { selectIsLoading as selectCardphotoAddLoading } from '@cardphoto/infrastructure/selectors/cardphotoUiSelectors'
 import type { MouseEvent } from 'react'
 import type { ToolbarSection } from '@toolbar/domain/types'
 import type { IconState } from '@shared/config/constants'
@@ -12,6 +14,7 @@ export const useCardphotoToolbarUI = (section: ToolbarSection) => {
 
   const { state, actions } = useToolbarFacade('cardphoto')
   const { crop, download, cardphotoAdd } = state as CardphotoToolbarState
+  const cardphotoAddLoading = useAppSelector(selectCardphotoAddLoading)
 
   const buttonIconRefs = useRef<Record<string, HTMLButtonElement | null>>({})
 
@@ -66,7 +69,11 @@ export const useCardphotoToolbarUI = (section: ToolbarSection) => {
       actions.updateKey('download', 'enabled')
     }
 
-    if (btnType === 'cardphotoAdd' && state.cardphotoAdd !== 'disabled') {
+    if (
+      btnType === 'cardphotoAdd' &&
+      !cardphotoAddLoading &&
+      state.cardphotoAdd !== 'disabled'
+    ) {
       actions.updateKey('cardphotoAdd', 'enabled')
     }
 

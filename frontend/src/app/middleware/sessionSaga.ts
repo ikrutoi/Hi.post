@@ -763,10 +763,12 @@ export function* hydrateAppSession() {
         (appliedSameAsProcessedAsset ? assetResolved : null)
 
       const userIdb = findIdbImageMetaById(userOriginalData?.id, idbById)
-      const userResolved =
-        userIdb != null
+      /** Do not resurrect orphan IDB userImages when session has no user original. */
+      const userResolved = userOriginalData?.id
+        ? userIdb != null
           ? hydrateMeta(userIdb)
           : hydrateSessionImageMeta(userOriginalData, userImageMeta)
+        : null
 
       const processedMeta = hydrateMeta(rawProcess)
 
