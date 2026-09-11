@@ -76,11 +76,14 @@ function* handleRemoveCartPostcard(
     return
   }
 
-  yield put(removeItem(localId))
-
+  /** Selection first — иначе один кадр без valid localId ломает archive toolbar. */
   if (selectionAdvance != null) {
     yield* applyArchiveSelectionAdvance(selectionAdvance)
-  } else {
+  }
+
+  yield put(removeItem(localId))
+
+  if (selectionAdvance == null) {
     const stateAfterRemove: RootState = yield select()
     if (selectHistoryListSelectedLocalId(stateAfterRemove) === localId) {
       yield put(setHistoryListSelectedLocalId(null))

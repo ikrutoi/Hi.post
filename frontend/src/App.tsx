@@ -158,7 +158,14 @@ import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { applyRightListArchiveToolbarVisuals } from '@toolbar/application/syncRightListArchiveToolbarVisuals'
 import { notebookSessionRestored } from '@date/calendar/application/orchestration/notebookOrchestration.events'
-import { resolveCartArchiveViewMode, resolveHistoryArchiveViewMode } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
+import {
+  buildCartCalendarCommands,
+  buildHistoryCalendarCommandsDesktop,
+  buildNotebookCartTabCommandsMobile,
+  buildNotebookHistoryTabCommandsMobile,
+  resolveCartArchiveViewMode,
+  resolveHistoryArchiveViewMode,
+} from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 import {
   computeCartLegendStatusCounts,
   computeHistoryLegendStatusCounts,
@@ -238,8 +245,6 @@ const App = () => {
   )
   const [colorToolbar, setColorToolbar] = useState<boolean | null>(null)
   const [activePieSide, setActivePieSide] = useState<'left' | 'right'>('left')
-  const activePieSideRef = useRef(activePieSide)
-  activePieSideRef.current = activePieSide
   /** After turning off cardPieCopy: switch to left pie and keep `cardPieEdit` enabled until clicked again. */
   const [
     suppressCardPieEditActiveAfterCopy,
@@ -836,7 +841,6 @@ const App = () => {
       cardPieEditEngaged &&
       cardPieEditHydrateScope === 'section' &&
       rightListArchiveSource === 'history'
-    const returnMode = archiveCartCenterReturnModeRef.current
 
     setRightPieCardphotoPeekNoToolbar(false)
     setRightPieCardtextPeekNoToolbar(false)
@@ -850,10 +854,10 @@ const App = () => {
         setSuppressCardPieEditActiveAfterCopy(true)
       }
       dispatch(clearArchiveEnvelopeSandbox())
-      dispatch(setNotebookStripTab('history'))
-      dispatch(setActiveSection('date'))
-      if (returnMode === 'list') {
-        dispatch(setHistoryListPanelOpen(true))
+      for (const command of isMobileLayout
+        ? buildNotebookHistoryTabCommandsMobile()
+        : buildHistoryCalendarCommandsDesktop()) {
+        dispatch(command)
       }
       archiveCartCenterReturnModeRef.current = null
       return
@@ -955,6 +959,7 @@ const App = () => {
     cardPieEditHydrateScope,
     rightListArchiveSource,
     endCardPieEditEngaged,
+    isMobileLayout,
   ])
 
   const handleRightPieCenterCartClick = useCallback(() => {
@@ -974,7 +979,6 @@ const App = () => {
       rightListArchiveSource === 'cart'
     const wasDatePickReturn =
       cartCalendarDatePickMode && rightListArchiveSource === 'cart'
-    const returnMode = archiveCartCenterReturnModeRef.current
 
     setRightPieCardphotoPeekNoToolbar(false)
     setRightPieCardtextPeekNoToolbar(false)
@@ -984,8 +988,6 @@ const App = () => {
     releaseCartDatePickListEntryOwnership()
     cartDatePickOwnedByListEntryRef.current = false
     dispatch(endCartCalendarDatePick())
-    dispatch(setNotebookStripTab('cart'))
-    dispatch(setActiveSection('date'))
     if (wasSectionPeek || wasSectionEditReturn || wasDatePickReturn) {
       if (wasSectionEditReturn) {
         endCardPieEditEngaged()
@@ -993,12 +995,16 @@ const App = () => {
         setSuppressCardPieEditActiveAfterCopy(true)
       }
       dispatch(clearArchiveEnvelopeSandbox())
-      if (returnMode === 'list') {
-        dispatch(setCartListPanelOpen(true))
+      for (const command of isMobileLayout
+        ? buildNotebookCartTabCommandsMobile()
+        : buildCartCalendarCommands()) {
+        dispatch(command)
       }
       archiveCartCenterReturnModeRef.current = null
       return
     }
+    dispatch(setNotebookStripTab('cart'))
+    dispatch(setActiveSection('date'))
 
     const freshState = store.getState()
     const freshCardsByDateMap = selectCardsByDateMap(freshState)
@@ -1136,32 +1142,25 @@ const App = () => {
     cardPieEditHydrateScope,
     cartCalendarDatePickMode,
     endCardPieEditEngaged,
+    isMobileLayout,
   ])
 
   const handleArchivePieCenterClick = useCallback(() => {
-    if (
-      notebookStripTab === 'cart' ||
-      notebookStripTab === 'cartdate' ||
-      rightListArchiveSource === 'cart'
-    ) {
+    if (rightListArchiveSource === 'cart') {
       handleRightPieCenterCartClick()
       return
     }
-    if (
-      notebookStripTab === 'history' ||
-      rightListArchiveSource === 'history'
-    ) {
+    if (rightListArchiveSource === 'history') {
       handleRightPieCenterHistoryClick()
     }
   }, [
-    notebookStripTab,
     rightListArchiveSource,
     handleRightPieCenterCartClick,
     handleRightPieCenterHistoryClick,
   ])
 
   const rightPieOnCenterClick =
-    rightListArchiveSource != null ? handleArchivePieCenterClick : undefined
+    rightListArchiveLocalId != null ? handleArchivePieCenterClick : undefined
 
   /**
    * Cart / History list or calendar: center cycles forward.
@@ -2094,7 +2093,8 @@ const App = () => {
     (state: ReturnType<typeof store.getState>) =>
       readDisplayedRightListArchivePostcardLocalId(state, {
         isMobileLayout,
-        activePieSideRight: activePieSideRef.current === 'right',
+        /** Центральный archive CardPie: тот же localId, что на экране (не зависит от activePieSide). */
+        activePieSideRight: true,
         pinnedLocalId:
           rightListArchivePinnedForLeftFactory?.localId ?? null,
       }),

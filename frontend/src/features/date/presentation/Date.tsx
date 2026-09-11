@@ -176,8 +176,17 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   )
   const { legendStatusCounts: cartLegendStatusCounts, cartUnderlyingPostcardCount } =
     useMemo(() => computeCartLegendStatusCounts(cartItems), [cartItems])
+  /**
+   * Cart/history archive: CardPie date sector → date peek (not day grid).
+   * Full calendar — центральная кнопка CardPie.
+   */
+  const showArchiveListDatePeek =
+    rightPieDatePeekNoToolbar &&
+    (section === 'cart' || section === 'history')
+
   const showMobileSliderToolbar =
     isMobileLayout &&
+    !showArchiveListDatePeek &&
     (archiveCalendarSurface ||
       (!rightPieDatePeekNoToolbar &&
         !(assemblyDateSimplifiedPeek && section === 'date')))
@@ -238,9 +247,10 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
     !archiveCalendarSurface
   const peekDispatchDate = useMemo(() => {
     if (
-      !archiveCalendarSurface &&
-      rightPieDatePeekNoToolbar &&
-      section === 'date'
+      showArchiveListDatePeek ||
+      (!archiveCalendarSurface &&
+        rightPieDatePeekNoToolbar &&
+        section === 'date')
     ) {
       return peekPrimaryDispatchDate(listRowInner)
     }
@@ -249,6 +259,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
     }
     return null
   }, [
+    showArchiveListDatePeek,
     archiveCalendarSurface,
     rightPieDatePeekNoToolbar,
     showAssemblyDatePeek,
@@ -380,9 +391,10 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   )
 
   if (
-    !archiveCalendarSurface &&
-    (rightPieDatePeekNoToolbar || showAssemblyDatePeek) &&
-    section === 'date'
+    showArchiveListDatePeek ||
+    (!archiveCalendarSurface &&
+      (rightPieDatePeekNoToolbar || showAssemblyDatePeek) &&
+      section === 'date')
   ) {
     const peekDates =
       showAssemblyDatePeek && appliedDispatchDates.length > 0

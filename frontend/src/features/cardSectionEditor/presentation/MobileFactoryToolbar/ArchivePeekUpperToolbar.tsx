@@ -51,6 +51,8 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
     requestSectionEditFromPeek,
     rightPieDatePeekNoToolbar,
     rightPieEnvelopePeekNoToolbar,
+    mirrorListArchiveSource,
+    listRowPostcardStatus,
   } = useRightListArchiveMini()
 
   const aromaTint =
@@ -62,9 +64,17 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
   const cardphotoTint =
     assemblyCardphotoSimplifiedPeek ||
     (isArchiveSectionPeekActive && activeSection === 'cardphoto')
-  /** Date: assembly apply-peek или archive date sector peek. */
+  /** Date peek в корзине/истории — фон полосы strip, не $color-date-input. */
+  const archiveListDatePeek =
+    activeSection === 'date' &&
+    rightPieDatePeekNoToolbar &&
+    (mirrorListArchiveSource === 'cart' ||
+      mirrorListArchiveSource === 'history' ||
+      listRowPostcardStatus === 'cart' ||
+      listRowPostcardStatus === 'cartBlocked')
   const dateTint =
-    assemblyDateSimplifiedPeek || rightPieDatePeekNoToolbar
+    assemblyDateSimplifiedPeek ||
+    (rightPieDatePeekNoToolbar && !archiveListDatePeek)
   /** History/list-row envelope peek (cart uses EnvelopeInnerToolbar). */
   const envelopeTint =
     rightPieEnvelopePeekNoToolbar || assemblyRecipientSimplifiedPeek
@@ -126,6 +136,7 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
         cardtextTint && styles.upperRowCardtext,
         cardphotoTint && styles.upperRowCardphoto,
         dateTint && styles.upperRowDate,
+        archiveListDatePeek && styles.upperRowArchiveListDatePeek,
         envelopeTint && styles.upperRowEnvelope,
       )}
     >

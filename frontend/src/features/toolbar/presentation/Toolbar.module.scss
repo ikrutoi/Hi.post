@@ -1138,11 +1138,28 @@
 .toolbarHistory,
 .toolbarDate,
 .toolbarCart {
-  .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
+  .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']):not(
+      [data-icon-key='postcardEdit']
+    ) {
     color: $color-font-enabled-light;
 
     &:hover {
       background-color: $color-app-inner;
+    }
+  }
+
+  /**
+   * Archive date peek (cart/history): postcardEdit on strip chrome — transparent hit area.
+   */
+  .toolbarKey[data-icon-key='postcardEdit'].toolbarKeyEnabled {
+    color: $color-font-enabled-light;
+    background-color: transparent;
+
+    @include iconButton.toolbar-key-hover-fine-pointer {
+      &:hover {
+        color: $color-font-enabled-light;
+        background-color: transparent;
+      }
     }
   }
 

@@ -36,6 +36,8 @@ $list-panel-footer-band: calc(
   border-radius: 0.75rem;
 
   :global([data-shell-layout='desktop']) & {
+    border: none;
+    border-radius: 0;
     padding-top: calc(#{$desktop-factory-toolbar-stack-height} + 0.5rem);
 
     &.panelEmptyNoToolbar {

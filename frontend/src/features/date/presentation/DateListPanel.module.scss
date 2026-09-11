@@ -11,6 +11,11 @@
   background-color: #fff;
   border: 1px solid $color-app-strip;
   border-radius: 0.75rem;
+
+  :global([data-shell-layout='desktop']) & {
+    border: none;
+    border-radius: 0;
+  }
 }
 
 .panelScrollTrack {

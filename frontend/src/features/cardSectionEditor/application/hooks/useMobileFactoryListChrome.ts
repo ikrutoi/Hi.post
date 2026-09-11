@@ -466,6 +466,7 @@ export function useMobileFactoryListChrome() {
   )
 
   return {
+    archiveCalendarOpen,
     showMobileTemplateList,
     showMobileSectionTemplateList,
     showMobileTemplateListInCentralZone,

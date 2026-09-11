@@ -49,6 +49,8 @@ $list-panel-scroll-inset: 0.35rem;
   }
 
   :global([data-shell-layout='desktop']) & {
+    border: none;
+    border-radius: 0;
     padding-top: calc(
       #{$list-panel-compact-header-band-section-toolbar} + 0.5rem
     );

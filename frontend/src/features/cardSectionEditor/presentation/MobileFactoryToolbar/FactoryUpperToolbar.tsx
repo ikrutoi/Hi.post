@@ -43,6 +43,7 @@ export const FactoryUpperToolbar: React.FC<{
     ? sandboxRecipient.currentView
     : sessionRecipientView
   const {
+    archiveCalendarOpen,
     mobileSectionSimplifiedPeek,
     cartEnvelopeInnerPeekToolbar,
     showCardphotoListFactoryUpperToolbar,
@@ -68,6 +69,13 @@ export const FactoryUpperToolbar: React.FC<{
     isMobileLayout &&
     (activeSection === 'date' || activeSection === 'history')
 
+  /** Desktop cart/history calendar: nav row only (no assembly CardSectionToolbar). */
+  const suppressDesktopArchiveCalendarSectionToolbar =
+    !isMobileLayout &&
+    (activeSection === 'date' || activeSection === 'history') &&
+    archiveCalendarOpen &&
+    !mobileSectionSimplifiedPeek
+
   let content: React.ReactNode
   if (showPeekEmptyToolbarShell) {
     content = cartEnvelopeInnerPeekToolbar ? (
@@ -85,7 +93,10 @@ export const FactoryUpperToolbar: React.FC<{
     content = <CartListMobileFactoryUpperToolbar />
   } else if (isMobileLayout && showHistoryListFactoryUpperToolbar) {
     content = <HistoryListMobileFactoryUpperToolbar />
-  } else if (suppressCalendarUpperRow) {
+  } else if (
+    suppressCalendarUpperRow ||
+    suppressDesktopArchiveCalendarSectionToolbar
+  ) {
     content = <MobileDateCalendarToolbarNav />
   } else {
     content = <CardSectionToolbar />

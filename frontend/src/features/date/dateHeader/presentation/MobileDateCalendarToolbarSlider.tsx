@@ -4,7 +4,10 @@ import { useAppSelector } from '@app/hooks'
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
-import { selectIsHistoryListPanelOpen } from '@date/calendar/infrastructure/selectors'
+import {
+  selectIsHistoryListPanelOpen,
+  selectNotebookStripTab,
+} from '@date/calendar/infrastructure/selectors'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { useDateSwitcherController } from '@date/switcher/application/hooks/useDateSwitcherController'
@@ -51,14 +54,32 @@ export const DesktopDateCalendarToolbarSlider: React.FC = () => {
   const activeSection = useAppSelector(selectActiveSection)
   const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
   const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
+  const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const { rightPieDatePeekNoToolbar } = useRightListArchiveMini()
   const { assemblyDateSimplifiedPeek } = useMobileFactoryListChrome()
+
+  /** Same gates as `Date.tsx` `showMobileSliderToolbar` / `showArchiveListDatePeek`. */
+  const archiveCalendarSurface =
+    cartListPanelOpen ||
+    historyListPanelOpen ||
+    activeSection === 'history' ||
+    notebookStripTab === 'cart' ||
+    notebookStripTab === 'history' ||
+    notebookStripTab === 'cartdate'
+
+  const showArchiveListDatePeek =
+    rightPieDatePeekNoToolbar &&
+    (cartListPanelOpen ||
+      historyListPanelOpen ||
+      activeSection === 'history' ||
+      notebookStripTab === 'cart' ||
+      notebookStripTab === 'history')
 
   const show =
     !isMobileLayout &&
     (activeSection === 'date' || activeSection === 'history') &&
-    (cartListPanelOpen ||
-      historyListPanelOpen ||
+    !showArchiveListDatePeek &&
+    (archiveCalendarSurface ||
       (!rightPieDatePeekNoToolbar && !assemblyDateSimplifiedPeek))
 
   if (!show) return null
