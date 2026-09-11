@@ -13,8 +13,6 @@ export const ICON_KEYS = [
   'applyMediumCheck',
   'applyCheck',
   'close',
-  'closeBig',
-  'return',
   'user',
   'rotateLeft',
   'rotateRight',

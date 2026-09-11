@@ -10,7 +10,7 @@ type ListPanelCornerReturnProps = {
 
 export const ListPanelCornerReturn: React.FC<ListPanelCornerReturnProps> = ({
   onClick,
-  ariaLabel = 'Return to section',
+  ariaLabel = 'Close list',
 }) => {
   const { isMobileLayout } = useSizeFacade()
   if (!isMobileLayout) return null
@@ -25,9 +25,9 @@ export const ListPanelCornerReturn: React.FC<ListPanelCornerReturnProps> = ({
         onClick()
       }}
       aria-label={ariaLabel}
-      title="Return"
+      title="Close"
     >
-      {getToolbarIcon({ key: 'return' })}
+      {getToolbarIcon({ key: 'close' })}
     </button>
   )
 }

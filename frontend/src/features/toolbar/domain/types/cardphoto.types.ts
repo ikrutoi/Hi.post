@@ -81,11 +81,11 @@ export const CARDPHOTO_CREATE_UPPER_APPLY_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-/** Create upper: return справа → View. */
-export const CARDPHOTO_CREATE_UPPER_RETURN_TOOLBAR: ToolbarConfig = [
+/** Create upper: close справа → View. */
+export const CARDPHOTO_CREATE_UPPER_CLOSE_TOOLBAR: ToolbarConfig = [
   {
     group: 'close',
-    icons: [{ key: 'return', state: 'enabled' }],
+    icons: [{ key: 'close', state: 'enabled' }],
     status: 'enabled',
   },
 ]

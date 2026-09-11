@@ -8,8 +8,6 @@ export const VIEW_KEYS = [
   'listClose',
   'listAdd',
   'close',
-  'closeBig',
-  'return',
   'sortUp',
   'sortDown',
   'apply',
@@ -92,10 +90,7 @@ export const ENVELOPE_MOBILE_ADDRESS_VIEW_DELETE_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-/**
- * Recipient View opened from a multi-select list: close acts as “back to list”,
- * so show return instead of close.
- */
+/** Recipient View opened from a multi-select list: close acts as “back to list”. */
 export const ENVELOPE_MOBILE_ADDRESS_VIEW_RETURN_TOOLBAR: ToolbarConfig = [
   {
     group: 'senderView',
@@ -107,7 +102,7 @@ export const ENVELOPE_MOBILE_ADDRESS_VIEW_RETURN_TOOLBAR: ToolbarConfig = [
   },
   {
     group: 'actions',
-    icons: [{ key: 'return', state: 'enabled' }],
+    icons: [{ key: 'close', state: 'enabled' }],
     status: 'enabled',
   },
 ]
@@ -124,11 +119,11 @@ export const ENVELOPE_MOBILE_RECIPIENTS_MULTI_VIEW_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-/** Mobile focused address view (upper factory row): return = leave focus. */
-export const ENVELOPE_MOBILE_ADDRESS_VIEW_UPPER_RETURN_TOOLBAR: ToolbarConfig = [
+/** Mobile focused address view (upper factory row): close = leave focus. */
+export const ENVELOPE_MOBILE_ADDRESS_VIEW_UPPER_CLOSE_TOOLBAR: ToolbarConfig = [
   {
     group: 'close',
-    icons: [{ key: 'return', state: 'enabled' }],
+    icons: [{ key: 'close', state: 'enabled' }],
     status: 'enabled',
   },
 ]

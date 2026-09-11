@@ -1,6 +1,6 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import clsx from 'clsx'
-import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { useAppSelector } from '@app/hooks'
 import {
   selectCardPieCopyStripExpanded,
 } from '@cart/infrastructure/selectors'
@@ -14,12 +14,11 @@ import {
   selectCardphotoAssetToolbar,
   selectIsCardphotoCreateSession,
 } from '@cardphoto/infrastructure/selectors'
-import { toolbarAction } from '@toolbar/application/helpers'
-import { CARDPHOTO_CREATE_UPPER_APPLY_TOOLBAR, CARDPHOTO_CREATE_UPPER_RETURN_TOOLBAR } from '@toolbar/domain/types/cardphoto.types'
+import { CARDPHOTO_CREATE_UPPER_APPLY_TOOLBAR, CARDPHOTO_CREATE_UPPER_CLOSE_TOOLBAR } from '@toolbar/domain/types/cardphoto.types'
 import { CardphotoPrintQualitySlot } from '@features/toolbar/presentation/CardphotoPrintQualitySlot'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
-import type { IconKey, IconState } from '@shared/config/constants'
+import type { IconState } from '@shared/config/constants'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import styles from './CardSectionToolbar.module.scss'
 
@@ -33,7 +32,6 @@ function readApplyMediumState(raw: unknown): IconState {
 }
 
 export const CardSectionToolbar: React.FC = () => {
-  const dispatch = useAppDispatch()
   const { activeSection } = useSectionMenuFacade()
   const { sizeMiniCard } = useSizeFacade()
   const isMobileLayout = useAppSelector(selectIsMobileLayout)
@@ -52,7 +50,7 @@ export const CardSectionToolbar: React.FC = () => {
   const cardphotoCreateApplyState = readApplyMediumState(cardphotoCreateApplyRaw)
   const isCardphotoCreateCropActive = cardphotoCreateCropState === 'active'
   /**
-   * Create с загруженным фото — upper: applyMedium | quality | return (без cardphoto section).
+   * Create с загруженным фото — upper: applyMedium | quality | close (без cardphoto section).
    */
   const showCardphotoCreateUpper =
     activeSection === 'cardphoto' &&
@@ -78,17 +76,6 @@ export const CardSectionToolbar: React.FC = () => {
   const showDateCalendarNav =
     activeSection === 'date' || activeSection === 'history'
   const showAromaUpperToolbar = activeSection === 'aroma'
-
-  const handleCardphotoCreateReturn = useCallback(
-    (key: IconKey) => {
-      if (key !== 'return') return
-      dispatch(
-        toolbarAction({ section: 'cardphotoCreate', key: 'close' } as const),
-      )
-      return false
-    },
-    [dispatch],
-  )
 
   return (
     <div
@@ -125,9 +112,8 @@ export const CardSectionToolbar: React.FC = () => {
             <div className={styles.cardSectionToolbarUpperReturn}>
               <Toolbar
                 section="cardphotoCreate"
-                groupsOverride={CARDPHOTO_CREATE_UPPER_RETURN_TOOLBAR}
+                groupsOverride={CARDPHOTO_CREATE_UPPER_CLOSE_TOOLBAR}
                 className={toolbarStyles.toolbarAromaUpperReturn}
-                onActionClick={handleCardphotoCreateReturn}
               />
             </div>
           </div>

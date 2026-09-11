@@ -1557,7 +1557,7 @@ function* handleEnvelopeToolbarAction(
 
   if (
     (section === 'senderView' || section === 'recipientView') &&
-    (key === 'close' || key === 'return')
+    key === 'close'
   ) {
     if (section === 'senderView') {
       const isEditMode: boolean = yield select(selectSenderViewEditMode)
@@ -1672,7 +1672,7 @@ function* handleEnvelopeToolbarAction(
 
   if (
     (section === 'senderCreate' || section === 'recipientCreate') &&
-    (key === 'close' || key === 'closeBig' || key === 'return')
+    key === 'close'
   ) {
     yield* closeAddressCreateForm(section)
     return

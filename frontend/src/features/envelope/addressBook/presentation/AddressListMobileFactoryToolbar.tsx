@@ -89,10 +89,10 @@ export const AddressListMobileFactoryLowerToolbar: React.FC = () => {
   return null
 }
 
-const ADDRESS_LIST_FACTORY_UPPER_RETURN_TOOLBAR: ToolbarConfig = [
+const ADDRESS_LIST_FACTORY_UPPER_CLOSE_TOOLBAR: ToolbarConfig = [
   {
     group: 'close',
-    icons: [{ key: 'return', state: 'enabled' }],
+    icons: [{ key: 'close', state: 'enabled' }],
     status: 'enabled',
   },
 ]
@@ -139,9 +139,9 @@ export const AddressListMobileFactoryUpperToolbar: React.FC<{
     [dispatch],
   )
 
-  const handleReturnAction = useCallback(
+  const handleCloseAction = useCallback(
     (key: IconKey) => {
-      if (key !== 'return') return
+      if (key !== 'close') return
       dispatch(closeAddressList())
       return false
     },
@@ -172,9 +172,9 @@ export const AddressListMobileFactoryUpperToolbar: React.FC<{
         <div className={styles.upperToolbar}>
           <Toolbar
             section={upperReturnSection}
-            groupsOverride={ADDRESS_LIST_FACTORY_UPPER_RETURN_TOOLBAR}
+            groupsOverride={ADDRESS_LIST_FACTORY_UPPER_CLOSE_TOOLBAR}
             className={toolbarStyles.toolbarAromaUpperReturn}
-            onActionClick={handleReturnAction}
+            onActionClick={handleCloseAction}
           />
         </div>
       ) : null}

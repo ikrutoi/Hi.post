@@ -3,7 +3,6 @@ import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 
 export const USER_PANEL_KEYS = [
   'applyLight',
-  'return',
   // 'postcardFavorite',
   'editLight',
   'cardphotoAdd',

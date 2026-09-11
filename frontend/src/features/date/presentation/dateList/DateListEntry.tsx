@@ -1,5 +1,5 @@
 import React from 'react'
-import { IconX } from '@shared/ui/icons'
+import { IconClose } from '@shared/ui/icons'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { parseListEntryRecipientDetail } from '@shared/utils/listEntryRecipientDetail'
 import styles from './DateListEntry.module.scss'
@@ -101,7 +101,7 @@ export const DateListEntry: React.FC<DateListEntryProps> = ({
           aria-label="Remove this postcard from the list"
           title="Remove this postcard from the list"
         >
-          <IconX />
+          <IconClose />
         </button>
       ) : null}
     </div>

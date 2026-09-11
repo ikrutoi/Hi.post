@@ -471,7 +471,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     }
 
     if (recipientView === 'recipientView') {
-      dispatch(toolbarAction({ section: 'recipientView', key: 'return' }))
+      dispatch(toolbarAction({ section: 'recipientView', key: 'close' }))
       return
     }
 

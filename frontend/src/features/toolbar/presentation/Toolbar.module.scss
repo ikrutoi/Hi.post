@@ -1854,9 +1854,7 @@
 
   .toolbarKey.toolbarKeyEnabled,
   .toolbarKey[data-icon-key='applyLight'].toolbarKeyEnabled,
-  .toolbarKey[data-icon-key='return'].toolbarKeyEnabled,
   .toolbarKey[data-icon-key='close'].toolbarKeyEnabled,
-  .toolbarKey[data-icon-key='closeBig'].toolbarKeyEnabled,
   .toolbarKey[data-icon-key='postcardEdit'].toolbarKeyEnabled {
     color: $color-font-enabled-light;
 
@@ -2165,7 +2163,7 @@
     background-color: #fff;
   }
 
-  .toolbarKey.toolbarKeyEnabled:not([data-icon-key='return']) {
+  .toolbarKey.toolbarKeyEnabled:not([data-icon-key='close']) {
     color: $color-font-enabled-light;
   }
 }

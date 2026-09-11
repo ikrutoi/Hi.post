@@ -16,7 +16,7 @@ import {
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { openEditorSectionTemplateList } from '@features/cardSectionEditor/application/helpers'
-import { ENVELOPE_MOBILE_ADDRESS_VIEW_UPPER_RETURN_TOOLBAR } from '@toolbar/domain/types/addressView.types'
+import { ENVELOPE_MOBILE_ADDRESS_VIEW_UPPER_CLOSE_TOOLBAR } from '@toolbar/domain/types/addressView.types'
 import type { IconKey } from '@shared/config/constants'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
@@ -156,9 +156,9 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     assemblySenderSimplifiedPeek && assemblyRecipientSimplifiedPeek
   const recipientsToolbarSlotDisabled = recipientView === 'recipientCreate'
 
-  const handleFocusReturn = useCallback(
+  const handleFocusClose = useCallback(
     (key: IconKey): void | false => {
-      if (key !== 'return' || mobileFocus == null || focusRole == null) return
+      if (key !== 'close' || mobileFocus == null || focusRole == null) return
 
       if (recipientViewEditMode) return false
 
@@ -215,9 +215,9 @@ export const EnvelopeInnerToolbar: React.FC = () => {
           <div className={styles.envelopeToolbarFocusReturn}>
             <Toolbar
               section="recipientView"
-              groupsOverride={ENVELOPE_MOBILE_ADDRESS_VIEW_UPPER_RETURN_TOOLBAR}
+              groupsOverride={ENVELOPE_MOBILE_ADDRESS_VIEW_UPPER_CLOSE_TOOLBAR}
               className={toolbarStyles.toolbarAromaUpperReturn}
-              onActionClick={handleFocusReturn}
+              onActionClick={handleFocusClose}
             />
           </div>
         </>

@@ -13,7 +13,7 @@ import {
 import { useTemplateActions } from '@entities/templates/application/hooks/useTemplateActions'
 import { CARDTEXT_TEMPLATE_TITLE_MAX_LENGTH } from '@cardtext/application/helpers'
 import { getToolbarIcon } from '@/shared/utils/icons'
-import { IconX } from '@shared/ui/icons'
+import { IconClose } from '@shared/ui/icons'
 import styles from './CardtextEditTitleInline.module.scss'
 
 export const CardtextEditTitleInline: React.FC = () => {
@@ -111,7 +111,7 @@ export const CardtextEditTitleInline: React.FC = () => {
           aria-label="Cancel"
           title="Cancel"
         >
-          <IconX />
+          <IconClose />
         </button>
       </form>
     </div>

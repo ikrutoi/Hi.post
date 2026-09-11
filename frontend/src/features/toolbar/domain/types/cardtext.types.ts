@@ -65,16 +65,16 @@ export const CARDTEXT_COMPOSER_TOOLBAR: ToolbarConfig = [
   },
   {
     group: 'close',
-    icons: [{ key: 'return', state: 'enabled' }],
+    icons: [{ key: 'close', state: 'enabled' }],
     status: 'enabled',
   },
 ]
 
-/** @deprecated Prefer return in CARDTEXT_COMPOSER_TOOLBAR (lower row). Kept for list chrome. */
-export const CARDTEXT_EDITOR_UPPER_RETURN_TOOLBAR: ToolbarConfig = [
+/** @deprecated Prefer close in CARDTEXT_COMPOSER_TOOLBAR (lower row). Kept for list chrome. */
+export const CARDTEXT_EDITOR_UPPER_CLOSE_TOOLBAR: ToolbarConfig = [
   {
     group: 'close',
-    icons: [{ key: 'return', state: 'enabled' }],
+    icons: [{ key: 'close', state: 'enabled' }],
     status: 'enabled',
   },
 ]

@@ -1,7 +1,7 @@
 @use '../config/colors' as *;
 @use './toolbarIconButton' as iconButton;
 
-/// Ghost close (IconX): compact hit area, no border, neutral hover fill.
+/// Ghost close (IconClose): compact hit area, no border, neutral hover fill.
 @mixin panel-close-button {
   display: flex;
   align-items: center;

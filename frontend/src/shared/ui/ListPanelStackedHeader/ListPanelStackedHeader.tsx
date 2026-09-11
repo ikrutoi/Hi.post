@@ -1,6 +1,6 @@
 import React, { type ReactNode } from 'react'
 import type { IconKey } from '@shared/config/constants'
-import { IconX } from '@shared/ui/icons'
+import { IconClose } from '@shared/ui/icons'
 import { getToolbarIcon } from '@shared/utils/icons'
 import clsx from 'clsx'
 import styles from './ListPanelStackedHeader.module.scss'
@@ -198,7 +198,7 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
                 onClick={onClose}
                 aria-label={closeAriaLabel}
               >
-                <IconX />
+                <IconClose />
               </button>
             ) : null}
           </>
