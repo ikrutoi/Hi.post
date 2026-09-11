@@ -24,6 +24,10 @@ import {
   useFileDialog,
   useCropState,
 } from '../application/hooks'
+import {
+  registerCardphotoFilePicker,
+  unregisterCardphotoFilePicker,
+} from '../application/helpers/cardphotoFilePickerBridge'
 import styles from './CardphotoStage.module.scss'
 import { ImageMeta } from '../domain/types'
 import { useAssetRegistryFacade } from '@entities/assetRegistry/application/facade/assetRegistryFacade'
@@ -51,9 +55,7 @@ export const CardphotoStage = () => {
   /** Keep `full.blob` so the saga does not depend on fetch(blob:) (revoked / missing URLs). */
   const setUserImage = (meta: ImageMeta) => dispatch(uploadUserImage(meta))
 
-  const { state: cardphotoUiState, actions: cardphotoUiActions } =
-    useCardphotoUiFacade()
-  const { shouldOpenFileDialog } = cardphotoUiState
+  const { actions: cardphotoUiActions } = useCardphotoUiFacade()
   const { getAssetById } = useAssetRegistryFacade()
 
   const assetToolbar = useAppSelector(selectCardphotoAssetToolbar)
@@ -123,13 +125,12 @@ export const CardphotoStage = () => {
 
   const { inputRef, trackCancel } = useFileDialog()
 
-  useEffect(() => {
-    if (shouldOpenFileDialog) {
-      trackCancel()
-      inputRef.current?.click()
-      cardphotoUiActions.resetFileDialog()
-    }
-  }, [shouldOpenFileDialog, cardphotoUiActions, trackCancel])
+  useLayoutEffect(() => {
+    const input = inputRef.current
+    if (!input) return
+    registerCardphotoFilePicker(input, trackCancel)
+    return () => unregisterCardphotoFilePicker()
+  }, [trackCancel])
 
   const handleFileChange = useImageUpload(
     setUserImage,

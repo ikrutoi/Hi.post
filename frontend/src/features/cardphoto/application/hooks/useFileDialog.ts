@@ -1,5 +1,6 @@
 import { useCallback, useRef } from 'react'
 import { useCardphotoUiFacade } from '../facades'
+import { getCardphotoFilePickerCancelGeneration } from '../helpers/cardphotoFilePickerBridge'
 
 const PICKER_DISMISS_DELAY_MS = 400
 
@@ -11,6 +12,7 @@ export const useFileDialog = () => {
     const input = inputRef.current
     if (!input) return
 
+    const generation = getCardphotoFilePickerCancelGeneration()
     let settled = false
 
     const cleanup = () => {
@@ -23,6 +25,7 @@ export const useFileDialog = () => {
 
     const dismissWithoutSelection = () => {
       if (settled) return
+      if (generation !== getCardphotoFilePickerCancelGeneration()) return
       settled = true
       cleanup()
       if (!input.files?.length) {

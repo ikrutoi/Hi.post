@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { useStore } from 'react-redux'
 import { useToolbarFacade } from '../application/facades'
 import { useCardtextFacade } from '@cardtext/application/facades'
 import { useSizeFacade } from '@layout/application/facades'
@@ -41,6 +42,8 @@ import {
   markLoading as markCardphotoAddLoading,
 } from '@/features/cardphoto/infrastructure/state'
 import { selectIsLoading as selectCardphotoAddLoading } from '@cardphoto/infrastructure/selectors/cardphotoUiSelectors'
+import { openCardphotoFilePickerFromUserGesture } from '@cardphoto/application/helpers/cardphotoFilePickerBridge'
+import { shouldOpenCardphotoFilePickerSync } from '@cardphoto/application/helpers/shouldOpenCardphotoFilePickerSync'
 import { getCardphotoListSortIconForMode } from '@cardphoto/application/helpers/cardphotoListSort'
 import {
   getHistoryListSortIconForMode,
@@ -129,6 +132,7 @@ export const Toolbar = ({
       : storeState
   const { onAction } = toolbarActions
   const dispatch = useAppDispatch()
+  const store = useStore<RootState>()
   const { cardPieEditEngaged, exitArchiveEditToSectionPeek } =
     useRightListArchiveMini()
   const mobileAddressFocus = useEnvelopeMobileAddressFocus()
@@ -762,6 +766,14 @@ export const Toolbar = ({
           e.preventDefault()
           if (key === 'cardphotoAdd') {
             dispatch(markCardphotoAddLoading())
+            if (
+              (section === 'cardphoto' ||
+                section === 'cardphotoCreate' ||
+                section === 'cardphotoProcessed') &&
+              shouldOpenCardphotoFilePickerSync(store.getState())
+            ) {
+              openCardphotoFilePickerFromUserGesture()
+            }
           }
           if (
             (key === 'addList' || key === 'removeFromList') &&

@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import createSagaMiddleware from 'redux-saga'
 import { rootReducer } from './rootReducer'
 import { authListenerMiddleware } from '@app/listeners/authListener'
+import { cardphotoFilePickerListenerMiddleware } from '@app/listeners/cardphotoFilePickerListener'
 import { postcardSyncListenerMiddleware } from '@app/listeners/postcardSyncListener'
 import { rootSaga } from './rootSaga'
 
@@ -26,6 +27,7 @@ export const store = configureStore({
       },
     })
       .prepend(postcardSyncListenerMiddleware.middleware)
+      .prepend(cardphotoFilePickerListenerMiddleware.middleware)
       .prepend(authListenerMiddleware.middleware)
       .concat(sagaMiddleware),
 })
