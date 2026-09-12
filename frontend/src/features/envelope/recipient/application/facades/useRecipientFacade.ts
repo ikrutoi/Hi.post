@@ -21,6 +21,7 @@ import {
   removeRecipientFromListByIndex,
   removeRecipientFromListById,
 } from '../../infrastructure/state'
+import { setRecipientsPendingIds } from '@envelope/infrastructure/state'
 import type { AddressField, AddressFields } from '@shared/config/constants'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import {
@@ -149,6 +150,14 @@ export const useRecipientFacade = () => {
           dispatch(updateArchiveRecipientField({ field, value })),
       )
       dispatch(setArchiveRecipientView('recipientView'))
+      return
+    }
+    const showingMultiGrid =
+      state.currentView === 'recipientsView' &&
+      recipientsDisplayList.length > 1
+    const showingSingleCard = state.currentView === 'recipientView'
+    if (!showingMultiGrid && !showingSingleCard) {
+      dispatch(setRecipientsPendingIds([entry.id]))
       return
     }
     dispatch(toggleRecipientSelection(entry.id))

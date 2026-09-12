@@ -111,6 +111,7 @@ import {
   selectRecipientsDisplayList,
   selectRecipientApplied,
   selectAppliedRecipientDisplayAddress,
+  selectRecipientEntriesState,
 } from '@envelope/recipient/infrastructure/selectors'
 import {
   removeAddressTemplateRef,
@@ -2179,7 +2180,15 @@ function* handleRemoveRecipientFromListById(action: PayloadAction<string>) {
 
 function* syncRecipientsViewIdsFromPending() {
   const recipient: RecipientState = yield select(selectRecipientState)
-  const pendingIds: string[] = yield select(selectRecipientsPendingIds)
+  const rawPendingIds: string[] = yield select(selectRecipientsPendingIds)
+  const bookEntries: { id: string }[] = yield select(
+    selectRecipientEntriesState,
+  )
+  const bookIds = new Set(bookEntries.map((e) => e.id))
+  const pendingIds = rawPendingIds.filter((id) => bookIds.has(id))
+  if (pendingIds.length !== rawPendingIds.length) {
+    yield put(setRecipientsPendingIds(pendingIds))
+  }
   if (recipient.currentRecipientsList === 'second') {
     yield put(setRecipientsViewIdsSecondList(pendingIds))
   } else {

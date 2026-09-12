@@ -9,8 +9,6 @@ import { selectActiveAddressEdit } from '@envelope/infrastructure/selectors'
 import { selectSenderApplied, selectSenderView } from '@envelope/sender/infrastructure/selectors'
 import {
   selectRecipientView,
-  selectRecipientsFormViewIdsCount,
-  selectRecipientState,
 } from '@envelope/recipient/infrastructure/selectors'
 import {
   selectArchiveEnvelopeSandboxActive,
@@ -73,29 +71,15 @@ export function useEnvelopeAddressViewToolbarContent({
   const recipientView = sandboxActive
     ? sandboxRecipient.currentView
     : sessionRecipientView
-  const recipientsFormViewIdsCount = useAppSelector(
-    selectRecipientsFormViewIdsCount,
-  )
-  const recipientState = useAppSelector(selectRecipientState)
+  const envelopeFacade = useEnvelopeFacade()
+  const senderFacade = useSenderFacade()
+  const recipientFacade = useRecipientFacade()
+  const recipientsFormViewIdsCount = recipientFacade.recipientsDisplayList.length
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const addressEditActive =
     senderViewEditMode || recipientViewEditMode || cardPieEditEngaged
-  const recipientsMultiListReady = useMemo(() => {
-    if (sandboxActive) {
-      const first =
-        sandboxRecipient.recipientsViewIdsFirstList?.length ?? 0
-      const second =
-        sandboxRecipient.recipientsViewIdsSecondList?.length ?? 0
-      return first > 1 || second > 1
-    }
-    const first = recipientState?.recipientsViewIdsFirstList?.length ?? 0
-    const second = recipientState?.recipientsViewIdsSecondList?.length ?? 0
-    return first > 1 || second > 1
-  }, [sandboxActive, sandboxRecipient, recipientState])
-  const envelopeFacade = useEnvelopeFacade()
-  const senderFacade = useSenderFacade()
-  const recipientFacade = useRecipientFacade()
+  const recipientsMultiListReady = recipientsFormViewIdsCount > 1
   const sessionSenderAppliedIds = useAppSelector(selectSenderApplied)
   const sandboxSenderAppliedIds = useAppSelector(
     selectArchiveSandboxSenderApplied,

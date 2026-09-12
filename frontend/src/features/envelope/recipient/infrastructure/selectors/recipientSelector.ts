@@ -14,6 +14,35 @@ import type {
 const EMPTY_RECIPIENT_STATE_LIST: RecipientState[] = []
 const EMPTY_ADDRESS_BOOK_ENTRIES: AddressBookEntry[] = []
 
+function addressHasAnyField(
+  data: AddressFields | null | undefined,
+): boolean {
+  if (data == null) return false
+  return Object.values(data).some((v) => (v ?? '').toString().trim() !== '')
+}
+
+/** Envelope draft only if it has fields; otherwise the address-book template. */
+function pickRecipientListAddress(
+  templateId: string,
+  envelopeRecipients: RecipientState[],
+  recipientEntries: AddressBookEntry[],
+): AddressFields | null {
+  const fromEnvelope = envelopeRecipients.find(
+    (r) => r.recipientViewId === templateId,
+  )
+  if (addressHasAnyField(fromEnvelope?.appliedData)) {
+    return { ...(fromEnvelope!.appliedData as AddressFields) }
+  }
+  if (addressHasAnyField(fromEnvelope?.viewDraft)) {
+    return { ...fromEnvelope!.viewDraft }
+  }
+  const fromBook = recipientEntries.find((e) => e.id === templateId)
+  if (addressHasAnyField(fromBook?.address as AddressFields | undefined)) {
+    return { ...(fromBook!.address as AddressFields) }
+  }
+  return null
+}
+
 export const selectRecipientEntriesState = (state: RootState): AddressBookEntry[] =>
   state.addressBook?.recipientEntries ?? EMPTY_ADDRESS_BOOK_ENTRIES
 
@@ -206,17 +235,18 @@ export const selectRecipientsPendingResolvedEntries = createSelector(
     pendingIds,
   ): AddressBookEntry[] =>
     pendingIds.flatMap((templateId) => {
-      const fromEnvelope = envelopeRecipients.find(
-        (r) => r.recipientViewId === templateId,
+      const address = pickRecipientListAddress(
+        templateId,
+        envelopeRecipients,
+        recipientEntries,
       )
-      const fromBook = recipientEntries.find((e) => e.id === templateId)
-      const address = fromEnvelope?.viewDraft ?? fromBook?.address
       if (!address) return []
+      const fromBook = recipientEntries.find((e) => e.id === templateId)
       return [
         {
           id: templateId,
           role: 'recipient' as const,
-          address: { ...address },
+          address,
           createdAt: fromBook?.createdAt ?? new Date().toISOString(),
         } as AddressBookEntry,
       ]
@@ -236,17 +266,18 @@ const selectRecipientsDisplayEntriesFromViewIds = createSelector(
     viewIds,
   ): AddressBookEntry[] =>
     viewIds.flatMap((templateId) => {
-      const fromEnvelope = envelopeRecipients.find(
-        (r) => r.recipientViewId === templateId,
+      const address = pickRecipientListAddress(
+        templateId,
+        envelopeRecipients,
+        recipientEntries,
       )
-      const fromBook = recipientEntries.find((e) => e.id === templateId)
-      const address = fromEnvelope?.viewDraft ?? fromBook?.address
       if (!address) return []
+      const fromBook = recipientEntries.find((e) => e.id === templateId)
       return [
         {
           id: templateId,
           role: 'recipient' as const,
-          address: { ...address },
+          address,
           createdAt: fromBook?.createdAt ?? new Date().toISOString(),
         } as AddressBookEntry,
       ]
@@ -273,17 +304,9 @@ export const selectRecipientsDisplayList = createSelector(
 )
 
 /**
- * Сколько id в текущем списке получателей формы (first/second).
- * Не зависит от inList в адресной книге: removeFromList не уменьшает бейдж у IconUsers.
+ * Сколько адресов реально видно в форме Получатели (resolved first/second ids).
  */
 export const selectRecipientsFormViewIdsCount = createSelector(
-  [selectRecipientState],
-  (r): number => {
-    if (!r) return 0
-    const ids =
-      r.currentRecipientsList === 'second'
-        ? (r.recipientsViewIdsSecondList ?? EMPTY_STRINGS)
-        : (r.recipientsViewIdsFirstList ?? EMPTY_STRINGS)
-    return ids.length
-  },
+  [selectRecipientsDisplayList],
+  (entries): number => entries.length,
 )

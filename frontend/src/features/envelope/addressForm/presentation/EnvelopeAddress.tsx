@@ -11,7 +11,7 @@ import {
   selectSenderApplied,
   selectSenderView,
 } from '../../sender/infrastructure/selectors'
-import { selectRecipientView, selectRecipientsFormViewIdsCount } from '../../recipient/infrastructure/selectors'
+import { selectRecipientView } from '../../recipient/infrastructure/selectors'
 import { setSenderView, setSenderViewId } from '../../sender/infrastructure/state'
 import {
   setRecipientView,
@@ -129,14 +129,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientsFormPreviewId = useAppSelector(selectRecipientsFormPreviewId)
   const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
-  const sessionRecipientsFormViewIdsCount = useAppSelector(
-    selectRecipientsFormViewIdsCount,
-  )
-  const recipientsFormViewIdsCount = sandboxActive
-    ? sandboxRecipient.currentRecipientsList === 'second'
-      ? (sandboxRecipient.recipientsViewIdsSecondList?.length ?? 0)
-      : (sandboxRecipient.recipientsViewIdsFirstList?.length ?? 0)
-    : sessionRecipientsFormViewIdsCount
 
   const recipientFieldsetRef = useRef<HTMLDivElement | null>(null)
   const senderFieldsetRef = useRef<HTMLDivElement | null>(null)
@@ -163,6 +155,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     Object.values(value).some((v) => (v ?? '').trim() !== '')
 
   const recipientsDisplayList = recipientFacade.recipientsDisplayList
+  const recipientsFormViewIdsCount = recipientsDisplayList.length
 
   const recipientIdForDisplay =
     role === 'recipient'
@@ -248,8 +241,13 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   useEffect(() => {
     if (role !== 'recipient') return
     if (recipientView === 'recipientCreate') return
-    // После Close (recipientsView) не открываем карточку снова, даже если в списке 1 id.
-    if (recipientView === 'recipientsView') return
+    // Recipients grid stays closed only while there are 2+ visible addresses.
+    if (
+      recipientView === 'recipientsView' &&
+      recipientsDisplayList.length !== 1
+    ) {
+      return
+    }
 
     const activeTemplateId = sandboxActive
       ? sandboxRecipient.recipientViewId
@@ -437,6 +435,12 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
             keepRecipientView: true,
           }),
         )
+      }
+      applyRecipientEntry(entry)
+      if (sandboxActive) {
+        dispatch(setArchiveRecipientView('recipientView'))
+      } else {
+        dispatch(setRecipientView('recipientView'))
       }
       return
     }

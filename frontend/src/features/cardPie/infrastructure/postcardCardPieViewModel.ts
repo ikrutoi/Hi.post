@@ -140,12 +140,18 @@ function cardphotoUrlsFromCard(card: Card): {
   }
 }
 
+export function recipientFormViewIds(recipient: RecipientState): string[] {
+  return recipient.currentRecipientsList === 'second'
+    ? (recipient.recipientsViewIdsSecondList ?? [])
+    : (recipient.recipientsViewIdsFirstList ?? [])
+}
+
 export function recipientAppliedCount(recipient: RecipientState): number {
+  const current = recipientFormViewIds(recipient).filter(Boolean).length
+  if (current > 0) return current
   const n = recipient.applied?.length ?? 0
   if (n > 0) return n
-  const a = recipient.recipientsViewIdsFirstList?.length ?? 0
-  const b = recipient.recipientsViewIdsSecondList?.length ?? 0
-  if (a + b > 0) return a + b
+  if (recipient.recipientViewId) return 1
   if (recipient.appliedData != null || recipient.formIsComplete) return 1
   return 0
 }
@@ -232,13 +238,13 @@ export function buildRecipientPreviewLines(
 
   const envelopeRecipients = ctx.envelopeRecipients ?? []
   const entries = ctx.recipientEntries ?? []
+  const formIds = recipientFormViewIds(recipient).filter(Boolean)
   const appliedIds =
-    (recipient.applied?.length ?? 0) > 0
-      ? recipient.applied
-      : [
-          ...(recipient.recipientsViewIdsFirstList ?? []),
-          ...(recipient.recipientsViewIdsSecondList ?? []),
-        ]
+    formIds.length > 0
+      ? formIds
+      : (recipient.applied?.length ?? 0) > 0
+        ? recipient.applied
+        : []
 
   const lines: string[] = []
   for (const id of appliedIds) {
