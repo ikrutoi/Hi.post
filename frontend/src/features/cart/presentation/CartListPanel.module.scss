@@ -34,7 +34,7 @@ $cart-list-header-active-height: calc(#{$list-panel-header-chip-height} + 2px);
 $cart-list-header-skew-offset: calc(
   (#{$list-panel-header-chip-height} + 2px) * #{math.tan($cart-list-header-skew-deg)}
 );
-$cart-list-header-corner-radius: $list-panel-header-chip-radius;
+$cart-list-header-corner-radius: 0.5rem;
 /** Как month/year в календаре: активная 65%, неактивная 50%. */
 $cart-list-header-segment-inactive-share: 0.5;
 $cart-list-header-segment-active-share: 0.65;

@@ -12,7 +12,7 @@ $switcher-cart-active-height: calc(#{$list-panel-header-chip-height} + 2px);
 $switcher-cart-skew-offset: calc(
   (#{$list-panel-header-chip-height} + 2px) * #{math.tan($switcher-cart-skew-deg)}
 );
-$switcher-cart-corner-radius: $list-panel-header-chip-radius;
+$switcher-cart-corner-radius: 0.5rem;
 $switcher-cart-inactive-share: 0.5;
 $switcher-cart-active-share: 0.65;
 $switcher-cart-inactive-w: 50%;
