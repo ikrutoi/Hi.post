@@ -7,12 +7,11 @@ $list-entry-surface: $color-cart-list-surface;
 /** Левый gutter: чекбокс / dateEdit — шире, иконка по центру. */
 $cart-list-entry-gutter-start: 3rem;
 
-@mixin cart-list-entry-indicator-border($indicator-color) {
-  border-color: $indicator-color;
-}
-
 $list-entry-bg: #fff;
 $list-entry-bg-hover: #fafafa;
+/** Как рамка шаблона в списке cardtext (`AddressBookCell` / `$color-app-substrate-border`). */
+$list-entry-section-border: $color-app-substrate-border;
+$list-entry-corner-radius: 0.75rem;
 
 .shell {
   position: relative;
@@ -20,33 +19,11 @@ $list-entry-bg-hover: #fafafa;
   margin-bottom: 0.25rem;
   padding: 0.15rem $cart-list-entry-gutter-end 0.15rem $cart-list-entry-gutter-start;
   background-color: #fff;
-  border: 1px solid $color-preview-indicator-cart;
-  border-radius: $list-entry-radius-sm;
+  border: 1px solid $list-entry-section-border;
+  border-radius: $list-entry-corner-radius;
   transition:
     box-shadow 0.15s ease,
     border-color 0.15s ease;
-
-  @include cart-list-entry-indicator-border($color-preview-indicator-cart);
-
-  &[data-preview-status='cartBlocked'] {
-    @include cart-list-entry-indicator-border($color-preview-indicator-error);
-  }
-
-  &[data-preview-status='ready'] {
-    @include cart-list-entry-indicator-border($color-preview-indicator-ready);
-  }
-
-  &[data-preview-status='sent'] {
-    @include cart-list-entry-indicator-border($color-preview-indicator-sent);
-  }
-
-  &[data-preview-status='delivered'] {
-    @include cart-list-entry-indicator-border($color-preview-indicator-delivered);
-  }
-
-  &[data-preview-status='error'] {
-    @include cart-list-entry-indicator-border($color-preview-indicator-error);
-  }
 
   /**
    * Выбранная строка — только слева: полоска + зазор (общий миксин).
@@ -175,7 +152,7 @@ $list-entry-bg-hover: #fafafa;
   padding: 1px 0.5rem 1px 0;
   background-color: $list-entry-bg;
   border: none;
-  border-radius: $list-entry-radius-sm;
+  border-radius: $list-entry-corner-radius;
   user-select: none;
   transition: background-color 0.15s ease;
 

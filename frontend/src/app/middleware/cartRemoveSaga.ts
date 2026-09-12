@@ -1,18 +1,13 @@
-import { call, put, select, takeEvery } from 'redux-saga/effects'
+import { call, put, select, takeLeading } from 'redux-saga/effects'
 import type { SagaIterator } from 'redux-saga'
 import type { RootState } from '@app/state'
 import { store } from '@app/state/store'
 import type { PostcardHydrated } from '@entities/postcard'
 import { postcardsAdapter } from '@db/adapters/storeAdapters'
+import { selectCartItems } from '@cart/infrastructure/selectors'
 import {
-  selectCartItems,
-  selectCartListStatusSegment,
-} from '@cart/infrastructure/selectors'
-import {
+  commitCartPostcardRemoval,
   removeCartPostcard,
-  removeItem,
-  setCartListSelectedLocalId,
-  setCartListStatusSegment,
 } from '@cart/infrastructure/state'
 import { resolveArchiveSelectionAdvance } from '@date/application/helpers/archiveSelectionAfterRemove'
 import { syncArchiveCenterPostcardCalendarView } from '@date/calendar/application/logic/archiveCenterCalendarSync'
@@ -24,30 +19,48 @@ import { applyRightListArchiveToolbarVisuals } from '@toolbar/application/syncRi
 import { refreshRightSidebarBadgesFromPostcards } from './postcardCreateSaga'
 import { postcardLocalDataChanged } from '@features/sync/store/postcardSync.actions'
 
-function* applyArchiveSelectionAdvance(
-  advance: NonNullable<ReturnType<typeof resolveArchiveSelectionAdvance>>,
+function* handleRemoveCartPostcard(
+  action: ReturnType<typeof removeCartPostcard>,
 ): SagaIterator {
-  if (advance.cart != null) {
-    const currentSegment: ReturnType<typeof selectCartListStatusSegment> =
-      yield select(selectCartListStatusSegment)
-    if (currentSegment !== advance.cart.segment) {
-      yield put(setCartListStatusSegment(advance.cart.segment))
+  const localId = action.payload
+  const stateBefore: RootState = yield select()
+  const items: PostcardHydrated[] = selectCartItems(stateBefore)
+  const row = items.find((p) => p.localId === localId)
+  if (row == null) return
+
+  const selectionAdvance = resolveArchiveSelectionAdvance(stateBefore, localId)
+
+  if (row.id) {
+    try {
+      yield call([postcardsAdapter, 'deleteById'], row.id)
+    } catch (e) {
+      console.error('removeCartPostcard: IDB delete failed', e)
     }
-    yield put(setCartListSelectedLocalId(advance.cart.localId))
   }
 
-  if (advance.historyLocalId !== undefined) {
-    yield put(setHistoryListSelectedLocalId(advance.historyLocalId))
+  if (selectionAdvance?.historyLocalId !== undefined) {
+    yield put(setHistoryListSelectedLocalId(selectionAdvance.historyLocalId))
+  } else if (selectHistoryListSelectedLocalId(stateBefore) === localId) {
+    yield put(setHistoryListSelectedLocalId(null))
   }
+
+  yield put(
+    commitCartPostcardRemoval({
+      removedLocalId: localId,
+      nextCart: selectionAdvance?.cart,
+    }),
+  )
 
   const nextArchiveLocalId =
-    advance.historyLocalId ?? advance.cart?.localId ?? null
-  if (nextArchiveLocalId != null && advance.archiveSource != null) {
+    selectionAdvance?.historyLocalId ??
+    selectionAdvance?.cart?.localId ??
+    null
+  if (nextArchiveLocalId != null && selectionAdvance?.archiveSource != null) {
     yield call(
       applyRightListArchiveToolbarVisuals,
       store.dispatch,
       store.getState,
-      advance.archiveSource,
+      selectionAdvance.archiveSource,
     )
     syncArchiveCenterPostcardCalendarView(
       store.dispatch,
@@ -56,44 +69,11 @@ function* applyArchiveSelectionAdvance(
       { includeDayPanel: false },
     )
   }
-}
-
-function* handleRemoveCartPostcard(
-  action: ReturnType<typeof removeCartPostcard>,
-): SagaIterator {
-  const localId = action.payload
-  const stateBefore: RootState = yield select()
-  const items: PostcardHydrated[] = selectCartItems(stateBefore)
-  const row = items.find((p) => p.localId === localId)
-  if (!row?.id) return
-
-  const selectionAdvance = resolveArchiveSelectionAdvance(stateBefore, localId)
-
-  try {
-    yield call([postcardsAdapter, 'deleteById'], row.id)
-  } catch (e) {
-    console.error('removeCartPostcard: IDB delete failed', e)
-    return
-  }
-
-  /** Selection first — иначе один кадр без valid localId ломает archive toolbar. */
-  if (selectionAdvance != null) {
-    yield* applyArchiveSelectionAdvance(selectionAdvance)
-  }
-
-  yield put(removeItem(localId))
-
-  if (selectionAdvance == null) {
-    const stateAfterRemove: RootState = yield select()
-    if (selectHistoryListSelectedLocalId(stateAfterRemove) === localId) {
-      yield put(setHistoryListSelectedLocalId(null))
-    }
-  }
 
   yield call(refreshRightSidebarBadgesFromPostcards)
   yield put(postcardLocalDataChanged())
 }
 
 export function* watchCartRemove(): SagaIterator {
-  yield takeEvery(removeCartPostcard.type, handleRemoveCartPostcard)
+  yield takeLeading(removeCartPostcard.type, handleRemoveCartPostcard)
 }

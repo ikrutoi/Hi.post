@@ -65,7 +65,7 @@ $cart-list-panel-inline-end-inset: calc(
   padding-inline: 0;
   background-color: notebookTab.$desktop-cart-list-toolbar-fill;
   background-image: none;
-  border-radius: 1rem;
+  border-radius: 0.75rem;
   overflow: hidden;
   @include iconButton.toolbar-factory-edge-key-insets;
 }

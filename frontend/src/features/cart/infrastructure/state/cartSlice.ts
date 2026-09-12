@@ -111,6 +111,32 @@ const cartSlice = createSlice({
         (lid) => lid !== removed,
       )
     },
+    /**
+     * Удаление + выбор следующей строки в одном reducer — без кадра, где
+     * selectedLocalId указывает на уже удалённую открытку (ломает тулбар CardPie).
+     */
+    commitCartPostcardRemoval(
+      state,
+      action: PayloadAction<{
+        removedLocalId: number
+        nextCart?: { segment: CartListStatusSegment; localId: number | null }
+      }>,
+    ) {
+      const { removedLocalId, nextCart } = action.payload
+      state.items = state.items.filter((item) => item.localId !== removedLocalId)
+      state.listCheckedLocalIds = state.listCheckedLocalIds.filter(
+        (lid) => lid !== removedLocalId,
+      )
+      if (nextCart != null) {
+        state.listStatusSegment = nextCart.segment
+        state.listSelectedLocalIdsBySegment[nextCart.segment] = nextCart.localId
+      }
+      for (const segment of ['cart', 'cartBlocked'] as const satisfies readonly CartListStatusSegment[]) {
+        if (state.listSelectedLocalIdsBySegment[segment] === removedLocalId) {
+          state.listSelectedLocalIdsBySegment[segment] = null
+        }
+      }
+    },
     updateItem(state, action: PayloadAction<PostcardHydrated>) {
       const index = state.items.findIndex(
         (item) => item.id === action.payload.id,
@@ -156,6 +182,7 @@ export const {
   setItems,
   addItem,
   removeItem,
+  commitCartPostcardRemoval,
   updateItem,
   setCartItemCardAroma,
   clearCart,

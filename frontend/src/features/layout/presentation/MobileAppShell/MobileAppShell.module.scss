@@ -448,7 +448,7 @@
   position: absolute;
   top: calc(0.5rem + env(safe-area-inset-top, 0px));
   right: var(--mobile-section-inset);
-  z-index: 10;
+  z-index: 30;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -780,6 +780,7 @@
   width: 100%;
   aspect-ratio: 1;
   position: relative;
+  overflow: hidden;
 
   :global([class*='hubContainer']) {
     box-shadow: none;
@@ -817,14 +818,16 @@
   position: absolute;
   inset: 0;
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
-  transition-property: opacity;
+  transition-property: opacity, visibility;
   transition-timing-function: ease;
-  will-change: opacity;
 }
 
 .mobileArchivePieRevealOpaque {
   opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .mobileArchivePieRevealBlank {
@@ -1035,7 +1038,7 @@ $mobile-central-pie-envelope-empty-icon-width: 40%;
   left: calc(100% + 0.35rem);
   top: 0;
   bottom: 0;
-  z-index: 4;
+  z-index: 8;
   width: var(--mobile-section-toolbar-key-size, #{iconButton.$toolbar-hit-size-standard});
   display: flex;
   align-items: center;

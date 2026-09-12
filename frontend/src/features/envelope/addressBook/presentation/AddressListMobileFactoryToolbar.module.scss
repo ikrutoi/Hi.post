@@ -24,6 +24,8 @@
   background-image: none;
   min-height: 100%;
   @include address-list-toolbar-role-keys-clear;
+  border-radius: 0.75rem 0.75rem 0 0;
+  overflow: hidden;
 
   .upperApply :global([class*='toolbarAromaUpperApply']) {
     margin-inline: 0;
@@ -44,14 +46,14 @@
 }
 
 .upperRowSender {
-  border-radius: 1rem 1rem 0 0;
+  border-radius: 0.75rem 0.75rem 0 0;
   overflow: hidden;
   @include address-list-toolbar-role-fill($color-envelope-sender-input);
   @include address-list-toolbar-role-keys-clear;
 }
 
 .upperRowRecipient {
-  border-radius: 1rem 1rem 0 0;
+  border-radius: 0.75rem 0.75rem 0 0;
   overflow: hidden;
   @include address-list-toolbar-role-fill($color-envelope-recipient-input);
   @include address-list-toolbar-role-keys-clear;
@@ -144,14 +146,14 @@
 }
 
 .addressListToolbarRowSender {
-  border-radius: 0 0 1rem 1rem;
+  border-radius: 0 0 0.75rem 0.75rem;
   overflow: hidden;
   @include address-list-toolbar-role-fill($color-envelope-sender-input);
   @include address-list-toolbar-role-keys-clear;
 }
 
 .addressListToolbarRowRecipient {
-  border-radius: 0 0 1rem 1rem;
+  border-radius: 0 0 0.75rem 0.75rem;
   overflow: hidden;
   @include address-list-toolbar-role-fill($color-envelope-recipient-input);
   @include address-list-toolbar-role-keys-clear;

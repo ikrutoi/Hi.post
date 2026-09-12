@@ -3,7 +3,10 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
-import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
+import {
+  selectCartListPanelOpen,
+  selectCartListStatusSegment,
+} from '@cart/infrastructure/selectors'
 import { setHistoryListPanelOpen } from '@date/calendar/infrastructure/state'
 import {
   selectIsHistoryListPanelOpen,
@@ -18,6 +21,7 @@ import {
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { setUserLoginPanelOpen } from '@features/auth/infrastructure/state/auth.slice'
 import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
+import { releaseCartDatePickListEntryOwnership } from '@date/calendar/application/logic/cartDatePickListEntryOwnership'
 import {
   syncSectionMenuVisualsAllEnabled,
 } from './sectionEditorMenuHandlers'
@@ -91,13 +95,18 @@ export function* handleRightSidebarToolbarAction(
     const lastActiveView: 'calendar' | 'list' = yield select(
       selectLastCartArchiveView,
     )
+    const listStatusSegment = yield select(selectCartListStatusSegment)
     yield put(setUserLoginPanelOpen(false))
+    if (cartListPanelOpen && listStatusSegment === 'cartBlocked') {
+      releaseCartDatePickListEntryOwnership()
+    }
     yield* dispatchCommands(
       buildCartArchiveToggleCommands({
         cartListPanelOpen,
         notebookStripTab,
         isMobileLayout: false,
         lastActiveView,
+        listStatusSegment,
       }),
     )
     yield call(syncSectionMenuVisualsAllEnabled)

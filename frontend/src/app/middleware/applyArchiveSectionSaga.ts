@@ -39,7 +39,6 @@ import {
   restoreCardtextSession,
   setCardtextAppliedData,
   setCardtextViewEditMode,
-  setStatus as setCardtextStatus,
 } from '@cardtext/infrastructure/state'
 import { selectCardtextIsComplete } from '@cardtext/infrastructure/selectors'
 import { cardtextValueForReadOnlyPreview } from '@cardtext/domain/editor/editor.types'
@@ -135,9 +134,12 @@ function* applyArchiveSectionFromPostcard(
           options?.clearCardtextApplied ? null : branch,
         ),
       )
-      if (branch.status != null) {
-        yield put(setCardtextStatus(branch.status))
-      }
+      /**
+       * Do not `setCardtextStatus` after restore: that reducer already wrote
+       * `assetData.status`. A follow-up status action runs
+       * `maybePersistCreateDraftOnExitView`, which can `restoreCardtextSession`
+       * from `presetData` and wipe the copied cardtext.
+       */
       {
         const complete: boolean = yield select(selectCardtextIsComplete)
         yield put(

@@ -617,17 +617,34 @@ const App = () => {
     rightArchivePiePostcardStatus === 'cart' ||
     rightArchivePiePostcardStatus === 'cartBlocked'
 
-  const canShowRightListArchiveCardPie =
-    sectionSize != null && rightListArchiveLocalId != null
+  /**
+   * Leave archive CardPie station only when the archive postcard is gone AND
+   * cart/history no longer has a selected row. `sectionSize` / a one-frame
+   * null localId after delete must not flip to left — that kills the central
+   * pie toolbar and right-sidebar logo hits.
+   */
+  const archiveRowSelected =
+    (listSelectedLocalId != null &&
+      cartItems.some((item) => item.localId === listSelectedLocalId) &&
+      (listPanelOpen ||
+        notebookStripTab === 'cart' ||
+        notebookStripTab === 'cartdate' ||
+        activePieSide === 'right')) ||
+    (historyListSelectedLocalId != null &&
+      cartItems.some((item) => item.localId === historyListSelectedLocalId) &&
+      (historyListPanelOpen ||
+        notebookStripTab === 'history' ||
+        activePieSide === 'right'))
 
   useEffect(() => {
-    if (!canShowRightListArchiveCardPie && activePieSide === 'right') {
-      setSuppressCardPieEditActiveAfterCopy(true)
-      releaseAssemblySessionLease()
-      setActivePieSide('left')
-    }
+    if (activePieSide !== 'right') return
+    if (rightListArchiveLocalId != null || archiveRowSelected) return
+    setSuppressCardPieEditActiveAfterCopy(true)
+    releaseAssemblySessionLease()
+    setActivePieSide('left')
   }, [
-    canShowRightListArchiveCardPie,
+    archiveRowSelected,
+    rightListArchiveLocalId,
     activePieSide,
     releaseAssemblySessionLease,
   ])
@@ -1408,13 +1425,17 @@ const App = () => {
         setRightPieDatePeekNoToolbar(false)
         setSuppressCardPieEditActiveAfterCopy(true)
         releaseAssemblySessionLease()
-        setActivePieSide('left')
+        if (!archiveRowSelected && rightListArchiveLocalId == null) {
+          setActivePieSide('left')
+        }
       }
     }
     prevShowTopCardStripFullSpanRef.current = showTopCardStripFullSpan
   }, [
     showTopCardStripFullSpan,
     activeSection,
+    archiveRowSelected,
+    rightListArchiveLocalId,
     releaseAssemblySessionLease,
     syncPeekChromeForOpenedSection,
   ])
@@ -1965,28 +1986,11 @@ const App = () => {
   ])
 
   useEffect(() => {
-    if (!isMobileLayout) return
-    const archiveRowSelected =
-      (listSelectedLocalId != null &&
-        (listPanelOpen ||
-          notebookStripTab === 'cart' ||
-          notebookStripTab === 'cartdate')) ||
-      (historyListSelectedLocalId != null &&
-        (historyListPanelOpen || notebookStripTab === 'history'))
-    if (archiveRowSelected && activePieSide !== 'right') {
-      setActivePieSide('right')
-      endCardPieEditEngaged()
-      setSuppressCardPieEditActiveAfterCopy(true)
-    }
-  }, [
-    isMobileLayout,
-    listPanelOpen,
-    listSelectedLocalId,
-    historyListPanelOpen,
-    historyListSelectedLocalId,
-    notebookStripTab,
-    activePieSide,
-  ])
+    if (!archiveRowSelected || activePieSide === 'right') return
+    setActivePieSide('right')
+    endCardPieEditEngaged()
+    setSuppressCardPieEditActiveAfterCopy(true)
+  }, [archiveRowSelected, activePieSide, endCardPieEditEngaged])
 
   useEffect(() => {
     if (rightListArchiveLocalId == null) {
@@ -2104,7 +2108,8 @@ const App = () => {
   const handlePostcardPieCartToolbarAction = useCallback(
     (key: string) => {
       const state = store.getState()
-      const lid = readArchiveToolbarTargetLocalId(state)
+      const lid =
+        rightListArchiveLocalId ?? readArchiveToolbarTargetLocalId(state)
       if (key === 'delete') {
         if (lid == null) return false
         if (!selectCartItems(state).some((item) => item.localId === lid)) {
@@ -2144,6 +2149,12 @@ const App = () => {
       if (shouldRevert) {
         dispatch(revertAllMirrorSectionsCopyRequested())
       } else {
+        /**
+         * cardPieCopy writes into the factory session. Drop the dual-mode
+         * freeze so the left CardPie shows the copied sections (cardtext
+         * otherwise stays on the pre-archive snapshot).
+         */
+        dispatch(clearAssemblyBranchFreeze())
         dispatch(
           applyAllMirrorSectionsCopyRequested({
             sourceLocalId: lid,
@@ -2156,7 +2167,7 @@ const App = () => {
       }
       return false
     },
-    [dispatch, readArchiveToolbarTargetLocalId],
+    [dispatch, readArchiveToolbarTargetLocalId, rightListArchiveLocalId],
   )
   const handleEditorPieToolbarPassthrough = useCallback((key: string) => {
     if (key !== 'editLight' && key !== 'cardPie') return

@@ -2,7 +2,9 @@ import type { UnknownAction } from '@reduxjs/toolkit'
 import {
   setCartListPanelOpen,
   setCartListSelectedLocalId,
+  setCartListStatusSegment,
 } from '@cart/infrastructure/state'
+import type { CartListStatusSegment } from '@cart/domain/types'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state/sectionEditorMenuSlice'
 import {
   closeDayPanel,
@@ -200,20 +202,49 @@ export const buildHistoryListCommands = (): UnknownAction[] => [
 export const buildNotebookHistoryTabCommands = (): UnknownAction[] =>
   buildHistoryCalendarCommandsDesktop()
 
+export function nextCartListStatusSegment(
+  current: CartListStatusSegment,
+): CartListStatusSegment {
+  return current === 'cart' ? 'cartBlocked' : 'cart'
+}
+
+/**
+ * Desktop: повторный клик по корзине только меняет сегмент списка
+ * (активные ↔ заблокированные), список не закрывается.
+ */
+export function buildDesktopCartListSegmentCycleCommands(
+  current: CartListStatusSegment,
+): UnknownAction[] {
+  const next = nextCartListStatusSegment(current)
+  if (next === 'cart') {
+    return [endCartCalendarDatePick(), setCartListStatusSegment('cart')]
+  }
+  return [setCartListStatusSegment('cartBlocked')]
+}
+
 export function buildCartArchiveToggleCommands(input: {
   cartListPanelOpen: boolean
   notebookStripTab: DateStripSection
   isMobileLayout: boolean
   lastActiveView?: ArchiveActiveView
+  listStatusSegment?: CartListStatusSegment
   /** Mobile footer: первое нажатие из inactive открывает список, не календарь. */
   inactiveOpensView?: ArchiveActiveView
 }): UnknownAction[] {
   const mode = resolveCartArchiveViewMode(input)
+  const listStatusSegment = input.listStatusSegment ?? 'cart'
 
-  /** Desktop sidebar: включение — сразу календарь (центр) + список (справа). */
-  if (!input.isMobileLayout && mode === 'inactive') {
+  /**
+   * Desktop sidebar: календарь в центре + список справа.
+   * Повторный клик не скрывает список — переключает активные / заблокированные.
+   */
+  if (!input.isMobileLayout) {
+    if (mode === 'list') {
+      return buildDesktopCartListSegmentCycleCommands(listStatusSegment)
+    }
     return [
       setLastCartArchiveView('list'),
+      setCartListStatusSegment('cart'),
       ...buildDesktopCartArchiveActivateCommands(),
     ]
   }
@@ -246,8 +277,11 @@ export function buildHistoryArchiveToggleCommands(input: {
 }): UnknownAction[] {
   const mode = resolveHistoryArchiveViewMode(input)
 
-  /** Desktop sidebar: включение — сразу календарь (центр) + список (справа). */
-  if (!input.isMobileLayout && mode === 'inactive') {
+  /**
+   * Desktop sidebar: календарь в центре + список справа.
+   * Повторный клик не скрывает список (в отличие от mobile toggle).
+   */
+  if (!input.isMobileLayout) {
     return [
       setLastHistoryArchiveView('list'),
       ...buildDesktopHistoryArchiveActivateCommands(),

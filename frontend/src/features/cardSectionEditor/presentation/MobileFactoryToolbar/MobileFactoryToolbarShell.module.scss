@@ -28,9 +28,9 @@
   width: 100%;
   box-sizing: border-box;
   border: none;
-  border-radius: 1rem;
+  border-radius: 0.75rem;
   /**
-   * Transparent shell; row bands carry the section fill and 1rem corners.
+   * Transparent shell; row bands carry the section fill and 0.75rem corners.
    */
   background-color: transparent;
   display: flex;
@@ -51,13 +51,13 @@
 .rowLower {
   overflow: hidden;
   z-index: 1;
-  border-radius: 0 0 1rem 1rem;
+  border-radius: 0 0 0.75rem 0.75rem;
 }
 
 .rowUpper {
   overflow: hidden;
   z-index: 2;
-  border-radius: 1rem 1rem 0 0;
+  border-radius: 0.75rem 0.75rem 0 0;
 
   &::before {
     content: '';
@@ -121,7 +121,7 @@
 
 .shell:not(:has(.rowLower > *)) {
   .rowUpper {
-    border-radius: 1rem;
+    border-radius: 0.75rem;
   }
 }
 

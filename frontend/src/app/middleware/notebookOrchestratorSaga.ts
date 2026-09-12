@@ -2,7 +2,7 @@ import type { SagaIterator } from 'redux-saga'
 import { call, put, select, takeEvery } from 'redux-saga/effects'
 import { selectIsMobileLayout } from '@layout/infrastructure/selectors'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
-import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
+import { selectCartListPanelOpen, selectCartListStatusSegment } from '@cart/infrastructure/selectors'
 import { selectIsHistoryListPanelOpen, selectNotebookStripTab, selectLastCartArchiveView, selectLastHistoryArchiveView } from '@date/calendar/infrastructure/selectors'
 import { closeCardPieListPanelAndSyncIconsSaga } from '@app/middleware/exclusiveListPanelsSaga'
 import {
@@ -12,6 +12,7 @@ import {
   notebookTabHistoryClicked,
 } from '@date/calendar/application/orchestration/notebookOrchestration.events'
 import { bumpNotebookDateTabPeekClearTick } from '@date/calendar/infrastructure/state'
+import { releaseCartDatePickListEntryOwnership } from '@date/calendar/application/logic/cartDatePickListEntryOwnership'
 import {
   buildCartArchiveToggleCommands,
   buildHistoryArchiveToggleCommands,
@@ -44,8 +45,16 @@ function* handleNotebookTabCartClicked(): SagaIterator {
   const lastActiveView: 'calendar' | 'list' = yield select(
     selectLastCartArchiveView,
   )
+  const listStatusSegment = yield select(selectCartListStatusSegment)
   if (isMobileLayout) {
     yield call(closeCardPieListPanelAndSyncIconsSaga)
+  }
+  if (
+    !isMobileLayout &&
+    cartListPanelOpen &&
+    listStatusSegment === 'cartBlocked'
+  ) {
+    releaseCartDatePickListEntryOwnership()
   }
   yield* dispatchCommands(
     buildCartArchiveToggleCommands({
@@ -53,6 +62,7 @@ function* handleNotebookTabCartClicked(): SagaIterator {
       notebookStripTab,
       isMobileLayout,
       lastActiveView,
+      listStatusSegment,
     }),
   )
 }

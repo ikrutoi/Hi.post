@@ -28,7 +28,7 @@
 }
 
 .upperRowCardtext {
-  border-radius: 1rem 1rem 0 0;
+  border-radius: 0.75rem 0.75rem 0 0;
   overflow: hidden;
   background-color: $color-cardtext-input;
   background-image: none;
@@ -44,7 +44,7 @@
 }
 
 .upperRowCardphoto {
-  border-radius: 1rem 1rem 0 0;
+  border-radius: 0.75rem 0.75rem 0 0;
   overflow: hidden;
   background-color: $color-cardphoto-input;
   background-image: none;
@@ -89,7 +89,7 @@
 }
 
 .upperRowEnvelope {
-  border-radius: 1rem 1rem 0 0;
+  border-radius: 0.75rem 0.75rem 0 0;
   overflow: hidden;
   background-color: $color-envelope-recipient-input;
   background-image: none;

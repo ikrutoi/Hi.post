@@ -153,8 +153,7 @@ export const AddressListMobileFactoryUpperToolbar: React.FC<{
       className={clsx(
         styles.upperRow,
         placement === 'listHeader' && styles.upperRowListHeader,
-        placement !== 'listHeader' &&
-          (senderListOpen ? styles.upperRowSender : styles.upperRowRecipient),
+        senderListOpen ? styles.upperRowSender : styles.upperRowRecipient,
       )}
       data-address-list-toolbar-role={senderListOpen ? 'sender' : 'recipient'}
     >

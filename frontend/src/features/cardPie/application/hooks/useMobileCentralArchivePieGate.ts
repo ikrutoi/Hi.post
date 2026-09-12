@@ -118,6 +118,7 @@ export function useMobileCentralArchivePieGate(
 
   const [minHoldElapsed, setMinHoldElapsed] = useState(localId == null)
   const [mediaDecoded, setMediaDecoded] = useState(true)
+  const [paintWaitTimedOut, setPaintWaitTimedOut] = useState(false)
   const [mounted, setMounted] = useState<MountedArchivePie | null>(null)
   const [contentOpaque, setContentOpaque] = useState(false)
   const [fadeOutDone, setFadeOutDone] = useState(true)
@@ -127,14 +128,22 @@ export function useMobileCentralArchivePieGate(
   useEffect(() => {
     if (localId == null) {
       setMinHoldElapsed(true)
+      setPaintWaitTimedOut(false)
       return
     }
     setMinHoldElapsed(false)
+    setPaintWaitTimedOut(false)
     const timerId = window.setTimeout(() => {
       setMinHoldElapsed(true)
     }, minHoldMs)
+    const failOpenId = window.setTimeout(() => {
+      setPaintWaitTimedOut(true)
+      setMinHoldElapsed(true)
+      setMediaDecoded(true)
+    }, Math.max(minHoldMs, 500))
     return () => {
       window.clearTimeout(timerId)
+      window.clearTimeout(failOpenId)
     }
   }, [localId, minHoldMs])
 
@@ -217,7 +226,10 @@ export function useMobileCentralArchivePieGate(
     mediaDecoded &&
     (!needsPhoto || Boolean(displayUrl?.trim())) &&
     (!needsAroma || Boolean(aromaUrl?.trim()))
-  const isPaintReady = Boolean(isContentReady && minHoldElapsed)
+  const isPaintReady = Boolean(
+    (isContentReady && minHoldElapsed) ||
+      (localId != null && bundle != null && paintWaitTimedOut),
+  )
 
   /** После fade out: blank, затем mount + fade in. */
   useEffect(() => {

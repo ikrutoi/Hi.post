@@ -39,7 +39,7 @@ import {
 } from '@envelope/recipient/infrastructure/state'
 import type { RecipientState } from '@envelope/domain/types'
 import type { AddressFields } from '@shared/config/constants'
-import { updateToolbarSection } from '@toolbar/infrastructure/state'
+import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
 import { selectCardtextState } from '@cardtext/infrastructure/selectors'
 import { selectEnvelopeSessionRecord, selectRecipientsList } from '@envelope/infrastructure/selectors'
@@ -778,11 +778,10 @@ export function* refreshRightSidebarBadgesFromPostcards(): SagaIterator {
         ? String(activeCartCount)
         : null
   yield put(
-    updateToolbarSection({
+    updateToolbarIcon({
       section: 'rightSidebar',
-      value: {
-        cart: { options: { badge: cartBadgeValue } },
-      },
+      key: 'cart',
+      value: { options: { badge: cartBadgeValue } },
     }),
   )
 }

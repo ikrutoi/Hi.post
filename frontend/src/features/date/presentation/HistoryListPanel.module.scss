@@ -258,13 +258,13 @@ $list-panel-footer-band: calc(
   :global([data-shell-layout='mobile']) & {
     bottom: $list-panel-footer-bottom-inset-mobile;
     @include notebookTab.mobile-history-list-toolbar-role-fill;
-    border-radius: 1rem;
+    border-radius: 0.75rem;
     overflow: hidden;
   }
 
   :global([data-shell-layout='desktop']) & {
     @include notebookTab.desktop-history-list-toolbar-role-fill;
-    border-radius: 1rem;
+    border-radius: 0.75rem;
     overflow: hidden;
     padding: 0;
     @include iconButton.toolbar-factory-edge-key-insets;

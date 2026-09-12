@@ -27,15 +27,12 @@ export function nextLocalIdAfterRemoval(
   removedLocalId: number,
 ): number | null {
   const idx = orderedLocalIds.indexOf(removedLocalId)
-  if (idx < 0) return null
-
   const remaining = orderedLocalIds.filter((id) => id !== removedLocalId)
   if (remaining.length === 0) return null
-
-  if (idx === orderedLocalIds.length - 1) {
+  if (idx < 0 || idx >= remaining.length) {
     return remaining[0] ?? null
   }
-  return remaining[Math.min(idx, remaining.length - 1)] ?? null
+  return remaining[idx] ?? remaining[0] ?? null
 }
 
 export function resolveArchiveSelectionAdvance(

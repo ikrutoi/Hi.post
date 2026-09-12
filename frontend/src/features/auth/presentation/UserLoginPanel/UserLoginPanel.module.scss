@@ -11,7 +11,7 @@ $user-panel-chrome-inset-inline: 0.5rem;
 $user-panel-chrome-inset-top: 0.35rem;
 $user-panel-chrome-inset-bottom: 0.35rem;
 /** Как `desktop-template-list-header-toolbar-rounding` у plan mini list header. */
-$user-panel-chrome-radius: 1rem;
+$user-panel-chrome-radius: 0.75rem;
 $user-panel-header-band: calc(
   #{$user-panel-chrome-inset-top} + #{$user-panel-chrome-height}
 );

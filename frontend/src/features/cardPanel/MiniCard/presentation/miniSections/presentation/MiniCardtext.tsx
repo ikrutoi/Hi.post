@@ -21,7 +21,10 @@ import {
 } from '@cardtext/domain/editor/editor.types'
 import { selectCardtextDisplayForMiniStrip } from '@cardtext/infrastructure/selectors'
 import { selectCartItems } from '@cart/infrastructure/selectors'
-import { isMirrorSectionAppliedToEditor } from '@cardPanel/application/helpers/mirrorSectionEditorSync'
+import {
+  isMirrorCardtextHydratedInEditor,
+  isMirrorSectionAppliedToEditor,
+} from '@cardPanel/application/helpers/mirrorSectionEditorSync'
 
 function cardtextMiniSlateKey(
   prefix: string,
@@ -54,6 +57,7 @@ export const MiniCardtext: React.FC = () => {
   const factoryDisplay = useAppSelector(selectCardtextDisplayForMiniStrip)
   const cartItems = useAppSelector(selectCartItems)
   const cardtextApplied = useAppSelector((s) => s.cardtext.appliedData)
+  const cardtextAsset = useAppSelector((s) => s.cardtext.assetData)
 
   const rowMirrorInner =
     mirrorInner ?? mirrorBundleRow?.currentData?.data ?? null
@@ -76,14 +80,16 @@ export const MiniCardtext: React.FC = () => {
       : null
   const mirrorCopyInFactory =
     mirrorActive &&
-    isMirrorSectionAppliedToEditor('cardtext', rowMirrorInner, sourcePostcard, {
+    (isMirrorSectionAppliedToEditor('cardtext', rowMirrorInner, sourcePostcard, {
       cardphotoAppliedData: null,
       cardtextApplied,
       appliedRecipientAddress: null,
       appliedSenderAddress: null,
       selectedAroma: null,
       selectedDates: [],
-    })
+    }) ||
+      isMirrorCardtextHydratedInEditor(rowMirrorInner, cardtextApplied) ||
+      isMirrorCardtextHydratedInEditor(rowMirrorInner, cardtextAsset))
 
   const mirrorCt = rowMirrorInner?.cardtext
   const mirrorHasText =

@@ -113,6 +113,7 @@ import {
   setItems,
   toggleCartListEntryChecked,
   removeItem,
+  commitCartPostcardRemoval,
   removeCartPostcard,
   clearCart,
 } from '@cart/infrastructure/state'
@@ -313,6 +314,7 @@ const SESSION_WATCH_ACTIONS = [
   setCartListStatusSegment.type,
   addItem.type,
   removeItem.type,
+  commitCartPostcardRemoval.type,
   removeCartPostcard.type,
   clearCart.type,
 ]

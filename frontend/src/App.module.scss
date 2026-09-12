@@ -152,6 +152,7 @@
   position: relative;
   min-width: 0;
   min-height: 0;
+  overflow: hidden;
   pointer-events: auto;
 }
 
@@ -621,7 +622,7 @@
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    border-radius: 1rem;
+    border-radius: 0.75rem;
     background: var(
       --desktop-factory-stack-bg,
       var(--mobile-section-surface-bg, transparent)
@@ -713,7 +714,7 @@
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    border-radius: 1rem;
+    border-radius: 0.75rem;
     background: var(--desktop-factory-toolbar-bg, transparent);
   }
 
