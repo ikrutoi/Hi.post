@@ -18,7 +18,7 @@ $entry-row-height-compact: 2.28rem;
   cursor: default;
   padding: 1px 0.5rem 1px 0.5rem;
   background-color: $color-envelope-recipient-input;
-  border: 1px solid $color-envelope-recipient-border;
+  border: 1px solid $color-section-light;
   border-radius: $list-entry-radius-sm;
   user-select: none;
   transition:
@@ -32,7 +32,7 @@ $entry-row-height-compact: 2.28rem;
 
   /* Keyboard focus in listbox: same border family as default (no accent tint). */
   &[data-focused='true']:not([data-selected='true']) {
-    border-color: darken($color-envelope-recipient-border, 10%);
+    border-color: darken($color-section-light, 10%);
   }
 
   &[data-selected='true'] {
@@ -46,7 +46,7 @@ $entry-row-height-compact: 2.28rem;
     @include selectionAccent.list-entry-selection-accent(
       $gap-color: darken($color-envelope-recipient-input, 2%)
     );
-    border-color: $color-envelope-recipient-border;
+    border-color: $color-section-light;
   }
 
   &[data-has-remove='true'] {

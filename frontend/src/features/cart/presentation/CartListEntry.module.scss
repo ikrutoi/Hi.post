@@ -9,8 +9,8 @@ $cart-list-entry-gutter-start: 3rem;
 
 $list-entry-bg: #fff;
 $list-entry-bg-hover: #fafafa;
-/** Как рамка шаблона в списке cardtext (`AddressBookCell` / `$color-app-substrate-border`). */
-$list-entry-section-border: $color-app-substrate-border;
+/** Как рамка формы Получатели / шаблонов адреса (`$color-section-light`). */
+$list-entry-section-border: $color-section-light;
 $list-entry-corner-radius: 0.75rem;
 
 .shell {
