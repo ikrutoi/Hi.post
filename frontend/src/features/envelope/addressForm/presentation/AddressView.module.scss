@@ -385,8 +385,7 @@ $envelope-address-view-row-height: 1.625rem;
     border: none;
     border-radius: 0;
     background-color: transparent;
-    /* Gap to Name comes from toolbar margin-bottom; keep side/bottom field padding. */
-    padding: 0 0.5rem 0.55rem;
+    padding: 0.75rem 0.5rem;
     box-sizing: border-box;
   }
 }

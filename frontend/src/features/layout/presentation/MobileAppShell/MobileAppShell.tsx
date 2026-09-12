@@ -86,6 +86,13 @@ import {
   selectRecipientListPanelOpen,
   selectSenderListPanelOpen,
 } from '@envelope/infrastructure/selectors'
+import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
+import { selectSenderView } from '@envelope/sender/infrastructure/selectors'
+import {
+  selectArchiveEnvelopeSandboxActive,
+  selectArchiveSandboxRecipient,
+  selectArchiveSandboxSender,
+} from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import {
   useAddressCardPiePreview,
   useAddressTemplatePreviewPieToolbar,
@@ -243,6 +250,48 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const cartItems = useAppSelector(selectCartItems)
   const notebookStripSection = useDateStripSectionForNotebookTabs()
   const activeSection = useAppSelector(selectActiveSection)
+  const sessionSenderView = useAppSelector(selectSenderView)
+  const sessionRecipientView = useAppSelector(selectRecipientView)
+  const envelopeSandboxActive = useAppSelector(
+    selectArchiveEnvelopeSandboxActive,
+  )
+  const envelopeSandboxSender = useAppSelector(selectArchiveSandboxSender)
+  const envelopeSandboxRecipient = useAppSelector(
+    selectArchiveSandboxRecipient,
+  )
+  const {
+    mirrorTargetLocalId,
+    mirrorListArchiveSource,
+    rightPieCardphotoPeekNoToolbar,
+    rightPieCardtextPeekNoToolbar,
+    rightPieEnvelopePeekNoToolbar,
+    rightPieAromaPeekNoToolbar,
+    rightPieDatePeekNoToolbar,
+    clearRightPieCardphotoPeek,
+    clearRightPieCardtextPeek,
+    clearRightPieEnvelopePeek,
+    clearRightPieAromaPeek,
+    clearRightPieDatePeek,
+  } = useRightListArchiveMini()
+  const senderViewForCreate = envelopeSandboxActive
+    ? envelopeSandboxSender.currentView
+    : sessionSenderView
+  const recipientViewForCreate = envelopeSandboxActive
+    ? envelopeSandboxRecipient.currentView
+    : sessionRecipientView
+  /**
+   * addressAdd → senderCreate/recipientCreate: pin the form to the upper
+   * visual viewport (keyboard in the lower half). Prop override for tests.
+   */
+  const envelopeCreateRole =
+    envelopeAddressCreateRole ??
+    (activeSection === 'envelope' && !rightPieEnvelopePeekNoToolbar
+      ? senderViewForCreate === 'senderCreate'
+        ? 'sender'
+        : recipientViewForCreate === 'recipientCreate'
+          ? 'recipient'
+          : null
+      : null)
   const cardphotoListPanelOpen = useAppSelector(selectIsListPanelOpen)
   const cardphotoAssetData = useAppSelector(selectCardphotoAssetData)
   const cardphotoAssetPreviewUrl = useAppSelector(
@@ -279,10 +328,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     (activeSection === 'cardtext' &&
       (cardtextEditorComposerVisible || cardtextDraftFocus))
   const showMobileUserLoginChrome =
-    envelopeAddressCreateRole == null && !cardtextComposeHideAppHeader
+    envelopeCreateRole == null && !cardtextComposeHideAppHeader
   useMobileVisualViewport(shellRef, {
-    pinTop:
-      envelopeAddressCreateRole != null || cardtextComposeHideAppHeader,
+    pinTop: envelopeCreateRole != null || cardtextComposeHideAppHeader,
   })
   const addressCardPiePreview = useAddressCardPiePreview()
   const showMobileCardPieListInFactory =
@@ -318,20 +366,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     selectPlanPie,
     cyclePlanPie,
   } = useMobilePlanCardPies()
-  const {
-    mirrorTargetLocalId,
-    mirrorListArchiveSource,
-    rightPieCardphotoPeekNoToolbar,
-    rightPieCardtextPeekNoToolbar,
-    rightPieEnvelopePeekNoToolbar,
-    rightPieAromaPeekNoToolbar,
-    rightPieDatePeekNoToolbar,
-    clearRightPieCardphotoPeek,
-    clearRightPieCardtextPeek,
-    clearRightPieEnvelopePeek,
-    clearRightPieAromaPeek,
-    clearRightPieDatePeek,
-  } = useRightListArchiveMini()
 
   const clearMobileFactoryPeek = useCallback(() => {
     clearRightPieCardphotoPeek()
@@ -1017,7 +1051,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       ref={shellRef}
       className={styles.mobileShell}
       style={cardWidthStyle}
-      data-envelope-address-create={envelopeAddressCreateRole ?? undefined}
+      data-envelope-address-create={envelopeCreateRole ?? undefined}
       data-cardtext-create={cardtextCreateChromeActive ? 'true' : undefined}
       data-cardtext-compose={
         cardtextComposeHideAppHeader && !cardtextCreateChromeActive

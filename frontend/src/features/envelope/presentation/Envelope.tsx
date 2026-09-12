@@ -10,6 +10,7 @@ import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiv
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
 import { EnvelopeMobileAddressViewToolbar } from './EnvelopeMobileAddressViewToolbar'
+import { EnvelopeMobileAddressForm } from './EnvelopeMobileAddressForm'
 import { useEnvelopeMobileAddressFocus } from './EnvelopeMobileAddressFocusContext'
 import { useArchiveEditPeekGate } from '@cardPanel/application/hooks/useArchiveEditPeekGate'
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
@@ -113,6 +114,15 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
     isMobile &&
     addressAddSoloRole != null &&
     !envelopePeekMode
+  const mobileAddressCreateRole: 'sender' | 'recipient' | null =
+    isMobile && !envelopePeekMode
+      ? recipientView === 'recipientCreate'
+        ? 'recipient'
+        : senderView === 'senderCreate'
+          ? 'sender'
+          : null
+      : null
+  const showMobileAddressCreateForm = mobileAddressCreateRole != null
 
   useEffect(() => {
     if (!isMobile || envelopePeekMode) {
@@ -190,7 +200,12 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
     senderView,
   ])
 
-  const envelopeWorkZone = (
+  const envelopeWorkZone = showMobileAddressCreateForm ? (
+    <EnvelopeMobileAddressForm
+      role={mobileAddressCreateRole ?? 'recipient'}
+      lang={lang}
+    />
+  ) : (
     <div className={styles.envelopeWorkZone}>
       <div className={styles.envelopeTopSlot}>
         <div
@@ -288,6 +303,9 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
   const body = (
     <div
       className={styles.envelope}
+      data-envelope-mobile-form={
+        showMobileAddressCreateForm ? 'true' : undefined
+      }
       data-envelope-mobile-focus={
         showMobileAddressFocus ? addressAddSoloRole! : undefined
       }

@@ -88,12 +88,20 @@
   --mobile-factory-frame-max-height: none;
   --mobile-factory-frame-margin-top: 0;
   --mobile-factory-frame-margin-bottom: 0;
-  --mobile-factory-frame-padding-top: 0;
+  --mobile-factory-frame-padding-top: 0.5rem;
   --mobile-factory-frame-padding-bottom: 0;
-  --mobile-factory-frame-bg: transparent;
-  --mobile-section-surface-bg: #{$color-app-inner};
+  --mobile-factory-frame-bg: #{$color-base};
+  --mobile-section-surface-bg: #{$color-base};
 
   --mobile-factory-content-flex: 1 1 auto;
+  --mobile-factory-content-gap: 0.5rem;
+  --mobile-factory-work-zone-flex: 0 1 auto;
+  --mobile-factory-work-zone-aspect-ratio: auto;
+  --mobile-factory-work-zone-height: auto;
+  --mobile-factory-work-zone-min-height: 0;
+  --mobile-factory-work-zone-margin-bottom: 0.5rem;
+  --mobile-factory-work-zone-display: flex;
+  --mobile-factory-work-zone-flex-direction: column;
 
   .mobileFooter {
     display: none;
@@ -103,11 +111,15 @@
     display: none;
   }
 
+  .mobileBody {
+    background-color: $color-base;
+  }
+
   .mobileForm {
     overflow: hidden;
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: 0;
-    background-color: $color-app-inner;
+    background-color: $color-base;
 
     :global([class*='cardSectionEditor']) {
       justify-content: flex-start;
@@ -134,6 +146,12 @@
 
     :global([data-mobile-factory-section-frame='true']) {
       overflow: hidden;
+      background-color: $color-base;
+      background-image: none;
+
+      &::before {
+        content: none;
+      }
     }
 
     :global([class*='content']) {
@@ -142,18 +160,26 @@
     }
 
     :global([data-mobile-central-work-zone='true']) {
-      /* Keep the factory square — unsetting aspect-ratio collapses height to 0. */
-      aspect-ratio: var(--mobile-central-work-side) / var(--mobile-central-work-side);
-      flex: 0 0 auto;
+      aspect-ratio: auto;
+      flex: 0 1 auto;
       width: var(--mobile-central-work-side);
-      height: var(--mobile-central-work-side);
-      min-height: var(--mobile-central-work-side);
-      margin-top: var(--mobile-section-inset);
-      overflow: hidden;
+      height: auto;
+      max-height: 100%;
+      min-height: 0;
+      margin-top: 0;
+      overflow: auto;
       border-radius: 0.5rem;
       background-color: var(--envelope-address-create-bg);
       border: 1px solid var(--envelope-address-create-border);
       box-sizing: border-box;
+
+      :global([class*='centralWorkZoneInner']) {
+        position: relative;
+        inset: auto;
+        flex: 0 0 auto;
+        height: auto;
+        min-height: 0;
+      }
     }
   }
 
