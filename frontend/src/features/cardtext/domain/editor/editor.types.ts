@@ -109,12 +109,16 @@ export interface CardtextContent {
 }
 
 /** Рекурсивно: в сохранённых/серверных value иногда вложенные element-узлы, а не только `CardtextTextNode` в `children` блока. */
-function slateSubtreeHasNonEmptyText(node: unknown): boolean {
-  if (node == null || typeof node !== 'object') return false
+function slateSubtreePlainText(node: unknown): string {
+  if (node == null || typeof node !== 'object') return ''
   const n = node as { text?: unknown; children?: unknown }
-  if (typeof n.text === 'string' && n.text.trim().length > 0) return true
-  if (!Array.isArray(n.children)) return false
-  return n.children.some(slateSubtreeHasNonEmptyText)
+  if (typeof n.text === 'string') return n.text
+  if (!Array.isArray(n.children)) return ''
+  return n.children.map(slateSubtreePlainText).join('')
+}
+
+function slateSubtreeHasNonEmptyText(node: unknown): boolean {
+  return slateSubtreePlainText(node).trim().length > 0
 }
 
 /** Для превью / зеркала списка: есть текст в plainText или в узлах value (в т.ч. draft без applied). */
@@ -130,27 +134,34 @@ export function cardtextHasRenderableContent(
 }
 
 /**
- * Значение для read-only Slate (мини-секция, зеркало списка): если в `value` нет текста,
- * но `plainText` непустой — строим параграфы (иначе превью пустое при сохранённом plainText).
+ * Значение для read-only Slate и сектора CardPie: плоские `{ text }` children.
+ * Archive/copy часто хранит вложенный Slate — без flatten мини-пай пустой до reload.
  */
 export function cardtextValueForReadOnlyPreview(ct: CardtextContent): CardtextValue {
   const rawBlocks = ct.value ?? []
+  const defaultAlign = (ct.style?.align ?? 'left') as TextAlign
+  const fromBlocks: CardtextValue = []
   for (const block of rawBlocks) {
-    if (slateSubtreeHasNonEmptyText(block)) {
-      return JSON.parse(JSON.stringify(rawBlocks)) as CardtextValue
-    }
+    const text = slateSubtreePlainText(block)
+    if (text.trim().length === 0) continue
+    const type =
+      block.type === 'heading' || block.type === 'quote' ? block.type : 'paragraph'
+    const align = block.align ?? defaultAlign
+    fromBlocks.push({
+      type,
+      align,
+      children: [{ text }],
+    })
   }
+  if (fromBlocks.length > 0) return fromBlocks
+
   const plain = ct.plainText?.trim() ?? ''
   if (plain.length > 0) {
-    const align = (ct.style?.align ?? 'left') as TextAlign
     return plain.split('\n').map((line) => ({
       type: 'paragraph' as const,
-      align,
+      align: defaultAlign,
       children: [{ text: line }],
     }))
-  }
-  if (rawBlocks.length > 0) {
-    return JSON.parse(JSON.stringify(rawBlocks)) as CardtextValue
   }
   return initialCardtextValue.map((b) => ({
     ...b,

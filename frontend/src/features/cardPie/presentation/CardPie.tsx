@@ -27,6 +27,7 @@ import { CardSection } from '@shared/config/constants'
 import { CardPieProps } from '../domain/types'
 import { useCardPieFacade } from '../application/facade'
 import { isPostcardPieAllComplete } from '../infrastructure/postcardCardPieViewModel'
+import { cardtextValueForReadOnlyPreview } from '@cardtext/domain/editor/editor.types'
 import {
   PIE_DATE_SCATTER_SLOTS,
   PIE_ENVELOPE_SCATTER_SLOTS,
@@ -153,7 +154,9 @@ export const CardPie: React.FC<CardPieProps> = ({
    */
   const hasAppliedCardtext = Boolean(sections.cardtext)
   const valueCardtext = hasAppliedCardtext
-    ? (cardData?.cardtext?.value ?? [])
+    ? cardData?.cardtext != null
+      ? cardtextValueForReadOnlyPreview(cardData.cardtext)
+      : []
     : []
   const previewLines = valueCardtext
     .slice(0, 8)

@@ -5,6 +5,7 @@ import type { AddressFields } from '@shared/config/constants'
 import {
   CARDTEXT_APPLIED_DISPLAY_STATUSES,
   cardtextHasRenderableContent,
+  cardtextValueForReadOnlyPreview,
   createInitialCardtextContent,
   type CardtextContent,
 } from '@cardtext/domain/editor/editor.types'
@@ -85,10 +86,7 @@ function cardtextContentForPie(card: Card): CardtextContent {
     createInitialCardtextContent()
   return {
     ...picked,
-    value: picked.value.map((b) => ({
-      ...b,
-      children: b.children.map((c) => ({ ...c })),
-    })),
+    value: cardtextValueForReadOnlyPreview(picked),
     style: { ...picked.style },
   }
 }
@@ -378,8 +376,9 @@ export function buildPieSectionFlagsFromInner(
   envelopeComplete: boolean,
 ): CardPieSectionFlags {
   const cardtextComplete =
-    inner.cardtext.status != null &&
-    CARDTEXT_APPLIED_DISPLAY_STATUSES.has(inner.cardtext.status)
+    cardtextHasRenderableContent(inner.cardtext) &&
+    (inner.cardtext.status == null ||
+      CARDTEXT_APPLIED_DISPLAY_STATUSES.has(inner.cardtext.status))
   return {
     cardphoto: Boolean(inner.cardphoto.previewUrl),
     cardtext: cardtextComplete,
