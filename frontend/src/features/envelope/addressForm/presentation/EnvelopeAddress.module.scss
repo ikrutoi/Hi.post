@@ -294,7 +294,7 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
 
 .addressFormRecipient {
   &.addressFieldset {
-    border: solid 1px $color-envelope-recipient-border;
+    border: solid 1px $color-section-light;
     // border: solid 1px red;
     /** IconUsers вынесен наружу — можно безопасно клипать содержимое по радиусу. */
     overflow: hidden;
