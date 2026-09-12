@@ -2595,7 +2595,6 @@ function DesktopFactoryTopRow({
               <AddressCardPiePreview preview={addressCardPiePreview.preview} />
             ) : (
               <CardPie
-                key={selectedPlanPieId ?? 'assembly-overview'}
                 isProcessed
                 fillContainer
                 station="left"
