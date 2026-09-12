@@ -121,6 +121,26 @@
     padding-bottom: 0;
     background-color: $color-base;
 
+    :global([class*='rowLower']) {
+      background-color: var(--envelope-address-create-bg);
+    }
+
+    :global([class*='rowLower']) :global([class*='toolbarKey']),
+    :global([class*='rowLower'])
+      :global([class*='toolbarKey'][class*='toolbarKeyEnabled']:hover),
+    :global([class*='rowLower'])
+      :global([class*='toolbarKey'][class*='toolbarKeyActive']:hover),
+    :global([class*='rowLower'])
+      :global([class*='toolbarKey'][class*='toolbarKeyDisabled']:hover),
+    :global([class*='rowLower'])
+      :global([class*='toolbarRecipientCreate'])
+      :global([class*='toolbarKey']),
+    :global([class*='rowLower'])
+      :global([class*='toolbarSenderCreate'])
+      :global([class*='toolbarKey']) {
+      background-color: transparent;
+    }
+
     :global([class*='cardSectionEditor']) {
       justify-content: flex-start;
       flex: 1 1 auto;
