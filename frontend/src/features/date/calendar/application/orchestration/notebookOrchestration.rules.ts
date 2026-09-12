@@ -228,11 +228,14 @@ export function buildCartArchiveToggleCommands(input: {
   isMobileLayout: boolean
   lastActiveView?: ArchiveActiveView
   listStatusSegment?: CartListStatusSegment
+  /** Mobile: второй клик по корзине показывает заблокированные, если они есть. */
+  hasBlockedCartItems?: boolean
   /** Mobile footer: первое нажатие из inactive открывает список, не календарь. */
   inactiveOpensView?: ArchiveActiveView
 }): UnknownAction[] {
   const mode = resolveCartArchiveViewMode(input)
   const listStatusSegment = input.listStatusSegment ?? 'cart'
+  const hasBlockedCartItems = Boolean(input.hasBlockedCartItems)
 
   /**
    * Desktop sidebar: календарь в центре + список справа.
@@ -249,21 +252,35 @@ export function buildCartArchiveToggleCommands(input: {
     ]
   }
 
+  /**
+   * Mobile footer: список → (заблокированные, если есть) → календарь → список.
+   */
+  if (mode === 'list') {
+    if (listStatusSegment !== 'cartBlocked' && hasBlockedCartItems) {
+      return [
+        setLastCartArchiveView('list'),
+        ...buildDesktopCartListSegmentCycleCommands(listStatusSegment),
+      ]
+    }
+    return [
+      setLastCartArchiveView('calendar'),
+      ...buildNotebookCartTabCommandsMobile(),
+    ]
+  }
+
   const next =
     mode === 'inactive' && input.inactiveOpensView != null
       ? input.inactiveOpensView
       : resolveNextArchiveViewOnClick(mode, input.lastActiveView)
   const remember = setLastCartArchiveView(next)
   if (next === 'list') {
-    const openList = input.isMobileLayout
-      ? buildMobileCartSlotOpenCommands()
-      : buildCartListCommands()
-    return [remember, ...openList]
+    return [
+      remember,
+      setCartListStatusSegment('cart'),
+      ...buildMobileCartSlotOpenCommands(),
+    ]
   }
-  const openCalendar = input.isMobileLayout
-    ? buildNotebookCartTabCommandsMobile()
-    : buildCartCalendarCommands()
-  return [remember, ...openCalendar]
+  return [remember, ...buildNotebookCartTabCommandsMobile()]
 }
 
 export function buildHistoryArchiveToggleCommands(input: {

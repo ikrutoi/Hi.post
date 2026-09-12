@@ -2,7 +2,11 @@ import type { SagaIterator } from 'redux-saga'
 import { call, put, select, takeEvery } from 'redux-saga/effects'
 import { selectIsMobileLayout } from '@layout/infrastructure/selectors'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
-import { selectCartListPanelOpen, selectCartListStatusSegment } from '@cart/infrastructure/selectors'
+import {
+  selectCartListPanelOpen,
+  selectCartListStatusSegment,
+  selectHasBlockedCartPostcards,
+} from '@cart/infrastructure/selectors'
 import { selectIsHistoryListPanelOpen, selectNotebookStripTab, selectLastCartArchiveView, selectLastHistoryArchiveView } from '@date/calendar/infrastructure/selectors'
 import { closeCardPieListPanelAndSyncIconsSaga } from '@app/middleware/exclusiveListPanelsSaga'
 import {
@@ -46,6 +50,9 @@ function* handleNotebookTabCartClicked(): SagaIterator {
     selectLastCartArchiveView,
   )
   const listStatusSegment = yield select(selectCartListStatusSegment)
+  const hasBlockedCartItems: boolean = yield select(
+    selectHasBlockedCartPostcards,
+  )
   if (isMobileLayout) {
     yield call(closeCardPieListPanelAndSyncIconsSaga)
   }
@@ -63,6 +70,7 @@ function* handleNotebookTabCartClicked(): SagaIterator {
       isMobileLayout,
       lastActiveView,
       listStatusSegment,
+      hasBlockedCartItems,
     }),
   )
 }

@@ -67,6 +67,12 @@ export const selectBlockedCartPostcardCount = createSelector(
   },
 )
 
+/** Есть ли строки сегмента `cartBlocked` (список заблокированных). */
+export const selectHasBlockedCartPostcards = createSelector(
+  [selectCartItems],
+  (items): boolean => items.some((item) => item.status === 'cartBlocked'),
+)
+
 // export const selectCartAmount = (state: RootState): CartAmount => {
 //   const items: Postcard[] = state.cart.items.filter(
 //     (item) => item.status === 'cart',

@@ -20,6 +20,8 @@ import {
   selectCartListPanelOpen,
   selectCartListSelectedLocalId,
   selectCartItems,
+  selectCartListStatusSegment,
+  selectHasBlockedCartPostcards,
 } from '@cart/infrastructure/selectors'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
@@ -966,6 +968,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         notebookStripTab: selectNotebookStripTab(state),
         isMobileLayout: true,
         lastActiveView: selectLastCartArchiveView(state),
+        listStatusSegment: selectCartListStatusSegment(state),
+        hasBlockedCartItems: selectHasBlockedCartPostcards(state),
         inactiveOpensView: 'list',
       })) {
         dispatch(command)
