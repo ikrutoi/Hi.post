@@ -1343,6 +1343,10 @@ const App = () => {
       return
     }
 
+    const prevPostcardRemoved =
+      prev.localId != null &&
+      !cartItems.some((item) => item.localId === prev.localId)
+
     const onlySelectedRowChangedInSameList =
       prev.source != null &&
       source != null &&
@@ -1355,7 +1359,13 @@ const App = () => {
 
     resetArchiveMirrorCopyToggle()
 
-    if (onlySelectedRowChangedInSameList) {
+    /**
+     * Выбор другой строки в том же списке оставляет peek.
+     * Удаление текущей открытки (в т.ч. с переходом на соседнюю) должно
+     * снять peek/edit — иначе клики по центральному CardPie и слотам
+     * корзины/истории перестают проходить (кнопка фабрики их сбрасывает).
+     */
+    if (onlySelectedRowChangedInSameList && !prevPostcardRemoved) {
       return
     }
 
@@ -1365,12 +1375,22 @@ const App = () => {
     setRightPieAromaPeekNoToolbar(false)
     setRightPieDatePeekNoToolbar(false)
     dispatch(clearArchiveEnvelopeSandbox())
+    if (prevPostcardRemoved || localId == null) {
+      setRightListArchivePinnedForLeftFactory(null)
+      if (cardPieEditEngagedRef.current) {
+        endCardPieEditEngaged()
+      }
+      setCardPieEditHydrateScope('all')
+      setSuppressCardPieEditActiveAfterCopy(true)
+    }
     if (!cardPieEditEngagedRef.current) {
       releaseAssemblySessionLease()
     }
   }, [
+    cartItems,
     rightListArchiveLocalId,
     rightListArchiveSource,
+    endCardPieEditEngaged,
     releaseAssemblySessionLease,
     resetArchiveMirrorCopyToggle,
     dispatch,
@@ -1428,11 +1448,26 @@ const App = () => {
   ])
 
   useEffect(() => {
-    if (rightListArchiveLocalId == null) {
-      releaseAssemblySessionLease()
-      setCardPieEditHydrateScope('all')
+    if (rightListArchiveLocalId != null) return
+    setRightPieCardphotoPeekNoToolbar(false)
+    setRightPieCardtextPeekNoToolbar(false)
+    setRightPieEnvelopePeekNoToolbar(false)
+    setRightPieAromaPeekNoToolbar(false)
+    setRightPieDatePeekNoToolbar(false)
+    setRightListArchivePinnedForLeftFactory(null)
+    dispatch(clearArchiveEnvelopeSandbox())
+    if (cardPieEditEngagedRef.current) {
+      endCardPieEditEngaged()
     }
-  }, [rightListArchiveLocalId, releaseAssemblySessionLease])
+    releaseAssemblySessionLease()
+    setCardPieEditHydrateScope('all')
+    setSuppressCardPieEditActiveAfterCopy(true)
+  }, [
+    rightListArchiveLocalId,
+    dispatch,
+    endCardPieEditEngaged,
+    releaseAssemblySessionLease,
+  ])
 
   useEffect(() => {
     dispatch(setArchiveFactoryEditActive(cardPieEditEngaged))
