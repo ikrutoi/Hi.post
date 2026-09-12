@@ -90,9 +90,9 @@
   --mobile-factory-frame-margin-bottom: 0;
   --mobile-factory-frame-padding-top: 0.5rem;
   --mobile-factory-frame-padding-bottom: 0;
-  --mobile-factory-frame-bg: #{$color-base};
-  --mobile-section-surface-bg: #{$color-base};
-  --envelope-address-create-bg: #{$color-app-header};
+  --mobile-factory-frame-bg: #fff;
+  --mobile-section-surface-bg: #fff;
+  --envelope-address-create-bg: #{$color-base};
   --envelope-address-create-border: #{$color-section-light};
 
   --mobile-factory-content-flex: 1 1 auto;
@@ -113,15 +113,20 @@
     display: none;
   }
 
+  .mobileSubstrate,
+  .mobileMain {
+    background-color: #fff;
+  }
+
   .mobileBody {
-    background-color: $color-base;
+    background-color: #fff;
   }
 
   .mobileForm {
     overflow: hidden;
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: 0;
-    background-color: $color-base;
+    background-color: #fff;
 
     :global([class*='rowLower']) {
       background-color: var(--envelope-address-create-toolbar-bg);
@@ -168,7 +173,7 @@
 
     :global([data-mobile-factory-section-frame='true']) {
       overflow: hidden;
-      background-color: $color-base;
+      background-color: #fff;
       background-image: none;
 
       &::before {

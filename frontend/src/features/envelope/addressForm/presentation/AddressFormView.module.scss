@@ -19,6 +19,98 @@
   max-width: 100%;
 }
 
+/**
+ * Desktop create: 22 equal tracks of the form height.
+ * Top 3, each field 2, gaps between fields 1. Bottom is leftover.
+ * Captions sit in the track above each input.
+ */
+:global([data-shell-layout='desktop']) .addressFormView {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  overflow: hidden;
+  padding-block: 0;
+
+  .addressFormFields {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    display: grid;
+    grid-template-rows: repeat(22, minmax(0, 1fr));
+    gap: 0;
+  }
+
+  .addressFormFields > *:nth-child(1) {
+    grid-row: 4 / span 2;
+  }
+
+  .addressFormFields > *:nth-child(2) {
+    grid-row: 7 / span 2;
+  }
+
+  .addressFormFields > *:nth-child(3) {
+    grid-row: 10 / span 2;
+  }
+
+  .addressFormFields > *:nth-child(4) {
+    grid-row: 13 / span 2;
+  }
+
+  .addressFormFields > * {
+    width: 78%;
+    max-width: 78%;
+    justify-self: end;
+    min-height: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+  }
+
+  .labelGroup {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 0 0.5rem;
+  }
+
+  .labelGroup > * {
+    position: relative;
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+  }
+
+  :global([class*='labelText']) {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 100%;
+    margin-bottom: 0;
+    padding-bottom: 0.12rem;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  :global([class*='inputWrapper']) {
+    flex: 1 1 auto;
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  :global([class*='labelInput']) {
+    flex: 1 1 auto;
+    height: 100%;
+    min-height: 0;
+  }
+}
+
 .labelGroup {
   display: flex;
   flex-wrap: nowrap;
