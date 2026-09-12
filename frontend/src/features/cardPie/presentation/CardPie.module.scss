@@ -31,7 +31,6 @@ $pie-center-cart-blocked-inner-stop: (
   --envelope-text: #{$color-envelope-recipient-legend};
   --envelope-text-many: #{$color-toggle-active};
   --pie-rect-fill: #fff;
-  --pie-rect-fill-envelope: #{$color-envelope-recipient-input};
   --pie-center-icon-fill: #{$color-app-inner};
   --pie-center-button-fill: #{$color-app-header};
   --pie-center-disc-fill-incomplete: #{notebookTab.$desktop-plan-mini-toolbar-fill};
@@ -134,7 +133,7 @@ $pie-center-cart-blocked-inner-stop: (
 }
 
 .rectEnvelope {
-  fill: var(--pie-rect-fill-envelope);
+  fill: var(--pie-rect-fill);
 }
 
 .rectEmpty {
@@ -185,14 +184,6 @@ $pie-center-cart-blocked-inner-stop: (
   text {
     fill: currentColor;
   }
-}
-
-.pieEnvelopeSingleCircleOuter {
-  fill: var(--pie-rect-fill);
-}
-
-.pieEnvelopeSingleCircleInner {
-  fill: $color-envelope-recipient-input;
 }
 
 .pieEnvelopeSenderCircle {

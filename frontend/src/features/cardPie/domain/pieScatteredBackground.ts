@@ -260,11 +260,6 @@ export function getPieEnvelopeSingleCircleLayout(
   return { cx, cy, outerRadius, innerRadius }
 }
 
-export const PIE_ENVELOPE_SINGLE_CIRCLE_LAYOUT = getPieEnvelopeSingleCircleLayout(
-  PIE_ENVELOPE_PATTERN_WIDTH,
-  PIE_ENVELOPE_PATTERN_HEIGHT,
-)
-
 /** Круг отправителя в левом верхнем углу (меньше кругов получателя). */
 export function getPieEnvelopeSenderCircleLayout(
   patternWidth: number,
