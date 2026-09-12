@@ -2,12 +2,10 @@ import { takeEvery, put, select, call } from 'redux-saga/effects'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
-import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import {
   selectCartListPanelOpen,
   selectCartListStatusSegment,
 } from '@cart/infrastructure/selectors'
-import { setHistoryListPanelOpen } from '@date/calendar/infrastructure/state'
 import {
   selectIsHistoryListPanelOpen,
   selectNotebookStripTab,
@@ -62,10 +60,6 @@ export function* handleRightSidebarToolbarAction(
     const isOpen: boolean = yield select(selectUserLoginPanelOpen)
     const nextOpen = !isOpen
     yield put(setUserLoginPanelOpen(nextOpen))
-    if (nextOpen) {
-      yield put(setCartListPanelOpen(false))
-      yield put(setHistoryListPanelOpen(false))
-    }
     yield put(
       updateToolbarIcon({
         section: 'rightSidebar',

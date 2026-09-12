@@ -26,6 +26,12 @@ import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import { setUserLoginPanelOpen } from '@features/auth/infrastructure/state/auth.slice'
 
+/**
+ * Правая колонка: корзина/история уступают место форме пользователя.
+ * После закрытия формы возвращаем тот список, который был открыт.
+ */
+let rightListHiddenByUserLogin: 'cart' | 'history' | null = null
+
 /** Закрыть CardPiePanel и вернуть иконку cardPie в enabled (если список уже открыт в slice). */
 export function* closeCardPieListPanelAndSyncIconsSaga(): SagaIterator {
   const cardPieOpen: boolean = yield select(selectIsCardPieListPanelOpen)
@@ -172,7 +178,25 @@ function* closeOtherListPanels(action: {
     action.type === setUserLoginPanelOpen.type &&
     action.payload === false
   ) {
+    const restore = rightListHiddenByUserLogin
+    rightListHiddenByUserLogin = null
+    if (restore === 'cart') {
+      yield put(setCartListPanelOpen(true))
+    } else if (restore === 'history') {
+      yield put(setHistoryListPanelOpen(true))
+    }
     yield* syncListPanelToolbarIcons()
+    return
+  }
+
+  if (openingUserLogin) {
+    const cartOpen: boolean = yield select(selectCartListPanelOpen)
+    const historyOpen: boolean = yield select(selectIsHistoryListPanelOpen)
+    rightListHiddenByUserLogin = cartOpen
+      ? 'cart'
+      : historyOpen
+        ? 'history'
+        : null
   }
 
   if (
