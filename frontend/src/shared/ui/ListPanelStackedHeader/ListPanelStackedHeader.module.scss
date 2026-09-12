@@ -412,12 +412,14 @@
       width: calc(100% - 0.75rem - 8px);
 
       .headerTopRow,
+      .headerTopRowCustom,
       .headerToolbarRow {
         @include header-row-section-fill(notebookTab.$desktop-cart-list-toolbar-fill);
         padding-inline: 0;
       }
 
       .headerTopRow,
+      .headerTopRowCustom,
       .headerToolbarRow {
         @include iconButton.toolbar-factory-edge-key-insets;
       }
@@ -515,7 +517,8 @@
     }
   }
 
-  .headerToolbarRow {
+  .headerToolbarRow,
+  &[data-header-fade='cart'] .headerTopRowCustom {
     > * {
       background-color: transparent !important;
       background-image: none !important;

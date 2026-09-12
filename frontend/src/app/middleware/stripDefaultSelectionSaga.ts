@@ -54,13 +54,13 @@ export function* applyCartStripDefaultSelectionIfNeededSaga(): SagaIterator {
   const postcard = resolveDefaultCartSegmentPostcard(cartItems, segment)
   if (postcard == null) return
 
-  const nextSegment = cartListStatusSegmentForLocalId(
+  const postcardSegment = cartListStatusSegmentForLocalId(
     cartItems,
     postcard.localId,
   )
-  if (nextSegment !== segment) {
-    yield put(setCartListStatusSegment(nextSegment))
-  }
+  /** Пустой список активных не подменяем заблокированными. */
+  if (postcardSegment !== segment) return
+
   yield put(setCartListSelectedLocalId(postcard.localId))
   yield put(updateLastViewedCalendarDate(calendarViewDateForPostcard(postcard)))
   yield call(

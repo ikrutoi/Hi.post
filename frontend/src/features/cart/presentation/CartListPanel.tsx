@@ -305,12 +305,16 @@ export const CartListPanel: React.FC<Props> = ({
       ? 'cardBlocked'
       : 'cart')
 
-  const cartListToolbarGroupsOverride = useMemo(() => {
-    if (entriesProp != null || listSegment !== 'cartBlocked') {
-      return undefined
-    }
-    return CART_LIST_TOOLBAR.filter((group) => group.group !== 'cartList')
-  }, [entriesProp, listSegment])
+  const showCartListSelectAll =
+    hasRows && (entriesProp != null || listSegment !== 'cartBlocked')
+  const cartListSelectAllGroups = useMemo(
+    () => CART_LIST_TOOLBAR.filter((group) => group.group === 'cartList'),
+    [],
+  )
+  const cartListDeleteGroups = useMemo(
+    () => CART_LIST_TOOLBAR.filter((group) => group.group === 'actions'),
+    [],
+  )
 
   return (
     <div
@@ -328,21 +332,32 @@ export const CartListPanel: React.FC<Props> = ({
           headerFade="cart"
           hideLeadIcon
           hideClose
-          headerTopCenter={
-            entriesProp == null ? <CartHeaderSegments /> : undefined
+          headerTopRow={
+            <div className={styles.cartDesktopHeaderToolbar}>
+              <div className={styles.cartDesktopHeaderSide}>
+                {showCartListSelectAll ? (
+                  <Toolbar
+                    section="cartList"
+                    groupsOverride={cartListSelectAllGroups}
+                    className={styles.cartDesktopHeaderIconCluster}
+                  />
+                ) : null}
+              </div>
+              <div className={styles.cartDesktopHeaderCenter}>
+                {entriesProp == null ? <CartHeaderSegments /> : null}
+              </div>
+              <div className={styles.cartDesktopHeaderSide}>
+                {hasRows ? (
+                  <Toolbar
+                    section="cartList"
+                    groupsOverride={cartListDeleteGroups}
+                    justifyGroupsEnd
+                    className={styles.cartDesktopHeaderIconCluster}
+                  />
+                ) : null}
+              </div>
+            </div>
           }
-          toolbar={
-            hasRows ? (
-              <Toolbar
-                section="cartList"
-                groupsOverride={cartListToolbarGroupsOverride}
-                justifyGroupsEnd={cartListToolbarGroupsOverride != null}
-              />
-            ) : (
-              false
-            )
-          }
-          showDividerWithoutToolbar={!hasRows}
         />
       ) : null}
       <div className={styles.panelScrollTrack} aria-hidden />

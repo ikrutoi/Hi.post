@@ -118,6 +118,9 @@ export function resolveFirstCartSegmentPostcard(
   return orderedStripPostcardsByDispatchDate(cartItems, segment)[0] ?? null
 }
 
+/**
+ * Выбор по текущему сегменту списка. Пустой `cart` не подменяем `cartBlocked`.
+ */
 export function resolveDefaultCartSegmentPostcard(
   cartItems: readonly PostcardHydrated[],
   segment: CartListStatusSegment,
@@ -126,7 +129,8 @@ export function resolveDefaultCartSegmentPostcard(
   if (segment === 'cartBlocked') {
     return resolveFirstCartSegmentPostcard(cartItems, 'cartBlocked')
   }
-  return resolveDefaultCartStripPostcard(cartItems, today)
+  const cartPostcards = cartItems.filter((item) => item.status === 'cart')
+  return resolveNearestPostcardByDispatchDate(cartPostcards, today)
 }
 
 /** Первый вход в текущий сегмент списка или выбор в нём невалиден. */
