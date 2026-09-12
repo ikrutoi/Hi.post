@@ -92,6 +92,8 @@
   --mobile-factory-frame-padding-bottom: 0;
   --mobile-factory-frame-bg: #{$color-base};
   --mobile-section-surface-bg: #{$color-base};
+  --envelope-address-create-bg: #{$color-app-header};
+  --envelope-address-create-border: #{$color-section-light};
 
   --mobile-factory-content-flex: 1 1 auto;
   --mobile-factory-content-gap: 0.5rem;
@@ -122,7 +124,7 @@
     background-color: $color-base;
 
     :global([class*='rowLower']) {
-      background-color: var(--envelope-address-create-bg);
+      background-color: var(--envelope-address-create-toolbar-bg);
     }
 
     :global([class*='rowLower']) :global([class*='toolbarKey']),
@@ -228,13 +230,11 @@
 }
 
 .mobileShell[data-envelope-address-create='sender'] {
-  --envelope-address-create-bg: #{$color-envelope-sender-input};
-  --envelope-address-create-border: #{$color-envelope-sender-input-border};
+  --envelope-address-create-toolbar-bg: #{$color-envelope-sender-input};
 }
 
 .mobileShell[data-envelope-address-create='recipient'] {
-  --envelope-address-create-bg: #{$color-envelope-recipient-input};
-  --envelope-address-create-border: #{$color-envelope-recipient-input-border};
+  --envelope-address-create-toolbar-bg: #{$color-envelope-recipient-input};
 }
 
 .mobileShell[data-keyboard-open='true']:not([data-cardtext-list-open='true']) {

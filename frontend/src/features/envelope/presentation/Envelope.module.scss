@@ -415,12 +415,9 @@
   box-sizing: border-box;
 }
 
-.envelopeMobileCreateCardSender {
-  background-color: $color-envelope-sender-input;
-}
-
+.envelopeMobileCreateCardSender,
 .envelopeMobileCreateCardRecipient {
-  background-color: $color-envelope-recipient-input;
+  background-color: $color-app-header;
 }
 
 .envelope[data-envelope-mobile-form='true'] {
