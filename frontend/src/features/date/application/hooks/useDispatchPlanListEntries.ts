@@ -27,6 +27,7 @@ import {
 import {
   selectRecipientsDisplayList,
   selectRecipientsPendingResolvedEntries,
+  selectRecipientEntriesState,
 } from '@envelope/recipient/infrastructure/selectors'
 import type { DateListPanelItem } from '@date/presentation/DateListPanel'
 import { listEntryPriceLine } from '@shared/utils/listEntryPriceLine'
@@ -135,9 +136,7 @@ export function useDispatchPlanListEntries(
     selectRecipientsPendingResolvedEntries,
   )
   const envelopeRecipients = useAppSelector(selectRecipientsList)
-  const recipientEntries = useAppSelector(
-    (s) => s.addressBook?.recipientEntries ?? [],
-  )
+  const recipientEntries = useAppSelector(selectRecipientEntriesState)
   const excludedDispatchBranchSet = useAppSelector(selectExcludedDispatchBranchSet)
   const envelopeRecord = useAppSelector(selectEnvelopeSessionRecord)
   const cardphotoState = useAppSelector(selectCardphotoState)

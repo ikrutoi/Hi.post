@@ -92,11 +92,6 @@ import {
   useAddressCardPiePreview,
   useAddressTemplatePreviewPieToolbar,
 } from '@envelope/application/hooks'
-import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
-import {
-  selectArchiveEnvelopeSandboxActive,
-  selectArchiveSandboxRecipient,
-} from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import { HistoryListRightSlot } from '@date/presentation/HistoryListRightSlot'
 import type { HistoryListPanelItem } from '@date/presentation/HistoryListPanel'
 import { CardtextRightSlot } from '@cardtext/presentation/CardtextRightSlot'
@@ -382,14 +377,6 @@ const App = () => {
 
   const handleAppClick = useToolbarClickReset(colorToolbar, setColorToolbar)
   const { activeSection } = useSectionMenuFacade()
-  const sessionRecipientView = useAppSelector(selectRecipientView)
-  const archiveEnvelopeSandboxActive = useAppSelector(
-    selectArchiveEnvelopeSandboxActive,
-  )
-  const archiveSandboxRecipient = useAppSelector(selectArchiveSandboxRecipient)
-  const recipientView = archiveEnvelopeSandboxActive
-    ? archiveSandboxRecipient.currentView
-    : sessionRecipientView
   const prevActiveSectionRef = useRef(activeSection)
   const { listPanelOpen, listSelectedLocalId } = useCartFacade()
   const cartCalendarDatePickLocalId = useAppSelector(
@@ -2182,14 +2169,6 @@ const App = () => {
     return <div className={styles.authBoot} aria-busy="true" />
   }
 
-  const mobileEnvelopeAddressCreateRole =
-    isMobileLayout &&
-    activeSection === 'envelope' &&
-    (archiveEnvelopeSandboxActive || !rightPieEnvelopePeekNoToolbar) &&
-    recipientView === 'recipientCreate'
-      ? ('recipient' as const)
-      : null
-
   if (isMobileLayout) {
     return (
       <>
@@ -2210,7 +2189,6 @@ const App = () => {
           showTopCardStripFullSpan={showTopCardStripFullSpan}
           onBeforeLeftPieInteraction={handleBeforeLeftPieInteraction}
           onLeftPieCenterClick={handleLeftPieCenterClick}
-          envelopeAddressCreateRole={mobileEnvelopeAddressCreateRole}
           cardPieListPanelOpen={cardPieListPanelOpen}
           onEditorPieToolbarAction={handleEditorPieToolbarAction}
           onPostcardPieCartToolbarAction={handlePostcardPieCartToolbarAction}

@@ -5,4 +5,4 @@ export {
   camelCase,
   kebabCase,
 } from './string'
-export { EMPTY_STRINGS } from './emptyRefs'
+export { EMPTY_STRINGS, EMPTY_NUMBERS } from './emptyRefs'

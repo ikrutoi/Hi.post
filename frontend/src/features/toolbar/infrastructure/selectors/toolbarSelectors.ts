@@ -7,6 +7,8 @@ import type {
   ToolbarGroup,
 } from '../../domain/types'
 
+const EMPTY_TOOLBAR_GROUPS: ToolbarGroup[] = []
+
 const selectToolbarBase = (state: RootState) => state.toolbar
 
 export const selectCardtextToolbar = (state: RootState) => state.toolbar.cardtext
@@ -31,7 +33,8 @@ export const selectToolbarGroups = <S extends ToolbarSection>(section: S) =>
   createSelector(
     [selectToolbarBase],
     (toolbar): ToolbarGroup[] =>
-      (toolbar[section] as ToolbarState[S] | undefined)?.config ?? []
+      (toolbar[section] as ToolbarState[S] | undefined)?.config ??
+      EMPTY_TOOLBAR_GROUPS
   )
 
 export const selectToolbarGroupStatus = <S extends ToolbarSection>(

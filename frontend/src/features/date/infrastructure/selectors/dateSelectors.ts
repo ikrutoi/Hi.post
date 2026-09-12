@@ -8,6 +8,7 @@ import {
   SelectedDispatchDate,
 } from '@entities/date/domain/types'
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
+import { EMPTY_STRINGS } from '@shared/utils/helpers'
 import {
   selectIsEnvelopeReady,
 } from '@envelope/infrastructure/selectors'
@@ -28,8 +29,11 @@ export const selectSelectedDate = (state: RootState): SelectedDispatchDate =>
 export const selectSelectedDates = (state: RootState): DispatchDate[] =>
   state.date.selectedDates
 
+const EMPTY_DISPATCH_DATES: DispatchDate[] = []
+const SESSION_PLAN_SLOT_KEYS: string[] = ['session']
+
 export const selectAppliedDates = (state: RootState): DispatchDate[] =>
-  state.date.appliedDates ?? []
+  state.date.appliedDates ?? EMPTY_DISPATCH_DATES
 
 export const selectIsMultiDateMode = (state: RootState): boolean =>
   state.date.isMultiDateMode
@@ -49,7 +53,7 @@ export const selectIsDateComplete = (state: RootState): boolean =>
 
 /** Ключи веток «дата|получатель», убранные из списка дат (см. excludeDispatchBranch). */
 export const selectExcludedDispatchBranches = (state: RootState): string[] =>
-  state.date.excludedDispatchBranches ?? []
+  state.date.excludedDispatchBranches ?? EMPTY_STRINGS
 
 export const selectExcludedDispatchBranchSet = createSelector(
   [selectExcludedDispatchBranches],
@@ -63,10 +67,9 @@ export const selectExcludedDispatchBranchSet = createSelector(
 export const selectRecipientBranchSlotKeys = createSelector(
   [selectRecipientState],
   (recipient): string[] => {
-    const applied = recipient.applied ?? []
-    if (applied.length > 0) return [...applied]
-    if (recipient.appliedData != null) return ['session']
-    return ['session']
+    const applied = recipient.applied ?? EMPTY_STRINGS
+    if (applied.length > 0) return applied
+    return SESSION_PLAN_SLOT_KEYS
   },
 )
 
@@ -74,10 +77,10 @@ export const selectRecipientBranchSlotKeys = createSelector(
 export const selectRecipientPlanBranchSlotKeys = createSelector(
   [selectRecipientState],
   (recipient): string[] => {
-    const applied = recipient.applied ?? []
-    if (applied.length > 0) return applied.map(String)
+    const applied = recipient.applied ?? EMPTY_STRINGS
+    if (applied.length > 0) return applied
     /** Без applied — стабильный `session` (не recipientViewId из preview списка). */
-    return ['session']
+    return SESSION_PLAN_SLOT_KEYS
   },
 )
 
@@ -243,8 +246,6 @@ export const selectCardPieListPanelRowCount = createSelector(
 
 /** Бейдж listDate в тулбаре секции «Дата». */
 export const selectDateListToolbarBadgeCount = selectDateListPlanRowCount
-
-const EMPTY_DISPATCH_DATES: DispatchDate[] = []
 
 /** Черновик календаря (клики по дням) — подсветка ячеек. */
 export const selectDraftDispatchDates = createSelector(

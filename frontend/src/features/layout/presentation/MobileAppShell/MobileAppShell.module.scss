@@ -94,7 +94,6 @@
   --mobile-section-surface-bg: #{$color-app-inner};
 
   --mobile-factory-content-flex: 1 1 auto;
-  --mobile-factory-content-gap: 0;
 
   .mobileFooter {
     display: none;
@@ -142,20 +141,17 @@
       min-height: 0;
     }
 
-    :global([class*='toolbarSlot']) {
-      display: none;
-    }
-
     :global([data-mobile-central-work-zone='true']) {
-      aspect-ratio: unset;
-      flex: 1 1 auto;
-      height: auto;
-      min-height: 0;
-      /* Match L/R of main section; top = same as L/R; bottom already on the zone. */
+      /* Keep the factory square — unsetting aspect-ratio collapses height to 0. */
+      aspect-ratio: var(--mobile-central-work-side) / var(--mobile-central-work-side);
+      flex: 0 0 auto;
+      width: var(--mobile-central-work-side);
+      height: var(--mobile-central-work-side);
+      min-height: var(--mobile-central-work-side);
       margin-top: var(--mobile-section-inset);
       overflow: hidden;
       border-radius: 0.5rem;
-      /* Border on the clip root — nested card borders get clipped at rounded corners. */
+      background-color: var(--envelope-address-create-bg);
       border: 1px solid var(--envelope-address-create-border);
       box-sizing: border-box;
     }

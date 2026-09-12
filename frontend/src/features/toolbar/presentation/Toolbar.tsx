@@ -10,6 +10,7 @@ import { selectSenderViewId, selectSenderApplied, selectIsSenderEnabled, selectS
 import {
   selectRecipientViewId,
   selectRecipientApplied,
+  selectCurrentRecipientsViewIds,
 } from '@envelope/recipient/infrastructure/selectors'
 import {
   selectArchiveEnvelopeSandboxActive,
@@ -167,13 +168,7 @@ export const Toolbar = ({
   const sessionSenderViewIdForApply = useAppSelector(selectSenderViewId)
   const sessionRecipientAppliedIds = useAppSelector(selectRecipientApplied)
   const sessionRecipientViewIdForApply = useAppSelector(selectRecipientViewId)
-  const sessionRecipientViewIds = useAppSelector((state: RootState) => {
-    const recipient = state.recipient
-    if (!recipient) return []
-    return recipient.currentRecipientsList === 'second'
-      ? (recipient.recipientsViewIdsSecondList ?? [])
-      : (recipient.recipientsViewIdsFirstList ?? [])
-  })
+  const sessionRecipientViewIds = useAppSelector(selectCurrentRecipientsViewIds)
   const senderAppliedIds = sandboxActive
     ? (sandboxSender.applied ?? [])
     : sessionSenderAppliedIds

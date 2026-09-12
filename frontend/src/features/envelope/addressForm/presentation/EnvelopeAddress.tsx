@@ -10,8 +10,12 @@ import { useAppSelector, useAppDispatch } from '@app/hooks'
 import {
   selectSenderApplied,
   selectSenderView,
+  selectSenderEntriesState,
 } from '../../sender/infrastructure/selectors'
-import { selectRecipientView } from '../../recipient/infrastructure/selectors'
+import {
+  selectRecipientView,
+  selectRecipientEntriesState,
+} from '../../recipient/infrastructure/selectors'
 import { setSenderView, setSenderViewId } from '../../sender/infrastructure/state'
 import {
   setRecipientView,
@@ -101,12 +105,8 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
             null)
           : editingTemplateId
 
-  const senderEntries = useAppSelector(
-    (state) => state.addressBook?.senderEntries ?? [],
-  )
-  const recipientEntries = useAppSelector(
-    (state) => state.addressBook?.recipientEntries ?? [],
-  )
+  const senderEntries = useAppSelector(selectSenderEntriesState)
+  const recipientEntries = useAppSelector(selectRecipientEntriesState)
 
   const dispatch = useAppDispatch()
   const isMobile = useAppSelector(selectIsMobileLayout)
@@ -773,6 +773,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                     address={recipientFacade.formDraft}
                     onFieldChange={update}
                     lang={lang}
+                    mobileFullscreen={isMobile}
                   />
                 ) : showRecipientDetailCard ? (
                   <RecipientView

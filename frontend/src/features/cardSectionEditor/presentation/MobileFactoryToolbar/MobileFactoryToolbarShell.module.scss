@@ -54,6 +54,10 @@
   border-radius: 0 0 0.75rem 0.75rem;
 }
 
+.shellLowerOnly .rowLower {
+  border-radius: 0.75rem;
+}
+
 .rowUpper {
   overflow: hidden;
   z-index: 2;

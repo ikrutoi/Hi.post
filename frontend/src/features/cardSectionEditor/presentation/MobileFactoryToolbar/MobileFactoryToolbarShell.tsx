@@ -79,7 +79,10 @@ export const MobileFactoryToolbarShell: React.FC = () => {
   const showArchivePeekLowerToolbar =
     isMobileLayout && mobileArchiveSectionPeek
 
-  const showUpperContent = !hideUpperToolbar && !hideCardtextCreateUpperToolbar
+  const showUpperContent =
+    !hideUpperToolbar &&
+    !hideCardtextCreateUpperToolbar &&
+    !envelopeAddressCreateMode
   const showMobileListFactoryUpper =
     showMobileCardphotoListFactoryChrome ||
     showMobileCardtextListFactoryChrome ||
@@ -116,11 +119,18 @@ export const MobileFactoryToolbarShell: React.FC = () => {
     !showPeekEmptyToolbarShell &&
     (showSectionUpperToolbar || showMobileDateCalendarNavRow)
 
-  if (envelopeAddressCreateMode) return null
   if (!showShell) return null
 
   return (
-    <div className={styles.shell} aria-label="Section toolbars">
+    <div
+      className={clsx(
+        styles.shell,
+        envelopeAddressCreateMode &&
+          !showUpperRow &&
+          styles.shellLowerOnly,
+      )}
+      aria-label="Section toolbars"
+    >
       {showUpperRow ? (
         <div className={styles.rowUpper}>
           <FactoryUpperToolbar includeDateCalendarNav />

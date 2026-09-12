@@ -1,4 +1,5 @@
 import type { RootState } from '@app/state'
+import { EMPTY_NUMBERS } from '@shared/utils/helpers'
 import type { Cart, CartAmount, CartListStatusSegment } from '@cart/domain/types'
 import type { PostcardHydrated } from '@entities/postcard'
 import { createSelector } from '@reduxjs/toolkit'
@@ -13,10 +14,15 @@ import {
 export const selectCartListPanelOpen = (state: RootState): boolean =>
   state.cart.isActive
 
+const EMPTY_CART_LIST_SELECTED: Cart['listSelectedLocalIdsBySegment'] = {
+  cart: null,
+  cartBlocked: null,
+}
+
 export const selectCartListSelectedLocalIdsBySegment = (
   state: RootState,
 ): Cart['listSelectedLocalIdsBySegment'] =>
-  state.cart.listSelectedLocalIdsBySegment ?? { cart: null, cartBlocked: null }
+  state.cart.listSelectedLocalIdsBySegment ?? EMPTY_CART_LIST_SELECTED
 
 export const selectCartListStatusSegment = (
   state: RootState,
@@ -84,7 +90,7 @@ export const selectCardPieCopyStripExpanded = (state: RootState): boolean =>
   Boolean(state.cart.cardPieCopyStripExpanded)
 
 export const selectCartListCheckedLocalIds = (state: RootState): number[] =>
-  state.cart.listCheckedLocalIds ?? []
+  state.cart.listCheckedLocalIds ?? EMPTY_NUMBERS
 
 export const selectIsCartListEntryChecked = (
   state: RootState,

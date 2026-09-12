@@ -9,6 +9,7 @@ import {
   incrementAddressTemplatesReloadVersion,
   incrementAddressBookReloadVersion,
 } from '@features/previewStrip/infrastructure/state'
+import { selectAddressTemplateRefs } from '@features/previewStrip/infrastructure/selectors'
 import { removeAddressBookEntry } from '../../addressBook/infrastructure/state'
 
 export const useRecipientListPanelFacade = () => {
@@ -16,9 +17,7 @@ export const useRecipientListPanelFacade = () => {
   const { entries, sortOptions } = useAddressBookList('recipient')
   const { delete: deleteTemplate } = useAddressTemplateActions('recipient')
 
-  const addressTemplateRefs = useAppSelector(
-    (state) => state.previewStripOrder?.addressTemplateRefs ?? [],
-  )
+  const addressTemplateRefs = useAppSelector(selectAddressTemplateRefs)
 
   const starredRecipientIds = useMemo(
     () =>

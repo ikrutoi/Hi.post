@@ -31,14 +31,14 @@ function pickRecipientListAddress(
     (r) => r.recipientViewId === templateId,
   )
   if (addressHasAnyField(fromEnvelope?.appliedData)) {
-    return { ...(fromEnvelope!.appliedData as AddressFields) }
+    return fromEnvelope!.appliedData as AddressFields
   }
   if (addressHasAnyField(fromEnvelope?.viewDraft)) {
-    return { ...fromEnvelope!.viewDraft }
+    return fromEnvelope!.viewDraft
   }
   const fromBook = recipientEntries.find((e) => e.id === templateId)
   if (addressHasAnyField(fromBook?.address as AddressFields | undefined)) {
-    return { ...(fromBook!.address as AddressFields) }
+    return fromBook!.address as AddressFields
   }
   return null
 }
@@ -214,7 +214,7 @@ const selectRecipientsViewSortDirectionRaw = (
 ): SortDirection => state.recipient?.recipientsViewSortDirection ?? 'asc'
 
 /** Id списка получателей для текущего вида (first или second). */
-const selectCurrentRecipientsViewIds = (state: RootState): string[] => {
+export const selectCurrentRecipientsViewIds = (state: RootState): string[] => {
   const r = state.recipient
   if (!r) return EMPTY_STRINGS
   return r.currentRecipientsList === 'second'
@@ -247,7 +247,7 @@ export const selectRecipientsPendingResolvedEntries = createSelector(
           id: templateId,
           role: 'recipient' as const,
           address,
-          createdAt: fromBook?.createdAt ?? new Date().toISOString(),
+          createdAt: fromBook?.createdAt ?? '',
         } as AddressBookEntry,
       ]
     }),
@@ -258,7 +258,7 @@ const selectRecipientsDisplayEntriesFromViewIds = createSelector(
   [
     selectEnvelopeRecipientsList,
     selectRecipientEntriesState,
-    (s: RootState) => selectCurrentRecipientsViewIds(s),
+    selectCurrentRecipientsViewIds,
   ],
   (
     envelopeRecipients,
@@ -278,7 +278,7 @@ const selectRecipientsDisplayEntriesFromViewIds = createSelector(
           id: templateId,
           role: 'recipient' as const,
           address,
-          createdAt: fromBook?.createdAt ?? new Date().toISOString(),
+          createdAt: fromBook?.createdAt ?? '',
         } as AddressBookEntry,
       ]
     }),
@@ -287,8 +287,9 @@ const selectRecipientsDisplayEntriesFromViewIds = createSelector(
 export const selectRecipientsDisplayList = createSelector(
   [selectRecipientsDisplayEntriesFromViewIds, selectRecipientsViewSortDirectionRaw],
   (baseEntries, recipientsViewSortDirection): AddressBookEntry[] => {
+    if (baseEntries.length <= 1) return baseEntries
     const direction = recipientsViewSortDirection
-    const sorted = [...baseEntries].sort((a, b) => {
+    return [...baseEntries].sort((a, b) => {
       const nameA = (a.address?.name ?? '').trim().toLowerCase()
       const nameB = (b.address?.name ?? '').trim().toLowerCase()
       const cmp = nameA.localeCompare(nameB, undefined, {
@@ -298,8 +299,6 @@ export const selectRecipientsDisplayList = createSelector(
       if (direction === 'desc') return -cmp
       return cmp
     })
-
-    return sorted
   },
 )
 

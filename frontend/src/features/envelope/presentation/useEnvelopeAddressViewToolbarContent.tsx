@@ -6,9 +6,10 @@ import { useEnvelopeFacade } from '@envelope/application/facades'
 import { useSenderFacade } from '@envelope/sender/application/facades'
 import { useRecipientFacade } from '@envelope/recipient/application/facades'
 import { selectActiveAddressEdit } from '@envelope/infrastructure/selectors'
-import { selectSenderApplied, selectSenderView } from '@envelope/sender/infrastructure/selectors'
+import { selectSenderApplied, selectSenderView, selectSenderEntriesState } from '@envelope/sender/infrastructure/selectors'
 import {
   selectRecipientView,
+  selectRecipientEntriesState,
 } from '@envelope/recipient/infrastructure/selectors'
 import {
   selectArchiveEnvelopeSandboxActive,
@@ -88,12 +89,8 @@ export function useEnvelopeAddressViewToolbarContent({
     ? sandboxSenderAppliedIds
     : sessionSenderAppliedIds
   const activeAddressEdit = useAppSelector(selectActiveAddressEdit)
-  const senderEntries = useAppSelector(
-    (state) => state.addressBook?.senderEntries ?? [],
-  )
-  const recipientEntries = useAppSelector(
-    (state) => state.addressBook?.recipientEntries ?? [],
-  )
+  const senderEntries = useAppSelector(selectSenderEntriesState)
+  const recipientEntries = useAppSelector(selectRecipientEntriesState)
 
   const senderAddress = senderFacade.address
   const recipientAddress = recipientFacade.address
@@ -169,6 +166,12 @@ export function useEnvelopeAddressViewToolbarContent({
     recipientView !== 'recipientCreate' &&
     !assemblyRecipientSimplifiedPeek
 
+  const showRecipientCreateToolbar =
+    enabled &&
+    activeViewRole === 'recipient' &&
+    recipientView === 'recipientCreate' &&
+    !assemblyRecipientSimplifiedPeek
+
   const bothAppliedToolbarSlot = enabled && bothFormsApplied
 
   const showSenderToolbar =
@@ -223,7 +226,7 @@ export function useEnvelopeAddressViewToolbarContent({
     ? 'complete'
     : senderToolbarSlot
       ? 'sender'
-      : recipientToolbarSlot
+      : recipientToolbarSlot || showRecipientCreateToolbar
         ? 'recipient'
         : null
 
@@ -240,10 +243,16 @@ export function useEnvelopeAddressViewToolbarContent({
         )}
         data-envelope-address-view-toolbar
         aria-hidden={
-          section == null && !showRecipientsBrowseToolbar ? true : undefined
+          section == null &&
+          !showRecipientsBrowseToolbar &&
+          !showRecipientCreateToolbar
+            ? true
+            : undefined
         }
       >
-        {section === 'senderView' || section === 'recipientView' ? (
+        {showRecipientCreateToolbar ? (
+          <Toolbar section="recipientCreate" />
+        ) : section === 'senderView' || section === 'recipientView' ? (
           <Toolbar section={section} groupsOverride={addressViewToolbar} />
         ) : section === 'recipients' ? (
           <Toolbar

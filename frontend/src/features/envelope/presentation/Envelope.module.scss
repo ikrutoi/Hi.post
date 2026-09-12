@@ -88,6 +88,12 @@
     margin-right: 0;
   }
 
+  :global([class*='toolbarRecipientCreate']),
+  :global([class*='toolbarSenderCreate']) {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
   :global([data-shell-layout='mobile']) & :global([class*='toolbarRecipients']) {
     justify-content: flex-end;
   }

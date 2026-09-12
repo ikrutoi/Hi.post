@@ -1,6 +1,7 @@
 import type { RootState } from '@app/state'
 import { initialSection } from '@envelope/addressForm/domain/models'
 import type { AddressFields } from '@shared/config/constants'
+import { EMPTY_STRINGS } from '@shared/utils/helpers'
 import { createSelector } from '@reduxjs/toolkit'
 
 export const selectArchiveEnvelopeSandbox = (state: RootState) =>
@@ -29,11 +30,12 @@ export const selectArchiveSandboxSenderAppliedLocked = (
 }
 
 export const selectArchiveSandboxSenderApplied = (state: RootState): string[] =>
-  state.archiveEnvelopeSandbox.sender.applied ?? []
+  state.archiveEnvelopeSandbox.sender.applied ?? EMPTY_STRINGS
 
 export const selectArchiveSandboxRecipientApplied = (
   state: RootState,
-): string[] => state.archiveEnvelopeSandbox.recipient.applied ?? []
+): string[] =>
+  state.archiveEnvelopeSandbox.recipient.applied ?? EMPTY_STRINGS
 
 /** Same completeness rule as assembly `selectEnvelopeSessionRecord`. */
 export const selectArchiveSandboxEnvelopeComplete = createSelector(

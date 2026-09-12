@@ -9,7 +9,6 @@ import { useRecipientFacade } from '../recipient/application/facades'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
-import { EnvelopeMobileAddressForm } from './EnvelopeMobileAddressForm'
 import { EnvelopeMobileAddressViewToolbar } from './EnvelopeMobileAddressViewToolbar'
 import { useEnvelopeMobileAddressFocus } from './EnvelopeMobileAddressFocusContext'
 import { useArchiveEditPeekGate } from '@cardPanel/application/hooks/useArchiveEditPeekGate'
@@ -110,27 +109,17 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
       ? ('recipient' as const)
       : null
 
-  const mobileFormRole =
-    recipientView === 'recipientCreate' ? ('recipient' as const) : null
-
-  const showMobileAddressForm =
-    isMobile &&
-    mobileFormRole != null &&
-    !envelopePeekMode
-
   const showMobileAddressFocus =
     isMobile &&
     addressAddSoloRole != null &&
-    !showMobileAddressForm &&
     !envelopePeekMode
 
   useEffect(() => {
-    if (!isMobile || showMobileAddressForm || envelopePeekMode) {
+    if (!isMobile || envelopePeekMode) {
       mobileFocus?.clearFocus()
     }
   }, [
     isMobile,
-    showMobileAddressForm,
     envelopePeekMode,
     mobileFocus,
   ])
@@ -294,26 +283,18 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
     </div>
   )
 
-  const showEnvelopeToolbar =
-    !envelopePeekMode && !showMobileAddressForm
+  const showEnvelopeToolbar = !envelopePeekMode
 
   const body = (
     <div
       className={styles.envelope}
-      data-envelope-mobile-form={showMobileAddressForm ? 'true' : undefined}
       data-envelope-mobile-focus={
         showMobileAddressFocus ? addressAddSoloRole! : undefined
       }
     >
       <div className={styles.envelopeViewWrap}>
         <EnvelopeMobileAddressViewToolbar enabled={showEnvelopeToolbar} />
-        <div className={styles.envelopeViewContent}>
-          {showMobileAddressForm && mobileFormRole != null ? (
-            <EnvelopeMobileAddressForm role={mobileFormRole} lang={lang} />
-          ) : (
-            envelopeWorkZone
-          )}
-        </div>
+        <div className={styles.envelopeViewContent}>{envelopeWorkZone}</div>
       </div>
     </div>
   )

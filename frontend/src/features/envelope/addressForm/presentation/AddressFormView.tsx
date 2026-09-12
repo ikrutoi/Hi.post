@@ -6,7 +6,6 @@ import React, {
   useLayoutEffect,
 } from 'react'
 import clsx from 'clsx'
-import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { Label } from './Label/Label'
 import { useEnvelopeAddress } from '../application/hooks'
 import { useEnvelopeFacade } from '../../application/facades/useEnvelopeFacade'
@@ -136,12 +135,6 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
       )}
       data-envelope-address-surface
     >
-      <div
-        className={addressViewStyles.savedAddressViewToolbar}
-        data-envelope-address-view-toolbar
-      >
-        <Toolbar section={toolbarSection} />
-      </div>
       <div
         className={clsx(
           addressViewStyles.savedAddressViewCardWrap,

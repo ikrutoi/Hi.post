@@ -9,6 +9,7 @@ import {
   selectRecipientViewId,
   selectRecipientFormDraft,
   selectRecipientsDisplayList,
+  selectRecipientEntriesState,
 } from '../../infrastructure/selectors'
 import {
   selectRecipientListPendingIds,
@@ -97,9 +98,7 @@ export const useRecipientFacade = () => {
   const listSelectedIds = useAppSelector(selectRecipientListPendingIds)
   const listPanelOpen = useAppSelector(selectRecipientListPanelOpen)
   const sessionRecipientsDisplayList = useAppSelector(selectRecipientsDisplayList)
-  const recipientEntries = useAppSelector(
-    (state) => state.addressBook?.recipientEntries ?? [],
-  )
+  const recipientEntries = useAppSelector(selectRecipientEntriesState)
 
   const state = sandboxActive ? sandboxRecipient : sessionState
   const address = sandboxActive

@@ -446,7 +446,7 @@ $envelope-address-view-row-height: 1.625rem;
   .savedAddressViewCardWrap {
     flex: 0 0 auto;
     height: auto;
-    min-height: calc(#{$envelope-address-card-shell-height} - 2rem);
+    min-height: $envelope-address-card-shell-height;
     overflow: visible;
     display: block;
   }
@@ -456,7 +456,7 @@ $envelope-address-view-row-height: 1.625rem;
     width: 100%;
     max-width: 100%;
     height: auto;
-    min-height: calc(#{$envelope-address-card-shell-height} - 2.5rem);
+    min-height: $envelope-address-card-shell-height;
     overflow: visible;
     flex: none;
   }
