@@ -412,19 +412,27 @@
       width: calc(100% - 0.75rem - 8px);
 
       .headerTopRow,
-      .headerTopRowCustom,
       .headerToolbarRow {
         @include header-row-section-fill(notebookTab.$desktop-cart-list-toolbar-fill);
         padding-inline: 0;
       }
 
       .headerTopRow,
-      .headerTopRowCustom,
       .headerToolbarRow {
         @include iconButton.toolbar-factory-edge-key-insets;
       }
 
       @include desktop-template-list-header-toolbar-rounding;
+
+      .headerTopRowMinimal .headerTopCenterSlot {
+        position: relative;
+        inset: auto;
+        top: auto;
+        transform: none;
+        flex: 1 1 auto;
+        min-width: 0;
+        height: 100%;
+      }
     }
   }
 
@@ -517,8 +525,7 @@
     }
   }
 
-  .headerToolbarRow,
-  &[data-header-fade='cart'] .headerTopRowCustom {
+  .headerToolbarRow {
     > * {
       background-color: transparent !important;
       background-image: none !important;

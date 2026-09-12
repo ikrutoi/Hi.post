@@ -86,7 +86,7 @@ $cart-list-panel-inline-end-inset: calc(
   :global([data-shell-layout='desktop']) & {
     border: none;
     border-radius: 0;
-    padding-top: calc(#{$section-inner-toolbar-height-desktop} + 0.5rem);
+    padding-top: calc(#{$desktop-factory-toolbar-stack-height} + 0.5rem);
     padding-bottom: calc(#{$section-inner-toolbar-height-desktop} + 0.5rem);
 
     &.panelNoFooter {
@@ -95,7 +95,7 @@ $cart-list-panel-inline-end-inset: calc(
 
     .panelScrollTrack {
       top: calc(
-        #{$section-inner-toolbar-height-desktop} + 0.5rem -
+        #{$desktop-factory-toolbar-stack-height} + 0.5rem -
           #{$list-panel-scroll-inset}
       );
       bottom: calc(
@@ -163,40 +163,6 @@ $cart-list-panel-inline-end-inset: calc(
         #{$list-panel-list-footer-gap}
     );
   }
-}
-
-.cartDesktopHeaderToolbar {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  min-width: 0;
-  height: 100%;
-  gap: 0.25rem;
-}
-
-.cartDesktopHeaderSide {
-  flex: 1 1 0;
-  display: flex;
-  align-items: center;
-  min-width: 0;
-  height: 100%;
-
-  &:last-child {
-    justify-content: flex-end;
-  }
-}
-
-.cartDesktopHeaderCenter {
-  flex: 0 1 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 0;
-}
-
-.cartDesktopHeaderIconCluster {
-  width: auto;
-  flex: 0 0 auto;
 }
 
 .cartHeaderSegments {

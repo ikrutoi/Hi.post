@@ -4,11 +4,11 @@ import {
   clearCalendarPreviewCache,
   requestCalendarPreview,
 } from '@entities/card/infrastructure/state'
-import { selectCalendarPreviewDisplayUrlByCardId } from '@entities/card/infrastructure/selectors'
-import { selectCartItems } from '@cart/infrastructure/selectors'
-import { cardImageMetaLookupIdsFromCard } from '@entities/card/domain/helpers'
 import {
-  cardImageMetaLookupIds,
+  selectCalendarPreviewDisplayUrlByCardId,
+  selectCardImageMetaLookupIdsByCardId,
+} from '@entities/card/infrastructure/selectors'
+import {
   isPersistedBlobUrl,
   resolveListPreviewDisplayUrl,
 } from '@entities/card/domain/helpers/listPreviewDisplay'
@@ -33,13 +33,9 @@ export function useListCardPreviewUrl(
   const cachedUrl = useAppSelector((state) =>
     selectCalendarPreviewDisplayUrlByCardId(state, id),
   )
-  const lookupIds = useAppSelector((state) => {
-    const postcard = selectCartItems(state).find((p) => p.card.id === id)
-    if (postcard) {
-      return cardImageMetaLookupIdsFromCard(postcard.card, postcard.postcard)
-    }
-    return cardImageMetaLookupIds(id, undefined)
-  })
+  const lookupIds = useAppSelector((state) =>
+    selectCardImageMetaLookupIdsByCardId(state, id),
+  )
   const asset = useAppSelector((state) => {
     const registry = state.assetRegistry.images
     for (const metaId of lookupIds) {

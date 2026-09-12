@@ -26,7 +26,11 @@ import {
   selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
 import type { PostcardHydrated } from '@entities/postcard'
-import { cardListPreviewUrlFromCard } from '@entities/card/domain/helpers'
+import {
+  cardImageMetaLookupIds,
+  cardImageMetaLookupIdsFromCard,
+  cardListPreviewUrlFromCard,
+} from '@entities/card/domain/helpers'
 
 export const selectCardState = (state: RootState) => state.card
 
@@ -56,6 +60,21 @@ export const selectCalendarPreviewDisplayUrlByCardId = createSelector(
     (_state: RootState, cardId: string) => cardId,
   ],
   (cache, cardId) => (cardId ? (cache[cardId] ?? null) : null),
+)
+
+const EMPTY_CARD_IMAGE_META_LOOKUP_IDS: string[] = []
+
+/** ID картинки для registry/IDB по `card.id` — стабильная ссылка при тех же входах. */
+export const selectCardImageMetaLookupIdsByCardId = createSelector(
+  [selectCartItems, (_state: RootState, cardId: string) => cardId],
+  (items, cardId): string[] => {
+    if (!cardId) return EMPTY_CARD_IMAGE_META_LOOKUP_IDS
+    const postcard = items.find((p) => p.card.id === cardId)
+    if (postcard) {
+      return cardImageMetaLookupIdsFromCard(postcard.card, postcard.postcard)
+    }
+    return cardImageMetaLookupIds(cardId, undefined)
+  },
 )
 
 export const selectCardById = (id: string) => (state: RootState) =>

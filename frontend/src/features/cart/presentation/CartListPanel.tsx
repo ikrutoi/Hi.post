@@ -7,6 +7,7 @@ import { IconCardBlocked, IconCart } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { CART_LIST_TOOLBAR } from '@toolbar/domain/types/cartList.types'
+import { withDisabledToolbarGroups } from '@toolbar/domain/helpers'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import { cartListBillableLocalIds } from '@cart/application/logic/cartListBillableLocalIds'
 import { useCartFacade } from '../application/facades'
@@ -305,16 +306,13 @@ export const CartListPanel: React.FC<Props> = ({
       ? 'cardBlocked'
       : 'cart')
 
-  const showCartListSelectAll =
-    hasRows && (entriesProp != null || listSegment !== 'cartBlocked')
-  const cartListSelectAllGroups = useMemo(
-    () => CART_LIST_TOOLBAR.filter((group) => group.group === 'cartList'),
-    [],
-  )
-  const cartListDeleteGroups = useMemo(
-    () => CART_LIST_TOOLBAR.filter((group) => group.group === 'actions'),
-    [],
-  )
+  const cartListHeaderToolbarGroups = useMemo(() => {
+    const groups =
+      entriesProp != null || listSegment !== 'cartBlocked'
+        ? CART_LIST_TOOLBAR
+        : CART_LIST_TOOLBAR.filter((group) => group.group !== 'cartList')
+    return hasRows ? groups : withDisabledToolbarGroups(groups)
+  }, [entriesProp, hasRows, listSegment])
 
   return (
     <div
@@ -332,31 +330,17 @@ export const CartListPanel: React.FC<Props> = ({
           headerFade="cart"
           hideLeadIcon
           hideClose
-          headerTopRow={
-            <div className={styles.cartDesktopHeaderToolbar}>
-              <div className={styles.cartDesktopHeaderSide}>
-                {showCartListSelectAll ? (
-                  <Toolbar
-                    section="cartList"
-                    groupsOverride={cartListSelectAllGroups}
-                    className={styles.cartDesktopHeaderIconCluster}
-                  />
-                ) : null}
-              </div>
-              <div className={styles.cartDesktopHeaderCenter}>
-                {entriesProp == null ? <CartHeaderSegments /> : null}
-              </div>
-              <div className={styles.cartDesktopHeaderSide}>
-                {hasRows ? (
-                  <Toolbar
-                    section="cartList"
-                    groupsOverride={cartListDeleteGroups}
-                    justifyGroupsEnd
-                    className={styles.cartDesktopHeaderIconCluster}
-                  />
-                ) : null}
-              </div>
-            </div>
+          headerTopCenter={
+            entriesProp == null ? <CartHeaderSegments /> : undefined
+          }
+          toolbar={
+            <Toolbar
+              section="cartList"
+              groupsOverride={cartListHeaderToolbarGroups}
+              justifyGroupsEnd={
+                entriesProp == null && listSegment === 'cartBlocked'
+              }
+            />
           }
         />
       ) : null}
