@@ -2,61 +2,24 @@
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
 .mark {
+  position: relative;
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  gap: 0.35rem;
   height: 100%;
-  min-width: 0;
+  min-width: max-content;
   box-sizing: border-box;
+  pointer-events: none;
 }
 
 .icon {
-  width: iconButton.$toolbar-icon-size-mobile-toolbar;
   height: iconButton.$toolbar-icon-size-mobile-toolbar;
+  width: auto;
   flex-shrink: 0;
   color: $color-envelope-recipient-legend;
-  opacity: 0.5;
+  opacity: 0.4;
 }
 
-.countBadge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.125rem;
-  min-width: 2.125rem;
-  height: 1.125rem;
-  padding: 0 0.2rem;
-  margin: 0;
-  border: none;
-  appearance: none;
-  box-sizing: border-box;
-  background-color: $color-envelope-recipient-input-border;
-  color: $color-envelope-recipient-legend;
-  font-size: 0.95rem;
-  font-weight: 700;
-  line-height: 1;
-  font-family: sans-serif;
-  border-radius: 1.125rem;
-  box-shadow: 0 0 0 1px rgba($color-envelope-recipient-legend, 0.15);
-  flex-shrink: 0;
-  cursor: default;
-
-  &:disabled {
-    cursor: default;
-  }
-}
-
-.countBadgeInteractive {
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-
-  &:hover {
-    filter: brightness(0.97);
-  }
-
-  &:focus-visible {
-    outline: 2px solid rgba($color-envelope-recipient-legend, 0.45);
-    outline-offset: 2px;
-  }
+.count {
+  @include iconButton.toolbar-icon-count-badge;
 }

@@ -104,6 +104,33 @@
   }
 }
 
+.sideRight {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: max-content;
+  pointer-events: none;
+
+  :global([data-shell-layout='mobile']) & {
+    @include iconButton.mobile-factory-toolbar-edge-slot-right;
+  }
+
+  :global([data-shell-layout='desktop']) & {
+    position: static;
+    right: auto;
+    margin-left: auto;
+    margin-inline-end: 0.5rem;
+  }
+
+  > * {
+    pointer-events: auto;
+  }
+}
+
 .sideLeft {
   position: absolute;
   top: 0;

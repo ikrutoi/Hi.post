@@ -51,6 +51,11 @@
       width: 1.25rem;
       min-width: 1.25rem;
     }
+
+    .iconBlocked {
+      height: auto;
+      min-height: 0;
+    }
   }
 
   &.root-calendar.rootCalendarDimmed {
@@ -107,6 +112,11 @@
     .iconSend {
       width: 1.25rem;
     }
+
+    .iconBlocked {
+      height: auto;
+      min-height: 0;
+    }
   }
 }
 
@@ -149,8 +159,13 @@
 //   color: $color-font-enabled-light;
 // }
 
-.iconSend {
-  width: auto;
+.iconStack {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
 }
 
 .dot {
@@ -171,9 +186,6 @@
     color: $color-font-enabled-light;
   }
 
-  .item.active .count {
-    color: $color-font-disabled;
-  }
 }
 
 .root-calendar {
@@ -292,21 +304,15 @@
     color: $color-app-sidebar-icon-active;
   }
 
-  .item.active .count {
-    color: $color-font-enabled-light;
-  }
-
   .count {
-    flex-shrink: 0;
-    display: inline-block;
-    min-width: 2.25ch;
-    margin-left: 0.05rem;
-    font-size: 0.95rem;
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-    line-height: 1;
-    text-align: start;
-    user-select: none;
+    @include iconButton.toolbar-icon-count-badge;
+  }
+}
+
+.root-historyList.rootCalendarCartHistory {
+  .count {
+    top: -0.72rem;
+    right: -0.78rem;
   }
 }
 
@@ -386,6 +392,12 @@
       height: 1rem;
     }
 
+    .iconBlocked,
+    .item svg.iconBlocked {
+      height: auto;
+      min-height: 0;
+    }
+
     .dot {
       flex-shrink: 0;
       width: 0.75rem;
@@ -408,6 +420,12 @@
       height: 1.125rem;
     }
 
+    .iconBlocked,
+    .item svg.iconBlocked {
+      height: auto;
+      min-height: 0;
+    }
+
     .dot {
       width: $mobile-calendar-preview-indicator-dot-size;
       height: $mobile-calendar-preview-indicator-dot-size;
@@ -419,7 +437,7 @@
     height: 100%;
     max-height: 100%;
     box-sizing: border-box;
-    overflow: hidden;
+    overflow: visible;
 
     .row {
       height: 100%;
@@ -444,6 +462,12 @@
       width: 1.35rem;
       min-width: 1.35rem;
       height: 1.125rem;
+    }
+
+    .iconBlocked,
+    .item svg.iconBlocked {
+      height: auto;
+      min-height: 0;
     }
 
     .dot {

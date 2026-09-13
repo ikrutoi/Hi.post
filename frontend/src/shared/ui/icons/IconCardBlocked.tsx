@@ -9,42 +9,37 @@ const strokeRound = {
 export const IconCardBlocked = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 1280 1280"
+    viewBox="0 0 1280 1600"
+    fill="none"
     fillRule="evenodd"
     clipRule="evenodd"
     imageRendering="optimizeQuality"
     shapeRendering="geometricPrecision"
     textRendering="geometricPrecision"
-    fill="currentColor"
     {...props}
   >
     <path
-      fill="none"
       stroke="currentColor"
       strokeWidth={107.498}
       {...strokeRound}
-      d="M289 1145V600c0-43 35-78 78-78h545c44 0 78 35 78 78v545c0 43-34 78-78 78H367c-43 0-78-35-78-78"
+      d="M196 1439V749c0-54 44-98 99-98h689c55 0 99 44 99 98v690c0 54-44 98-99 98H295c-55 0-99-44-99-98"
     />
     <path
-      fill="none"
       stroke="currentColor"
       strokeWidth={106.666}
       {...strokeRound}
-      d="m289 1028 195-195c36-35 81-35 117 0l195 195"
+      d="m196 1290 247-246c46-44 102-44 148 0l246 246"
     />
     <path
-      fill="none"
       stroke="currentColor"
       strokeWidth={106.666}
       {...strokeRound}
-      d="m718 950 39-39c36-35 81-35 117 0l117 117"
+      d="m739 1192 49-49c46-44 102-44 148 0l148 147"
     />
     <path
-      fill="none"
       stroke="currentColor"
       strokeWidth={107.498}
-      {...strokeRound}
-      d="M846 262v260M434 264v-2c0-113 92-206 206-206s206 93 206 206v2m-412-2v260"
+      d="M901 323v328M379 325v-2c0-144 117-260 261-260s261 116 261 260v2m-522-2v328"
     />
   </svg>
 )

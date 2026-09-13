@@ -1,87 +1,48 @@
-import React, { useCallback } from 'react'
-import clsx from 'clsx'
-import { useAppDispatch, useAppSelector } from '@app/hooks'
+import React from 'react'
+import { useAppSelector } from '@app/hooks'
 import { useRecipientFacade } from '@envelope/recipient/application/facades'
 import {
+  selectRecipientApplied,
+  selectRecipientState,
+} from '@envelope/recipient/infrastructure/selectors'
+import {
   selectArchiveEnvelopeSandboxActive,
-  selectArchiveSandboxRecipient,
+  selectArchiveSandboxRecipientApplied,
 } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
-import {
-  setArchiveRecipientView,
-  setArchiveRecipientViewId,
-} from '@cardPanel/infrastructure/state'
-import {
-  closeAddressEditSession,
-  setAddressFormView,
-  clearAddressCreateEditContext,
-} from '@envelope/infrastructure/state'
-import { selectRecipientViewEditMode } from '@envelope/infrastructure/selectors'
-import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
-import {
-  setRecipientView,
-  setRecipientViewId,
-} from '@envelope/recipient/infrastructure/state'
 import { IconUsers } from '@shared/ui/icons'
-import { toolbarAction } from '@toolbar/application/helpers'
 import styles from './RecipientsToolbarMark.module.scss'
 
+/** Applied ids after envelope Apply; otherwise Recipients view ids. */
+export function useRecipientsChromeCount(): number {
+  const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
+  const sessionAppliedIds = useAppSelector(selectRecipientApplied)
+  const sandboxAppliedIds = useAppSelector(selectArchiveSandboxRecipientApplied)
+  const appliedIds = sandboxActive ? sandboxAppliedIds : sessionAppliedIds
+  const recipient = useAppSelector(selectRecipientState)
+  const displayCount = useRecipientFacade().recipientsDisplayList.length
+  const viewIds =
+    recipient?.currentRecipientsList === 'second'
+      ? (recipient.recipientsViewIdsSecondList ?? [])
+      : (recipient?.recipientsViewIdsFirstList ?? [])
+  return Math.max(appliedIds.length, viewIds.length, displayCount)
+}
+
 /**
- * Recipient count + Users, left of the action keys.
+ * Recipient count + Users.
+ * After Apply with 2+ recipients: upper envelope toolbar, right.
+ * Otherwise: left of the lower View actions.
  */
 export const RecipientsToolbarMark: React.FC = () => {
-  const dispatch = useAppDispatch()
-  const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
-  const sandboxRecipient = useAppSelector(selectArchiveSandboxRecipient)
-  const sessionRecipientView = useAppSelector(selectRecipientView)
-  const recipientView = sandboxActive
-    ? sandboxRecipient.currentView
-    : sessionRecipientView
-  const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
-  const count = useRecipientFacade().recipientsDisplayList.length
-
-  const handleCountClick = useCallback(() => {
-    if (count <= 1) return
-    if (recipientView === 'recipientsView') return
-
-    if (sandboxActive) {
-      dispatch(setArchiveRecipientViewId(null))
-      dispatch(setArchiveRecipientView('recipientsView'))
-      return
-    }
-
-    if (recipientView === 'recipientView') {
-      dispatch(toolbarAction({ section: 'recipientView', key: 'close' }))
-      return
-    }
-
-    if (recipientViewEditMode) {
-      dispatch(
-        closeAddressEditSession({ role: 'recipient', keepRecipientView: true }),
-      )
-    }
-    dispatch(clearAddressCreateEditContext())
-    dispatch(setAddressFormView({ show: false, role: null }))
-    dispatch(setRecipientViewId(null))
-    dispatch(setRecipientView('recipientsView'))
-  }, [count, dispatch, recipientView, recipientViewEditMode, sandboxActive])
+  const count = useRecipientsChromeCount()
 
   return (
     <div className={styles.mark} data-envelope-recipients-toolbar-mark>
-      {count > 1 ? (
-        <button
-          type="button"
-          className={clsx(
-            styles.countBadge,
-            recipientView !== 'recipientsView' && styles.countBadgeInteractive,
-          )}
-          onClick={handleCountClick}
-          disabled={recipientView === 'recipientsView'}
-          aria-label="Open selected recipients list"
-        >
-          {count}
-        </button>
-      ) : null}
       <IconUsers className={styles.icon} aria-hidden />
+      {count > 1 ? (
+        <span className={styles.count} aria-hidden>
+          {count}
+        </span>
+      ) : null}
     </div>
   )
 }

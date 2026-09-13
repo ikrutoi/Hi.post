@@ -35,7 +35,10 @@ import {
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import { listStatusIsInQuickAddressBook } from '@envelope/domain/helpers'
 import { RecipientsBrowseToolbar } from '@envelope/addressForm/presentation/RecipientsBrowseToolbar'
-import { RecipientsToolbarMark } from '@envelope/addressForm/presentation/RecipientsToolbarMark'
+import {
+  RecipientsToolbarMark,
+  useRecipientsChromeCount,
+} from '@envelope/addressForm/presentation/RecipientsToolbarMark'
 import styles from './Envelope.module.scss'
 
 type UseEnvelopeAddressViewToolbarContentOptions = {
@@ -84,6 +87,7 @@ export function useEnvelopeAddressViewToolbarContent({
   const senderFacade = useSenderFacade()
   const recipientFacade = useRecipientFacade()
   const recipientsFormViewIdsCount = recipientFacade.recipientsDisplayList.length
+  const recipientsChromeCount = useRecipientsChromeCount()
   const addressCreateEditContext = useAppSelector(selectAddressCreateEditContext)
   const desktopKeepLowerRecipientsDuringCreate =
     !isMobile &&
@@ -268,8 +272,9 @@ export function useEnvelopeAddressViewToolbarContent({
     !showRecipientCreateToolbar
 
   const showRecipientsToolbarMark =
-    (slotRole === 'recipient' || slotRole === 'complete') &&
-    !showRecipientCreateToolbar
+    !showRecipientCreateToolbar &&
+    !(assemblyRecipientSimplifiedPeek && recipientsChromeCount > 1) &&
+    (slotRole === 'recipient' || slotRole === 'complete')
 
   const toolbarInner =
     showRecipientCreateToolbar ? (
