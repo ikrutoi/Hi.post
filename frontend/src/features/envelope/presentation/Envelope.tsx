@@ -5,6 +5,10 @@ import { getSafeLang } from '@i18n/helpers'
 import { i18n } from '@i18n/i18n'
 import { EnvelopeAddress } from '../addressForm/presentation'
 import { AddressFormView } from '../addressForm/presentation/AddressFormView'
+import { RecipientView } from '../addressForm/presentation/AddressView'
+import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
+import { ENVELOPE_DESKTOP_RECIPIENT_DETAIL_TOOLBAR } from '@toolbar/domain/types/addressView.types'
+import addressFormStyles from '../addressForm/presentation/AddressFormView.module.scss'
 import { EnvelopePeekAddressBlock } from './EnvelopePeekAddressBlock'
 import { useRecipientFacade } from '../recipient/application/facades'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
@@ -129,6 +133,14 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
     !envelopePeekMode &&
     !showRecipientSimplified &&
     recipientView === 'recipientCreate'
+  const showEnvelopeTopRecipientDetail =
+    !isMobile &&
+    !envelopePeekMode &&
+    !showRecipientSimplified &&
+    recipientView === 'recipientView' &&
+    recipientFacade.recipientsDisplayList.length > 1
+  const showEnvelopeTopSlotForm =
+    showEnvelopeTopCreate || showEnvelopeTopRecipientDetail
 
   useEffect(() => {
     if (!isMobile || envelopePeekMode) {
@@ -216,7 +228,7 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
       <div
         className={clsx(
           styles.envelopeTopSlot,
-          showEnvelopeTopCreate && styles.envelopeTopSlotCreate,
+          showEnvelopeTopSlotForm && styles.envelopeTopSlotCreate,
         )}
       >
         {showEnvelopeTopCreate ? (
@@ -229,6 +241,29 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
               onFieldChange={recipientFacade.update}
               lang={lang}
             />
+          </div>
+        ) : showEnvelopeTopRecipientDetail ? (
+          <div
+            className={clsx(
+              styles.envelopeTopCreate,
+              styles.envelopeTopCreateDetail,
+            )}
+          >
+            <div className={addressFormStyles.addressFormView}>
+              <div className={addressFormStyles.addressFormTopBar}>
+                <Toolbar
+                  section="recipientView"
+                  groupsOverride={ENVELOPE_DESKTOP_RECIPIENT_DETAIL_TOOLBAR}
+                />
+              </div>
+              <div className={addressFormStyles.addressFormDetailBody}>
+                <RecipientView
+                  templateId={recipientFacade.recipientTemplateId ?? ''}
+                  address={recipientFacade.address as AddressFields}
+                  viewOnly
+                />
+              </div>
+            </div>
           </div>
         ) : (
           <>

@@ -184,7 +184,8 @@ export function useEnvelopeAddressViewToolbarContent({
   const showRecipientToolbar =
     recipientToolbarSlot &&
     recipientView === 'recipientView' &&
-    recipientDisplayEntry != null
+    recipientDisplayEntry != null &&
+    (isMobile || recipientsFormViewIdsCount <= 1)
 
   const showRecipientsMultiToolbar =
     recipientToolbarSlot &&

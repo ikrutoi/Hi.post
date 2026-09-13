@@ -128,6 +128,20 @@ export const ENVELOPE_MOBILE_ADDRESS_VIEW_UPPER_CLOSE_TOOLBAR: ToolbarConfig = [
   },
 ]
 
+/** Desktop multi-recipient detail in the envelope top slot: edit | close. */
+export const ENVELOPE_DESKTOP_RECIPIENT_DETAIL_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'recipientView',
+    icons: [{ key: 'edit', state: 'enabled' }],
+    status: 'enabled',
+  },
+  {
+    group: 'close',
+    icons: [{ key: 'close', state: 'enabled' }],
+    status: 'enabled',
+  },
+]
+
 export const initialSenderViewToolbarState: AddressViewToolbarState = {
   ...Object.fromEntries(flattenIcons(SENDER_VIEW_TOOLBAR)),
   config: [...SENDER_VIEW_TOOLBAR],

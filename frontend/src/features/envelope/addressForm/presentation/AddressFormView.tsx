@@ -10,6 +10,7 @@ import { Label } from './Label/Label'
 import { useEnvelopeAddress } from '../application/hooks'
 import { useEnvelopeFacade } from '../../application/facades/useEnvelopeFacade'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
+import { ENVELOPE_DESKTOP_RECIPIENT_DETAIL_TOOLBAR } from '@toolbar/domain/types/addressView.types'
 import type { AddressFields } from '@shared/config/constants'
 import type { Lang } from '@i18n/types'
 import styles from './AddressFormView.module.scss'
@@ -23,6 +24,8 @@ export type AddressFormViewProps = {
   lang: Lang
   /** Mobile envelope: fullscreen form with senderCreate/recipientCreate toolbar. */
   mobileFullscreen?: boolean
+  /** Desktop top slot: read-only detailed address with view toolbar. */
+  readOnly?: boolean
 }
 
 export const AddressFormView: React.FC<AddressFormViewProps> = ({
@@ -32,6 +35,7 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
   onFieldChange,
   lang,
   mobileFullscreen = false,
+  readOnly = false,
 }) => {
   const { syncAddressFormToolbar } = useEnvelopeFacade()
   const { labelLayout } = useEnvelopeAddress(role, lang)
@@ -45,16 +49,24 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
     [address],
   )
 
-  const toolbarSection =
+  const createToolbarSection =
     role === 'sender' ? 'senderCreate' : 'recipientCreate'
+  const toolbarSection = readOnly ? 'recipientView' : createToolbarSection
 
   useLayoutEffect(() => {
-    syncAddressFormToolbar(toolbarSection, isAddressComplete)
-  }, [syncAddressFormToolbar, toolbarSection, isAddressComplete])
+    if (readOnly) return
+    syncAddressFormToolbar(createToolbarSection, isAddressComplete)
+  }, [
+    syncAddressFormToolbar,
+    createToolbarSection,
+    isAddressComplete,
+    readOnly,
+  ])
 
   // Focus the name field on open. Do not keep whatever the browser focused
   // first (iOS/Chrome often land on Country in an address form).
   useEffect(() => {
+    if (readOnly) return
     const nameInput =
       inputsRef.current.find((el) => el?.dataset.addressField === 'name') ??
       inputsRef.current[0]
@@ -76,7 +88,7 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
       window.cancelAnimationFrame(frame)
       window.clearTimeout(timer)
     }
-  }, [])
+  }, [readOnly])
 
   const handleKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
@@ -112,8 +124,9 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
                 field={subItem.key}
                 value={address[subItem.key]}
                 onValueChange={onFieldChange}
-                onKeyDown={(e) => handleKeyDown(e, idx)}
-                autoFocus={mobileFullscreen && subItem.key === 'name'}
+                onKeyDown={readOnly ? undefined : (e) => handleKeyDown(e, idx)}
+                autoFocus={!readOnly && mobileFullscreen && subItem.key === 'name'}
+                readOnly={readOnly}
               />
             )
           })}
@@ -131,8 +144,9 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
         field={item.key}
         value={address[item.key]}
         onValueChange={onFieldChange}
-        onKeyDown={(e) => handleKeyDown(e, idx)}
-        autoFocus={mobileFullscreen && item.key === 'name'}
+        onKeyDown={readOnly ? undefined : (e) => handleKeyDown(e, idx)}
+        autoFocus={!readOnly && mobileFullscreen && item.key === 'name'}
+        readOnly={readOnly}
       />
     )
   })
@@ -168,7 +182,14 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
           )}
         >
           <div className={styles.addressFormTopBar}>
-            {!mobileFullscreen ? <Toolbar section={toolbarSection} /> : null}
+            {!mobileFullscreen ? (
+              <Toolbar
+                section={toolbarSection}
+                groupsOverride={
+                  readOnly ? ENVELOPE_DESKTOP_RECIPIENT_DETAIL_TOOLBAR : undefined
+                }
+              />
+            ) : null}
           </div>
           <div className={styles.addressFormFields}>{fields}</div>
         </div>

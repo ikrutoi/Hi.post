@@ -1,6 +1,5 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
-@use '@styles/mixins/toolbarIconButton' as iconButton;
 
 /* Поля формы — фон и рамка задаются через .savedAddressView* в AddressView.module.scss */
 .addressFormView {
@@ -54,9 +53,11 @@
     border: none;
     border-radius: 0.75rem;
     background-color: $color-envelope-recipient-input;
-    @include iconButton.toolbar-factory-edge-key-insets;
+    padding-inline: 0.5rem;
+    box-sizing: border-box;
 
-    :global([class*='toolbarRecipientCreate']) {
+    :global([class*='toolbarRecipientCreate']),
+    :global([class*='toolbarRecipientView']) {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -70,6 +71,22 @@
       flex: 0 0 auto;
       width: auto;
     }
+
+    :global(button[class*='toolbarKey']) {
+      background-color: transparent !important;
+
+      &:hover,
+      &:active {
+        background-color: transparent !important;
+      }
+    }
+  }
+
+  .addressFormDetailBody {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto;
+    overflow: hidden;
   }
 
   .addressFormFields {

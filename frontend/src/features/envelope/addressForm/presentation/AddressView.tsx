@@ -41,12 +41,15 @@ export type SenderViewProps = {
 export type RecipientViewProps = {
   templateId: string
   address: AddressFields
+  /** Top-slot multi-recipient peek: never enter inline edit. */
+  viewOnly?: boolean
 }
 
 type SingleAddressViewProps = {
   role: AddressViewRole
   templateId: string
   address: AddressFields
+  viewOnly?: boolean
 }
 
 type EditableRowKey = 'name' | 'street' | 'cityZip' | 'country'
@@ -59,13 +62,18 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   role,
   templateId,
   address,
+  viewOnly = false,
 }) => {
   const dispatch = useAppDispatch()
   const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const isEditMode =
-    role === 'sender' ? senderViewEditMode : recipientViewEditMode
+    viewOnly
+      ? false
+      : role === 'sender'
+        ? senderViewEditMode
+        : recipientViewEditMode
   const [activeRow, setActiveRow] = useState<EditableRowKey>('name')
   const [cityZipFocus, setCityZipFocus] = useState<CityZipFocus>('zip')
   const containerRef = useRef<HTMLDivElement | null>(null)

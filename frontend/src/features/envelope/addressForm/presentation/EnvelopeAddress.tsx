@@ -207,9 +207,9 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
   const showRecipientsEnvelopeList =
     role === 'recipient' &&
+    recipientsDisplayList.length > 1 &&
     recipientView !== 'recipientCreate' &&
-    recipientView !== 'recipientView' &&
-    recipientsDisplayList.length > 1
+    (recipientView !== 'recipientView' || !isMobile)
 
   useEffect(() => {
     if (role !== 'recipient') return
@@ -777,13 +777,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                     lang={lang}
                     mobileFullscreen={isMobile}
                   />
-                ) : showRecipientDetailCard ? (
-                  <RecipientView
-                    templateId={
-                      cardTemplateId ?? recipientDisplayEntry?.id ?? ''
-                    }
-                    address={recipientAddressForView}
-                  />
                 ) : showRecipientsEnvelopeList ? (
                   <RecipientsView
                     entries={recipientsDisplayList}
@@ -795,6 +788,13 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                         ? recipientFieldsetContainerScrollRef
                         : undefined
                     }
+                  />
+                ) : showRecipientDetailCard ? (
+                  <RecipientView
+                    templateId={
+                      cardTemplateId ?? recipientDisplayEntry?.id ?? ''
+                    }
+                    address={recipientAddressForView}
                   />
                 ) : (
                   <div

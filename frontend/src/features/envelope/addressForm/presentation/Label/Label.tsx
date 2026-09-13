@@ -21,6 +21,7 @@ type LabelProps = {
   onValueChange: (field: keyof AddressFields, value: string) => void
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void
   autoFocus?: boolean
+  readOnly?: boolean
 }
 
 const ADDRESS_AUTOCOMPLETE: Record<keyof AddressFields, string> = {
@@ -42,6 +43,7 @@ export const Label = forwardRef<HTMLInputElement, LabelProps>(
       onValueChange,
       onKeyDown,
       autoFocus = false,
+      readOnly = false,
     },
     ref,
   ) => {
@@ -125,7 +127,9 @@ export const Label = forwardRef<HTMLInputElement, LabelProps>(
             aria-label={label}
             data-address-field={field}
             autoComplete={ADDRESS_AUTOCOMPLETE[field]}
-            autoFocus={autoFocus}
+            autoFocus={autoFocus && !readOnly}
+            readOnly={readOnly}
+            tabIndex={readOnly ? -1 : undefined}
             autoCapitalize={
               field === 'zip'
                 ? 'characters'
@@ -134,10 +138,10 @@ export const Label = forwardRef<HTMLInputElement, LabelProps>(
                   : 'sentences'
             }
             autoCorrect="on"
-            onChange={handleChange}
-            onKeyDown={onKeyDown}
+            onChange={readOnly ? undefined : handleChange}
+            onKeyDown={readOnly ? undefined : onKeyDown}
           />
-          {value.trim() !== '' && (
+          {!readOnly && value.trim() !== '' && (
             <button
               type="button"
               className={clsx(styles.clearButton)}
