@@ -24,6 +24,60 @@
   display: none;
 }
 
+:global([data-shell-layout='desktop']) .addressFormTopBar {
+  display: flex;
+  flex: 0 0 $section-inner-toolbar-height-desktop;
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  height: $section-inner-toolbar-height-desktop;
+  min-height: $section-inner-toolbar-height-desktop;
+  max-height: $section-inner-toolbar-height-desktop;
+  margin-block: 0.25rem;
+  padding-inline: 0.5rem;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 0.75rem;
+  background-color: $color-envelope-recipient-input;
+
+  > :global([data-envelope-recipients-toolbar-mark]) {
+    flex: 0 0 auto;
+    width: auto;
+  }
+
+  :global([class*='toolbarRecipientCreate']),
+  :global([class*='toolbarRecipientView']),
+  :global([class*='toolbarRecipients']) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    margin: 0;
+    box-sizing: border-box;
+  }
+
+  :global([class*='toolbarRecipients']) {
+    justify-content: flex-end;
+  }
+
+  :global([class*='toolbarGroup']) {
+    flex: 0 0 auto;
+    width: auto;
+  }
+
+  :global(button[class*='toolbarKey']) {
+    background-color: transparent !important;
+
+    &:hover,
+    &:active {
+      background-color: transparent !important;
+    }
+  }
+}
+
 /**
  * Desktop create: toolbar is outside the field grid.
  * Remaining height: 9 equal tracks — 4 field rows + 5 spacings.
@@ -38,49 +92,6 @@
   align-items: stretch;
   overflow: hidden;
   padding-block: 0;
-
-  .addressFormTopBar {
-    display: block;
-    flex: 0 0 $section-inner-toolbar-height-desktop;
-    width: 100%;
-    height: $section-inner-toolbar-height-desktop;
-    min-height: $section-inner-toolbar-height-desktop;
-    max-height: $section-inner-toolbar-height-desktop;
-    margin-block: 0.25rem;
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    border: none;
-    border-radius: 0.75rem;
-    background-color: $color-envelope-recipient-input;
-    padding-inline: 0.5rem;
-    box-sizing: border-box;
-
-    :global([class*='toolbarRecipientCreate']),
-    :global([class*='toolbarRecipientView']) {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      box-sizing: border-box;
-    }
-
-    :global([class*='toolbarGroup']) {
-      flex: 0 0 auto;
-      width: auto;
-    }
-
-    :global(button[class*='toolbarKey']) {
-      background-color: transparent !important;
-
-      &:hover,
-      &:active {
-        background-color: transparent !important;
-      }
-    }
-  }
 
   .addressFormDetailBody {
     flex: 1 1 auto;

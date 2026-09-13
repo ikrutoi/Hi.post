@@ -5,7 +5,12 @@ import { useAppSelector } from '@app/hooks'
 import { useEnvelopeFacade } from '@envelope/application/facades'
 import { useSenderFacade } from '@envelope/sender/application/facades'
 import { useRecipientFacade } from '@envelope/recipient/application/facades'
-import { selectActiveAddressEdit } from '@envelope/infrastructure/selectors'
+import {
+  selectActiveAddressEdit,
+  selectAddressCreateEditContext,
+  selectRecipientViewEditMode,
+  selectSenderViewEditMode,
+} from '@envelope/infrastructure/selectors'
 import { selectSenderApplied, selectSenderView, selectSenderEntriesState } from '@envelope/sender/infrastructure/selectors'
 import {
   selectRecipientView,
@@ -29,10 +34,6 @@ import {
 } from '@toolbar/domain/types/addressView.types'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import { listStatusIsInQuickAddressBook } from '@envelope/domain/helpers'
-import {
-  selectRecipientViewEditMode,
-  selectSenderViewEditMode,
-} from '@envelope/infrastructure/selectors'
 import { RecipientsBrowseToolbar } from '@envelope/addressForm/presentation/RecipientsBrowseToolbar'
 import { RecipientsToolbarMark } from '@envelope/addressForm/presentation/RecipientsToolbarMark'
 import styles from './Envelope.module.scss'
@@ -41,11 +42,17 @@ type UseEnvelopeAddressViewToolbarContentOptions = {
   enabled: boolean
   /** Mobile-only history list-row peek tint band. */
   includeHistoryListPeek?: boolean
+  /**
+   * `envelopeSlot` — mint bar inside Recipients (desktop).
+   * `factory` — lower factory row (mobile + both-applied peek).
+   */
+  variant?: 'factory' | 'envelopeSlot'
 }
 
 export function useEnvelopeAddressViewToolbarContent({
   enabled,
   includeHistoryListPeek = false,
+  variant = 'factory',
 }: UseEnvelopeAddressViewToolbarContentOptions): React.ReactNode {
   const isMobile = useAppSelector(selectIsMobileLayout)
   const {
@@ -77,6 +84,12 @@ export function useEnvelopeAddressViewToolbarContent({
   const senderFacade = useSenderFacade()
   const recipientFacade = useRecipientFacade()
   const recipientsFormViewIdsCount = recipientFacade.recipientsDisplayList.length
+  const addressCreateEditContext = useAppSelector(selectAddressCreateEditContext)
+  const desktopSingleRecipientCreateEdit =
+    !isMobile &&
+    recipientView === 'recipientCreate' &&
+    addressCreateEditContext?.role === 'recipient' &&
+    recipientsFormViewIdsCount === 1
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const addressEditActive =
@@ -124,17 +137,42 @@ export function useEnvelopeAddressViewToolbarContent({
   ])
 
   const recipientIdForDisplay =
-    activeAddressEdit?.role === 'recipient'
-      ? activeAddressEdit.templateId
-      : sandboxActive
-        ? sandboxRecipient.recipientViewId
-        : envelopeFacade.recipientTemplateId
+    addressCreateEditContext?.role === 'recipient'
+      ? addressCreateEditContext.templateId
+      : activeAddressEdit?.role === 'recipient'
+        ? activeAddressEdit.templateId
+        : sandboxActive
+          ? sandboxRecipient.recipientViewId
+          : envelopeFacade.recipientTemplateId
 
   const recipientDisplayEntry = useMemo((): AddressBookEntry | null => {
-    if (recipientView !== 'recipientView' || recipientIdForDisplay == null) {
+    const allowCreateEditCard =
+      desktopSingleRecipientCreateEdit && recipientIdForDisplay != null
+    if (
+      (recipientView !== 'recipientView' && !allowCreateEditCard) ||
+      recipientIdForDisplay == null
+    ) {
       return null
     }
     const fromBook = recipientEntries.find((e) => e.id === recipientIdForDisplay)
+    if (allowCreateEditCard) {
+      const committed = recipientFacade.state.viewDraft
+      if (fromBook) {
+        if (Object.values(committed).some((v) => (v ?? '').trim() !== '')) {
+          return { ...fromBook, address: { ...committed } }
+        }
+        return fromBook
+      }
+      if (!Object.values(committed).some((v) => (v ?? '').trim() !== '')) {
+        return null
+      }
+      return {
+        id: recipientIdForDisplay,
+        role: 'recipient',
+        address: { ...committed },
+        createdAt: new Date().toISOString(),
+      }
+    }
     if (fromBook) return fromBook
     if (!Object.values(recipientAddress).some((v) => (v ?? '').trim() !== '')) {
       return null
@@ -146,10 +184,12 @@ export function useEnvelopeAddressViewToolbarContent({
       createdAt: new Date().toISOString(),
     }
   }, [
+    desktopSingleRecipientCreateEdit,
     recipientView,
     recipientIdForDisplay,
     recipientEntries,
     recipientAddress,
+    recipientFacade.state.viewDraft,
   ])
 
   /** Lower View toolbar follows recipient; both applied → neutral tint band only. */
@@ -167,7 +207,8 @@ export function useEnvelopeAddressViewToolbarContent({
     !assemblyRecipientSimplifiedPeek
 
   const recipientToolbarSlot =
-    recipientChromeSlot && recipientView !== 'recipientCreate'
+    recipientChromeSlot &&
+    (recipientView !== 'recipientCreate' || desktopSingleRecipientCreateEdit)
 
   const showRecipientCreateToolbar =
     enabled &&
@@ -186,7 +227,7 @@ export function useEnvelopeAddressViewToolbarContent({
 
   const showRecipientToolbar =
     recipientToolbarSlot &&
-    recipientView === 'recipientView' &&
+    (recipientView === 'recipientView' || desktopSingleRecipientCreateEdit) &&
     recipientDisplayEntry != null &&
     (isMobile || recipientsFormViewIdsCount <= 1)
 
@@ -227,17 +268,52 @@ export function useEnvelopeAddressViewToolbarContent({
       : ENVELOPE_MOBILE_ADDRESS_VIEW_DELETE_TOOLBAR
   }, [addressViewInQuickList, recipientsFormViewIdsCount, section])
 
-  const slotRole: 'sender' | 'recipient' | 'complete' | null = bothAppliedToolbarSlot
-    ? 'complete'
-    : senderToolbarSlot
-      ? 'sender'
-      : recipientChromeSlot || showRecipientCreateToolbar
-        ? 'recipient'
-        : null
+  const slotRole: 'sender' | 'recipient' | 'complete' | null =
+    bothAppliedToolbarSlot
+      ? 'complete'
+      : senderToolbarSlot
+        ? 'sender'
+        : recipientChromeSlot || showRecipientCreateToolbar
+          ? 'recipient'
+          : null
+
+  const hostRecipientChromeInEnvelopeSlot =
+    !isMobile && slotRole === 'recipient' && !bothAppliedToolbarSlot
 
   const showRecipientsToolbarMark =
     (slotRole === 'recipient' || slotRole === 'complete') &&
     !showRecipientCreateToolbar
+
+  const toolbarInner =
+    showRecipientCreateToolbar ? (
+      <Toolbar section="recipientCreate" />
+    ) : section === 'senderView' || section === 'recipientView' ? (
+      <Toolbar section={section} groupsOverride={addressViewToolbar} />
+    ) : section === 'recipients' ? (
+      <Toolbar
+        section="recipients"
+        groupsOverride={ENVELOPE_MOBILE_RECIPIENTS_MULTI_VIEW_TOOLBAR}
+        justifyGroupsEnd
+      />
+    ) : showRecipientsBrowseToolbar ? (
+      <RecipientsBrowseToolbar />
+    ) : null
+
+  if (variant === 'envelopeSlot') {
+    if (
+      !enabled ||
+      isMobile ||
+      !hostRecipientChromeInEnvelopeSlot ||
+      toolbarInner == null
+    ) {
+      return null
+    }
+    return toolbarInner
+  }
+
+  if (hostRecipientChromeInEnvelopeSlot) {
+    return null
+  }
 
   if (slotRole != null) {
     return (
@@ -261,19 +337,7 @@ export function useEnvelopeAddressViewToolbarContent({
         }
       >
         {showRecipientsToolbarMark ? <RecipientsToolbarMark /> : null}
-        {showRecipientCreateToolbar ? (
-          <Toolbar section="recipientCreate" />
-        ) : section === 'senderView' || section === 'recipientView' ? (
-          <Toolbar section={section} groupsOverride={addressViewToolbar} />
-        ) : section === 'recipients' ? (
-          <Toolbar
-            section="recipients"
-            groupsOverride={ENVELOPE_MOBILE_RECIPIENTS_MULTI_VIEW_TOOLBAR}
-            justifyGroupsEnd
-          />
-        ) : showRecipientsBrowseToolbar ? (
-          <RecipientsBrowseToolbar />
-        ) : null}
+        {toolbarInner}
       </div>
     )
   }

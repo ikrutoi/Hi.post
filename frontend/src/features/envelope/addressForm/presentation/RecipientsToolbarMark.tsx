@@ -26,7 +26,7 @@ import { toolbarAction } from '@toolbar/application/helpers'
 import styles from './RecipientsToolbarMark.module.scss'
 
 /**
- * Lower factory toolbar: recipient count + Users, left of the action keys.
+ * Recipient count + Users, left of the action keys.
  */
 export const RecipientsToolbarMark: React.FC = () => {
   const dispatch = useAppDispatch()

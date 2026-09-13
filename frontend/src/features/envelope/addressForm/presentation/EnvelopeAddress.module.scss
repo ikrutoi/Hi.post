@@ -250,7 +250,6 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
 .addressFormRecipient {
   &.addressFieldset {
     border: solid 1px $color-section-light;
-    // border: solid 1px red;
     overflow: hidden;
     container-type: size;
     container-name: recipients-form;
@@ -268,6 +267,30 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
       border-radius: inherit;
     }
   }
+}
+
+.addressFormRecipientBody .recipientFieldsetContent.recipientFieldsetWithSlotToolbar {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0.25rem 0.5rem 0.5rem;
+  box-sizing: border-box;
+
+  > :global([class*='addressFormTopBar']) {
+    flex: 0 0 auto;
+  }
+
+  > .addressFieldsetInner {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+}
+
+.addressFormRecipient.recipientFieldsetWithSlotToolbar:has(
+    > .addressFieldsetInner
+      > [data-envelope-address-surface][data-envelope-address-view-mode='view']
+  ) {
+  padding: 0.25rem 0.5rem 0.5rem;
 }
 
 :global([data-shell-layout='desktop']) {

@@ -41,6 +41,7 @@ import {
 } from '@envelope/infrastructure/state'
 import {
   selectActiveAddressEdit,
+  selectAddressCreateEditContext,
   selectRecipientViewEditMode,
   selectRecipientsFormPreviewId,
   selectSenderListPanelOpen,
@@ -57,6 +58,8 @@ import { toolbarAction } from '@toolbar/application/helpers'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { useEnvelopeMobileAddressFocus } from '../../presentation/EnvelopeMobileAddressFocusContext'
+import { useEnvelopeAddressViewToolbarContent } from '../../presentation/useEnvelopeAddressViewToolbarContent'
+import addressFormStyles from './AddressFormView.module.scss'
 
 export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   role,
@@ -124,8 +127,13 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const recipientView = sandboxActive
     ? sandboxRecipient.currentView
     : sessionRecipientView
+  const recipientSlotToolbar = useEnvelopeAddressViewToolbarContent({
+    enabled: role === 'recipient',
+    variant: 'envelopeSlot',
+  })
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
+  const addressCreateEditContext = useAppSelector(selectAddressCreateEditContext)
   const recipientsFormPreviewId = useAppSelector(selectRecipientsFormPreviewId)
   const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
 
@@ -154,25 +162,51 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     Object.values(value).some((v) => (v ?? '').trim() !== '')
 
   const recipientsDisplayList = recipientFacade.recipientsDisplayList
+  const keepLowerRecipientCardDuringCreateEdit =
+    !isMobile &&
+    role === 'recipient' &&
+    recipientView === 'recipientCreate' &&
+    addressCreateEditContext?.role === 'recipient' &&
+    recipientsDisplayList.length === 1
 
   const recipientIdForDisplay =
     role === 'recipient'
-      ? sandboxActive
-        ? (sandboxRecipient.recipientViewId ??
-          sandboxRecipientAppliedIds[0] ??
-          null)
-        : (editingTemplateId ?? null)
+      ? keepLowerRecipientCardDuringCreateEdit
+        ? addressCreateEditContext.templateId
+        : sandboxActive
+          ? (sandboxRecipient.recipientViewId ??
+            sandboxRecipientAppliedIds[0] ??
+            null)
+          : (editingTemplateId ?? null)
       : null
 
   const recipientDisplayEntry = useMemo((): AddressBookEntry | null => {
-    if (role !== 'recipient' || recipientView !== 'recipientView') {
+    if (role !== 'recipient') return null
+    if (
+      recipientView !== 'recipientView' &&
+      !keepLowerRecipientCardDuringCreateEdit
+    ) {
       return null
     }
+    const committedAddress = keepLowerRecipientCardDuringCreateEdit
+      ? recipientFacade.state.viewDraft
+      : value
     if (recipientIdForDisplay != null) {
       const fromBook = recipientEntries.find(
         (e) => e.id === recipientIdForDisplay,
       )
       if (fromBook) {
+        if (keepLowerRecipientCardDuringCreateEdit) {
+          if (
+            Object.values(committedAddress).some((v) => (v ?? '').trim() !== '')
+          ) {
+            return {
+              ...fromBook,
+              address: { ...committedAddress },
+            }
+          }
+          return fromBook
+        }
         /** Prefer live sandbox/session draft when it has fields. */
         if (Object.values(value).some((v) => (v ?? '').trim() !== '')) {
           return {
@@ -183,16 +217,20 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         return fromBook
       }
     }
-    if (!Object.values(value).some((v) => (v ?? '').trim() !== '')) return null
+    if (!Object.values(committedAddress).some((v) => (v ?? '').trim() !== '')) {
+      return null
+    }
     return {
       id: recipientIdForDisplay ?? 'sandbox-recipient-draft',
       role: 'recipient',
-      address: { ...value },
+      address: { ...committedAddress },
       createdAt: new Date().toISOString(),
     }
   }, [
     role,
     recipientView,
+    keepLowerRecipientCardDuringCreateEdit,
+    recipientFacade.state.viewDraft,
     recipientIdForDisplay,
     recipientEntries,
     value,
@@ -683,6 +721,8 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                 styles.addressFieldset,
                 styles.addressFormRecipient,
                 styles.recipientFieldsetContent,
+                recipientSlotToolbar != null &&
+                  styles.recipientFieldsetWithSlotToolbar,
                 showRecipientsEnvelopeList && styles.recipientFieldsetMulti,
                 showRecipientsEnvelopeList && styles.recipientFieldsetWithList,
                 recipientView === 'recipientCreate' &&
@@ -691,6 +731,11 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               )}
               onMouseDownCapture={handleRecipientFieldsetMouseDownCapture}
             >
+              {recipientSlotToolbar != null ? (
+                <div className={addressFormStyles.addressFormTopBar}>
+                  {recipientSlotToolbar}
+                </div>
+              ) : null}
               {showRecipientsEnvelopeList ? (
                 <div
                   ref={setRecipientFieldsetContainerScrollRef}
@@ -726,6 +771,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                       cardTemplateId ?? recipientDisplayEntry?.id ?? ''
                     }
                     address={recipientAddressForView}
+                    viewOnly={keepLowerRecipientCardDuringCreateEdit}
                   />
                 ) : (
                   <div
