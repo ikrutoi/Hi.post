@@ -298,7 +298,17 @@ export function useEnvelopeAddressViewToolbarContent({
   }
 
   if (hostRecipientChromeInEnvelopeSlot) {
-    return null
+    if (!isMobile || !enabled) return null
+    return (
+      <div
+        className={clsx(
+          styles.envelopeAddressViewToolbarRow,
+          styles.envelopeAddressViewToolbarRowRecipient,
+        )}
+        data-envelope-address-view-toolbar
+        aria-hidden
+      />
+    )
   }
 
   if (slotRole != null) {
