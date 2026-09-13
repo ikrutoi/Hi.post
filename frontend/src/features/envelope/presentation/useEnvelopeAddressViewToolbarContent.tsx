@@ -217,6 +217,7 @@ export function useEnvelopeAddressViewToolbarContent({
   const showRecipientsMultiToolbar =
     recipientToolbarSlot &&
     (recipientView === 'recipientsView' ||
+      recipientView === 'recipientView' ||
       desktopKeepLowerRecipientsDuringCreate) &&
     recipientsMultiListReady
 

@@ -38,6 +38,8 @@ import {
   closeAddressEditSession,
   setRecipientsFormPreviewId,
   clearRecipientsFormPreviewId,
+  clearAddressCreateEditContext,
+  setAddressFormView,
 } from '@envelope/infrastructure/state'
 import {
   selectActiveAddressEdit,
@@ -448,8 +450,46 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     }
   }
 
+  const recipientsGridSelectedId =
+    role !== 'recipient'
+      ? null
+      : isMobile
+        ? recipientsFormPreviewId
+        : recipientView === 'recipientView'
+          ? sandboxActive
+            ? (sandboxRecipient.recipientViewId ?? null)
+            : (editingTemplateId ?? null)
+          : recipientView === 'recipientCreate' &&
+              addressCreateEditContext?.role === 'recipient'
+            ? (addressCreateEditContext.templateId ?? null)
+            : null
+
   const handleOpenRecipientFromList = (entry: AddressBookEntry) => {
     if (!isMobile) {
+      if (recipientsGridSelectedId === entry.id) {
+        if (sandboxActive) {
+          dispatch(setArchiveRecipientViewId(null))
+          dispatch(setArchiveRecipientView('recipientsView'))
+          return
+        }
+        if (recipientView === 'recipientView') {
+          dispatch(toolbarAction({ section: 'recipientView', key: 'close' }))
+          return
+        }
+        if (recipientViewEditMode) {
+          dispatch(
+            closeAddressEditSession({
+              role: 'recipient',
+              keepRecipientView: true,
+            }),
+          )
+        }
+        dispatch(clearAddressCreateEditContext())
+        dispatch(setAddressFormView({ show: false, role: null }))
+        dispatch(setRecipientViewId(null))
+        dispatch(setRecipientView('recipientsView'))
+        return
+      }
       if (recipientViewEditMode) {
         dispatch(
           closeAddressEditSession({
@@ -750,7 +790,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                     entries={recipientsDisplayList}
                     onRemove={recipientFacade.removeFromList}
                     onOpenRecipient={handleOpenRecipientFromList}
-                    selectedId={isMobile ? recipientsFormPreviewId : null}
+                    selectedId={recipientsGridSelectedId}
                     scrollbarPortalTarget={
                       recipientScrollContainerReady
                         ? recipientFieldsetContainerScrollRef

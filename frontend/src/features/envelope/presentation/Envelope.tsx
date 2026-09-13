@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 import clsx from 'clsx'
 import { Mark } from '@envelope/view/presentation'
 import { getSafeLang } from '@i18n/helpers'
@@ -7,7 +7,10 @@ import { EnvelopeAddress } from '../addressForm/presentation'
 import { AddressFormView } from '../addressForm/presentation/AddressFormView'
 import { RecipientView } from '../addressForm/presentation/AddressView'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
-import { ENVELOPE_DESKTOP_RECIPIENT_DETAIL_TOOLBAR } from '@toolbar/domain/types/addressView.types'
+import {
+  ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR,
+  ENVELOPE_MOBILE_ADDRESS_VIEW_DELETE_TOOLBAR,
+} from '@toolbar/domain/types/addressView.types'
 import addressFormStyles from '../addressForm/presentation/AddressFormView.module.scss'
 import { EnvelopePeekAddressBlock } from './EnvelopePeekAddressBlock'
 import { useRecipientFacade } from '../recipient/application/facades'
@@ -26,7 +29,7 @@ import {
   selectIsSenderEnabled,
 } from '../sender/infrastructure/selectors'
 import { setEnabled, setSenderApplied, setSenderView } from '../sender/infrastructure/state'
-import { selectRecipientView, selectRecipientAddressFormData } from '../recipient/infrastructure/selectors'
+import { selectRecipientView, selectRecipientAddressFormData, selectRecipientEntriesState } from '../recipient/infrastructure/selectors'
 import {
   selectArchiveEnvelopeSandboxActive,
   selectArchiveSandboxSender,
@@ -40,6 +43,7 @@ import {
 import {
   isAddressDraftComplete,
   isAddressDraftEmpty,
+  listStatusIsInQuickAddressBook,
 } from '@envelope/domain/helpers'
 import type { AddressFields } from '@shared/config/constants'
 import styles from './Envelope.module.scss'
@@ -141,6 +145,16 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
     recipientFacade.recipientsDisplayList.length > 1
   const showEnvelopeTopSlotForm =
     showEnvelopeTopCreate || showEnvelopeTopRecipientDetail
+  const recipientEntries = useAppSelector(selectRecipientEntriesState)
+  const topSlotAddressViewToolbar = useMemo(() => {
+    const id = recipientFacade.recipientTemplateId
+    const entry = id != null ? recipientEntries.find((e) => e.id === id) : null
+    const inQuickList =
+      entry != null && listStatusIsInQuickAddressBook(entry.listStatus)
+    return inQuickList
+      ? ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR
+      : ENVELOPE_MOBILE_ADDRESS_VIEW_DELETE_TOOLBAR
+  }, [recipientEntries, recipientFacade.recipientTemplateId])
 
   useEffect(() => {
     if (!isMobile || envelopePeekMode) {
@@ -253,7 +267,7 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
               <div className={addressFormStyles.addressFormTopBar}>
                 <Toolbar
                   section="recipientView"
-                  groupsOverride={ENVELOPE_DESKTOP_RECIPIENT_DETAIL_TOOLBAR}
+                  groupsOverride={topSlotAddressViewToolbar}
                 />
               </div>
               <div className={addressFormStyles.addressFormDetailBody}>

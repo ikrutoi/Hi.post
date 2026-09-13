@@ -50,6 +50,10 @@
   overflow: hidden;
   padding: 1px;
 
+  &[data-selected='true'] {
+    overflow: visible;
+  }
+
   .templateTextBlock {
     gap: 0.16rem;
   }
