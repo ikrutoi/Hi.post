@@ -162,16 +162,18 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     Object.values(value).some((v) => (v ?? '').trim() !== '')
 
   const recipientsDisplayList = recipientFacade.recipientsDisplayList
-  const keepLowerRecipientCardDuringCreateEdit =
+  const keepLowerRecipientsDuringCreate =
     !isMobile &&
     role === 'recipient' &&
     recipientView === 'recipientCreate' &&
-    addressCreateEditContext?.role === 'recipient' &&
-    recipientsDisplayList.length === 1
+    recipientsDisplayList.length >= 1
+  const keepLowerRecipientCardDuringCreate =
+    keepLowerRecipientsDuringCreate && recipientsDisplayList.length === 1
 
   const recipientIdForDisplay =
     role === 'recipient'
-      ? keepLowerRecipientCardDuringCreateEdit
+      ? keepLowerRecipientCardDuringCreate &&
+        addressCreateEditContext?.role === 'recipient'
         ? addressCreateEditContext.templateId
         : sandboxActive
           ? (sandboxRecipient.recipientViewId ??
@@ -182,31 +184,17 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
   const recipientDisplayEntry = useMemo((): AddressBookEntry | null => {
     if (role !== 'recipient') return null
-    if (
-      recipientView !== 'recipientView' &&
-      !keepLowerRecipientCardDuringCreateEdit
-    ) {
+    if (keepLowerRecipientCardDuringCreate) {
+      return recipientsDisplayList[0] ?? null
+    }
+    if (recipientView !== 'recipientView') {
       return null
     }
-    const committedAddress = keepLowerRecipientCardDuringCreateEdit
-      ? recipientFacade.state.viewDraft
-      : value
     if (recipientIdForDisplay != null) {
       const fromBook = recipientEntries.find(
         (e) => e.id === recipientIdForDisplay,
       )
       if (fromBook) {
-        if (keepLowerRecipientCardDuringCreateEdit) {
-          if (
-            Object.values(committedAddress).some((v) => (v ?? '').trim() !== '')
-          ) {
-            return {
-              ...fromBook,
-              address: { ...committedAddress },
-            }
-          }
-          return fromBook
-        }
         /** Prefer live sandbox/session draft when it has fields. */
         if (Object.values(value).some((v) => (v ?? '').trim() !== '')) {
           return {
@@ -217,20 +205,18 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         return fromBook
       }
     }
-    if (!Object.values(committedAddress).some((v) => (v ?? '').trim() !== '')) {
-      return null
-    }
+    if (!Object.values(value).some((v) => (v ?? '').trim() !== '')) return null
     return {
       id: recipientIdForDisplay ?? 'sandbox-recipient-draft',
       role: 'recipient',
-      address: { ...committedAddress },
+      address: { ...value },
       createdAt: new Date().toISOString(),
     }
   }, [
     role,
     recipientView,
-    keepLowerRecipientCardDuringCreateEdit,
-    recipientFacade.state.viewDraft,
+    keepLowerRecipientCardDuringCreate,
+    recipientsDisplayList,
     recipientIdForDisplay,
     recipientEntries,
     value,
@@ -243,7 +229,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const showRecipientsEnvelopeList =
     role === 'recipient' &&
     recipientsDisplayList.length > 1 &&
-    recipientView !== 'recipientCreate' &&
+    (recipientView !== 'recipientCreate' || keepLowerRecipientsDuringCreate) &&
     (recipientView !== 'recipientView' || !isMobile)
 
   useEffect(() => {
@@ -774,10 +760,12 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                 ) : showRecipientDetailCard ? (
                   <RecipientView
                     templateId={
-                      cardTemplateId ?? recipientDisplayEntry?.id ?? ''
+                      keepLowerRecipientCardDuringCreate
+                        ? (recipientDisplayEntry?.id ?? '')
+                        : (cardTemplateId ?? recipientDisplayEntry?.id ?? '')
                     }
                     address={recipientAddressForView}
-                    viewOnly={keepLowerRecipientCardDuringCreateEdit}
+                    viewOnly={keepLowerRecipientCardDuringCreate}
                   />
                 ) : (
                   <div

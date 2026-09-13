@@ -85,10 +85,12 @@ export function useEnvelopeAddressViewToolbarContent({
   const recipientFacade = useRecipientFacade()
   const recipientsFormViewIdsCount = recipientFacade.recipientsDisplayList.length
   const addressCreateEditContext = useAppSelector(selectAddressCreateEditContext)
-  const desktopSingleRecipientCreateEdit =
+  const desktopKeepLowerRecipientsDuringCreate =
     !isMobile &&
     recipientView === 'recipientCreate' &&
-    addressCreateEditContext?.role === 'recipient' &&
+    recipientsFormViewIdsCount >= 1
+  const desktopSingleRecipientCreateKeep =
+    desktopKeepLowerRecipientsDuringCreate &&
     recipientsFormViewIdsCount === 1
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
@@ -146,33 +148,13 @@ export function useEnvelopeAddressViewToolbarContent({
           : envelopeFacade.recipientTemplateId
 
   const recipientDisplayEntry = useMemo((): AddressBookEntry | null => {
-    const allowCreateEditCard =
-      desktopSingleRecipientCreateEdit && recipientIdForDisplay != null
-    if (
-      (recipientView !== 'recipientView' && !allowCreateEditCard) ||
-      recipientIdForDisplay == null
-    ) {
+    if (desktopSingleRecipientCreateKeep) {
+      return recipientFacade.recipientsDisplayList[0] ?? null
+    }
+    if (recipientView !== 'recipientView' || recipientIdForDisplay == null) {
       return null
     }
     const fromBook = recipientEntries.find((e) => e.id === recipientIdForDisplay)
-    if (allowCreateEditCard) {
-      const committed = recipientFacade.state.viewDraft
-      if (fromBook) {
-        if (Object.values(committed).some((v) => (v ?? '').trim() !== '')) {
-          return { ...fromBook, address: { ...committed } }
-        }
-        return fromBook
-      }
-      if (!Object.values(committed).some((v) => (v ?? '').trim() !== '')) {
-        return null
-      }
-      return {
-        id: recipientIdForDisplay,
-        role: 'recipient',
-        address: { ...committed },
-        createdAt: new Date().toISOString(),
-      }
-    }
     if (fromBook) return fromBook
     if (!Object.values(recipientAddress).some((v) => (v ?? '').trim() !== '')) {
       return null
@@ -184,12 +166,12 @@ export function useEnvelopeAddressViewToolbarContent({
       createdAt: new Date().toISOString(),
     }
   }, [
-    desktopSingleRecipientCreateEdit,
+    desktopSingleRecipientCreateKeep,
+    recipientFacade.recipientsDisplayList,
     recipientView,
     recipientIdForDisplay,
     recipientEntries,
     recipientAddress,
-    recipientFacade.state.viewDraft,
   ])
 
   /** Lower View toolbar follows recipient; both applied → neutral tint band only. */
@@ -208,7 +190,8 @@ export function useEnvelopeAddressViewToolbarContent({
 
   const recipientToolbarSlot =
     recipientChromeSlot &&
-    (recipientView !== 'recipientCreate' || desktopSingleRecipientCreateEdit)
+    (recipientView !== 'recipientCreate' ||
+      desktopKeepLowerRecipientsDuringCreate)
 
   const showRecipientCreateToolbar =
     enabled &&
@@ -227,13 +210,14 @@ export function useEnvelopeAddressViewToolbarContent({
 
   const showRecipientToolbar =
     recipientToolbarSlot &&
-    (recipientView === 'recipientView' || desktopSingleRecipientCreateEdit) &&
+    (recipientView === 'recipientView' || desktopSingleRecipientCreateKeep) &&
     recipientDisplayEntry != null &&
     (isMobile || recipientsFormViewIdsCount <= 1)
 
   const showRecipientsMultiToolbar =
     recipientToolbarSlot &&
-    recipientView === 'recipientsView' &&
+    (recipientView === 'recipientsView' ||
+      desktopKeepLowerRecipientsDuringCreate) &&
     recipientsMultiListReady
 
   const showRecipientsBrowseToolbar =
