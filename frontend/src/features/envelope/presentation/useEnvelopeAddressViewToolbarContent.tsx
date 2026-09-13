@@ -8,8 +8,6 @@ import { useRecipientFacade } from '@envelope/recipient/application/facades'
 import {
   selectActiveAddressEdit,
   selectAddressCreateEditContext,
-  selectRecipientViewEditMode,
-  selectSenderViewEditMode,
 } from '@envelope/infrastructure/selectors'
 import { selectSenderApplied, selectSenderView, selectSenderEntriesState } from '@envelope/sender/infrastructure/selectors'
 import {
@@ -34,8 +32,6 @@ import {
 } from '@toolbar/domain/types/addressView.types'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import { listStatusIsInQuickAddressBook } from '@envelope/domain/helpers'
-import { RecipientsBrowseToolbar } from '@envelope/addressForm/presentation/RecipientsBrowseToolbar'
-import { RecipientsToolbarMark } from '@envelope/addressForm/presentation/RecipientsToolbarMark'
 import styles from './Envelope.module.scss'
 
 type UseEnvelopeAddressViewToolbarContentOptions = {
@@ -59,7 +55,6 @@ export function useEnvelopeAddressViewToolbarContent({
     assemblySenderSimplifiedPeek,
     assemblyRecipientSimplifiedPeek,
     archiveCartEnvelopeSimplifiedPeek,
-    cardPieEditEngaged,
   } = useMobileFactoryListChrome()
   const { rightPieEnvelopePeekNoToolbar } = useRightListArchiveMini()
   const historyEnvelopeListPeek =
@@ -92,10 +87,6 @@ export function useEnvelopeAddressViewToolbarContent({
   const desktopSingleRecipientCreateKeep =
     desktopKeepLowerRecipientsDuringCreate &&
     recipientsFormViewIdsCount === 1
-  const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
-  const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
-  const addressEditActive =
-    senderViewEditMode || recipientViewEditMode || cardPieEditEngaged
   const recipientsMultiListReady = recipientsFormViewIdsCount > 1
   const sessionSenderAppliedIds = useAppSelector(selectSenderApplied)
   const sandboxSenderAppliedIds = useAppSelector(
@@ -221,11 +212,6 @@ export function useEnvelopeAddressViewToolbarContent({
       desktopKeepLowerRecipientsDuringCreate) &&
     recipientsMultiListReady
 
-  const showRecipientsBrowseToolbar =
-    bothAppliedToolbarSlot &&
-    recipientsMultiListReady &&
-    !addressEditActive
-
   const section: 'senderView' | 'recipientView' | 'recipients' | null =
     showSenderToolbar
       ? 'senderView'
@@ -267,10 +253,6 @@ export function useEnvelopeAddressViewToolbarContent({
     !bothAppliedToolbarSlot &&
     !showRecipientCreateToolbar
 
-  const showRecipientsToolbarMark =
-    !showRecipientCreateToolbar &&
-    (slotRole === 'recipient' || slotRole === 'complete')
-
   const toolbarInner =
     showRecipientCreateToolbar ? (
       <Toolbar section="recipientCreate" />
@@ -282,8 +264,6 @@ export function useEnvelopeAddressViewToolbarContent({
         groupsOverride={ENVELOPE_MOBILE_RECIPIENTS_MULTI_VIEW_TOOLBAR}
         justifyGroupsEnd
       />
-    ) : showRecipientsBrowseToolbar ? (
-      <RecipientsBrowseToolbar />
     ) : null
 
   if (variant === 'envelopeSlot') {
@@ -324,15 +304,9 @@ export function useEnvelopeAddressViewToolbarContent({
         )}
         data-envelope-address-view-toolbar
         aria-hidden={
-          !showRecipientsToolbarMark &&
-          section == null &&
-          !showRecipientsBrowseToolbar &&
-          !showRecipientCreateToolbar
-            ? true
-            : undefined
+          section == null && !showRecipientCreateToolbar ? true : undefined
         }
       >
-        {showRecipientsToolbarMark ? <RecipientsToolbarMark /> : null}
         {toolbarInner}
       </div>
     )

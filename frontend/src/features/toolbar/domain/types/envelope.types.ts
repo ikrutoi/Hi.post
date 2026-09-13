@@ -56,6 +56,7 @@ export const RECIPIENTS_KEYS = [
   'addressList',
   'apply',
   'addressAdd',
+  'addressNext',
 ] as const satisfies readonly IconKey[]
 
 export type RecipientsKey = (typeof RECIPIENTS_KEYS)[number]
@@ -75,6 +76,25 @@ export const RECIPIENTS_TOOLBAR: ToolbarConfig = [
 export const initialRecipientsToolbarState: EnvelopeToolbarState = {
   ...Object.fromEntries(flattenIcons(RECIPIENTS_TOOLBAR)),
   config: [...RECIPIENTS_TOOLBAR],
+}
+
+/** Envelope Apply-peek (2+ Recipients): cycle addresses from the upper-right. */
+export function recipientsApplyPeekAddressNextToolbar(
+  count: number,
+): ToolbarConfig {
+  return [
+    {
+      group: 'next',
+      icons: [
+        {
+          key: 'addressNext',
+          state: 'enabled',
+          options: { badge: count > 1 ? count : null },
+        },
+      ],
+      status: 'enabled',
+    },
+  ]
 }
 
 export type RecipientsToolbarState = EnvelopeToolbarState

@@ -1,16 +1,18 @@
 import React from 'react'
-import { useAppSelector } from '@app/hooks'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { useRecipientFacade } from '@envelope/recipient/application/facades'
 import {
   selectRecipientApplied,
   selectRecipientState,
+  selectRecipientViewId,
 } from '@envelope/recipient/infrastructure/selectors'
+import { setRecipientViewId } from '@envelope/recipient/infrastructure/state'
 import {
   selectArchiveEnvelopeSandboxActive,
+  selectArchiveSandboxRecipient,
   selectArchiveSandboxRecipientApplied,
 } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
-import { IconUsers } from '@shared/ui/icons'
-import styles from './RecipientsToolbarMark.module.scss'
+import { setArchiveRecipientViewId } from '@cardPanel/infrastructure/state'
 
 /** Applied ids after envelope Apply; otherwise Recipients view ids. */
 export function useRecipientsChromeCount(): number {
@@ -27,22 +29,29 @@ export function useRecipientsChromeCount(): number {
   return Math.max(appliedIds.length, viewIds.length, displayCount)
 }
 
-/**
- * Recipient count + Users.
- * After Apply with 2+ recipients: upper envelope toolbar, right.
- * Otherwise: left of the lower View actions.
- */
-export const RecipientsToolbarMark: React.FC = () => {
-  const count = useRecipientsChromeCount()
+/** After Apply with 2+ recipients: cycle the applied list (wraps). */
+export function useCycleAppliedRecipientNext(): () => void {
+  const dispatch = useAppDispatch()
+  const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
+  const sessionAppliedIds = useAppSelector(selectRecipientApplied)
+  const sandboxAppliedIds = useAppSelector(selectArchiveSandboxRecipientApplied)
+  const appliedIds = sandboxActive ? sandboxAppliedIds : sessionAppliedIds
+  const sessionViewId = useAppSelector(selectRecipientViewId)
+  const sandboxRecipient = useAppSelector(selectArchiveSandboxRecipient)
+  const currentId = sandboxActive
+    ? sandboxRecipient.recipientViewId
+    : sessionViewId
 
-  return (
-    <div className={styles.mark} data-envelope-recipients-toolbar-mark>
-      <IconUsers className={styles.icon} aria-hidden />
-      {count > 1 ? (
-        <span className={styles.count} aria-hidden>
-          {count}
-        </span>
-      ) : null}
-    </div>
-  )
+  return React.useCallback(() => {
+    if (appliedIds.length <= 1) return
+    const at = currentId != null ? appliedIds.indexOf(currentId) : 0
+    const index = at >= 0 ? at : 0
+    const nextId = appliedIds[(index + 1) % appliedIds.length]
+    if (nextId == null) return
+    if (sandboxActive) {
+      dispatch(setArchiveRecipientViewId(nextId))
+    } else {
+      dispatch(setRecipientViewId(nextId))
+    }
+  }, [appliedIds, currentId, dispatch, sandboxActive])
 }

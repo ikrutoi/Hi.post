@@ -90,7 +90,7 @@
 
 .upperRowEnvelope {
   border-radius: 0.75rem 0.75rem 0 0;
-  overflow: hidden;
+  overflow: visible;
   background-color: $color-envelope-recipient-input;
   background-image: none;
 

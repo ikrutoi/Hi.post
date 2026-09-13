@@ -143,6 +143,7 @@ import {
   IconDeleteV3,
   IconStar,
   IconAddressAdd,
+  IconAddressNext,
   IconEmpty,
   IconEdit,
   IconListDelete,
@@ -371,6 +372,8 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconStarFilled />
     case 'addressAdd':
       return <IconAddressAdd />
+    case 'addressNext':
+      return <IconAddressNext />
     case 'search':
       return <TbSearch />
     case 'empty':

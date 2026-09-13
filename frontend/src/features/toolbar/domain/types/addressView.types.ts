@@ -157,7 +157,6 @@ export const ENVELOPE_MOBILE_ADDRESS_VIEW_RETURN_TOOLBAR: ToolbarConfig = [
 
 /**
  * Mobile multi recipients list (lower scenario bar): clear selection on the right.
- * After both Apply: recipients browse chrome (`RecipientsBrowseToolbar`) on complete band.
  */
 export const ENVELOPE_MOBILE_RECIPIENTS_MULTI_VIEW_TOOLBAR: ToolbarConfig = [
   {

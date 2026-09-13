@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import clsx from 'clsx'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
@@ -17,11 +17,16 @@ import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { openEditorSectionTemplateList } from '@features/cardSectionEditor/application/helpers'
 import { ENVELOPE_MOBILE_ADDRESS_VIEW_UPPER_CLOSE_TOOLBAR } from '@toolbar/domain/types/addressView.types'
+import { recipientsApplyPeekAddressNextToolbar } from '@toolbar/domain/types/envelope.types'
 import type { IconKey } from '@shared/config/constants'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
 import { useEnvelopeMobileAddressFocus } from './EnvelopeMobileAddressFocusContext'
 import { readAddressAddToolbarMeta } from './readAddressAddToolbarMeta'
+import {
+  useCycleAppliedRecipientNext,
+  useRecipientsChromeCount,
+} from '@envelope/addressForm/presentation/RecipientsToolbarMark'
 import styles from './Envelope.module.scss'
 
 /** После Apply sender/recipient: одна иконка postcardEdit (IconCardPieEdit). */
@@ -54,6 +59,14 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     assemblySenderSimplifiedPeek,
     assemblyRecipientSimplifiedPeek,
   } = useMobileFactoryListChrome()
+  const recipientsCount = useRecipientsChromeCount()
+  const cycleAppliedRecipientNext = useCycleAppliedRecipientNext()
+  const showAddressNext =
+    assemblyRecipientSimplifiedPeek && recipientsCount > 1
+  const addressNextToolbar = useMemo(
+    () => recipientsApplyPeekAddressNextToolbar(recipientsCount),
+    [recipientsCount],
+  )
   const pendingAddressAddFocusRef = useRef<'recipient' | null>(null)
 
   useEffect(() => {
@@ -150,6 +163,15 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     [dispatch, isMobile, sandboxActive],
   )
 
+  const handleAddressNextClick = useCallback(
+    (key: IconKey): void | false => {
+      if (key !== 'addressNext') return
+      cycleAppliedRecipientNext()
+      return false
+    },
+    [cycleAppliedRecipientNext],
+  )
+
   const showFocusReturn =
     isMobile && focusRole === 'recipient' && mobileFocus != null
   const bothFormsApplied =
@@ -222,6 +244,14 @@ export const EnvelopeInnerToolbar: React.FC = () => {
       ) : (
         <div className={styles.envelopeToolbarSlotRecipients}>
           {recipientsToolbar}
+          {showAddressNext ? (
+            <Toolbar
+              section="recipients"
+              groupsOverride={addressNextToolbar}
+              className={toolbarStyles.toolbarAromaUpperReturn}
+              onActionClick={handleAddressNextClick}
+            />
+          ) : null}
         </div>
       )}
     </div>

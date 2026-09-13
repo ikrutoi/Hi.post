@@ -42,11 +42,6 @@
   border-radius: 0.75rem;
   background-color: $color-envelope-recipient-input;
 
-  > :global([data-envelope-recipients-toolbar-mark]) {
-    flex: 0 0 auto;
-    width: auto;
-  }
-
   > :global([class*='toolbar']) {
     flex: 1 1 auto;
     min-width: 0;

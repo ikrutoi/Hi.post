@@ -12,7 +12,7 @@
     margin: 0 0.3rem;
     &:not([data-icon-key='historyView']):not([data-icon-key='cardphotoReturn']):not(
         [data-icon-key='userLogin']
-      ) {
+      ):not([data-icon-key='addressNext']) {
       @include iconButton.toolbar-icon-button-size-standard-shell(true);
     }
     background-color: white;
@@ -45,6 +45,14 @@
         iconButton.$toolbar-icon-size-standard,
         2090 / 1283,
         true
+      );
+    }
+
+    &[data-icon-key='addressNext'] {
+      @include iconButton.toolbar-icon-button-height-only-at-desktop-scale(
+        iconButton.$toolbar-hit-size-standard,
+        iconButton.$toolbar-icon-size-standard,
+        $nested-svg: true
       );
     }
 
@@ -2353,7 +2361,7 @@
       .toolbarKeyCropQualityIndicator
     ):not([data-icon-key='historyView']):not([data-icon-key='userLogin']):not(
       [data-icon-key='cardphotoReturn']
-    ) {
+    ):not([data-icon-key='addressNext']) {
     @include iconButton.toolbar-icon-button-size-mobile-toolbar(true);
   }
 
@@ -2375,6 +2383,14 @@
       iconButton.$toolbar-icon-size-mobile-toolbar,
       2090 / 1283,
       true
+    );
+  }
+
+  .toolbar .toolbarKey[data-icon-key='addressNext'] {
+    @include iconButton.toolbar-icon-button-height-only(
+      iconButton.$toolbar-hit-size-mobile-toolbar,
+      iconButton.$toolbar-icon-size-mobile-toolbar,
+      $nested-svg: true
     );
   }
 
