@@ -8,8 +8,8 @@ import { AddressFormView } from '../addressForm/presentation/AddressFormView'
 import { RecipientView } from '../addressForm/presentation/AddressView'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import {
-  ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR,
-  ENVELOPE_MOBILE_ADDRESS_VIEW_DELETE_TOOLBAR,
+  ENVELOPE_TOP_SLOT_MULTI_RECIPIENT_VIEW_TOOLBAR,
+  ENVELOPE_TOP_SLOT_MULTI_RECIPIENT_VIEW_DELETE_TOOLBAR,
 } from '@toolbar/domain/types/addressView.types'
 import addressFormStyles from '../addressForm/presentation/AddressFormView.module.scss'
 import { EnvelopePeekAddressBlock } from './EnvelopePeekAddressBlock'
@@ -151,8 +151,8 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
     const inQuickList =
       entry != null && listStatusIsInQuickAddressBook(entry.listStatus)
     return inQuickList
-      ? ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR
-      : ENVELOPE_MOBILE_ADDRESS_VIEW_DELETE_TOOLBAR
+      ? ENVELOPE_TOP_SLOT_MULTI_RECIPIENT_VIEW_TOOLBAR
+      : ENVELOPE_TOP_SLOT_MULTI_RECIPIENT_VIEW_DELETE_TOOLBAR
   }, [recipientEntries, recipientFacade.recipientTemplateId])
 
   useEffect(() => {

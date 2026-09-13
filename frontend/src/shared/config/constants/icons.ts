@@ -66,6 +66,7 @@ export const ICON_KEYS = [
   'date',
   'listDelete',
   'listClose',
+  'listMinus',
   'listAdd',
   'listApply',
   'listCardtext',

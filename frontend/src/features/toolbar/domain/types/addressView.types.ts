@@ -6,6 +6,7 @@ export const VIEW_KEYS = [
   'edit',
   'delete',
   'listClose',
+  'listMinus',
   'listAdd',
   'close',
   'sortUp',
@@ -89,6 +90,53 @@ export const ENVELOPE_MOBILE_ADDRESS_VIEW_DELETE_TOOLBAR: ToolbarConfig = [
     status: 'enabled',
   },
 ]
+
+/**
+ * Top-slot recipient detail while Recipients still has 2+ cards:
+ * listMinus removes this address from the form (not the template book).
+ */
+export const ENVELOPE_TOP_SLOT_MULTI_RECIPIENT_VIEW_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'senderView',
+    icons: [
+      { key: 'addList', state: 'enabled' },
+      { key: 'edit', state: 'enabled' },
+    ],
+    status: 'enabled',
+  },
+  {
+    group: 'actions',
+    icons: [
+      { key: 'listMinus', state: 'enabled' },
+      { key: 'close', state: 'enabled' },
+    ],
+    status: 'enabled',
+  },
+]
+
+/**
+ * Same as ENVELOPE_TOP_SLOT_MULTI_RECIPIENT_VIEW_TOOLBAR when the address
+ * is not in the quick template list (hard-delete instead of close).
+ */
+export const ENVELOPE_TOP_SLOT_MULTI_RECIPIENT_VIEW_DELETE_TOOLBAR: ToolbarConfig =
+  [
+    {
+      group: 'senderView',
+      icons: [
+        { key: 'addList', state: 'enabled' },
+        { key: 'edit', state: 'enabled' },
+      ],
+      status: 'enabled',
+    },
+    {
+      group: 'actions',
+      icons: [
+        { key: 'listMinus', state: 'enabled' },
+        { key: 'delete', state: 'enabled' },
+      ],
+      status: 'enabled',
+    },
+  ]
 
 /** Recipient View opened from a multi-select list: close acts as “back to list”. */
 export const ENVELOPE_MOBILE_ADDRESS_VIEW_RETURN_TOOLBAR: ToolbarConfig = [

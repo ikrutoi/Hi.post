@@ -1510,6 +1510,17 @@ function* handleEnvelopeToolbarAction(
     return
   }
 
+  if (section === 'recipientView' && key === 'listMinus') {
+    const sandboxActive: boolean = yield select(
+      selectArchiveEnvelopeSandboxActive,
+    )
+    if (sandboxActive) return
+    const recipientViewId: string | null = yield select(selectRecipientViewId)
+    if (recipientViewId == null || recipientViewId === '') return
+    yield put(removeRecipientFromListById(recipientViewId))
+    return
+  }
+
   if (
     (section === 'senderView' || section === 'recipientView') &&
     key === 'removeFromList'

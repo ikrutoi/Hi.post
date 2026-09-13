@@ -120,6 +120,7 @@ import {
   IconCardHorizontalV2,
   IconImageReset,
   IconListClose,
+  IconListMinus,
   IconDownloadV2,
   IconListAdd,
   IconDeleteSmall,
@@ -252,6 +253,8 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconListDelete />
     case 'listClose':
       return <IconListClose />
+    case 'listMinus':
+      return <IconListMinus />
     case 'listAdd':
       return <IconListAdd />
     case 'listApply':

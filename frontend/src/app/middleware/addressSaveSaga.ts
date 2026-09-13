@@ -11,6 +11,8 @@ import {
   clearRecipientFormData,
   setRecipientAppliedWithData,
   setRecipientViewDraft,
+  setRecipientsViewIds,
+  setRecipientsViewIdsSecondList,
 } from '@envelope/recipient/infrastructure/state'
 import { saveAddressRequested as senderSaveRequested } from '@envelope/sender/infrastructure/state'
 import {
@@ -230,19 +232,18 @@ function* openAddressViewAfterSave(
   )
 
   if (role === 'recipient') {
+    const recipient: RecipientState = yield select(selectRecipientState)
     const pendingIds: string[] = yield select(selectRecipientsPendingIds)
-    const hadMultipleRecipients = pendingIds.length > 1
-    const shouldAddToRecipientList =
-      !hadMultipleRecipients && !pendingIds.includes(id)
-    const nextPendingIds = shouldAddToRecipientList
-      ? [...pendingIds, id]
-      : pendingIds
+    const currentViewIds =
+      recipient.currentRecipientsList === 'second'
+        ? (recipient.recipientsViewIdsSecondList ?? [])
+        : (recipient.recipientsViewIdsFirstList ?? [])
+    const formIds = currentViewIds.length > 0 ? currentViewIds : pendingIds
+    const nextFormIds = formIds.includes(id) ? formIds : [...formIds, id]
 
     yield put(setRecipientViewDraft(cleanedAddress))
     yield put(setAddressFormView({ show: false, role: null }))
-    if (!viewOnly) {
-      yield put(clearRecipientFormData())
-    }
+    yield put(clearRecipientFormData())
     if (!viewOnly) {
       yield put(
         setRecipientAppliedWithData({
@@ -251,16 +252,18 @@ function* openAddressViewAfterSave(
         }),
       )
     }
-    // applyLight (viewOnly): как senderView — всегда карточка сохранённого шаблона
-    if (viewOnly || nextPendingIds.length === 1) {
-      yield put(setRecipientViewId(id))
+    if (recipient.currentRecipientsList === 'second') {
+      yield put(setRecipientsViewIdsSecondList(nextFormIds))
+    } else {
+      yield put(setRecipientsViewIds(nextFormIds))
+    }
+    yield put(setRecipientsPendingIds(nextFormIds))
+    if (nextFormIds.length === 1) {
+      yield put(setRecipientViewId(nextFormIds[0]))
       yield put(setRecipientView('recipientView'))
     } else {
       yield put(setRecipientViewId(null))
       yield put(setRecipientView('recipientsView'))
-    }
-    if (shouldAddToRecipientList) {
-      yield put(setRecipientsPendingIds(nextPendingIds))
     }
   } else {
     yield put(setSenderViewDraft(cleanedAddress))
