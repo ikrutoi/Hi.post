@@ -43,7 +43,7 @@ type UseEnvelopeAddressViewToolbarContentOptions = {
   /** Mobile-only history list-row peek tint band. */
   includeHistoryListPeek?: boolean
   /**
-   * `envelopeSlot` — mint bar inside Recipients (desktop).
+   * `envelopeSlot` — mint bar inside Recipients (desktop and mobile).
    * `factory` — lower factory row (mobile + both-applied peek).
    */
   variant?: 'factory' | 'envelopeSlot'
@@ -212,7 +212,7 @@ export function useEnvelopeAddressViewToolbarContent({
     recipientToolbarSlot &&
     (recipientView === 'recipientView' || desktopSingleRecipientCreateKeep) &&
     recipientDisplayEntry != null &&
-    (isMobile || recipientsFormViewIdsCount <= 1)
+    recipientsFormViewIdsCount <= 1
 
   const showRecipientsMultiToolbar =
     recipientToolbarSlot &&
@@ -263,7 +263,9 @@ export function useEnvelopeAddressViewToolbarContent({
           : null
 
   const hostRecipientChromeInEnvelopeSlot =
-    !isMobile && slotRole === 'recipient' && !bothAppliedToolbarSlot
+    slotRole === 'recipient' &&
+    !bothAppliedToolbarSlot &&
+    !showRecipientCreateToolbar
 
   const showRecipientsToolbarMark =
     (slotRole === 'recipient' || slotRole === 'complete') &&
@@ -287,7 +289,6 @@ export function useEnvelopeAddressViewToolbarContent({
   if (variant === 'envelopeSlot') {
     if (
       !enabled ||
-      isMobile ||
       !hostRecipientChromeInEnvelopeSlot ||
       toolbarInner == null
     ) {

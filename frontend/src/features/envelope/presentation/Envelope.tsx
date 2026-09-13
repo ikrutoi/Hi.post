@@ -138,7 +138,6 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
     !showRecipientSimplified &&
     recipientView === 'recipientCreate'
   const showEnvelopeTopRecipientDetail =
-    !isMobile &&
     !envelopePeekMode &&
     !showRecipientSimplified &&
     recipientView === 'recipientView' &&
@@ -263,7 +262,12 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
               styles.envelopeTopCreateDetail,
             )}
           >
-            <div className={addressFormStyles.addressFormView}>
+            <div
+              className={clsx(
+                addressFormStyles.addressFormView,
+                addressFormStyles.addressFormViewSlot,
+              )}
+            >
               <div className={addressFormStyles.addressFormTopBar}>
                 <Toolbar
                   section="recipientView"

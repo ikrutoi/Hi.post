@@ -36,7 +36,6 @@ import {
 } from '@cardPanel/infrastructure/state'
 import {
   closeAddressEditSession,
-  setRecipientsFormPreviewId,
   clearRecipientsFormPreviewId,
   clearAddressCreateEditContext,
   setAddressFormView,
@@ -231,8 +230,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const showRecipientsEnvelopeList =
     role === 'recipient' &&
     recipientsDisplayList.length > 1 &&
-    (recipientView !== 'recipientCreate' || keepLowerRecipientsDuringCreate) &&
-    (recipientView !== 'recipientView' || !isMobile)
+    (recipientView !== 'recipientCreate' || keepLowerRecipientsDuringCreate)
 
   useEffect(() => {
     if (role !== 'recipient') return
@@ -453,41 +451,24 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const recipientsGridSelectedId =
     role !== 'recipient'
       ? null
-      : isMobile
-        ? recipientsFormPreviewId
-        : recipientView === 'recipientView'
-          ? sandboxActive
-            ? (sandboxRecipient.recipientViewId ?? null)
-            : (editingTemplateId ?? null)
-          : recipientView === 'recipientCreate' &&
-              addressCreateEditContext?.role === 'recipient'
-            ? (addressCreateEditContext.templateId ?? null)
-            : null
+      : recipientView === 'recipientView'
+        ? sandboxActive
+          ? (sandboxRecipient.recipientViewId ?? null)
+          : (editingTemplateId ?? null)
+        : recipientView === 'recipientCreate' &&
+            addressCreateEditContext?.role === 'recipient'
+          ? (addressCreateEditContext.templateId ?? null)
+          : null
 
   const handleOpenRecipientFromList = (entry: AddressBookEntry) => {
-    if (!isMobile) {
-      if (recipientsGridSelectedId === entry.id) {
-        if (sandboxActive) {
-          dispatch(setArchiveRecipientViewId(null))
-          dispatch(setArchiveRecipientView('recipientsView'))
-          return
-        }
-        if (recipientView === 'recipientView') {
-          dispatch(toolbarAction({ section: 'recipientView', key: 'close' }))
-          return
-        }
-        if (recipientViewEditMode) {
-          dispatch(
-            closeAddressEditSession({
-              role: 'recipient',
-              keepRecipientView: true,
-            }),
-          )
-        }
-        dispatch(clearAddressCreateEditContext())
-        dispatch(setAddressFormView({ show: false, role: null }))
-        dispatch(setRecipientViewId(null))
-        dispatch(setRecipientView('recipientsView'))
+    if (recipientsGridSelectedId === entry.id) {
+      if (sandboxActive) {
+        dispatch(setArchiveRecipientViewId(null))
+        dispatch(setArchiveRecipientView('recipientsView'))
+        return
+      }
+      if (recipientView === 'recipientView') {
+        dispatch(toolbarAction({ section: 'recipientView', key: 'close' }))
         return
       }
       if (recipientViewEditMode) {
@@ -498,27 +479,25 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
           }),
         )
       }
-      applyRecipientEntry(entry)
-      if (sandboxActive) {
-        dispatch(setArchiveRecipientView('recipientView'))
-      } else {
-        dispatch(setRecipientView('recipientView'))
-      }
+      dispatch(clearAddressCreateEditContext())
+      dispatch(setAddressFormView({ show: false, role: null }))
+      dispatch(setRecipientViewId(null))
+      dispatch(setRecipientView('recipientsView'))
       return
     }
-    /**
-     * Keep the recipients grid; preview the card on the central CardPie
-     * (same pattern as the address template list).
-     */
-    dispatch(
-      setRecipientsFormPreviewId(
-        recipientsFormPreviewId === entry.id ? null : entry.id,
-      ),
-    )
     if (recipientViewEditMode) {
       dispatch(
-        closeAddressEditSession({ role: 'recipient', keepRecipientView: true }),
+        closeAddressEditSession({
+          role: 'recipient',
+          keepRecipientView: true,
+        }),
       )
+    }
+    applyRecipientEntry(entry)
+    if (sandboxActive) {
+      dispatch(setArchiveRecipientView('recipientView'))
+    } else {
+      dispatch(setRecipientView('recipientView'))
     }
   }
 
@@ -761,6 +740,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                 <div
                   className={clsx(
                     addressFormStyles.addressFormTopBar,
+                    addressFormStyles.addressFormTopBarSlot,
                     recipientsDisplayList.length > 1 &&
                       addressFormStyles.addressFormTopBarActionsEnd,
                   )}
