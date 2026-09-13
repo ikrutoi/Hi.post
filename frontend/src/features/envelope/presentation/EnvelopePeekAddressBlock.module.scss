@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as *;
 
 .root {
   flex: 1;
@@ -19,8 +20,67 @@
   padding-bottom: 0.5rem;
 }
 
-.rootCompact.rootRecipient {
-  padding-bottom: 0.35rem;
+.rootAppliedCount {
+  justify-content: stretch;
+  padding-bottom: 0;
+}
+
+.countShell {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-sizing: border-box;
+  background-color: #fff;
+  border: 1px solid $color-section-light;
+  border-radius: 0.75rem;
+  container-type: inline-size;
+}
+
+.nameScatter {
+  position: absolute;
+  left: -30%;
+  top: -30%;
+  width: 160%;
+  height: 160%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.nameScatterItem {
+  position: absolute;
+  transform: translate(-50%, -50%) rotate(var(--peek-scatter-rotate, 0deg));
+  transform-origin: center center;
+  font-weight: 400;
+  line-height: 1;
+  color: $color-envelope-recipient-input-border;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.count {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+  font-size: $date-peek-day-font-size;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  text-align: center;
+  user-select: none;
+  color: $color-envelope-recipient-legend;
+}
+
+.rootCompact.rootAppliedCount {
+  .count {
+    font-size: $date-peek-day-font-size-compact;
+  }
 }
 
 .lines {
@@ -73,6 +133,10 @@
   .lineName {
     font-size: 1.2rem;
   }
+}
+
+.rootCompact.rootRecipient {
+  padding-bottom: 0.35rem;
 }
 
 .rootCompact.rootSender {

@@ -19,10 +19,6 @@ import { openEditorSectionTemplateList } from '../../application/helpers'
 import { useCloseArchiveSectionPeek } from '../../application/hooks/useCloseArchiveSectionPeek'
 import { useMobileFactoryListChrome } from '../../application/hooks/useMobileFactoryListChrome'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
-import {
-  RecipientsToolbarMark,
-  useRecipientsChromeCount,
-} from '@envelope/addressForm/presentation/RecipientsToolbarMark'
 import styles from './ArchivePeekUpperToolbar.module.scss'
 
 const ARCHIVE_PEEK_UPPER_EDIT_TOOLBAR: ToolbarConfig = [
@@ -51,7 +47,6 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
     showArchivePeekEditToolbar,
   } = useMobileFactoryListChrome()
   const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
-  const recipientCount = useRecipientsChromeCount()
   const {
     requestSectionEditFromPeek,
     rightPieDatePeekNoToolbar,
@@ -165,13 +160,6 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
         </div>
       ) : null}
       <div className={styles.upperSpacer} aria-hidden />
-      {showArchivePeekEditToolbar &&
-      activeSection === 'envelope' &&
-      recipientCount > 1 ? (
-        <div className={styles.sideRight}>
-          <RecipientsToolbarMark />
-        </div>
-      ) : null}
     </div>
   )
 }

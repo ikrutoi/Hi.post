@@ -22,10 +22,6 @@ import type { ToolbarConfig } from '@toolbar/domain/types'
 import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
 import { useEnvelopeMobileAddressFocus } from './EnvelopeMobileAddressFocusContext'
 import { readAddressAddToolbarMeta } from './readAddressAddToolbarMeta'
-import {
-  RecipientsToolbarMark,
-  useRecipientsChromeCount,
-} from '@envelope/addressForm/presentation/RecipientsToolbarMark'
 import styles from './Envelope.module.scss'
 
 /** После Apply sender/recipient: одна иконка postcardEdit (IconCardPieEdit). */
@@ -54,7 +50,6 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   const recipientsToolbarState = useAppSelector(
     selectActiveRecipientsToolbarState,
   )
-  const recipientCount = useRecipientsChromeCount()
   const {
     assemblySenderSimplifiedPeek,
     assemblyRecipientSimplifiedPeek,
@@ -159,10 +154,6 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     isMobile && focusRole === 'recipient' && mobileFocus != null
   const bothFormsApplied =
     assemblySenderSimplifiedPeek && assemblyRecipientSimplifiedPeek
-  const showUpperRecipientsMark =
-    assemblyRecipientSimplifiedPeek &&
-    !showFocusReturn &&
-    recipientCount > 1
   const handleFocusClose = useCallback(
     (key: IconKey): void | false => {
       if (key !== 'close' || mobileFocus == null || focusRole == null) return
@@ -231,11 +222,6 @@ export const EnvelopeInnerToolbar: React.FC = () => {
       ) : (
         <div className={styles.envelopeToolbarSlotRecipients}>
           {recipientsToolbar}
-          {showUpperRecipientsMark ? (
-            <div className={styles.envelopeToolbarRecipientsMark}>
-              <RecipientsToolbarMark />
-            </div>
-          ) : null}
         </div>
       )}
     </div>

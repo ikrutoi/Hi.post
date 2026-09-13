@@ -41,7 +41,7 @@ const MIN_DIST = 9
  * Крайние цифры могут частично выходить за границы секции.
  * Позиции фиксированы относительно layout-seed, не от выбранных дат.
  */
-const DATE_PEEK_SCATTER_SLOTS: PeekScatterSlot[] = (() => {
+export const DATE_PEEK_SCATTER_SLOTS: PeekScatterSlot[] = (() => {
   const rand = mulberry32(hashSeed('date-peek-scatter-layout-v4'))
   const sizes = [17, 19, 21, 23, 25, 20, 22, 18, 24, 21]
   const slots: PeekScatterSlot[] = []

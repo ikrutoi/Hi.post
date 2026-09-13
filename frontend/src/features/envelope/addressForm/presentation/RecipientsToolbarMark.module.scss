@@ -22,4 +22,6 @@
 
 .count {
   @include iconButton.toolbar-icon-count-badge;
+  top: -0.72rem;
+  right: -0.78rem;
 }

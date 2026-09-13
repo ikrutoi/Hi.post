@@ -14,6 +14,7 @@ import {
 import addressFormStyles from '../addressForm/presentation/AddressFormView.module.scss'
 import { EnvelopePeekAddressBlock } from './EnvelopePeekAddressBlock'
 import { useRecipientFacade } from '../recipient/application/facades'
+import { useRecipientsChromeCount } from '../addressForm/presentation/RecipientsToolbarMark'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
@@ -99,6 +100,9 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
     archiveEditPeekGate
   const showRecipientSimplified =
     !envelopePeekMode && assemblyRecipientSimplifiedPeek
+  const appliedRecipientsCount = useRecipientsChromeCount()
+  const showAppliedRecipientsCount =
+    showRecipientSimplified && appliedRecipientsCount > 1
   const bothFormsApplied =
     assemblySenderSimplifiedPeek && assemblyRecipientSimplifiedPeek
 
@@ -349,6 +353,9 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
               compact={isMobile}
               fromSessionApplied
               addressFallback={recipientFacade.address}
+              appliedCount={
+                showAppliedRecipientsCount ? appliedRecipientsCount : null
+              }
               className={styles.envelopePeekBlock}
             />
           ) : (
