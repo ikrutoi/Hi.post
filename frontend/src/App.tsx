@@ -30,6 +30,8 @@ import { MobileCardPieGutterMinis } from '@layout/presentation/MobileAppShell/Mo
 import { resolvePlanPieGutterHighlight } from '@layout/presentation/MobileAppShell/resolvePlanPieGutterHighlight'
 import { runPlanPieCenterCycle } from '@layout/presentation/MobileAppShell/runPlanPieCenterCycle'
 import { AssemblyCardPieInnerProvider } from '@layout/presentation/MobileAppShell/AssemblyCardPieInnerContext'
+import { AssemblyPlanPieFocusProvider } from '@layout/presentation/MobileAppShell/AssemblyPlanPieFocusContext'
+import { buildRecipientGroupCardPieInner } from '@features/cardPie/infrastructure/planEntryCardPieViewModel'
 import {
   EMPTY_GUTTER_PLAN_PIE_ID,
   useMobilePlanCardPies,
@@ -2441,16 +2443,23 @@ function DesktopFactoryTopRow({
     planPies,
     selectedPlanPie,
     selectedPlanPieId,
+    focusedRecipientSlotKey,
+    focusedRecipientPies,
     assemblyOverviewPie,
     selectPlanPie,
     cyclePlanPie,
+    cycleFocusedRecipient,
   } = useMobilePlanCardPies()
   const addressCardPiePreview = useAddressCardPiePreview()
   const addressTemplatePreviewPieToolbar = useAddressTemplatePreviewPieToolbar(
     addressCardPiePreview.preview,
   )
+  const cartPlanPies =
+    focusedRecipientSlotKey != null && focusedRecipientPies.length > 0
+      ? focusedRecipientPies
+      : planPies
   const handleEditorPieToolbarAction = useEditorPieAddCartHandler({
-    planPies,
+    planPies: cartPlanPies,
     selectedPlanPie,
     onEditorPieToolbarAction: (key) => {
       if (key !== 'editLight' && key !== 'cardPie') return
@@ -2469,16 +2478,27 @@ function DesktopFactoryTopRow({
   const keepPlanAccent = !showArchivePie && !showEmptyArchive
   const canCyclePlanPies =
     planPies.filter((pie) => pie.id !== EMPTY_GUTTER_PLAN_PIE_ID).length > 1
-  const { highlightPlanPieId, highlightAllPlanPies } = useMemo(
-    () =>
-      resolvePlanPieGutterHighlight({
-        keepAccent: keepPlanAccent,
-        planPieCount: planPies.length,
-        firstPlanPieId: planPies[0]?.id ?? null,
+  const { highlightPlanPieId, highlightAllPlanPies, highlightPlanPieIds } =
+    useMemo(
+      () =>
+        resolvePlanPieGutterHighlight({
+          keepAccent: keepPlanAccent,
+          planPieCount: planPies.length,
+          firstPlanPieId: planPies[0]?.id ?? null,
+          selectedPlanPieId,
+          highlightPlanPieIds:
+            focusedRecipientSlotKey != null
+              ? focusedRecipientPies.map((pie) => pie.id)
+              : null,
+        }),
+      [
+        focusedRecipientPies,
+        focusedRecipientSlotKey,
+        keepPlanAccent,
+        planPies,
         selectedPlanPieId,
-      }),
-    [keepPlanAccent, planPies, selectedPlanPieId],
-  )
+      ],
+    )
 
   const handleSelectPlanPie = useCallback(
     (id: string) => {
@@ -2536,9 +2556,34 @@ function DesktopFactoryTopRow({
     onLeftPieCenterClick()
   }, [canCyclePlanPies, cyclePlanPie, dispatch, onLeftPieCenterClick, planPies])
 
-  const assemblyPie = selectedPlanPie ?? assemblyOverviewPie
+  const assemblyPie = useMemo(() => {
+    if (selectedPlanPie != null) return selectedPlanPie
+    if (
+      focusedRecipientSlotKey != null &&
+      focusedRecipientPies.length > 0
+    ) {
+      return {
+        ...assemblyOverviewPie,
+        inner: buildRecipientGroupCardPieInner(
+          assemblyOverviewPie.inner,
+          focusedRecipientPies.map((pie) => pie.inner),
+        ),
+      }
+    }
+    return assemblyOverviewPie
+  }, [
+    assemblyOverviewPie,
+    focusedRecipientPies,
+    focusedRecipientSlotKey,
+    selectedPlanPie,
+  ])
+  const planPieFocusValue = useMemo(
+    () => ({ cycleFocusedRecipient }),
+    [cycleFocusedRecipient],
+  )
 
   return (
+    <AssemblyPlanPieFocusProvider value={planPieFocusValue}>
     <AssemblyCardPieInnerProvider value={assemblyPie.inner}>
     <>
       <div className={styles.appMainContentLeftListSlot}>
@@ -2568,6 +2613,7 @@ function DesktopFactoryTopRow({
             selectedPlanPieId={selectedPlanPieId}
             highlightPlanPieId={highlightPlanPieId}
             highlightAllPlanPies={highlightAllPlanPies}
+            highlightPlanPieIds={highlightPlanPieIds}
             density={planMiniListDensity}
             onSelectPlanPie={handleSelectPlanPie}
           />
@@ -2655,6 +2701,7 @@ function DesktopFactoryTopRow({
       {children}
     </>
     </AssemblyCardPieInnerProvider>
+    </AssemblyPlanPieFocusProvider>
   )
 }
 

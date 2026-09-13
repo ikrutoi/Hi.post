@@ -121,3 +121,36 @@ export function buildCardPieInnerDataForPlanEntry(
     sections: buildPieSectionFlagsFromInner(inner, options.envelopeComplete),
   }
 }
+
+function uniqueDispatchDates(
+  dates: CardPieInnerData['dates'],
+): CardPieInnerData['dates'] {
+  const seen = new Set<string>()
+  const out: CardPieInnerData['dates'] = []
+  for (const d of dates) {
+    const key = `${d.year}-${d.month}-${d.day}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    out.push(d)
+  }
+  return out
+}
+
+/** One recipient across several date branches: envelope count 1, dates of that group. */
+export function buildRecipientGroupCardPieInner(
+  overview: CardPieInnerData,
+  groupInners: CardPieInnerData[],
+): CardPieInnerData {
+  const first = groupInners[0]
+  const dates = uniqueDispatchDates(groupInners.flatMap((inner) => inner.dates))
+  const recipient = first?.recipient ?? overview.recipient
+  return {
+    ...overview,
+    recipient,
+    recipientCount: 1,
+    recipientPreviewLines: [],
+    date: dates[0] ?? first?.date ?? overview.date,
+    dates,
+    datePreviewLines: buildDatePreviewLines(dates),
+  }
+}

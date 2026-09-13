@@ -23,10 +23,8 @@ import type { ToolbarConfig } from '@toolbar/domain/types'
 import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
 import { useEnvelopeMobileAddressFocus } from './EnvelopeMobileAddressFocusContext'
 import { readAddressAddToolbarMeta } from './readAddressAddToolbarMeta'
-import {
-  useCycleAppliedRecipientNext,
-  useRecipientsChromeCount,
-} from '@envelope/addressForm/presentation/RecipientsToolbarMark'
+import { useAssemblyPlanPieFocusCycle } from '@layout/presentation/MobileAppShell/AssemblyPlanPieFocusContext'
+import { useRecipientsChromeCount } from '@envelope/addressForm/presentation/RecipientsToolbarMark'
 import styles from './Envelope.module.scss'
 
 /** После Apply sender/recipient: одна иконка postcardEdit (IconCardPieEdit). */
@@ -60,7 +58,7 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     assemblyRecipientSimplifiedPeek,
   } = useMobileFactoryListChrome()
   const recipientsCount = useRecipientsChromeCount()
-  const cycleAppliedRecipientNext = useCycleAppliedRecipientNext()
+  const cycleFocusedRecipient = useAssemblyPlanPieFocusCycle()
   const showAddressNext =
     assemblyRecipientSimplifiedPeek && recipientsCount > 1
   const addressNextToolbar = useMemo(
@@ -166,10 +164,10 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   const handleAddressNextClick = useCallback(
     (key: IconKey): void | false => {
       if (key !== 'addressNext') return
-      cycleAppliedRecipientNext()
+      cycleFocusedRecipient()
       return false
     },
-    [cycleAppliedRecipientNext],
+    [cycleFocusedRecipient],
   )
 
   const showFocusReturn =

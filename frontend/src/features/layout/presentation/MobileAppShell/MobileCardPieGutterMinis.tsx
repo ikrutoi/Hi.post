@@ -42,6 +42,8 @@ type MobileCardPieGutterMinisProps = {
   highlightPlanPieId?: string | null
   /** Multi-date factory strip: accent every mini pie. */
   highlightAllPlanPies?: boolean
+  /** addressNext: accent every mini that shares the focused recipient. */
+  highlightPlanPieIds?: string[] | null
   onSelectPlanPie: (id: string) => void
 }
 
@@ -52,6 +54,7 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
     selectedPlanPieId,
     highlightPlanPieId,
     highlightAllPlanPies = false,
+    highlightPlanPieIds = null,
     density = 1,
     onSelectPlanPie,
   }) => {
@@ -181,6 +184,8 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
               className={styles.mobilePieGutterMiniItem}
               data-selected={
                 highlightAllPlanPies ||
+                (highlightPlanPieIds != null &&
+                  highlightPlanPieIds.includes(id)) ||
                 (accentPlanPieId != null && accentPlanPieId === id)
                   ? 'true'
                   : undefined

@@ -9,10 +9,8 @@ import { clearApply } from '@cardphoto/infrastructure/state'
 import { clearApplied as clearAromaApplied } from '@aroma/infrastructure/state'
 import { clearAppliedDates } from '@date/infrastructure/state'
 import { setRecipientApplied } from '@envelope/recipient/infrastructure/state'
-import {
-  useCycleAppliedRecipientNext,
-  useRecipientsChromeCount,
-} from '@envelope/addressForm/presentation/RecipientsToolbarMark'
+import { useAssemblyPlanPieFocusCycle } from '@layout/presentation/MobileAppShell/AssemblyPlanPieFocusContext'
+import { useRecipientsChromeCount } from '@envelope/addressForm/presentation/RecipientsToolbarMark'
 import { recipientsApplyPeekAddressNextToolbar } from '@toolbar/domain/types/envelope.types'
 import { setArchiveRecipientApplied } from '@cardPanel/infrastructure/state'
 import {
@@ -53,7 +51,7 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
   } = useMobileFactoryListChrome()
   const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
   const recipientsCount = useRecipientsChromeCount()
-  const cycleAppliedRecipientNext = useCycleAppliedRecipientNext()
+  const cycleFocusedRecipient = useAssemblyPlanPieFocusCycle()
   const showAddressNext =
     assemblyRecipientSimplifiedPeek && recipientsCount > 1
   const addressNextToolbar = useMemo(
@@ -127,7 +125,7 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
         return false
       }
       if (key === 'addressNext') {
-        cycleAppliedRecipientNext()
+        cycleFocusedRecipient()
         return false
       }
     },
@@ -142,7 +140,7 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
       isMobileLayout,
       requestSectionEditFromPeek,
       sandboxActive,
-      cycleAppliedRecipientNext,
+      cycleFocusedRecipient,
     ],
   )
 

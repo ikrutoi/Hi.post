@@ -128,6 +128,8 @@ import {
   useMobilePlanCardPies,
 } from './useMobilePlanCardPies'
 import { AssemblyCardPieInnerProvider } from './AssemblyCardPieInnerContext'
+import { AssemblyPlanPieFocusProvider } from './AssemblyPlanPieFocusContext'
+import { buildRecipientGroupCardPieInner } from '@features/cardPie/infrastructure/planEntryCardPieViewModel'
 import { CardPieLeftSlot } from '@features/cardPie/presentation/CardPieLeftSlot'
 import { EditorPieListCardPieBadgeSync } from '@features/cardPie/presentation/EditorPieListCardPieBadgeSync'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
@@ -363,9 +365,12 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     planPies,
     selectedPlanPie,
     selectedPlanPieId,
+    focusedRecipientSlotKey,
+    focusedRecipientPies,
     assemblyOverviewPie,
     selectPlanPie,
     cyclePlanPie,
+    cycleFocusedRecipient,
   } = useMobilePlanCardPies()
 
   const clearMobileFactoryPeek = useCallback(() => {
@@ -408,7 +413,32 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   )
   const canCyclePlanPies = factoryPostcardCount > 1
   const showMobileCenterPlanCycleHint = factoryPostcardCount > 1
-  const assemblyPie = selectedPlanPie ?? assemblyOverviewPie
+  const assemblyPie = useMemo(() => {
+    if (selectedPlanPie != null) return selectedPlanPie
+    if (
+      focusedRecipientSlotKey != null &&
+      focusedRecipientPies.length > 0
+    ) {
+      return {
+        ...assemblyOverviewPie,
+        inner: buildRecipientGroupCardPieInner(
+          assemblyOverviewPie.inner,
+          focusedRecipientPies.map((pie) => pie.inner),
+        ),
+      }
+    }
+    return assemblyOverviewPie
+  }, [
+    assemblyOverviewPie,
+    focusedRecipientPies,
+    focusedRecipientSlotKey,
+    selectedPlanPie,
+  ])
+
+  const planPieFocusValue = useMemo(
+    () => ({ cycleFocusedRecipient }),
+    [cycleFocusedRecipient],
+  )
 
   const { cartUnderlyingPostcardCount } = useMemo(
     () => computeCartLegendStatusCounts(cartItems),
@@ -632,6 +662,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const {
     highlightPlanPieId: gutterHighlightPlanPieId,
     highlightAllPlanPies: gutterHighlightAllPlanPies,
+    highlightPlanPieIds: gutterHighlightPlanPieIds,
   } = useMemo(
     () =>
       resolvePlanPieGutterHighlight({
@@ -639,8 +670,18 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         planPieCount: planPies.length,
         firstPlanPieId: planPies[0]?.id ?? null,
         selectedPlanPieId,
+        highlightPlanPieIds:
+          focusedRecipientSlotKey != null
+            ? focusedRecipientPies.map((pie) => pie.id)
+            : null,
       }),
-    [gutterKeepsPlanPieAccent, planPies, selectedPlanPieId],
+    [
+      focusedRecipientPies,
+      focusedRecipientSlotKey,
+      gutterKeepsPlanPieAccent,
+      planPies,
+      selectedPlanPieId,
+    ],
   )
 
   const mobileCentralArchivePostcardStatus = useMemo(() => {
@@ -963,21 +1004,28 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     [dispatch, onBeforeLeftPieInteraction],
   )
 
+  const cartPlanPies = useMemo(() => {
+    if (focusedRecipientSlotKey != null && focusedRecipientPies.length > 0) {
+      return focusedRecipientPies
+    }
+    return planPies
+  }, [focusedRecipientPies, focusedRecipientSlotKey, planPies])
+
   const handleEditorPieToolbarAction = useEditorPieAddCartHandler({
-    planPies,
+    planPies: cartPlanPies,
     selectedPlanPie,
     onEditorPieToolbarAction,
   })
 
   /** All gutter minis selected: cart adds every branch — badge is the count. */
   const editorPieCartAddCount = useMemo(() => {
-    if (selectedPlanPieId != null || planPies.length <= 1) return 1
+    if (selectedPlanPieId != null || cartPlanPies.length <= 1) return 1
     return resolveEditorPieAddCartPayload({
-      planPies,
+      planPies: cartPlanPies,
       selectedPlanPie,
       planEntries: [],
     }).branchKeys.length
-  }, [planPies, selectedPlanPie, selectedPlanPieId])
+  }, [cartPlanPies, selectedPlanPie, selectedPlanPieId])
 
   const openCardphotoFactory = useOpenCardphotoFactory()
 
@@ -1067,6 +1115,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       }
       onClick={onAppClick}
     >
+      <AssemblyPlanPieFocusProvider value={planPieFocusValue}>
       <AssemblyCardPieInnerProvider value={assemblyPie.inner}>
       <MarkStampYearDevProvider>
         <div className={styles.mobileSubstrate}>
@@ -1092,6 +1141,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                     selectedPlanPieId={selectedPlanPieId}
                     highlightPlanPieId={gutterHighlightPlanPieId}
                     highlightAllPlanPies={gutterHighlightAllPlanPies}
+                    highlightPlanPieIds={gutterHighlightPlanPieIds}
                     onSelectPlanPie={handleSelectPlanPie}
                   />
                   <div className={styles.mobilePieStage}>
@@ -1356,6 +1406,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         ) : null}
       </MarkStampYearDevProvider>
       </AssemblyCardPieInnerProvider>
+      </AssemblyPlanPieFocusProvider>
     </div>
   )
 }

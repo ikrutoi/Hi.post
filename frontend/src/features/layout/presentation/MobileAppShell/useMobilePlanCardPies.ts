@@ -1,13 +1,26 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useAppSelector } from '@app/hooks'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { selectActiveCardFullData } from '@features/cardPie/infrastructure/selectors'
 import { selectAppliedDates } from '@date/infrastructure/selectors'
+import { parseDispatchBranchKey } from '@date/domain/dispatchBranchKey'
 import {
   buildCardPieInnerDataForPlanEntry,
   cardPieInnerFromEditorActiveData,
   DEFAULT_MOBILE_PLAN_PIE_ID,
   emptyCardPieInnerData,
 } from '@features/cardPie/infrastructure/planEntryCardPieViewModel'
+import { nextFocusedRecipientSlotKey } from '@envelope/domain/helpers/nextFocusedRecipientSlotKey'
+import {
+  selectRecipientApplied,
+  selectRecipientEntriesState,
+  selectRecipientState,
+} from '@envelope/recipient/infrastructure/selectors'
+import {
+  selectArchiveEnvelopeSandboxActive,
+  selectArchiveSandboxRecipientApplied,
+} from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
+import { setArchiveRecipientViewId } from '@cardPanel/infrastructure/state'
+import { setRecipientViewId } from '@envelope/recipient/infrastructure/state'
 import type {
   CardPieInnerData,
   CardPieSectionFlags,
@@ -20,10 +33,6 @@ import {
   selectNotebookDateTabPeekClearTick,
 } from '@date/calendar/infrastructure/selectors'
 import { selectEnvelopeSessionRecord } from '@envelope/infrastructure/selectors'
-import {
-  selectRecipientEntriesState,
-  selectRecipientState,
-} from '@envelope/recipient/infrastructure/selectors'
 import { selectRecipientsList } from '@envelope/infrastructure/selectors'
 import { selectAssemblyBranchFreeze } from '@cardPanel/infrastructure/selectors/assemblyBranchFreezeSelectors'
 
@@ -36,6 +45,13 @@ export type MobilePlanCardPie = {
 }
 
 export const EMPTY_GUTTER_PLAN_PIE_ID = 'empty-gutter-pie'
+
+export function planPieRecipientSlotKey(
+  pie: Pick<MobilePlanCardPie, 'dispatchBranchKey'>,
+): string | null {
+  if (pie.dispatchBranchKey == null) return null
+  return parseDispatchBranchKey(pie.dispatchBranchKey)?.recipientSlotKey ?? null
+}
 
 export function buildEmptyGutterPlanPie(): MobilePlanCardPie {
   const inner = emptyCardPieInnerData()
@@ -62,6 +78,7 @@ function buildDefaultMobilePlanPie(
 }
 
 export function useMobilePlanCardPies() {
+  const dispatch = useAppDispatch()
   const listSortDirection = useAppSelector(selectCardPieListSortDirection)
   const notebookDateTabPeekClearTick = useAppSelector(
     selectNotebookDateTabPeekClearTick,
@@ -79,10 +96,22 @@ export function useMobilePlanCardPies() {
   const recipientEntries = useAppSelector(selectRecipientEntriesState)
   const assemblyFreeze = useAppSelector(selectAssemblyBranchFreeze)
   const appliedDates = useAppSelector(selectAppliedDates)
+  const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
+  const sessionAppliedRecipientIds = useAppSelector(selectRecipientApplied)
+  const sandboxAppliedRecipientIds = useAppSelector(
+    selectArchiveSandboxRecipientApplied,
+  )
+  const appliedRecipientIds = sandboxActive
+    ? sandboxAppliedRecipientIds
+    : sessionAppliedRecipientIds
   const [selectedPlanPieId, setSelectedPlanPieId] = useState<string | null>(
     null,
   )
+  const [focusedRecipientSlotKey, setFocusedRecipientSlotKey] = useState<
+    string | null
+  >(null)
   const prevAppliedDatesKeyRef = useRef('')
+  const prevAppliedRecipientsKeyRef = useRef('')
 
   const assemblyBase = useMemo(() => {
     const useFreeze = assemblyFreeze != null
@@ -162,6 +191,13 @@ export function useMobilePlanCardPies() {
     [planPies, selectedPlanPieId],
   )
 
+  const focusedRecipientPies = useMemo(() => {
+    if (focusedRecipientSlotKey == null) return []
+    return planPies.filter(
+      (pie) => planPieRecipientSlotKey(pie) === focusedRecipientSlotKey,
+    )
+  }, [focusedRecipientSlotKey, planPies])
+
   useEffect(() => {
     if (selectedPlanPieId == null) return
     if (planPies.some((pie) => pie.id === selectedPlanPieId)) return
@@ -171,6 +207,7 @@ export function useMobilePlanCardPies() {
   useEffect(() => {
     if (notebookDateTabPeekClearTick === 0) return
     setSelectedPlanPieId(null)
+    setFocusedRecipientSlotKey(null)
   }, [notebookDateTabPeekClearTick])
 
   /**
@@ -186,8 +223,24 @@ export function useMobilePlanCardPies() {
     prevAppliedDatesKeyRef.current = key
     if (appliedDates.length > 1) {
       setSelectedPlanPieId(null)
+      setFocusedRecipientSlotKey(null)
     }
   }, [appliedDates])
+
+  useEffect(() => {
+    const key = appliedRecipientIds.join('|')
+    if (key === prevAppliedRecipientsKeyRef.current) return
+    prevAppliedRecipientsKeyRef.current = key
+    if (appliedRecipientIds.length > 1) {
+      setSelectedPlanPieId(null)
+      setFocusedRecipientSlotKey(null)
+    }
+  }, [appliedRecipientIds])
+
+  const selectPlanPie = useCallback((id: string | null) => {
+    setFocusedRecipientSlotKey(null)
+    setSelectedPlanPieId(id)
+  }, [])
 
   const cyclePlanPie = useCallback((): string | null => {
     if (planPies.length === 0) return null
@@ -208,17 +261,42 @@ export function useMobilePlanCardPies() {
       }
     }
 
+    setFocusedRecipientSlotKey(null)
     setSelectedPlanPieId(nextId)
     return nextId
   }, [planPies, selectedPlanPieId])
+
+  const cycleFocusedRecipient = useCallback((): string | null => {
+    if (appliedRecipientIds.length <= 1) return focusedRecipientSlotKey
+    const next = nextFocusedRecipientSlotKey(
+      appliedRecipientIds,
+      focusedRecipientSlotKey,
+    )
+    setFocusedRecipientSlotKey(next)
+    setSelectedPlanPieId(null)
+    if (sandboxActive) {
+      dispatch(setArchiveRecipientViewId(next))
+    } else {
+      dispatch(setRecipientViewId(next))
+    }
+    return next
+  }, [
+    appliedRecipientIds,
+    dispatch,
+    focusedRecipientSlotKey,
+    sandboxActive,
+  ])
 
   return {
     planPies,
     selectedPlanPie,
     selectedPlanPieId,
+    focusedRecipientSlotKey,
+    focusedRecipientPies,
     /** Central pie when no single gutter mini is selected. */
     assemblyOverviewPie,
-    selectPlanPie: setSelectedPlanPieId,
+    selectPlanPie,
     cyclePlanPie,
+    cycleFocusedRecipient,
   }
 }
