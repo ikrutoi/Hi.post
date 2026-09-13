@@ -597,6 +597,14 @@
 .envelopeTopCreateDetail {
   padding-inline: 0.5rem;
   box-sizing: border-box;
+  background-color: $color-base;
+
+  :global([class*='savedAddressViewContainer']),
+  :global([class*='savedAddressViewCardWrap']),
+  :global([class*='savedAddressViewRecipient']) {
+    background-color: transparent;
+    border: none;
+  }
 }
 
 .envelopeLeftSlotFullHeight {
