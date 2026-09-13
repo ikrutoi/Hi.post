@@ -582,44 +582,8 @@ function getEntryAddressFromBook(
   return entry?.address ? ({ ...entry.address } as AddressFields) : null
 }
 
-function* openSenderAddressEditSession(templateId: string): SagaIterator {
-  const senderViewId: string | null = yield select(selectSenderViewId)
-  const entries: { id: string; address: Record<string, string> }[] = yield select(
-    (s: RootState) => s.addressBook?.senderEntries ?? [],
-  )
-  const address = getEntryAddressFromBook(entries, templateId)
-  const sender: SenderState = yield select(selectSenderState)
-  const draft = address ?? { ...sender.viewDraft }
-  yield put(
-    openAddressEditSession({
-      role: 'sender',
-      templateId,
-      draft,
-      displayTemplateIdAtStart: senderViewId,
-    }),
-  )
-}
-
-function* openRecipientAddressEditSession(templateId: string): SagaIterator {
-  const recipientViewId: string | null = yield select(selectRecipientViewId)
-  const entries: { id: string; address: Record<string, string> }[] = yield select(
-    (s: RootState) => s.addressBook?.recipientEntries ?? [],
-  )
-  const address = getEntryAddressFromBook(entries, templateId)
-  const recipient: RecipientState = yield select(selectRecipientState)
-  const draft = address ?? { ...recipient.viewDraft }
-  yield put(setRecipientView('recipientView'))
-  yield put(
-    openAddressEditSession({
-      role: 'recipient',
-      templateId,
-      draft,
-      displayTemplateIdAtStart: recipientViewId,
-    }),
-  )
-}
-
-function* openMobileAddressCreateEditForm(
+/** Edit: open the create form prefilled with the template being edited. */
+function* openAddressCreateEditForm(
   role: 'sender' | 'recipient',
   templateId: string,
   options?: { returnToList?: boolean; returnToFormPreview?: boolean },
@@ -642,8 +606,17 @@ function* openMobileAddressCreateEditForm(
         ? (s.addressBook?.senderEntries ?? [])
         : (s.addressBook?.recipientEntries ?? []),
   )
-  const address = getEntryAddressFromBook(entries, templateId)
-  if (!address) return
+  const bookAddress = getEntryAddressFromBook(entries, templateId)
+  let address = bookAddress
+  if (!address) {
+    if (role === 'sender') {
+      const sender: SenderState = yield select(selectSenderState)
+      address = { ...sender.viewDraft }
+    } else {
+      const recipient: RecipientState = yield select(selectRecipientState)
+      address = { ...recipient.viewDraft }
+    }
+  }
 
   yield put(
     setAddressCreateEditContext({
@@ -1605,14 +1578,9 @@ function* handleEnvelopeToolbarAction(
       const senderViewId: string | null = yield select(selectSenderViewId)
       const templateId = senderViewId ?? sender.applied?.[0] ?? null
       if (templateId) {
-        const isMobileLayout: boolean = yield select(selectIsMobileLayout)
-        if (isMobileLayout) {
-          yield call(openMobileAddressCreateEditForm, 'sender', templateId, {
-            returnToList: action.payload.payload?.returnToList === true,
-          })
-        } else {
-          yield call(openSenderAddressEditSession, templateId)
-        }
+        yield call(openAddressCreateEditForm, 'sender', templateId, {
+          returnToList: action.payload.payload?.returnToList === true,
+        })
       }
     } else {
       yield call(saveAndCloseAddressEditSession, false)
@@ -1640,16 +1608,11 @@ function* handleEnvelopeToolbarAction(
       const recipientViewId: string | null = yield select(selectRecipientViewId)
       const templateId = recipientViewId ?? recipient.applied?.[0] ?? null
       if (templateId) {
-        const isMobileLayout: boolean = yield select(selectIsMobileLayout)
-        if (isMobileLayout) {
-          yield call(openMobileAddressCreateEditForm, 'recipient', templateId, {
-            returnToList: action.payload.payload?.returnToList === true,
-            returnToFormPreview:
-              action.payload.payload?.returnToFormPreview === true,
-          })
-        } else {
-          yield call(openRecipientAddressEditSession, templateId)
-        }
+        yield call(openAddressCreateEditForm, 'recipient', templateId, {
+          returnToList: action.payload.payload?.returnToList === true,
+          returnToFormPreview:
+            action.payload.payload?.returnToFormPreview === true,
+        })
       }
     } else {
       yield call(saveAndCloseAddressEditSession, true)

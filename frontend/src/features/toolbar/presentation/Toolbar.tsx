@@ -78,6 +78,7 @@ import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors
 import {
   selectRecipientAddressListPanelDensity,
   selectSenderAddressListPanelDensity,
+  selectAddressCreateEditContext,
   selectRecipientViewEditMode,
   selectSenderViewEditMode,
 } from '@envelope/infrastructure/selectors'
@@ -323,6 +324,7 @@ export const Toolbar = ({
   )
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
+  const addressCreateEditContext = useAppSelector(selectAddressCreateEditContext)
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
   const authUser = useAppSelector(selectAuthUser)
   const { isAllComplete: editorPieComplete, progress: editorPieProgress } =
@@ -559,14 +561,17 @@ export const Toolbar = ({
       buttonStatus = 'active'
     }
     if (key === 'applyMedium' && section === 'senderCreate') {
+      const createEdit = addressCreateEditContext?.role === 'sender'
       buttonStatus =
-        senderCreateDraftInList || !senderCreateDraftComplete
+        (!createEdit && senderCreateDraftInList) || !senderCreateDraftComplete
           ? 'disabled'
           : 'enabled'
     }
     if (key === 'applyMedium' && section === 'recipientCreate') {
+      const createEdit = addressCreateEditContext?.role === 'recipient'
       buttonStatus =
-        recipientCreateDraftInList || !recipientCreateDraftComplete
+        (!createEdit && recipientCreateDraftInList) ||
+        !recipientCreateDraftComplete
           ? 'disabled'
           : 'enabled'
     }

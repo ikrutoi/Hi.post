@@ -20,10 +20,31 @@ type LabelProps = {
   value: string
   onValueChange: (field: keyof AddressFields, value: string) => void
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void
+  autoFocus?: boolean
+}
+
+const ADDRESS_AUTOCOMPLETE: Record<keyof AddressFields, string> = {
+  name: 'name',
+  street: 'street-address',
+  city: 'address-level2',
+  zip: 'postal-code',
+  country: 'country-name',
 }
 
 export const Label = forwardRef<HTMLInputElement, LabelProps>(
-  ({ role, roleLabel, label, field, value, onValueChange, onKeyDown }, ref) => {
+  (
+    {
+      role,
+      roleLabel,
+      label,
+      field,
+      value,
+      onValueChange,
+      onKeyDown,
+      autoFocus = false,
+    },
+    ref,
+  ) => {
     const inputRef = useRef<HTMLInputElement | null>(null)
     const pendingSelectionRef = useRef<{ start: number; end: number } | null>(
       null,
@@ -102,6 +123,9 @@ export const Label = forwardRef<HTMLInputElement, LabelProps>(
             type="text"
             value={value}
             aria-label={label}
+            data-address-field={field}
+            autoComplete={ADDRESS_AUTOCOMPLETE[field]}
+            autoFocus={autoFocus}
             autoCapitalize={
               field === 'zip'
                 ? 'characters'

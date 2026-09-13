@@ -51,19 +51,29 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
     syncAddressFormToolbar(toolbarSection, isAddressComplete)
   }, [syncAddressFormToolbar, toolbarSection, isAddressComplete])
 
-  // Only auto-focus first input on mount when nothing in the form is focused (avoid stealing focus on remount)
+  // Focus the name field on open. Do not keep whatever the browser focused
+  // first (iOS/Chrome often land on Country in an address form).
   useEffect(() => {
-    const firstInput = inputsRef.current[0]
-    if (!firstInput) return
-    const container = firstInput.closest('[data-envelope-address-surface]')
-    const active = document.activeElement as Node | null
-    if (active && container?.contains(active)) return
-    const len = firstInput.value.length
-    firstInput.focus()
-    try {
-      firstInput.setSelectionRange(len, len)
-    } catch {
-      /* Edge may reject setSelectionRange on some input types/states */
+    const nameInput =
+      inputsRef.current.find((el) => el?.dataset.addressField === 'name') ??
+      inputsRef.current[0]
+    if (!nameInput) return
+    const focusName = () => {
+      if (document.activeElement === nameInput) return
+      nameInput.focus()
+      try {
+        const len = nameInput.value.length
+        nameInput.setSelectionRange(len, len)
+      } catch {
+        /* Edge may reject setSelectionRange on some input types/states */
+      }
+    }
+    focusName()
+    const frame = window.requestAnimationFrame(focusName)
+    const timer = window.setTimeout(focusName, 50)
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.clearTimeout(timer)
     }
   }, [])
 
@@ -102,6 +112,7 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
                 value={address[subItem.key]}
                 onValueChange={onFieldChange}
                 onKeyDown={(e) => handleKeyDown(e, idx)}
+                autoFocus={mobileFullscreen && subItem.key === 'name'}
               />
             )
           })}
@@ -120,6 +131,7 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
         value={address[item.key]}
         onValueChange={onFieldChange}
         onKeyDown={(e) => handleKeyDown(e, idx)}
+        autoFocus={mobileFullscreen && item.key === 'name'}
       />
     )
   })
