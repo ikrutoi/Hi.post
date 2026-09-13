@@ -4,6 +4,7 @@ import { Mark } from '@envelope/view/presentation'
 import { getSafeLang } from '@i18n/helpers'
 import { i18n } from '@i18n/i18n'
 import { EnvelopeAddress } from '../addressForm/presentation'
+import { AddressFormView } from '../addressForm/presentation/AddressFormView'
 import { EnvelopePeekAddressBlock } from './EnvelopePeekAddressBlock'
 import { useRecipientFacade } from '../recipient/application/facades'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
@@ -123,6 +124,11 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
           : null
       : null
   const showMobileAddressCreateForm = mobileAddressCreateRole != null
+  const showEnvelopeTopCreate =
+    !isMobile &&
+    !envelopePeekMode &&
+    !showRecipientSimplified &&
+    recipientView === 'recipientCreate'
 
   useEffect(() => {
     if (!isMobile || envelopePeekMode) {
@@ -207,40 +213,60 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
     />
   ) : (
     <div className={styles.envelopeWorkZone}>
-      <div className={styles.envelopeTopSlot}>
-        <div
-          className={styles.envelopeLogo}
-          data-envelope-mobile-focus-chrome
-        />
-        <div
-          className={styles.envelopeMark}
-          data-envelope-mobile-focus-chrome
-        >
-          <Mark
-            simplifiedPeek={envelopePeekMode}
-            listArchivePostcardStatus={listRowPostcardStatus}
-          />
-        </div>
-        <div
-          className={clsx(
-            styles.envelopeSection,
-            styles.envelopeSectionSender,
-          )}
-          data-envelope-mobile-focus-sender
-        >
-          {envelopePeekMode ? (
-            <EnvelopePeekAddressBlock
-              key={
-                listRowLocalId != null
-                  ? `peek-env-sender-${listRowLocalId}`
-                  : 'peek-env-sender'
-              }
-              role="sender"
-              compact={isMobile}
-              className={styles.envelopePeekBlock}
+      <div
+        className={clsx(
+          styles.envelopeTopSlot,
+          showEnvelopeTopCreate && styles.envelopeTopSlotCreate,
+        )}
+      >
+        {showEnvelopeTopCreate ? (
+          <div className={styles.envelopeTopCreate}>
+            <AddressFormView
+              key="recipientCreate"
+              role="recipient"
+              roleLabel="Recipients"
+              address={recipientFacade.formDraft}
+              onFieldChange={recipientFacade.update}
+              lang={lang}
             />
-          ) : null}
-        </div>
+          </div>
+        ) : (
+          <>
+            <div
+              className={styles.envelopeLogo}
+              data-envelope-mobile-focus-chrome
+            />
+            <div
+              className={styles.envelopeMark}
+              data-envelope-mobile-focus-chrome
+            >
+              <Mark
+                simplifiedPeek={envelopePeekMode}
+                listArchivePostcardStatus={listRowPostcardStatus}
+              />
+            </div>
+            <div
+              className={clsx(
+                styles.envelopeSection,
+                styles.envelopeSectionSender,
+              )}
+              data-envelope-mobile-focus-sender
+            >
+              {envelopePeekMode ? (
+                <EnvelopePeekAddressBlock
+                  key={
+                    listRowLocalId != null
+                      ? `peek-env-sender-${listRowLocalId}`
+                      : 'peek-env-sender'
+                  }
+                  role="sender"
+                  compact={isMobile}
+                  className={styles.envelopePeekBlock}
+                />
+              ) : null}
+            </div>
+          </>
+        )}
       </div>
       <div
         className={styles.envelopeBottomSlot}
@@ -277,6 +303,7 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
               role="recipient"
               roleLabel="Recipients"
               lang={lang}
+              embedCreateForm={false}
             />
           )}
         </div>

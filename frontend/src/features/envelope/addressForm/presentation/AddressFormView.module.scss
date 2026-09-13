@@ -20,8 +20,8 @@
 }
 
 /**
- * Desktop create: 22 equal tracks of the form height.
- * Top 3, each field 2, gaps between fields 1. Bottom is leftover.
+ * Desktop create: 11 equal tracks of the form height.
+ * Top 1, each field 1, gaps between fields 1. Bottom is leftover.
  * Captions sit in the track above each input.
  */
 :global([data-shell-layout='desktop']) .addressFormView {
@@ -39,37 +39,38 @@
     min-height: 0;
     height: 100%;
     display: grid;
-    grid-template-rows: repeat(22, minmax(0, 1fr));
+    grid-template-rows: repeat(11, minmax(0, 1fr));
     gap: 0;
   }
 
   .addressFormFields > *:nth-child(1) {
-    grid-row: 4 / span 2;
+    grid-row: 2;
   }
 
   .addressFormFields > *:nth-child(2) {
-    grid-row: 7 / span 2;
+    grid-row: 4;
   }
 
   .addressFormFields > *:nth-child(3) {
-    grid-row: 10 / span 2;
+    grid-row: 6;
   }
 
   .addressFormFields > *:nth-child(4) {
-    grid-row: 13 / span 2;
+    grid-row: 8;
   }
 
   .addressFormFields > * {
     width: 78%;
     max-width: 78%;
     justify-self: end;
+    align-self: start;
+    height: calc(100% + 0.5rem);
     min-height: 0;
     position: relative;
     display: flex;
     flex-direction: column;
     justify-content: stretch;
     box-sizing: border-box;
-    padding-bottom: 0.35rem;
   }
 
   .labelGroup {
@@ -112,6 +113,7 @@
     height: 100%;
     min-height: 0;
     font-size: 0.9rem;
+    padding-block: 0.25rem;
   }
 }
 

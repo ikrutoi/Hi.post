@@ -11,6 +11,8 @@ export interface EnvelopeAddressProps {
   role: EnvelopeRole
   roleLabel: EnvelopeRoleLabel
   lang: Lang
+  /** When false, create mode is hosted outside this fieldset (envelope top slot). */
+  embedCreateForm?: boolean
   // value: RoleState
   // onValueChange: (
   //   role: EnvelopeRole,

@@ -64,6 +64,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   role,
   roleLabel,
   lang,
+  embedCreateForm = true,
 }) => {
   const envelopeFacade = useEnvelopeFacade()
   const senderFacade = useSenderFacade()
@@ -754,6 +755,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                 showRecipientsEnvelopeList && styles.recipientFieldsetMulti,
                 showRecipientsEnvelopeList && styles.recipientFieldsetWithList,
                 recipientView === 'recipientCreate' &&
+                  embedCreateForm &&
                   styles.addressFieldsetCreateOpen,
               )}
               onMouseDownCapture={handleRecipientFieldsetMouseDownCapture}
@@ -765,7 +767,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                 />
               ) : null}
               <div className={styles.addressFieldsetInner}>
-                {recipientView === 'recipientCreate' ? (
+                {recipientView === 'recipientCreate' && embedCreateForm ? (
                   <AddressFormView
                     key="recipientCreate"
                     role="recipient"
