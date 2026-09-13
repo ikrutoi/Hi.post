@@ -333,12 +333,16 @@
     align-items: center;
     justify-content: flex-start;
     border: none;
-    padding-inline: 0;
+    padding-inline: var(
+      --mobile-factory-toolbar-inset-inline,
+      #{iconButton.$toolbar-factory-row-inset-inline}
+    );
     width: 100%;
     min-width: 0;
+    @include mobile-factory-toolbar-row-full-bleed;
+    overflow: visible;
 
-    :global([class*='envelopeToolbarSlotSender']),
-    :global([class*='envelopeToolbarSlotRecipients']) {
+    :global([class*='envelopeToolbarSlotSender']) {
       flex: 0 0 auto;
       display: flex;
       align-items: center;
@@ -347,6 +351,17 @@
       margin-left: 0;
       margin-right: auto;
       width: auto;
+    }
+
+    :global([class*='envelopeToolbarSlotRecipients']) {
+      flex: 1 1 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-width: 0;
+      margin-left: 0;
+      margin-right: 0;
+      width: 100%;
     }
 
     :global([class*='toolbarSender']),
@@ -369,6 +384,15 @@
       width: auto;
       justify-content: flex-start;
     }
+  }
+
+  :global([class*='sideRight']) :global(
+      [class*='toolbar']:not([class*='toolbarKey']):not(
+          [class*='toolbarGroup']
+        ):not([class*='toolbarBadge']):not([class*='toolbarIcon'])
+    ) {
+    flex: 0 0 auto;
+    width: auto;
   }
 }
 
@@ -399,7 +423,8 @@
 :global([data-mobile-factory-section-frame='true'][data-mobile-section-surface='envelope']) {
   .rowUpper:has(:global([class*='cardSectionToolbar']))::before,
   .rowUpper:has(:global([class*='upperRowEnvelope']))::before,
-  .rowUpper:has(:global([class*='upperRowRecipient']))::before {
+  .rowUpper:has(:global([class*='upperRowRecipient']))::before,
+  .rowUpper:has(:global([class*='envelopeToolbarRow']))::before {
     background-color: $color-envelope-recipient-input;
   }
 

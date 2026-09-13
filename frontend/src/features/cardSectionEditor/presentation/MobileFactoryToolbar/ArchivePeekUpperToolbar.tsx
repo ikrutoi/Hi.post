@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback } from 'react'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
@@ -9,9 +9,8 @@ import { clearApply } from '@cardphoto/infrastructure/state'
 import { clearApplied as clearAromaApplied } from '@aroma/infrastructure/state'
 import { clearAppliedDates } from '@date/infrastructure/state'
 import { setRecipientApplied } from '@envelope/recipient/infrastructure/state'
-import { useAssemblyPlanPieFocusCycle } from '@layout/presentation/MobileAppShell/AssemblyPlanPieFocusContext'
+import { AddressNextCycleButton } from './AddressNextCycleButton'
 import { useRecipientsChromeCount } from '@envelope/addressForm/presentation/RecipientsToolbarMark'
-import { recipientsApplyPeekAddressNextToolbar } from '@toolbar/domain/types/envelope.types'
 import { setArchiveRecipientApplied } from '@cardPanel/infrastructure/state'
 import {
   selectArchiveEnvelopeSandboxActive,
@@ -51,13 +50,8 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
   } = useMobileFactoryListChrome()
   const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
   const recipientsCount = useRecipientsChromeCount()
-  const cycleFocusedRecipient = useAssemblyPlanPieFocusCycle()
   const showAddressNext =
     assemblyRecipientSimplifiedPeek && recipientsCount > 1
-  const addressNextToolbar = useMemo(
-    () => recipientsApplyPeekAddressNextToolbar(recipientsCount),
-    [recipientsCount],
-  )
   const {
     requestSectionEditFromPeek,
     rightPieDatePeekNoToolbar,
@@ -124,10 +118,6 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
         }
         return false
       }
-      if (key === 'addressNext') {
-        cycleFocusedRecipient()
-        return false
-      }
     },
     [
       assemblyAromaSimplifiedPeek,
@@ -140,7 +130,6 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
       isMobileLayout,
       requestSectionEditFromPeek,
       sandboxActive,
-      cycleFocusedRecipient,
     ],
   )
 
@@ -178,11 +167,7 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
       <div className={styles.upperSpacer} aria-hidden />
       {showAddressNext ? (
         <div className={styles.sideRight}>
-          <Toolbar
-            section="recipients"
-            groupsOverride={addressNextToolbar}
-            onActionClick={handleAction}
-          />
+          <AddressNextCycleButton count={recipientsCount} />
         </div>
       ) : null}
     </div>

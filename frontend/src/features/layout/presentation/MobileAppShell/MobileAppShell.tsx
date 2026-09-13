@@ -129,7 +129,6 @@ import {
 } from './useMobilePlanCardPies'
 import { AssemblyCardPieInnerProvider } from './AssemblyCardPieInnerContext'
 import { AssemblyPlanPieFocusProvider } from './AssemblyPlanPieFocusContext'
-import { buildRecipientGroupCardPieInner } from '@features/cardPie/infrastructure/planEntryCardPieViewModel'
 import { CardPieLeftSlot } from '@features/cardPie/presentation/CardPieLeftSlot'
 import { EditorPieListCardPieBadgeSync } from '@features/cardPie/presentation/EditorPieListCardPieBadgeSync'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
@@ -367,6 +366,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     selectedPlanPieId,
     focusedRecipientSlotKey,
     focusedRecipientPies,
+    focusedRecipientInner,
     assemblyOverviewPie,
     selectPlanPie,
     cyclePlanPie,
@@ -415,23 +415,16 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const showMobileCenterPlanCycleHint = factoryPostcardCount > 1
   const assemblyPie = useMemo(() => {
     if (selectedPlanPie != null) return selectedPlanPie
-    if (
-      focusedRecipientSlotKey != null &&
-      focusedRecipientPies.length > 0
-    ) {
+    if (focusedRecipientInner != null) {
       return {
         ...assemblyOverviewPie,
-        inner: buildRecipientGroupCardPieInner(
-          assemblyOverviewPie.inner,
-          focusedRecipientPies.map((pie) => pie.inner),
-        ),
+        inner: focusedRecipientInner,
       }
     }
     return assemblyOverviewPie
   }, [
     assemblyOverviewPie,
-    focusedRecipientPies,
-    focusedRecipientSlotKey,
+    focusedRecipientInner,
     selectedPlanPie,
   ])
 

@@ -5,11 +5,14 @@ import { selectAppliedDates } from '@date/infrastructure/selectors'
 import { parseDispatchBranchKey } from '@date/domain/dispatchBranchKey'
 import {
   buildCardPieInnerDataForPlanEntry,
+  buildRecipientGroupCardPieInner,
   cardPieInnerFromEditorActiveData,
   DEFAULT_MOBILE_PLAN_PIE_ID,
   emptyCardPieInnerData,
 } from '@features/cardPie/infrastructure/planEntryCardPieViewModel'
 import { nextFocusedRecipientSlotKey } from '@envelope/domain/helpers/nextFocusedRecipientSlotKey'
+import { bindAssemblyRecipientCycle } from './assemblyRecipientCycleBridge'
+import { resolveAddressForRecipientId } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import {
   selectRecipientApplied,
   selectRecipientEntriesState,
@@ -266,10 +269,29 @@ export function useMobilePlanCardPies() {
     return nextId
   }, [planPies, selectedPlanPieId])
 
+  const recipientCycleIds = useMemo(() => {
+    const fromPies: string[] = []
+    const seen = new Set<string>()
+    for (const pie of planPies) {
+      const key = planPieRecipientSlotKey(pie)
+      if (key == null || key === 'session' || seen.has(key)) continue
+      seen.add(key)
+      fromPies.push(key)
+    }
+    if (fromPies.length > 1) return fromPies
+    if (appliedRecipientIds.length > 1) return appliedRecipientIds
+    const viewIds =
+      recipientState?.currentRecipientsList === 'second'
+        ? (recipientState.recipientsViewIdsSecondList ?? [])
+        : (recipientState?.recipientsViewIdsFirstList ?? [])
+    if (viewIds.length > 1) return viewIds
+    return fromPies.length > 0 ? fromPies : appliedRecipientIds
+  }, [appliedRecipientIds, planPies, recipientState])
+
   const cycleFocusedRecipient = useCallback((): string | null => {
-    if (appliedRecipientIds.length <= 1) return focusedRecipientSlotKey
+    if (recipientCycleIds.length <= 1) return focusedRecipientSlotKey
     const next = nextFocusedRecipientSlotKey(
-      appliedRecipientIds,
+      recipientCycleIds,
       focusedRecipientSlotKey,
     )
     setFocusedRecipientSlotKey(next)
@@ -281,10 +303,42 @@ export function useMobilePlanCardPies() {
     }
     return next
   }, [
-    appliedRecipientIds,
     dispatch,
     focusedRecipientSlotKey,
+    recipientCycleIds,
     sandboxActive,
+  ])
+
+  useEffect(() => bindAssemblyRecipientCycle(cycleFocusedRecipient), [
+    cycleFocusedRecipient,
+  ])
+
+  const focusedRecipientInner = useMemo(() => {
+    if (focusedRecipientSlotKey == null) return null
+    if (focusedRecipientPies.length > 0) {
+      return buildRecipientGroupCardPieInner(
+        assemblyOverviewPie.inner,
+        focusedRecipientPies.map((pie) => pie.inner),
+      )
+    }
+    const address = resolveAddressForRecipientId(
+      focusedRecipientSlotKey,
+      envelopeRecipients ?? [],
+      recipientEntries ?? [],
+    )
+    if (address == null) return null
+    return {
+      ...assemblyOverviewPie.inner,
+      recipient: address,
+      recipientCount: 1 as const,
+      recipientPreviewLines: [],
+    }
+  }, [
+    assemblyOverviewPie.inner,
+    envelopeRecipients,
+    focusedRecipientPies,
+    focusedRecipientSlotKey,
+    recipientEntries,
   ])
 
   return {
@@ -293,6 +347,7 @@ export function useMobilePlanCardPies() {
     selectedPlanPieId,
     focusedRecipientSlotKey,
     focusedRecipientPies,
+    focusedRecipientInner,
     /** Central pie when no single gutter mini is selected. */
     assemblyOverviewPie,
     selectPlanPie,

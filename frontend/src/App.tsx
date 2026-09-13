@@ -31,7 +31,6 @@ import { resolvePlanPieGutterHighlight } from '@layout/presentation/MobileAppShe
 import { runPlanPieCenterCycle } from '@layout/presentation/MobileAppShell/runPlanPieCenterCycle'
 import { AssemblyCardPieInnerProvider } from '@layout/presentation/MobileAppShell/AssemblyCardPieInnerContext'
 import { AssemblyPlanPieFocusProvider } from '@layout/presentation/MobileAppShell/AssemblyPlanPieFocusContext'
-import { buildRecipientGroupCardPieInner } from '@features/cardPie/infrastructure/planEntryCardPieViewModel'
 import {
   EMPTY_GUTTER_PLAN_PIE_ID,
   useMobilePlanCardPies,
@@ -2445,6 +2444,7 @@ function DesktopFactoryTopRow({
     selectedPlanPieId,
     focusedRecipientSlotKey,
     focusedRecipientPies,
+    focusedRecipientInner,
     assemblyOverviewPie,
     selectPlanPie,
     cyclePlanPie,
@@ -2558,23 +2558,16 @@ function DesktopFactoryTopRow({
 
   const assemblyPie = useMemo(() => {
     if (selectedPlanPie != null) return selectedPlanPie
-    if (
-      focusedRecipientSlotKey != null &&
-      focusedRecipientPies.length > 0
-    ) {
+    if (focusedRecipientInner != null) {
       return {
         ...assemblyOverviewPie,
-        inner: buildRecipientGroupCardPieInner(
-          assemblyOverviewPie.inner,
-          focusedRecipientPies.map((pie) => pie.inner),
-        ),
+        inner: focusedRecipientInner,
       }
     }
     return assemblyOverviewPie
   }, [
     assemblyOverviewPie,
-    focusedRecipientPies,
-    focusedRecipientSlotKey,
+    focusedRecipientInner,
     selectedPlanPie,
   ])
   const planPieFocusValue = useMemo(

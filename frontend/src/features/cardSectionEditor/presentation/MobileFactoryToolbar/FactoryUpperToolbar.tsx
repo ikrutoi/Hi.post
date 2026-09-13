@@ -46,6 +46,7 @@ export const FactoryUpperToolbar: React.FC<{
     archiveCalendarOpen,
     mobileSectionSimplifiedPeek,
     cartEnvelopeInnerPeekToolbar,
+    assemblyRecipientSimplifiedPeek,
     showCardphotoListFactoryUpperToolbar,
     showCardtextListFactoryUpperToolbar,
     showAddressListFactoryUpperToolbar,
@@ -78,7 +79,8 @@ export const FactoryUpperToolbar: React.FC<{
 
   let content: React.ReactNode
   if (showPeekEmptyToolbarShell) {
-    content = cartEnvelopeInnerPeekToolbar ? (
+    content =
+      cartEnvelopeInnerPeekToolbar || assemblyRecipientSimplifiedPeek ? (
       <EnvelopeInnerToolbar />
     ) : (
       <ArchivePeekUpperToolbar />

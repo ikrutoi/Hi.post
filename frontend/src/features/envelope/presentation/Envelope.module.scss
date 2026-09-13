@@ -143,6 +143,12 @@
   :global([data-shell-layout='desktop']) & {
     border-radius: 0.5rem 0.5rem 0 0;
     padding-inline: 0;
+    /* Parent factory row is flex-direction row; height token as flex-basis
+       would shrink this strip to ~2.25rem wide and pin icons left. */
+    flex: 1 1 auto;
+    align-self: stretch;
+    width: 100%;
+    min-width: 0;
   }
 
   > * {
@@ -218,6 +224,12 @@
     min-width: 0;
     justify-content: flex-start;
   }
+
+  > *:nth-child(2) {
+    width: auto !important;
+    flex: 0 0 auto;
+    margin-left: auto !important;
+  }
 }
 
 .envelopeToolbarSlotSender {
@@ -237,7 +249,7 @@
     gap: 0;
     padding: 0;
     justify-content: flex-start;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .envelopeToolbarRowSender,
@@ -282,6 +294,12 @@
       width: auto !important;
       flex: 0 1 auto;
       min-width: 0;
+    }
+
+    > *:nth-child(2) {
+      width: auto !important;
+      flex: 0 0 auto;
+      margin-left: auto;
     }
   }
 

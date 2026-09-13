@@ -108,12 +108,13 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  z-index: 1;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  width: max-content;
   min-width: max-content;
-  pointer-events: none;
+  pointer-events: auto;
 
   :global([data-shell-layout='mobile']) & {
     @include iconButton.mobile-factory-toolbar-edge-slot-right;
@@ -128,6 +129,9 @@
 
   > * {
     pointer-events: auto;
+    flex: 0 0 auto;
+    width: auto !important;
+    max-width: none;
   }
 }
 
@@ -180,4 +184,5 @@
 .upperSpacer {
   flex: 1 1 auto;
   min-width: 0;
+  pointer-events: none;
 }

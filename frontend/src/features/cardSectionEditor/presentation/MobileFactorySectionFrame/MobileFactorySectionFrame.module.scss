@@ -130,6 +130,8 @@
 }
 
 .toolbarSlot {
+  position: relative;
+  z-index: 4;
   flex: 0 0 auto;
   @include mobile-factory-inset-horizontal;
 }
