@@ -34,6 +34,7 @@ import {
   selectSenderViewEditMode,
 } from '@envelope/infrastructure/selectors'
 import { RecipientsBrowseToolbar } from '@envelope/addressForm/presentation/RecipientsBrowseToolbar'
+import { RecipientsToolbarMark } from '@envelope/addressForm/presentation/RecipientsToolbarMark'
 import styles from './Envelope.module.scss'
 
 type UseEnvelopeAddressViewToolbarContentOptions = {
@@ -160,11 +161,13 @@ export function useEnvelopeAddressViewToolbarContent({
     senderView !== 'senderCreate' &&
     !assemblySenderSimplifiedPeek
 
-  const recipientToolbarSlot =
+  const recipientChromeSlot =
     enabled &&
     activeViewRole === 'recipient' &&
-    recipientView !== 'recipientCreate' &&
     !assemblyRecipientSimplifiedPeek
+
+  const recipientToolbarSlot =
+    recipientChromeSlot && recipientView !== 'recipientCreate'
 
   const showRecipientCreateToolbar =
     enabled &&
@@ -228,9 +231,13 @@ export function useEnvelopeAddressViewToolbarContent({
     ? 'complete'
     : senderToolbarSlot
       ? 'sender'
-      : recipientToolbarSlot || showRecipientCreateToolbar
+      : recipientChromeSlot || showRecipientCreateToolbar
         ? 'recipient'
         : null
+
+  const showRecipientsToolbarMark =
+    (slotRole === 'recipient' || slotRole === 'complete') &&
+    !showRecipientCreateToolbar
 
   if (slotRole != null) {
     return (
@@ -245,6 +252,7 @@ export function useEnvelopeAddressViewToolbarContent({
         )}
         data-envelope-address-view-toolbar
         aria-hidden={
+          !showRecipientsToolbarMark &&
           section == null &&
           !showRecipientsBrowseToolbar &&
           !showRecipientCreateToolbar
@@ -252,6 +260,7 @@ export function useEnvelopeAddressViewToolbarContent({
             : undefined
         }
       >
+        {showRecipientsToolbarMark ? <RecipientsToolbarMark /> : null}
         {showRecipientCreateToolbar ? (
           <Toolbar section="recipientCreate" />
         ) : section === 'senderView' || section === 'recipientView' ? (

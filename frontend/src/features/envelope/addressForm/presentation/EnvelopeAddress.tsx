@@ -36,8 +36,6 @@ import {
 } from '@cardPanel/infrastructure/state'
 import {
   closeAddressEditSession,
-  setAddressFormView,
-  clearAddressCreateEditContext,
   setRecipientsFormPreviewId,
   clearRecipientsFormPreviewId,
 } from '@envelope/infrastructure/state'
@@ -156,7 +154,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     Object.values(value).some((v) => (v ?? '').trim() !== '')
 
   const recipientsDisplayList = recipientFacade.recipientsDisplayList
-  const recipientsFormViewIdsCount = recipientsDisplayList.length
 
   const recipientIdForDisplay =
     role === 'recipient'
@@ -461,42 +458,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     }
   }
 
-  /**
-   * Count badge (multi selection): from single View / Create back to the
-   * selected-addresses grid — same outcome as lower-toolbar return.
-   */
-  const handleRecipientsCountBadgeClick = useCallback(() => {
-    if (recipientsFormViewIdsCount <= 1) return
-    if (recipientView === 'recipientsView') return
-
-    if (sandboxActive) {
-      dispatch(setArchiveRecipientViewId(null))
-      dispatch(setArchiveRecipientView('recipientsView'))
-      return
-    }
-
-    if (recipientView === 'recipientView') {
-      dispatch(toolbarAction({ section: 'recipientView', key: 'close' }))
-      return
-    }
-
-    if (recipientViewEditMode) {
-      dispatch(
-        closeAddressEditSession({ role: 'recipient', keepRecipientView: true }),
-      )
-    }
-    dispatch(clearAddressCreateEditContext())
-    dispatch(setAddressFormView({ show: false, role: null }))
-    dispatch(setRecipientViewId(null))
-    dispatch(setRecipientView('recipientsView'))
-  }, [
-    recipientsFormViewIdsCount,
-    recipientView,
-    sandboxActive,
-    recipientViewEditMode,
-    dispatch,
-  ])
-
   const handlePlaceholderClick = (r: 'sender' | 'recipient') => {
     if (isMobile) {
       if (!bothFormsApplied && mobileFocus != null && mobileFocus.dualSide !== r) {
@@ -591,14 +552,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         return
       }
 
-      if (
-        el.closest(`.${styles.envelopeRecipientToolbarIconContainer}`)
-      ) {
-        if (recipientViewEditMode) {
-          dispatch(toolbarAction({ section: 'recipientView', key: 'edit' }))
-        }
-        return
-      }
       if (el.closest('button, a, input, textarea, select, [role="button"]'))
         return
       if (el.closest('[data-scrollarea-track]')) return
@@ -720,28 +673,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
       {role === 'recipient' && (
         <div className={styles.addressFormRecipientBody}>
-          {/**
-           * IconUsers выше верхней кромки fieldset — снаружи clip-контейнера,
-           * иначе overflow:hidden на форме обрежет иконку вместе со скроллом.
-           */}
-          <div className={styles.envelopeRecipientToolbarIconContainer}>
-            {recipientsFormViewIdsCount > 1 && (
-              <button
-                type="button"
-                className={clsx(
-                  styles.recipientsCountBadge,
-                  recipientView !== 'recipientsView' &&
-                    styles.recipientsCountBadgeInteractive,
-                )}
-                onClick={handleRecipientsCountBadgeClick}
-                disabled={recipientView === 'recipientsView'}
-                aria-label="Open selected recipients list"
-              >
-                {recipientsFormViewIdsCount}
-              </button>
-            )}
-            <IconUsers className={styles.envelopeRecipientToolbarIcon} />
-          </div>
           <div className={styles.addressFieldsetStack}>
             <div
               ref={recipientFieldsetRef}

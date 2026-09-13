@@ -2,7 +2,6 @@
 @use '@styles/config/uiLayout' as *;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
-$envelopeRecipientBodyTopOffset: 0.75rem;
 /**
  * Sender / recipients envelope toolbars + icons: sit above the fieldset top edge
  * (not centered on the border like translateY(-50%)).
@@ -123,17 +122,6 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
   left: 0.5rem;
 }
 
-/* create-форма: IconUsers не перехватывает клики по applyLight / close;
-   счётчик остаётся кликабельным (возврат к списку выбранных). */
-.addressFormRecipientBody:has(.addressFieldsetCreateOpen)
-  > .envelopeRecipientToolbarIconContainer {
-  pointer-events: none;
-
-  .recipientsCountBadgeInteractive {
-    pointer-events: auto;
-  }
-}
-
 .addressFormSenderBody .addressFormSender,
 .addressFormRecipientBody .recipientFieldsetContent,
 .addressFormRecipientBody .recipientFieldsetMulti {
@@ -159,7 +147,6 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
 .recipientFieldsetWithList {
   padding-right: 0;
   padding-bottom: 0;
-  /** Обрезает скролл-трек по скруглению формы. IconUsers — снаружи fieldset. */
   overflow: hidden;
 }
 
@@ -195,33 +182,6 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
   }
 }
 
-.envelopeRecipientToolbarIconContainer {
-  position: absolute;
-  /** Верх fieldset = padding-top body; иконка живёт снаружи clip. */
-  top: $envelopeRecipientBodyTopOffset;
-  right: 1rem;
-  min-width: iconButton.$toolbar-hit-size-desktop;
-  height: iconButton.$toolbar-hit-size-desktop;
-  padding: 0.5rem;
-  transform: translateY($envelopeAddressToolbarLift);
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0 0.25rem 0 0.5rem;
-  box-sizing: border-box;
-  z-index: 3;
-  // border: solid 1px blue;
-}
-
-.envelopeRecipientToolbarIcon {
-  width: iconButton.$toolbar-hit-size-desktop;
-  height: iconButton.$toolbar-hit-size-desktop;
-  flex-shrink: 0;
-  color: $color-envelope-recipient-legend;
-  opacity: 0.5;
-  transition: color 0.2s ease;
-}
-
 .addressFormRecipientBody,
 .addressFormSenderBody {
   position: relative;
@@ -229,11 +189,6 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
   min-height: 0;
   display: flex;
   flex-direction: column;
-}
-
-.addressFormRecipientBody {
-  padding-top: $envelopeRecipientBodyTopOffset;
-  box-sizing: border-box;
 }
 
 .addressFormRecipientBody .recipientFieldsetContent,
@@ -296,7 +251,6 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
   &.addressFieldset {
     border: solid 1px $color-section-light;
     // border: solid 1px red;
-    /** IconUsers вынесен наружу — можно безопасно клипать содержимое по радиусу. */
     overflow: hidden;
     container-type: size;
     container-name: recipients-form;
@@ -392,49 +346,6 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
   min-height: min-content;
   box-sizing: border-box;
   gap: 0.4rem;
-}
-
-.recipientsCountBadge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  /* Same track as sender Toggle default (2.125 × 1.125 rem), without the knob. */
-  width: 2.125rem;
-  min-width: 2.125rem;
-  height: 1.125rem;
-  padding: 0 0.2rem;
-  margin: 0;
-  border: none;
-  appearance: none;
-  box-sizing: border-box;
-  background-color: $color-envelope-recipient-input-border;
-  color: $color-envelope-recipient-legend;
-  font-size: 0.95rem;
-  font-weight: 700;
-  line-height: 1;
-  font-family: sans-serif;
-  border-radius: 1.125rem;
-  box-shadow: 0 0 0 1px rgba($color-envelope-recipient-legend, 0.15);
-  flex-shrink: 0;
-  cursor: default;
-
-  &:disabled {
-    cursor: default;
-  }
-}
-
-.recipientsCountBadgeInteractive {
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-
-  &:hover {
-    filter: brightness(0.97);
-  }
-
-  &:focus-visible {
-    outline: 2px solid rgba($color-envelope-recipient-legend, 0.45);
-    outline-offset: 2px;
-  }
 }
 
 .labelGroup {
