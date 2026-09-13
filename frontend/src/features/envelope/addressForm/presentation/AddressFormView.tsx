@@ -9,6 +9,7 @@ import clsx from 'clsx'
 import { Label } from './Label/Label'
 import { useEnvelopeAddress } from '../application/hooks'
 import { useEnvelopeFacade } from '../../application/facades/useEnvelopeFacade'
+import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import type { AddressFields } from '@shared/config/constants'
 import type { Lang } from '@i18n/types'
 import styles from './AddressFormView.module.scss'
@@ -166,6 +167,9 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
             addressViewStyles.savedAddressViewCreateForm,
           )}
         >
+          <div className={styles.addressFormTopBar}>
+            {!mobileFullscreen ? <Toolbar section={toolbarSection} /> : null}
+          </div>
           <div className={styles.addressFormFields}>{fields}</div>
         </div>
       </div>

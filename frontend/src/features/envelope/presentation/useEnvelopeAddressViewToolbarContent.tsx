@@ -168,6 +168,7 @@ export function useEnvelopeAddressViewToolbarContent({
 
   const showRecipientCreateToolbar =
     enabled &&
+    isMobile &&
     activeViewRole === 'recipient' &&
     recipientView === 'recipientCreate' &&
     !assemblyRecipientSimplifiedPeek

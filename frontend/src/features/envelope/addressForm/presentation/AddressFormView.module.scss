@@ -1,4 +1,6 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
 
 /* Поля формы — фон и рамка задаются через .savedAddressView* в AddressView.module.scss */
 .addressFormView {
@@ -19,9 +21,13 @@
   max-width: 100%;
 }
 
+.addressFormTopBar {
+  display: none;
+}
+
 /**
- * Desktop create: 11 equal tracks of the form height.
- * Top 1, each field 1, gaps between fields 1. Bottom is leftover.
+ * Desktop create: toolbar is outside the field grid.
+ * Remaining height: 9 equal tracks — 4 field rows + 5 spacings.
  * Captions sit in the track above each input.
  */
 :global([data-shell-layout='desktop']) .addressFormView {
@@ -34,12 +40,44 @@
   overflow: hidden;
   padding-block: 0;
 
+  .addressFormTopBar {
+    display: block;
+    flex: 0 0 $section-inner-toolbar-height-desktop;
+    width: 100%;
+    height: $section-inner-toolbar-height-desktop;
+    min-height: $section-inner-toolbar-height-desktop;
+    max-height: $section-inner-toolbar-height-desktop;
+    margin-block: 0.25rem;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    border: none;
+    border-radius: 0.75rem;
+    background-color: $color-envelope-recipient-input;
+    @include iconButton.toolbar-factory-edge-key-insets;
+
+    :global([class*='toolbarRecipientCreate']) {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+    :global([class*='toolbarGroup']) {
+      flex: 0 0 auto;
+      width: auto;
+    }
+  }
+
   .addressFormFields {
     flex: 1 1 auto;
     min-height: 0;
-    height: 100%;
+    height: auto;
     display: grid;
-    grid-template-rows: repeat(11, minmax(0, 1fr));
+    grid-template-rows: repeat(9, minmax(0, 1fr));
     gap: 0;
   }
 
@@ -64,17 +102,22 @@
     max-width: 78%;
     justify-self: end;
     align-self: start;
-    height: calc(100% + 0.5rem);
+    height: calc(100% + 0.3rem);
     min-height: 0;
     position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: stretch;
     box-sizing: border-box;
   }
 
+  .addressFormFields > *:not(.labelGroup) {
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+  }
+
   .labelGroup {
+    display: flex;
     flex-direction: row;
+    flex-wrap: nowrap;
     align-items: stretch;
     gap: 0 0.5rem;
   }
@@ -113,7 +156,7 @@
     height: 100%;
     min-height: 0;
     font-size: 0.9rem;
-    padding-block: 0.25rem;
+    padding-block: 0.15rem;
   }
 }
 
