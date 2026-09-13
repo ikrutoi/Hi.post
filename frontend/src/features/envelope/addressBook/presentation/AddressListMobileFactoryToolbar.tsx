@@ -103,7 +103,8 @@ export const AddressListMobileFactoryUpperToolbar: React.FC<{
 }> = ({ placement = 'factory' }) => {
   const dispatch = useAppDispatch()
   const { isMobileLayout } = useSizeFacade()
-  const showReturn = isMobileLayout && placement === 'factory'
+  const showReturn =
+    placement === 'listHeader' || (isMobileLayout && placement === 'factory')
   const showApply = placement !== 'listHeader'
   const senderListOpen = useAppSelector(selectSenderListPanelOpen)
   const upperReturnSection = senderListOpen ? 'senderView' : 'recipientView'

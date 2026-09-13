@@ -95,7 +95,8 @@ export const CardtextListMobileFactoryUpperToolbar: React.FC<{
 }> = ({ placement = 'factory' }) => {
   const dispatch = useAppDispatch()
   const { isMobileLayout } = useSizeFacade()
-  const showReturn = isMobileLayout && placement === 'factory'
+  const showReturn =
+    placement === 'listHeader' || (isMobileLayout && placement === 'factory')
   const showApply = placement !== 'listHeader'
   const templates = useAppSelector(selectCardtextTemplatesListItems)
   const listEmpty = (templates?.length ?? 0) === 0

@@ -154,8 +154,6 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     isMobile && focusRole === 'recipient' && mobileFocus != null
   const bothFormsApplied =
     assemblySenderSimplifiedPeek && assemblyRecipientSimplifiedPeek
-  const recipientsToolbarSlotDisabled = recipientView === 'recipientCreate'
-
   const handleFocusClose = useCallback(
     (key: IconKey): void | false => {
       if (key !== 'close' || mobileFocus == null || focusRole == null) return
@@ -222,13 +220,7 @@ export const EnvelopeInnerToolbar: React.FC = () => {
           </div>
         </>
       ) : (
-        <div
-          className={clsx(
-            styles.envelopeToolbarSlotRecipients,
-            recipientsToolbarSlotDisabled &&
-              styles.envelopeToolbarSlotDisabled,
-          )}
-        >
+        <div className={styles.envelopeToolbarSlotRecipients}>
           {recipientsToolbar}
         </div>
       )}

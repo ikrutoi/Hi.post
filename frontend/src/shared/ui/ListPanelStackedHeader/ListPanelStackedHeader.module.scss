@@ -237,6 +237,10 @@
       :global([class*='upperToolbar'] [class*='toolbarKey']) {
         margin-inline: 0;
       }
+
+      :global([class*='upperToolbar']) {
+        right: 0;
+      }
     }
 
     .headerToolbarRow {

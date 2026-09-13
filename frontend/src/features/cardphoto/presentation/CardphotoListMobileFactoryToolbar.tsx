@@ -94,7 +94,8 @@ export const CardphotoListMobileFactoryUpperToolbar: React.FC<{
 }> = ({ placement = 'factory' }) => {
   const dispatch = useAppDispatch()
   const { isMobileLayout } = useSizeFacade()
-  const showReturn = isMobileLayout && placement === 'factory'
+  const showReturn =
+    placement === 'listHeader' || (isMobileLayout && placement === 'factory')
   const showApply = placement !== 'listHeader'
   const inlineTemplateCount = useAppSelector(selectCardphotoInlineTemplateCount)
   const listEmpty = inlineTemplateCount === 0
