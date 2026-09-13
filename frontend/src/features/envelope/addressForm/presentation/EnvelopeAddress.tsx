@@ -732,7 +732,13 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               onMouseDownCapture={handleRecipientFieldsetMouseDownCapture}
             >
               {recipientSlotToolbar != null ? (
-                <div className={addressFormStyles.addressFormTopBar}>
+                <div
+                  className={clsx(
+                    addressFormStyles.addressFormTopBar,
+                    recipientsDisplayList.length > 1 &&
+                      addressFormStyles.addressFormTopBarActionsEnd,
+                  )}
+                >
                   {recipientSlotToolbar}
                 </div>
               ) : null}

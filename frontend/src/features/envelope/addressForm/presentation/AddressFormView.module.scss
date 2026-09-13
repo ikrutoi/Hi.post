@@ -45,22 +45,27 @@
     width: auto;
   }
 
+  > :global([class*='toolbar']) {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+  }
+
   :global([class*='toolbarRecipientCreate']),
-  :global([class*='toolbarRecipientView']),
-  :global([class*='toolbarRecipients']) {
+  :global([class*='toolbarRecipientView']) {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    flex: 1 1 auto;
-    width: 100%;
-    min-width: 0;
-    height: 100%;
-    margin: 0;
     box-sizing: border-box;
   }
 
   :global([class*='toolbarRecipients']) {
+    display: flex;
+    align-items: center;
     justify-content: flex-end;
+    box-sizing: border-box;
   }
 
   :global([class*='toolbarGroup']) {
@@ -74,6 +79,15 @@
     &:hover,
     &:active {
       background-color: transparent !important;
+    }
+  }
+
+  &.addressFormTopBarActionsEnd {
+    justify-content: flex-end;
+
+    > :global([class*='toolbar']) {
+      flex: 0 0 auto;
+      width: auto;
     }
   }
 }
