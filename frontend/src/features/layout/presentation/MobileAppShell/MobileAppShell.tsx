@@ -127,6 +127,7 @@ import {
   EMPTY_GUTTER_PLAN_PIE_ID,
   useMobilePlanCardPies,
 } from './useMobilePlanCardPies'
+import { AssemblyCardPieInnerProvider } from './AssemblyCardPieInnerContext'
 import { CardPieLeftSlot } from '@features/cardPie/presentation/CardPieLeftSlot'
 import { EditorPieListCardPieBadgeSync } from '@features/cardPie/presentation/EditorPieListCardPieBadgeSync'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
@@ -407,6 +408,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   )
   const canCyclePlanPies = factoryPostcardCount > 1
   const showMobileCenterPlanCycleHint = factoryPostcardCount > 1
+  const assemblyPie = selectedPlanPie ?? assemblyOverviewPie
 
   const { cartUnderlyingPostcardCount } = useMemo(
     () => computeCartLegendStatusCounts(cartItems),
@@ -1065,6 +1067,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       }
       onClick={onAppClick}
     >
+      <AssemblyCardPieInnerProvider value={assemblyPie.inner}>
       <MarkStampYearDevProvider>
         <div className={styles.mobileSubstrate}>
           {showMobileUserLoginChrome ? (
@@ -1223,12 +1226,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                         <CardPie
                           fillContainer
                           station="left"
-                          pieInner={
-                            (selectedPlanPie ?? assemblyOverviewPie).inner
-                          }
-                          pieSections={
-                            (selectedPlanPie ?? assemblyOverviewPie).sections
-                          }
+                          pieInner={assemblyPie.inner}
+                          pieSections={assemblyPie.sections}
                           onLeftPieSectorClick={handleLeftPieSectorClick}
                           onLeftPieCenterClick={handleLeftPieCenterPress}
                           leftPieCenterPlanCycle={canCyclePlanPies}
@@ -1356,6 +1355,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
           </div>
         ) : null}
       </MarkStampYearDevProvider>
+      </AssemblyCardPieInnerProvider>
     </div>
   )
 }

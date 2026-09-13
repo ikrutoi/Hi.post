@@ -29,6 +29,7 @@ import {
 import { MobileCardPieGutterMinis } from '@layout/presentation/MobileAppShell/MobileCardPieGutterMinis'
 import { resolvePlanPieGutterHighlight } from '@layout/presentation/MobileAppShell/resolvePlanPieGutterHighlight'
 import { runPlanPieCenterCycle } from '@layout/presentation/MobileAppShell/runPlanPieCenterCycle'
+import { AssemblyCardPieInnerProvider } from '@layout/presentation/MobileAppShell/AssemblyCardPieInnerContext'
 import {
   EMPTY_GUTTER_PLAN_PIE_ID,
   useMobilePlanCardPies,
@@ -2298,7 +2299,7 @@ const App = () => {
                   postcardPieCartToolbarStateOverride={
                     postcardPieCartToolbarStateOverride
                   }
-                />
+                >
                 <div
                   className={clsx(styles.appMainContentCenter)}
                   data-desktop-factory-slot="true"
@@ -2342,6 +2343,7 @@ const App = () => {
                     </div>
                   </div>
                 </div>
+                </DesktopFactoryTopRow>
               </div>
             </RightListArchiveMiniProvider>
             <div
@@ -2410,6 +2412,7 @@ type DesktopFactoryTopRowProps = {
   archiveCenterCycleHintViewMode: 'list' | 'calendar' | null
   onPostcardPieCartToolbarAction: (key: string) => boolean | void
   postcardPieCartToolbarStateOverride: undefined
+  children?: React.ReactNode
 }
 
 function DesktopFactoryTopRow({
@@ -2431,6 +2434,7 @@ function DesktopFactoryTopRow({
   archiveCenterCycleHintViewMode,
   onPostcardPieCartToolbarAction,
   postcardPieCartToolbarStateOverride,
+  children,
 }: DesktopFactoryTopRowProps) {
   const dispatch = useAppDispatch()
   const {
@@ -2535,6 +2539,7 @@ function DesktopFactoryTopRow({
   const assemblyPie = selectedPlanPie ?? assemblyOverviewPie
 
   return (
+    <AssemblyCardPieInnerProvider value={assemblyPie.inner}>
     <>
       <div className={styles.appMainContentLeftListSlot}>
         <div className={styles.appMainContentLeftListPlaceholder}>
@@ -2647,7 +2652,9 @@ function DesktopFactoryTopRow({
           ) : null}
         </div>
       </div>
+      {children}
     </>
+    </AssemblyCardPieInnerProvider>
   )
 }
 

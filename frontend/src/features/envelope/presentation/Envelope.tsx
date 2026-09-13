@@ -16,6 +16,7 @@ import { EnvelopePeekAddressBlock } from './EnvelopePeekAddressBlock'
 import { useRecipientFacade } from '../recipient/application/facades'
 import { useRecipientsChromeCount } from '../addressForm/presentation/RecipientsToolbarMark'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
+import { useAssemblyCardPieInner } from '@layout/presentation/MobileAppShell/AssemblyCardPieInnerContext'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
 import { EnvelopeMobileAddressViewToolbar } from './EnvelopeMobileAddressViewToolbar'
@@ -100,9 +101,16 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
     archiveEditPeekGate
   const showRecipientSimplified =
     !envelopePeekMode && assemblyRecipientSimplifiedPeek
+  const assemblyPieInner = useAssemblyCardPieInner()
   const appliedRecipientsCount = useRecipientsChromeCount()
+  const pieRecipientCount = assemblyPieInner?.recipientCount
   const showAppliedRecipientsCount =
-    showRecipientSimplified && appliedRecipientsCount > 1
+    showRecipientSimplified &&
+    (pieRecipientCount ?? appliedRecipientsCount) > 1
+  const pieRecipientAddress =
+    showRecipientSimplified && pieRecipientCount === 1
+      ? (assemblyPieInner?.recipient ?? null)
+      : null
   const bothFormsApplied =
     assemblySenderSimplifiedPeek && assemblyRecipientSimplifiedPeek
 
@@ -354,8 +362,9 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
               fromSessionApplied
               addressFallback={recipientFacade.address}
               appliedCount={
-                showAppliedRecipientsCount ? appliedRecipientsCount : null
+                showAppliedRecipientsCount ? pieRecipientCount ?? appliedRecipientsCount : null
               }
+              pieRecipientAddress={pieRecipientAddress}
               className={styles.envelopePeekBlock}
             />
           ) : (

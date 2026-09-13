@@ -48,6 +48,11 @@ export type EnvelopePeekAddressBlockProps = {
    * View-like 1px shell; numeral matches date selected-days count.
    */
   appliedCount?: number | null
+  /**
+   * Central CardPie envelope is a single address (selected mini pie).
+   * Takes over Recipients peek lines so factory matches the pie.
+   */
+  pieRecipientAddress?: Readonly<AddressFields> | null
 }
 
 type PeekAddressLine = { text: string; isName: boolean }
@@ -155,6 +160,7 @@ export const EnvelopePeekAddressBlock: React.FC<
   fromSessionApplied = false,
   addressFallback = null,
   appliedCount = null,
+  pieRecipientAddress = null,
 }) => {
   const { listRowInner } = useRightListArchiveMini()
   const recipientState = useAppSelector(selectRecipientState)
@@ -261,6 +267,8 @@ export const EnvelopePeekAddressBlock: React.FC<
     recipientAppliedIds.length,
   ])
 
+  const pieRecipientLines =
+    role === 'recipient' ? addressLinesForPeek(pieRecipientAddress) : []
   const linesFromRole =
     role === 'sender'
       ? fromSessionApplied
@@ -271,11 +279,13 @@ export const EnvelopePeekAddressBlock: React.FC<
         : recipientLinesFromArchive
   const fallbackLines = addressLinesForPeek(addressFallback)
   const lines =
-    linesFromRole.length > 0
-      ? linesFromRole
-      : fromSessionApplied
-        ? fallbackLines
-        : linesFromRole
+    pieRecipientLines.length > 0
+      ? pieRecipientLines
+      : linesFromRole.length > 0
+        ? linesFromRole
+        : fromSessionApplied
+          ? fallbackLines
+          : linesFromRole
 
   if (role === 'recipient' && appliedCount != null && appliedCount > 1) {
     return (
