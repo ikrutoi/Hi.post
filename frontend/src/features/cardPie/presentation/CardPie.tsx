@@ -4,7 +4,7 @@ import { AROMA_IMAGES_THUMB } from '@entities/aroma/domain/types'
 import { MONTH_NAMES } from '@entities/date/constants'
 import {
   IconUsers,
-  IconLogo,
+  IconLogoRound,
   IconCart,
   IconHistoryV2,
   IconSectionMenuCardphoto,
@@ -975,7 +975,7 @@ export const CardPie: React.FC<CardPieProps> = ({
             }}
           >
             {station === 'left' ? (
-              <IconLogo aria-hidden />
+              <IconLogoRound aria-hidden />
             ) : (
               <span
                 className={clsx(
