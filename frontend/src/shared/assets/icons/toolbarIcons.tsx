@@ -195,6 +195,7 @@ import {
   IconCardPieCheck,
   IconCardBlocked,
   IconDateEdit,
+  IconDateNext,
   IconAddCartList,
   IconHistoryPanelDensity,
   IconAddList,
@@ -374,6 +375,8 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconAddressAdd />
     case 'addressNext':
       return <IconAddressNext />
+    case 'dateNext':
+      return <IconDateNext />
     case 'search':
       return <TbSearch />
     case 'empty':

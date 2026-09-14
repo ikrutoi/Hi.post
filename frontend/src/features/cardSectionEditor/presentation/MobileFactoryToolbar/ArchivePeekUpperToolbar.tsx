@@ -9,6 +9,7 @@ import { clearApply } from '@cardphoto/infrastructure/state'
 import { clearApplied as clearAromaApplied } from '@aroma/infrastructure/state'
 import { clearAppliedDates } from '@date/infrastructure/state'
 import { AddressNextCycleButton } from './AddressNextCycleButton'
+import { DateNextCycleButton } from './DateNextCycleButton'
 import { useRecipientsChromeCount } from '@envelope/addressForm/presentation/RecipientsToolbarMark'
 import { unapplyRecipientsKeepingSelection } from '@envelope/domain/helpers/unapplyRecipientsKeepingSelection'
 import { selectRecipientApplied, selectCurrentRecipientsViewIds } from '@envelope/recipient/infrastructure/selectors'
@@ -16,6 +17,7 @@ import {
   selectArchiveEnvelopeSandboxActive,
   selectArchiveSandboxRecipient,
 } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
+import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { openEditorSectionTemplateList } from '../../application/helpers'
@@ -54,8 +56,11 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
   const sessionAppliedIds = useAppSelector(selectRecipientApplied)
   const sessionViewIds = useAppSelector(selectCurrentRecipientsViewIds)
   const recipientsCount = useRecipientsChromeCount()
+  const appliedDispatchDates = useAppSelector(selectMergedDispatchDates)
   const showAddressNext =
     assemblyRecipientSimplifiedPeek && recipientsCount > 1
+  const showDateNext =
+    assemblyDateSimplifiedPeek && appliedDispatchDates.length > 1
   const {
     requestSectionEditFromPeek,
     rightPieDatePeekNoToolbar,
@@ -181,6 +186,11 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
       {showAddressNext ? (
         <div className={styles.sideRight}>
           <AddressNextCycleButton count={recipientsCount} />
+        </div>
+      ) : null}
+      {showDateNext ? (
+        <div className={styles.sideRight}>
+          <DateNextCycleButton count={appliedDispatchDates.length} />
         </div>
       ) : null}
     </div>

@@ -12,7 +12,7 @@
     margin: 0 0.3rem;
     &:not([data-icon-key='historyView']):not([data-icon-key='cardphotoReturn']):not(
         [data-icon-key='userLogin']
-      ):not([data-icon-key='addressNext']) {
+      ):not([data-icon-key='addressNext']):not([data-icon-key='dateNext']) {
       @include iconButton.toolbar-icon-button-size-standard-shell(true);
     }
     background-color: white;
@@ -53,6 +53,14 @@
         iconButton.$toolbar-hit-size-standard,
         iconButton.$toolbar-icon-size-standard,
         iconButton.$toolbar-aroma-icon-aspect,
+        true
+      );
+    }
+
+    &[data-icon-key='dateNext'] {
+      @include iconButton.toolbar-date-next-button-at-desktop-scale(
+        iconButton.$toolbar-hit-size-standard,
+        iconButton.$toolbar-icon-size-standard,
         true
       );
     }
@@ -157,6 +165,7 @@
     &[data-icon-key='addressList'].toolbarKeyEnabled,
     &[data-icon-key='addressAdd'].toolbarKeyEnabled,
     &[data-icon-key='addressNext'].toolbarKeyEnabled,
+    &[data-icon-key='dateNext'].toolbarKeyEnabled,
     &[data-icon-key='postcardEdit'].toolbarKeyEnabled,
     &[data-icon-key='editLight'].toolbarKeyEnabled,
     &[data-icon-key='cardPieCopy'].toolbarKeyEnabled {
@@ -2363,7 +2372,7 @@
       .toolbarKeyCropQualityIndicator
     ):not([data-icon-key='historyView']):not([data-icon-key='userLogin']):not(
       [data-icon-key='cardphotoReturn']
-    ):not([data-icon-key='addressNext']) {
+    ):not([data-icon-key='addressNext']):not([data-icon-key='dateNext']) {
     @include iconButton.toolbar-icon-button-size-mobile-toolbar(true);
   }
 
@@ -2393,6 +2402,14 @@
       iconButton.$toolbar-hit-size-mobile-toolbar,
       iconButton.$toolbar-icon-size-mobile-toolbar,
       iconButton.$toolbar-aroma-icon-aspect,
+      true
+    );
+  }
+
+  .toolbar .toolbarKey[data-icon-key='dateNext'] {
+    @include iconButton.toolbar-date-next-button(
+      iconButton.$toolbar-hit-size-mobile-toolbar,
+      iconButton.$toolbar-icon-size-mobile-toolbar,
       true
     );
   }

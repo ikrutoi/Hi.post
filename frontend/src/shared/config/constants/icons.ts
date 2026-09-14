@@ -85,6 +85,7 @@ export const ICON_KEYS = [
   'favoriteFilled',
   'addressAdd',
   'addressNext',
+  'dateNext',
   'clearInput',
   'search',
   'empty',

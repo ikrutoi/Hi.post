@@ -136,6 +136,13 @@
 .sideRight {
   right: 0;
   justify-content: flex-end;
+  gap: 0;
+
+  /** dateNext — крайний справа, как addressNext; calendarReturn слева от него. */
+  > *:last-child {
+    margin-right: 0 !important;
+    margin-inline-end: 0 !important;
+  }
 }
 
 .center {

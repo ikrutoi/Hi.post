@@ -161,7 +161,7 @@ $toolbar-css-var-icon-mobile-section: --mobile-section-toolbar-icon-size;
 /** Aroma section glyph — 1600×1280, size by height. */
 $toolbar-aroma-icon-aspect: 1600 / 1280;
 
-/** Cardphoto return glyph — 1600×1440, keep 1280-unit scale (do not squash). */
+/** Cardphoto return / dateNext — 1600×1440, keep 1280-unit scale (do not squash). */
 $toolbar-cardphoto-return-width-scale: 1600 / 1280;
 $toolbar-cardphoto-return-height-scale: 1440 / 1280;
 
@@ -223,6 +223,50 @@ $toolbar-cardphoto-return-height-scale: 1440 / 1280;
 
   :global([data-shell-layout='desktop']) & {
     @include toolbar-cardphoto-return-button(
+      $hit-size * $toolbar-desktop-scale,
+      $icon-size * $toolbar-desktop-scale,
+      $nested-svg
+    );
+  }
+}
+
+/**
+ * dateNext: same hit box as addressNext, glyph at 1280-unit scale
+ * (viewBox is 1440 tall — height-fit would shrink it ~11%).
+ */
+@mixin toolbar-date-next-button($hit-size, $icon-size, $nested-svg: true) {
+  @include toolbar-icon-button-height-only(
+    $hit-size,
+    $icon-size,
+    $toolbar-aroma-icon-aspect,
+    $nested-svg
+  );
+  overflow: visible;
+
+  @if $nested-svg {
+    svg {
+      width: calc(#{$icon-size} * #{$toolbar-cardphoto-return-width-scale});
+      height: calc(#{$icon-size} * #{$toolbar-cardphoto-return-height-scale});
+      max-width: none;
+    }
+  } @else {
+    > svg {
+      width: calc(#{$icon-size} * #{$toolbar-cardphoto-return-width-scale});
+      height: calc(#{$icon-size} * #{$toolbar-cardphoto-return-height-scale});
+      max-width: none;
+    }
+  }
+}
+
+@mixin toolbar-date-next-button-at-desktop-scale(
+  $hit-size,
+  $icon-size,
+  $nested-svg: true
+) {
+  @include toolbar-date-next-button($hit-size, $icon-size, $nested-svg);
+
+  :global([data-shell-layout='desktop']) & {
+    @include toolbar-date-next-button(
       $hit-size * $toolbar-desktop-scale,
       $icon-size * $toolbar-desktop-scale,
       $nested-svg

@@ -14,7 +14,8 @@ import {
   selectCartDatePickSessionActive,
   selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
-import { selectCanApplyDispatchDates } from '@date/infrastructure/selectors'
+import { DateNextCycleButton } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar/DateNextCycleButton'
+import { selectCanApplyDispatchDates, selectDraftDispatchDates, selectSelectedDates } from '@date/infrastructure/selectors'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { endCartCalendarDatePick } from '@date/calendar/infrastructure/state'
 import { releaseCartDatePickListEntryOwnership } from '@date/calendar/application/logic/cartDatePickListEntryOwnership'
@@ -49,6 +50,12 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const canApplyAssemblyDates = useAppSelector(selectCanApplyDispatchDates)
+  const draftDispatchDates = useAppSelector(selectDraftDispatchDates)
+  const selectedDates = useAppSelector(selectSelectedDates)
+  const selectedDaysCount = Math.max(
+    draftDispatchDates.length,
+    selectedDates.length,
+  )
   const canApplyCartdatePick = useAppSelector(selectCanApplyCartdatePick)
   const canApplyDispatchDates =
     notebookStripTab === 'cartdate'
@@ -189,6 +196,7 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
   /** `cartdate` — chrome как date (Apply), контекст корзины. */
   const showDateApplyChrome =
     notebookStripTab === 'date' || notebookStripTab === 'cartdate'
+  const showDateNext = showDateApplyChrome && selectedDaysCount > 1
 
   const dateApplyToolbar = useMemo((): ToolbarConfig => {
     return [
@@ -246,6 +254,9 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
         >
           {getToolbarIcon({ key: 'calendarReturn' })}
         </button>
+        {showDateNext ? (
+          <DateNextCycleButton count={selectedDaysCount} />
+        ) : null}
       </div>
     </div>
   )
