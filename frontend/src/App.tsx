@@ -29,6 +29,10 @@ import {
 import { MobileCardPieGutterMinis } from '@layout/presentation/MobileAppShell/MobileCardPieGutterMinis'
 import { resolvePlanPieGutterHighlight } from '@layout/presentation/MobileAppShell/resolvePlanPieGutterHighlight'
 import { runPlanPieCenterCycle } from '@layout/presentation/MobileAppShell/runPlanPieCenterCycle'
+import {
+  isCartOrHistoryArchiveActive,
+  revealFactoryFromCartOrHistory,
+} from '@layout/presentation/MobileAppShell/revealFactoryFromCartOrHistory'
 import { AssemblyCardPieInnerProvider } from '@layout/presentation/MobileAppShell/AssemblyCardPieInnerContext'
 import { AssemblyPlanPieFocusProvider } from '@layout/presentation/MobileAppShell/AssemblyPlanPieFocusContext'
 import {
@@ -138,7 +142,6 @@ import {
   setHistoryListSelectedLocalId,
   setNotebookStripTab,
   setNotebookStripDateOverCart,
-  setNotebookStripDateOverHistory,
   updateLastViewedCalendarDate,
   cyclePlanMiniListDensity,
 } from '@date/calendar/infrastructure/state'
@@ -148,7 +151,6 @@ import {
   isCartDatePickListEntryOwned,
   releaseCartDatePickListEntryOwnership,
 } from '@date/calendar/application/logic/cartDatePickListEntryOwnership'
-import { isCartOwnedNotebookStrip } from '@date/calendar/application/logic/calendarStripSection'
 import { calendarDayHasCards } from '@date/cell/domain/calendarDayContent'
 import { IconCardPie, IconCardPieNext, IconPanelDensity2 } from '@shared/ui/icons'
 import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
@@ -2474,12 +2476,12 @@ function DesktopFactoryTopRow({
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const planMiniListDensity = useAppSelector(selectPlanMiniListDensity)
   const showArchivePie = rightListArchiveLocalId != null
-  const showEmptyArchive =
-    !showArchivePie &&
-    (listPanelOpen ||
-      historyListPanelOpen ||
-      isCartOwnedNotebookStrip(notebookStripTab) ||
-      notebookStripTab === 'history')
+  const archiveChromeActive = isCartOrHistoryArchiveActive({
+    cartListPanelOpen: listPanelOpen,
+    historyListPanelOpen,
+    notebookStripTab,
+  })
+  const showEmptyArchive = !showArchivePie && archiveChromeActive
   const keepPlanAccent = !showArchivePie && !showEmptyArchive
   const planMiniPieCount = planPies.filter(
     (pie) => pie.id !== EMPTY_GUTTER_PLAN_PIE_ID,
@@ -2517,25 +2519,11 @@ function DesktopFactoryTopRow({
       if (pie == null) return
 
       onBeforeLeftPieInteraction()
-      if (listPanelOpen) {
-        dispatch(setCartListPanelOpen(false))
-      }
-      if (historyListPanelOpen) {
-        dispatch(setHistoryListPanelOpen(false))
-      }
-      if (
-        isCartOwnedNotebookStrip(notebookStripTab) ||
-        notebookStripTab === 'history'
-      ) {
-        if (isCartOwnedNotebookStrip(notebookStripTab)) {
-          dispatch(setNotebookStripDateOverCart(true))
-        }
-        if (notebookStripTab === 'history') {
-          dispatch(setNotebookStripDateOverHistory(true))
-        }
-        dispatch(setNotebookStripTab('date'))
-        dispatch(setActiveSection('date'))
-      }
+      revealFactoryFromCartOrHistory(dispatch, {
+        cartListPanelOpen: listPanelOpen,
+        historyListPanelOpen,
+        notebookStripTab,
+      })
       dispatch(clearViewAroma())
       selectPlanPie(id)
       if (pie.dispatchDate != null) {
@@ -2559,13 +2547,37 @@ function DesktopFactoryTopRow({
   )
 
   const handleCentralPieCenterClick = useCallback(() => {
+    if (archiveChromeActive) {
+      onBeforeLeftPieInteraction()
+      revealFactoryFromCartOrHistory(dispatch, {
+        cartListPanelOpen: listPanelOpen,
+        historyListPanelOpen,
+        notebookStripTab,
+      })
+      dispatch(clearViewAroma())
+      selectPlanPie(null)
+      return
+    }
+
     if (canCyclePlanPies) {
       runPlanPieCenterCycle({ dispatch, planPies, cyclePlanPie })
       return
     }
 
     onLeftPieCenterClick()
-  }, [canCyclePlanPies, cyclePlanPie, dispatch, onLeftPieCenterClick, planPies])
+  }, [
+    archiveChromeActive,
+    canCyclePlanPies,
+    cyclePlanPie,
+    dispatch,
+    historyListPanelOpen,
+    listPanelOpen,
+    notebookStripTab,
+    onBeforeLeftPieInteraction,
+    onLeftPieCenterClick,
+    planPies,
+    selectPlanPie,
+  ])
 
   const assemblyPie = useMemo(() => {
     if (selectedPlanPie != null) return selectedPlanPie
@@ -2616,7 +2628,7 @@ function DesktopFactoryTopRow({
             onLeadIconClick={() => dispatch(cyclePlanMiniListDensity())}
             secondLeadIconAriaLabel="Next plan pie"
             onSecondLeadIconClick={handleCentralPieCenterClick}
-            secondLeadIconDisabled={!canCyclePlanPies}
+            secondLeadIconDisabled={!canCyclePlanPies && !archiveChromeActive}
             secondLeadBadge={canCyclePlanPies ? planMiniPieCount : null}
           />
           <MobileCardPieGutterMinis
