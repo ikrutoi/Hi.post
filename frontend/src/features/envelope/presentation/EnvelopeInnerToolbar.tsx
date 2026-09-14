@@ -6,9 +6,8 @@ import {
   selectActiveRecipientsToolbarState,
   selectRecipientViewEditMode,
 } from '@envelope/infrastructure/selectors'
-import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
-import { setRecipientApplied } from '@envelope/recipient/infrastructure/state'
-import { setArchiveRecipientApplied } from '@cardPanel/infrastructure/state'
+import { selectRecipientView, selectRecipientApplied, selectCurrentRecipientsViewIds } from '@envelope/recipient/infrastructure/selectors'
+import { unapplyRecipientsKeepingSelection } from '@envelope/domain/helpers/unapplyRecipientsKeepingSelection'
 import {
   selectArchiveEnvelopeSandboxActive,
   selectArchiveSandboxRecipient,
@@ -57,6 +56,8 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     assemblyRecipientSimplifiedPeek,
   } = useMobileFactoryListChrome()
   const recipientsCount = useRecipientsChromeCount()
+  const sessionAppliedIds = useAppSelector(selectRecipientApplied)
+  const sessionViewIds = useAppSelector(selectCurrentRecipientsViewIds)
   const showAddressNext =
     assemblyRecipientSimplifiedPeek && recipientsCount > 1
   const pendingAddressAddFocusRef = useRef<'recipient' | null>(null)
@@ -144,15 +145,28 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   const handleRecipientApplyPeekClick = useCallback(
     (key: IconKey): void | false => {
       if (key !== 'postcardEdit') return
-      if (sandboxActive) {
-        dispatch(setArchiveRecipientApplied(false))
-      } else {
-        dispatch(setRecipientApplied(false))
-      }
+      unapplyRecipientsKeepingSelection(dispatch, {
+        sandbox: sandboxActive,
+        appliedIds: sandboxActive
+          ? (sandboxRecipient.applied ?? [])
+          : sessionAppliedIds,
+        viewIds: sandboxActive
+          ? sandboxRecipient.currentRecipientsList === 'second'
+            ? (sandboxRecipient.recipientsViewIdsSecondList ?? [])
+            : (sandboxRecipient.recipientsViewIdsFirstList ?? [])
+          : sessionViewIds,
+      })
       openEditorSectionTemplateList(dispatch, 'envelope', isMobile)
       return false
     },
-    [dispatch, isMobile, sandboxActive],
+    [
+      dispatch,
+      isMobile,
+      sandboxActive,
+      sandboxRecipient,
+      sessionAppliedIds,
+      sessionViewIds,
+    ],
   )
 
   const showFocusReturn =

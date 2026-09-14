@@ -394,12 +394,13 @@ export function* processEnvelopeVisuals() {
   )
   const isRecipientFormOpen =
     recipient.currentView === 'recipientCreate'
-  const canApplyRecipients = recipientsPendingIds.length >= 1
   const isRecipientsEmptyForm = isRecipientFormOpen && !recipientComplete
   const recipientsViewIds =
     recipient.currentRecipientsList === 'second'
       ? (recipient.recipientsViewIdsSecondList ?? [])
       : (recipient.recipientsViewIdsFirstList ?? [])
+  const canApplyRecipients =
+    recipientsPendingIds.length >= 1 || recipientsViewIds.length >= 1
   const appliedIds = recipient.applied ?? []
   const recipientHasApplied = appliedIds.length > 0
   const recipientsViewIdsEqual =

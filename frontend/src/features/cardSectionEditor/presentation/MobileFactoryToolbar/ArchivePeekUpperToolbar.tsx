@@ -8,12 +8,13 @@ import { setCardtextApplyPeekChrome, setCardtextAppliedData } from '@cardtext/in
 import { clearApply } from '@cardphoto/infrastructure/state'
 import { clearApplied as clearAromaApplied } from '@aroma/infrastructure/state'
 import { clearAppliedDates } from '@date/infrastructure/state'
-import { setRecipientApplied } from '@envelope/recipient/infrastructure/state'
 import { AddressNextCycleButton } from './AddressNextCycleButton'
 import { useRecipientsChromeCount } from '@envelope/addressForm/presentation/RecipientsToolbarMark'
-import { setArchiveRecipientApplied } from '@cardPanel/infrastructure/state'
+import { unapplyRecipientsKeepingSelection } from '@envelope/domain/helpers/unapplyRecipientsKeepingSelection'
+import { selectRecipientApplied, selectCurrentRecipientsViewIds } from '@envelope/recipient/infrastructure/selectors'
 import {
   selectArchiveEnvelopeSandboxActive,
+  selectArchiveSandboxRecipient,
 } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
@@ -49,6 +50,9 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
     showArchivePeekEditToolbar,
   } = useMobileFactoryListChrome()
   const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
+  const sandboxRecipient = useAppSelector(selectArchiveSandboxRecipient)
+  const sessionAppliedIds = useAppSelector(selectRecipientApplied)
+  const sessionViewIds = useAppSelector(selectCurrentRecipientsViewIds)
   const recipientsCount = useRecipientsChromeCount()
   const showAddressNext =
     assemblyRecipientSimplifiedPeek && recipientsCount > 1
@@ -109,11 +113,17 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
           dispatch(clearAppliedDates())
         } else if (assemblyRecipientSimplifiedPeek) {
           /** Peek = recipient уже на открытке; postcardEdit снимает apply. */
-          if (sandboxActive) {
-            dispatch(setArchiveRecipientApplied(false))
-          } else {
-            dispatch(setRecipientApplied(false))
-          }
+          unapplyRecipientsKeepingSelection(dispatch, {
+            sandbox: sandboxActive,
+            appliedIds: sandboxActive
+              ? (sandboxRecipient.applied ?? [])
+              : sessionAppliedIds,
+            viewIds: sandboxActive
+              ? sandboxRecipient.currentRecipientsList === 'second'
+                ? (sandboxRecipient.recipientsViewIdsSecondList ?? [])
+                : (sandboxRecipient.recipientsViewIdsFirstList ?? [])
+              : sessionViewIds,
+          })
           openEditorSectionTemplateList(dispatch, 'envelope', isMobileLayout)
         }
         return false
@@ -130,6 +140,9 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
       isMobileLayout,
       requestSectionEditFromPeek,
       sandboxActive,
+      sandboxRecipient,
+      sessionAppliedIds,
+      sessionViewIds,
     ],
   )
 

@@ -497,6 +497,9 @@ function* applyArchiveEnvelopeSandboxFromToolbar(
       ids.every((id) => appliedIds.includes(id))
 
     if (recipientsViewIdsEqual) {
+      if (ids.length > 0) {
+        yield put(restoreRecipientsPendingIds(ids))
+      }
       yield put(setArchiveRecipientApplied(false))
       return
     }
@@ -1958,6 +1961,9 @@ function* handleEnvelopeToolbarAction(
           ids.every((id) => appliedIds.includes(id))
 
         if (recipientsViewIdsEqual) {
+          if (ids.length > 0) {
+            yield put(restoreRecipientsPendingIds(ids))
+          }
           yield put(setRecipientApplied(false))
           return
         }
