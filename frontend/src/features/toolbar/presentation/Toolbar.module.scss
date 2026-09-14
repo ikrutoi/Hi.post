@@ -52,7 +52,8 @@
       @include iconButton.toolbar-icon-button-height-only-at-desktop-scale(
         iconButton.$toolbar-hit-size-standard,
         iconButton.$toolbar-icon-size-standard,
-        $nested-svg: true
+        iconButton.$toolbar-aroma-icon-aspect,
+        true
       );
     }
 
@@ -2391,7 +2392,8 @@
     @include iconButton.toolbar-icon-button-height-only(
       iconButton.$toolbar-hit-size-mobile-toolbar,
       iconButton.$toolbar-icon-size-mobile-toolbar,
-      $nested-svg: true
+      iconButton.$toolbar-aroma-icon-aspect,
+      true
     );
   }
 

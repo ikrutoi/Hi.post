@@ -115,6 +115,7 @@
 }
 
 .headerSecondLead {
+  position: relative;
   flex-shrink: 0;
   border-radius: 0.65rem;
   background-color: #fff;
@@ -122,6 +123,10 @@
   pointer-events: none;
   overflow: visible;
   -webkit-tap-highlight-color: transparent;
+}
+
+.headerSecondLeadBadge {
+  @include iconButton.toolbar-icon-count-badge;
 }
 
 .headerSecondLeadDisabled,
@@ -517,6 +522,10 @@
       }
 
       @include desktop-template-list-header-toolbar-rounding;
+
+      .headerTopRow {
+        overflow: visible;
+      }
     }
   }
 

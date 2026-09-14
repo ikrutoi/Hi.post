@@ -49,6 +49,8 @@ export type ListPanelStackedHeaderProps = {
   secondLeadIconClassName?: string
   secondLeadIconKey?: string
   secondLeadIconDisabled?: boolean
+  /** Count chip on the second lead icon (e.g. plan mini pies). Hidden when null. */
+  secondLeadBadge?: number | string | null
   onClose?: () => void
   closeAriaLabel?: string
   /** Absolute fill behind header rows (e.g. user panel mosaic). */
@@ -75,6 +77,7 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
   secondLeadIconClassName,
   secondLeadIconKey,
   secondLeadIconDisabled = false,
+  secondLeadBadge = null,
   onClose,
   closeAriaLabel = 'Close list',
   chromeBackground,
@@ -101,6 +104,13 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
     secondLeadIconClassName,
   )
   const secondLeadIconState = secondLeadIconDisabled ? 'disabled' : 'enabled'
+  const showSecondLeadBadge =
+    secondLeadBadge != null && String(secondLeadBadge).trim().length > 0
+  const secondLeadBadgeNode = showSecondLeadBadge ? (
+    <span className={styles.headerSecondLeadBadge} aria-hidden>
+      {secondLeadBadge}
+    </span>
+  ) : null
 
   return (
     <div
@@ -169,6 +179,7 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
                       aria-label={secondLeadIconAriaLabel ?? 'Next'}
                     >
                       {secondLeadIconOverride}
+                      {secondLeadBadgeNode}
                     </button>
                   ) : (
                     <div
@@ -180,6 +191,7 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
                         : {})}
                     >
                       {secondLeadIconOverride}
+                      {secondLeadBadgeNode}
                     </div>
                   )
                 ) : null}

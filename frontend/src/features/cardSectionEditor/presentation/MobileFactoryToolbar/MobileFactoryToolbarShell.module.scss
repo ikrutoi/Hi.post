@@ -340,7 +340,6 @@
     width: 100%;
     min-width: 0;
     @include mobile-factory-toolbar-row-full-bleed;
-    overflow: visible;
 
     :global([class*='envelopeToolbarSlotSender']) {
       flex: 0 0 auto;

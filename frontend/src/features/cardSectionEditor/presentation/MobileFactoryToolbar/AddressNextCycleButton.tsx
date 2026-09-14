@@ -35,8 +35,8 @@ export const AddressNextCycleButton: React.FC<AddressNextCycleButtonProps> = ({
       >
         <IconAddressNext aria-hidden />
         {count > 1 ? (
-          <span className={toolbarStyles.toolbarBadge} aria-hidden>
-            <span className={toolbarStyles.toolbarBadgeValue}>{count}</span>
+          <span className={styles.badge} aria-hidden>
+            {count}
           </span>
         ) : null}
       </button>

@@ -2476,8 +2476,10 @@ function DesktopFactoryTopRow({
       isCartOwnedNotebookStrip(notebookStripTab) ||
       notebookStripTab === 'history')
   const keepPlanAccent = !showArchivePie && !showEmptyArchive
-  const canCyclePlanPies =
-    planPies.filter((pie) => pie.id !== EMPTY_GUTTER_PLAN_PIE_ID).length > 1
+  const planMiniPieCount = planPies.filter(
+    (pie) => pie.id !== EMPTY_GUTTER_PLAN_PIE_ID,
+  ).length
+  const canCyclePlanPies = planMiniPieCount > 1
   const { highlightPlanPieId, highlightAllPlanPies, highlightPlanPieIds } =
     useMemo(
       () =>
@@ -2599,6 +2601,7 @@ function DesktopFactoryTopRow({
             secondLeadIconAriaLabel="Next plan pie"
             onSecondLeadIconClick={handleCentralPieCenterClick}
             secondLeadIconDisabled={!canCyclePlanPies}
+            secondLeadBadge={canCyclePlanPies ? planMiniPieCount : null}
           />
           <MobileCardPieGutterMinis
             layout="desktop"
