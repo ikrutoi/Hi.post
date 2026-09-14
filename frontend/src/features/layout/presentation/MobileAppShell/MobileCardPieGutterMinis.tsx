@@ -16,17 +16,6 @@ import {
 import type { PanelDensity2Size } from '@shared/ui/icons'
 import styles from './MobileAppShell.module.scss'
 
-/** Padding around the grid + gap between minis — keep in sync with desktop SCSS. */
-const DESKTOP_MINI_PADDING_BLOCK_REM = 0.5
-const DESKTOP_MINI_PADDING_INLINE_START_REM = 0.5
-/** Matches `list-panel-scroll-padding` inline-end (0.25rem + scroll gutter). */
-const DESKTOP_MINI_PADDING_INLINE_END_REM = 0.75
-const DESKTOP_MINI_GAP_REM = 1
-const DESKTOP_MINI_COLUMNS_BY_DENSITY: Record<PanelDensity2Size, number> = {
-  1: 3,
-  2: 4,
-}
-
 type MobileCardPieGutterMinisProps = {
   layout?: 'mobile' | 'desktop'
   planPies: MobilePlanCardPie[]
@@ -66,29 +55,11 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
     const trackRef = useRef<HTMLDivElement | null>(null)
     const [thumbHeight, setThumbHeight] = useState(0)
     const [thumbTop, setThumbTop] = useState(0)
-    const [desktopMiniSize, setDesktopMiniSize] = useState(0)
 
     const displayPies = useMemo(
       () => (planPies.length > 0 ? planPies : [buildEmptyGutterPlanPie()]),
       [planPies],
     )
-
-    const desktopMiniColumns = DESKTOP_MINI_COLUMNS_BY_DENSITY[density]
-
-    const updateDesktopMiniSize = useCallback(() => {
-      const list = listRef.current
-      if (list == null || layout !== 'desktop') return
-      const rem =
-        parseFloat(getComputedStyle(document.documentElement).fontSize) || 16
-      const insets =
-        (DESKTOP_MINI_PADDING_INLINE_START_REM +
-          DESKTOP_MINI_PADDING_INLINE_END_REM) *
-          rem +
-        DESKTOP_MINI_GAP_REM * rem * (desktopMiniColumns - 1)
-      setDesktopMiniSize(
-        Math.max(0, (list.clientWidth - insets) / desktopMiniColumns),
-      )
-    }, [desktopMiniColumns, layout])
 
     const updateThumb = useCallback(() => {
       const list = listRef.current
@@ -122,8 +93,7 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
 
     useLayoutEffect(() => {
       updateThumb()
-      updateDesktopMiniSize()
-    }, [updateThumb, updateDesktopMiniSize, displayPies])
+    }, [updateThumb, displayPies])
 
     useEffect(() => {
       const list = listRef.current
@@ -136,7 +106,6 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
 
       const onResize = () => {
         updateThumb()
-        updateDesktopMiniSize()
       }
       window.addEventListener('resize', onResize)
 
@@ -144,7 +113,6 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
         typeof ResizeObserver !== 'undefined'
           ? new ResizeObserver(() => {
               updateThumb()
-              updateDesktopMiniSize()
             })
           : null
       resizeObserver?.observe(list)
@@ -154,7 +122,7 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
         window.removeEventListener('resize', onResize)
         resizeObserver?.disconnect()
       }
-    }, [updateThumb, updateDesktopMiniSize])
+    }, [updateThumb])
 
     const showThumb = thumbHeight > 0
 
@@ -164,13 +132,6 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
             styles.mobilePieGutterMiniShell,
             layout === 'desktop' && styles.mobilePieGutterMiniShellDesktop,
           )}
-        style={
-          layout === 'desktop' && desktopMiniSize > 0
-            ? ({
-                '--desktop-left-mini-pie-size': `${desktopMiniSize}px`,
-              } as React.CSSProperties)
-            : undefined
-        }
         aria-label="Card pie plan"
         {...(layout === 'desktop'
           ? { 'data-density-level': density }

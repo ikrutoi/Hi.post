@@ -655,34 +655,31 @@
   .mobilePieGutterMiniList {
     display: grid;
     /**
-     * (ширина слота − padding − gaps) / cols — размер задаёт JS,
-     * `--desktop-left-mini-pie-size`; до замера — три равные колонки.
+     * Equal flexible columns (not a pixel cap). A max-width column +
+     * min-width:auto on items overflowed the panel and clipped the last
+     * column — 6 minis in 4 columns looked like 5.
      */
-    grid-template-columns: repeat(
-      3,
-      minmax(0, var(--desktop-left-mini-pie-size, 1fr))
-    );
-    grid-auto-rows: var(--desktop-left-mini-pie-size, auto);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-rows: auto;
     align-content: start;
-    justify-content: start;
+    justify-content: stretch;
     gap: 1rem;
     @include list-panel-scroll-padding;
     padding-top: calc(
       0.5rem + #{$section-inner-toolbar-height-desktop} + 0.5rem
     );
-    overflow-x: visible;
+    overflow-x: hidden;
     background-color: transparent;
     border-radius: inherit;
   }
 
   &[data-density-level='2'] .mobilePieGutterMiniList {
-    grid-template-columns: repeat(
-      4,
-      minmax(0, var(--desktop-left-mini-pie-size, 1fr))
-    );
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .mobilePieGutterMiniItem {
+    min-width: 0;
+    min-height: 0;
     width: 100%;
     height: auto;
     aspect-ratio: 1;

@@ -2445,6 +2445,9 @@ function DesktopFactoryTopRow({
     focusedRecipientSlotKey,
     focusedRecipientPies,
     focusedRecipientInner,
+    focusedDispatchDateKey,
+    focusedDatePies,
+    focusedDateInner,
     assemblyOverviewPie,
     selectPlanPie,
     cyclePlanPie,
@@ -2457,7 +2460,9 @@ function DesktopFactoryTopRow({
   const cartPlanPies =
     focusedRecipientSlotKey != null && focusedRecipientPies.length > 0
       ? focusedRecipientPies
-      : planPies
+      : focusedDispatchDateKey != null && focusedDatePies.length > 0
+        ? focusedDatePies
+        : planPies
   const handleEditorPieToolbarAction = useEditorPieAddCartHandler({
     planPies: cartPlanPies,
     selectedPlanPie,
@@ -2491,9 +2496,13 @@ function DesktopFactoryTopRow({
           highlightPlanPieIds:
             focusedRecipientSlotKey != null
               ? focusedRecipientPies.map((pie) => pie.id)
-              : null,
+              : focusedDispatchDateKey != null
+                ? focusedDatePies.map((pie) => pie.id)
+                : null,
         }),
       [
+        focusedDatePies,
+        focusedDispatchDateKey,
         focusedRecipientPies,
         focusedRecipientSlotKey,
         keepPlanAccent,
@@ -2566,9 +2575,16 @@ function DesktopFactoryTopRow({
         inner: focusedRecipientInner,
       }
     }
+    if (focusedDateInner != null) {
+      return {
+        ...assemblyOverviewPie,
+        inner: focusedDateInner,
+      }
+    }
     return assemblyOverviewPie
   }, [
     assemblyOverviewPie,
+    focusedDateInner,
     focusedRecipientInner,
     selectedPlanPie,
   ])

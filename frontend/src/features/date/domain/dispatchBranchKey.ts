@@ -7,6 +7,12 @@ export function dispatchDateKeyFromDispatchDate(d: DispatchDate): string {
   return `${d.year}-${d.month}-${d.day}`
 }
 
+export function parseDispatchDateKey(key: string): DispatchDate | null {
+  const parts = key.split('-').map((x) => Number(x))
+  if (parts.length !== 3 || parts.some((n) => Number.isNaN(n))) return null
+  return { year: parts[0], month: parts[1], day: parts[2] }
+}
+
 export function recipientBranchKeyFromEnvelope(
   envelopeVariant: EnvelopeSessionRecord,
 ): string {

@@ -2,9 +2,16 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { selectActiveCardFullData } from '@features/cardPie/infrastructure/selectors'
 import { selectAppliedDates } from '@date/infrastructure/selectors'
-import { parseDispatchBranchKey } from '@date/domain/dispatchBranchKey'
+import {
+  dispatchDateKeyFromDispatchDate,
+  parseDispatchBranchKey,
+  parseDispatchDateKey,
+} from '@date/domain/dispatchBranchKey'
+import { nextFocusedDispatchDateKey } from '@date/domain/helpers/nextFocusedDispatchDateKey'
+import { updateLastViewedCalendarDate } from '@date/calendar/infrastructure/state'
 import {
   buildCardPieInnerDataForPlanEntry,
+  buildDateGroupCardPieInner,
   buildRecipientGroupCardPieInner,
   cardPieInnerFromEditorActiveData,
   DEFAULT_MOBILE_PLAN_PIE_ID,
@@ -12,6 +19,7 @@ import {
 } from '@features/cardPie/infrastructure/planEntryCardPieViewModel'
 import { nextFocusedRecipientSlotKey } from '@envelope/domain/helpers/nextFocusedRecipientSlotKey'
 import { bindAssemblyRecipientCycle } from './assemblyRecipientCycleBridge'
+import { bindAssemblyDateCycle } from './assemblyDateCycleBridge'
 import { resolveAddressForRecipientId } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import {
   selectRecipientApplied,
@@ -56,6 +64,22 @@ export function planPieRecipientSlotKey(
   return parseDispatchBranchKey(pie.dispatchBranchKey)?.recipientSlotKey ?? null
 }
 
+export function planPieDispatchDateKey(
+  pie: Pick<MobilePlanCardPie, 'dispatchBranchKey' | 'dispatchDate' | 'inner'>,
+): string | null {
+  if (pie.dispatchDate != null) {
+    return dispatchDateKeyFromDispatchDate(pie.dispatchDate)
+  }
+  const fromBranch =
+    pie.dispatchBranchKey != null
+      ? parseDispatchBranchKey(pie.dispatchBranchKey)?.date
+      : null
+  if (fromBranch != null) return dispatchDateKeyFromDispatchDate(fromBranch)
+  const fromInner = pie.inner.dates[0] ?? pie.inner.date
+  if (fromInner == null) return null
+  return dispatchDateKeyFromDispatchDate(fromInner)
+}
+
 export function buildEmptyGutterPlanPie(): MobilePlanCardPie {
   const inner = emptyCardPieInnerData()
   return {
@@ -90,7 +114,7 @@ export function useMobilePlanCardPies() {
     activeModeOnly: true,
     listSortDirection,
     showUndatedWhenAnySectionSelected: true,
-    hideBranchesInCart: true,
+    hideBranchesInCart: false,
   })
   const activeEditorData = useAppSelector(selectActiveCardFullData)
   const envelopeRecord = useAppSelector(selectEnvelopeSessionRecord)
@@ -111,6 +135,9 @@ export function useMobilePlanCardPies() {
     null,
   )
   const [focusedRecipientSlotKey, setFocusedRecipientSlotKey] = useState<
+    string | null
+  >(null)
+  const [focusedDispatchDateKey, setFocusedDispatchDateKey] = useState<
     string | null
   >(null)
   const prevAppliedDatesKeyRef = useRef('')
@@ -201,6 +228,13 @@ export function useMobilePlanCardPies() {
     )
   }, [focusedRecipientSlotKey, planPies])
 
+  const focusedDatePies = useMemo(() => {
+    if (focusedDispatchDateKey == null) return []
+    return planPies.filter(
+      (pie) => planPieDispatchDateKey(pie) === focusedDispatchDateKey,
+    )
+  }, [focusedDispatchDateKey, planPies])
+
   useEffect(() => {
     if (selectedPlanPieId == null) return
     if (planPies.some((pie) => pie.id === selectedPlanPieId)) return
@@ -211,6 +245,7 @@ export function useMobilePlanCardPies() {
     if (notebookDateTabPeekClearTick === 0) return
     setSelectedPlanPieId(null)
     setFocusedRecipientSlotKey(null)
+    setFocusedDispatchDateKey(null)
   }, [notebookDateTabPeekClearTick])
 
   /**
@@ -227,6 +262,7 @@ export function useMobilePlanCardPies() {
     if (appliedDates.length > 1) {
       setSelectedPlanPieId(null)
       setFocusedRecipientSlotKey(null)
+      setFocusedDispatchDateKey(null)
     }
   }, [appliedDates])
 
@@ -237,11 +273,13 @@ export function useMobilePlanCardPies() {
     if (appliedRecipientIds.length > 1) {
       setSelectedPlanPieId(null)
       setFocusedRecipientSlotKey(null)
+      setFocusedDispatchDateKey(null)
     }
   }, [appliedRecipientIds])
 
   const selectPlanPie = useCallback((id: string | null) => {
     setFocusedRecipientSlotKey(null)
+    setFocusedDispatchDateKey(null)
     setSelectedPlanPieId(id)
   }, [])
 
@@ -265,6 +303,7 @@ export function useMobilePlanCardPies() {
     }
 
     setFocusedRecipientSlotKey(null)
+    setFocusedDispatchDateKey(null)
     setSelectedPlanPieId(nextId)
     return nextId
   }, [planPies, selectedPlanPieId])
@@ -295,6 +334,7 @@ export function useMobilePlanCardPies() {
       focusedRecipientSlotKey,
     )
     setFocusedRecipientSlotKey(next)
+    setFocusedDispatchDateKey(null)
     setSelectedPlanPieId(null)
     if (sandboxActive) {
       dispatch(setArchiveRecipientViewId(next))
@@ -311,6 +351,63 @@ export function useMobilePlanCardPies() {
 
   useEffect(() => bindAssemblyRecipientCycle(cycleFocusedRecipient), [
     cycleFocusedRecipient,
+  ])
+
+  const dateCycleKeys = useMemo(() => {
+    const fromApplied: string[] = []
+    const appliedSeen = new Set<string>()
+    for (const d of appliedDates) {
+      const key = dispatchDateKeyFromDispatchDate(d)
+      if (appliedSeen.has(key)) continue
+      appliedSeen.add(key)
+      fromApplied.push(key)
+    }
+    if (fromApplied.length > 1) return fromApplied
+    const fromPies: string[] = []
+    const pieSeen = new Set<string>()
+    for (const pie of planPies) {
+      const key = planPieDispatchDateKey(pie)
+      if (key == null || pieSeen.has(key)) continue
+      pieSeen.add(key)
+      fromPies.push(key)
+    }
+    if (fromPies.length > 1) return fromPies
+    return fromApplied.length > 0 ? fromApplied : fromPies
+  }, [appliedDates, planPies])
+
+  const cycleFocusedDispatchDate = useCallback((): string | null => {
+    if (dateCycleKeys.length <= 1) return focusedDispatchDateKey
+    const next = nextFocusedDispatchDateKey(
+      dateCycleKeys,
+      focusedDispatchDateKey,
+    )
+    setFocusedDispatchDateKey(next)
+    setFocusedRecipientSlotKey(null)
+    setSelectedPlanPieId(null)
+    if (sandboxActive) {
+      dispatch(setArchiveRecipientViewId(null))
+    } else {
+      dispatch(setRecipientViewId(null))
+    }
+    const focusedDate = next != null ? parseDispatchDateKey(next) : null
+    if (focusedDate != null) {
+      dispatch(
+        updateLastViewedCalendarDate({
+          year: focusedDate.year,
+          month: focusedDate.month,
+        }),
+      )
+    }
+    return next
+  }, [
+    dateCycleKeys,
+    dispatch,
+    focusedDispatchDateKey,
+    sandboxActive,
+  ])
+
+  useEffect(() => bindAssemblyDateCycle(cycleFocusedDispatchDate), [
+    cycleFocusedDispatchDate,
   ])
 
   const focusedRecipientInner = useMemo(() => {
@@ -341,6 +438,29 @@ export function useMobilePlanCardPies() {
     recipientEntries,
   ])
 
+  const focusedDateInner = useMemo(() => {
+    if (focusedDispatchDateKey == null) return null
+    const focusedDate = parseDispatchDateKey(focusedDispatchDateKey)
+    if (focusedDatePies.length > 0) {
+      return buildDateGroupCardPieInner(
+        assemblyOverviewPie.inner,
+        focusedDatePies.map((pie) => pie.inner),
+        focusedDate,
+      )
+    }
+    if (focusedDate == null) return null
+    return {
+      ...assemblyOverviewPie.inner,
+      date: focusedDate,
+      dates: [focusedDate],
+      datePreviewLines: [String(focusedDate.day)],
+    }
+  }, [
+    assemblyOverviewPie.inner,
+    focusedDatePies,
+    focusedDispatchDateKey,
+  ])
+
   return {
     planPies,
     selectedPlanPie,
@@ -348,10 +468,14 @@ export function useMobilePlanCardPies() {
     focusedRecipientSlotKey,
     focusedRecipientPies,
     focusedRecipientInner,
+    focusedDispatchDateKey,
+    focusedDatePies,
+    focusedDateInner,
     /** Central pie when no single gutter mini is selected. */
     assemblyOverviewPie,
     selectPlanPie,
     cyclePlanPie,
     cycleFocusedRecipient,
+    cycleFocusedDispatchDate,
   }
 }

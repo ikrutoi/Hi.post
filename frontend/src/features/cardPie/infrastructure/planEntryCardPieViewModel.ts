@@ -154,3 +154,58 @@ export function buildRecipientGroupCardPieInner(
     datePreviewLines: buildDatePreviewLines(dates),
   }
 }
+
+function uniqueRecipientsFromInners(
+  inners: CardPieInnerData[],
+): NonNullable<CardPieInnerData['recipient']>[] {
+  const out: NonNullable<CardPieInnerData['recipient']>[] = []
+  const seen = new Set<string>()
+  for (const inner of inners) {
+    const recipient = inner.recipient
+    if (recipient == null) continue
+    const key = [
+      recipient.name,
+      recipient.street,
+      recipient.city,
+      recipient.zip,
+      recipient.country,
+    ].join('\0')
+    if (seen.has(key)) continue
+    seen.add(key)
+    out.push(recipient)
+  }
+  return out
+}
+
+/** One send day across several recipient branches: date count 1, recipients of that group. */
+export function buildDateGroupCardPieInner(
+  overview: CardPieInnerData,
+  groupInners: CardPieInnerData[],
+  focusedDate: CardPieInnerData['date'],
+): CardPieInnerData {
+  const first = groupInners[0]
+  const date = focusedDate ?? first?.date ?? first?.dates[0] ?? overview.date
+  const dates = date != null ? [date] : []
+  const recipients = uniqueRecipientsFromInners(groupInners)
+  const recipientCount = recipients.length
+  const recipient =
+    recipientCount === 1 ? recipients[0] : overview.recipient
+  const recipientPreviewLines =
+    recipientCount > 1
+      ? recipients
+          .map((row) => String(row.name ?? '').trim())
+          .filter((line) => line.length > 0)
+          .map((line) => line.toUpperCase())
+      : []
+
+  return {
+    ...overview,
+    recipient,
+    recipientCount: recipientCount > 0 ? recipientCount : overview.recipientCount,
+    recipientPreviewLines:
+      recipientCount > 1 ? recipientPreviewLines : [],
+    date,
+    dates,
+    datePreviewLines: buildDatePreviewLines(dates),
+  }
+}

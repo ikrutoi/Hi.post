@@ -57,6 +57,7 @@ import {
 } from '@date/application/helpers/selectedDatesMonthCycle'
 import { buildDatePreviewLines } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import { DatePeekMultiBackground } from './DatePeekMultiBackground'
+import { useAssemblyCardPieInner } from '@layout/presentation/MobileAppShell/AssemblyCardPieInnerContext'
 import {
   computeCartLegendStatusCounts,
   computeHistoryLegendStatusCounts,
@@ -126,6 +127,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
     listRowLocalId,
   } = useRightListArchiveMini()
   const { assemblyDateSimplifiedPeek } = useMobileFactoryListChrome()
+  const assemblyPieInner = useAssemblyCardPieInner()
   const appliedDispatchDates = useAppSelector(selectMergedDispatchDates)
   const draftDispatchDates = useAppSelector(selectDraftDispatchDates)
   const selectedDaysCount = draftDispatchDates.length
@@ -254,8 +256,14 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
     ) {
       return peekPrimaryDispatchDate(listRowInner)
     }
-    if (showAssemblyDatePeek && appliedDispatchDates.length > 0) {
-      return appliedDispatchDates[0] ?? null
+    if (showAssemblyDatePeek) {
+      const pieDates = (assemblyPieInner?.dates ?? []).filter(
+        isPeekDispatchDateFilled,
+      )
+      if (pieDates.length === 1) return pieDates[0] ?? null
+      if (appliedDispatchDates.length > 0) {
+        return appliedDispatchDates[0] ?? null
+      }
     }
     return null
   }, [
@@ -263,6 +271,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
     archiveCalendarSurface,
     rightPieDatePeekNoToolbar,
     showAssemblyDatePeek,
+    assemblyPieInner,
     appliedDispatchDates,
     section,
     listRowInner,
@@ -396,9 +405,14 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
       (rightPieDatePeekNoToolbar || showAssemblyDatePeek) &&
       section === 'date')
   ) {
+    const assemblyPeekDates = (assemblyPieInner?.dates ?? []).filter(
+      isPeekDispatchDateFilled,
+    )
     const peekDates =
       showAssemblyDatePeek && appliedDispatchDates.length > 0
-        ? appliedDispatchDates
+        ? assemblyPeekDates.length === 1
+          ? assemblyPeekDates
+          : appliedDispatchDates
         : listRowInner?.dates ?? []
     const isMultiDatePeek = peekDates.length > 1
     const d = peekDispatchDate

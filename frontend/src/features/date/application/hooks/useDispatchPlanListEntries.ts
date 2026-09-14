@@ -232,11 +232,18 @@ export function useDispatchPlanListEntries(
      * и мигает полоса выбора в gutter.
      */
     if (applied.length > 0) {
-      return applied.map((id) => ({
-        branchKey: id,
-        detailLine: resolveBranchDetailLine(id),
-        isSessionSlot: false,
-      }))
+      const seen = new Set<string>()
+      return applied.flatMap((id) => {
+        if (id === '' || seen.has(id)) return []
+        seen.add(id)
+        return [
+          {
+            branchKey: id,
+            detailLine: resolveBranchDetailLine(id),
+            isSessionSlot: false,
+          },
+        ]
+      })
     }
     if (recipientState.appliedData != null) {
       return [

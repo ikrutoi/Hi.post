@@ -367,6 +367,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     focusedRecipientSlotKey,
     focusedRecipientPies,
     focusedRecipientInner,
+    focusedDispatchDateKey,
+    focusedDatePies,
+    focusedDateInner,
     assemblyOverviewPie,
     selectPlanPie,
     cyclePlanPie,
@@ -421,9 +424,16 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         inner: focusedRecipientInner,
       }
     }
+    if (focusedDateInner != null) {
+      return {
+        ...assemblyOverviewPie,
+        inner: focusedDateInner,
+      }
+    }
     return assemblyOverviewPie
   }, [
     assemblyOverviewPie,
+    focusedDateInner,
     focusedRecipientInner,
     selectedPlanPie,
   ])
@@ -666,9 +676,13 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         highlightPlanPieIds:
           focusedRecipientSlotKey != null
             ? focusedRecipientPies.map((pie) => pie.id)
-            : null,
+            : focusedDispatchDateKey != null
+              ? focusedDatePies.map((pie) => pie.id)
+              : null,
       }),
     [
+      focusedDatePies,
+      focusedDispatchDateKey,
       focusedRecipientPies,
       focusedRecipientSlotKey,
       gutterKeepsPlanPieAccent,
@@ -1001,8 +1015,17 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     if (focusedRecipientSlotKey != null && focusedRecipientPies.length > 0) {
       return focusedRecipientPies
     }
+    if (focusedDispatchDateKey != null && focusedDatePies.length > 0) {
+      return focusedDatePies
+    }
     return planPies
-  }, [focusedRecipientPies, focusedRecipientSlotKey, planPies])
+  }, [
+    focusedDatePies,
+    focusedDispatchDateKey,
+    focusedRecipientPies,
+    focusedRecipientSlotKey,
+    planPies,
+  ])
 
   const handleEditorPieToolbarAction = useEditorPieAddCartHandler({
     planPies: cartPlanPies,

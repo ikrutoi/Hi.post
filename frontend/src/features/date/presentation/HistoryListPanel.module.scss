@@ -1,6 +1,5 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
-@use '@styles/config/mobileNotebookTabColors' as notebookTab;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
 /** Две строки хедера (icon row + toolbar) — `headerSectionToolbar` min-height. */
@@ -254,20 +253,20 @@ $list-panel-footer-band: calc(
   bottom: 0.5rem;
   z-index: 10;
   @include historyFooter.history-footer-indicators-shell-list;
+  background-color: transparent;
+  background-image: none;
 
   :global([data-shell-layout='mobile']) & {
     bottom: $list-panel-footer-bottom-inset-mobile;
-    @include notebookTab.mobile-history-list-toolbar-role-fill;
-    border-radius: 0.75rem;
-    overflow: hidden;
+    overflow: visible;
   }
 
   :global([data-shell-layout='desktop']) & {
-    @include notebookTab.desktop-history-list-toolbar-role-fill;
-    border-radius: 0.75rem;
-    overflow: hidden;
+    overflow: visible;
     padding: 0;
     @include iconButton.toolbar-factory-edge-key-insets;
+    background-color: transparent;
+    background-image: none;
   }
 }
 

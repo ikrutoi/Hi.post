@@ -304,6 +304,11 @@
     color: $color-app-sidebar-icon-active;
   }
 
+  .item:disabled .icon,
+  .item:disabled:active .icon {
+    color: $color-font-disabled;
+  }
+
   .count {
     @include iconButton.toolbar-icon-count-badge;
   }
@@ -316,7 +321,7 @@
   }
 }
 
-/** Кружки статусов в футере календаря — яркие, даже при enabled-иконках. */
+/** Кружки статусов в футере календаря — яркие; иконки disabled, если в списке нет открыток. */
 .root-historyList.rootCalendarFooterAlwaysEnabled {
   .item.inactive .dot,
   .item.active .dot {
@@ -324,15 +329,18 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
   }
 
-  .item.itemIconEnabled .icon,
-  .item.itemIconDisabled .icon,
-  .item.itemIconDisabled:active .icon,
-  .item.itemIconDisabled:disabled .icon {
+  .item.itemIconEnabled .icon {
     color: $color-font-enabled-light;
   }
 
   .item.itemIconEnabled:active .icon {
     color: $color-font-enabled;
+  }
+
+  .item.itemIconDisabled .icon,
+  .item.itemIconDisabled:active .icon,
+  .item.itemIconDisabled:disabled .icon {
+    color: $color-font-disabled;
   }
 
   .item.itemIconDisabled,

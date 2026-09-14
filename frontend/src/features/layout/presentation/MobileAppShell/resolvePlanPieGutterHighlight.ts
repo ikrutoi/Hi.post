@@ -9,6 +9,7 @@ export type PlanPieGutterHighlight = {
  * Overview (several minis, no single selection) accents every mini.
  * One selected mini accents only that mini.
  * A recipient group (addressNext) accents every mini that shares that address.
+ * A send-day group (dateNext) accents every mini that shares that date.
  * A sole mini stays accented even when `selectedPlanPieId` is still null.
  */
 export function resolvePlanPieGutterHighlight(input: {
