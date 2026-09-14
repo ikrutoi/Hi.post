@@ -302,15 +302,6 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
               data-envelope-mobile-focus-chrome
             />
             <div
-              className={styles.envelopeMark}
-              data-envelope-mobile-focus-chrome
-            >
-              <Mark
-                simplifiedPeek={envelopePeekMode}
-                listArchivePostcardStatus={listRowPostcardStatus}
-              />
-            </div>
-            <div
               className={clsx(
                 styles.envelopeSection,
                 styles.envelopeSectionSender,
@@ -333,6 +324,17 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
           </>
         )}
       </div>
+      {!showEnvelopeTopCreate && !showEnvelopeTopRecipientDetail ? (
+        <div
+          className={styles.envelopeMark}
+          data-envelope-mobile-focus-chrome
+        >
+          <Mark
+            simplifiedPeek={envelopePeekMode}
+            listArchivePostcardStatus={listRowPostcardStatus}
+          />
+        </div>
+      ) : null}
       <div
         className={styles.envelopeBottomSlot}
         data-envelope-mobile-focus-recipient

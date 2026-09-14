@@ -674,10 +674,14 @@
 }
 
 .envelopeMark {
-  grid-row: 1 / 13;
+  grid-row: 1 / 9;
   grid-column: 4 / 5;
   position: relative;
+  z-index: 2;
+  display: flex;
   justify-content: flex-end;
+  min-width: 0;
+  min-height: 0;
 }
 
 .envelopePeekBlock {
