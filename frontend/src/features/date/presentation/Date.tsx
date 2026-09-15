@@ -512,7 +512,11 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
             <>
               <button
                 type="button"
-                className={styles.dateBottomPostcardNextGroup}
+                className={clsx(
+                  styles.dateBottomPostcardNextGroup,
+                  showSelectedDaysCount &&
+                    styles.dateBottomPostcardNextGroupCounted,
+                )}
                 onClick={handleCycleSelectedMonths}
                 disabled={!canNavigateSelectedMonths}
                 aria-label={
@@ -535,7 +539,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
                   aria-hidden
                 />
                 {showSelectedDaysCount ? (
-                  <span className={styles.dateBottomPostcardNextCount}>
+                  <span className={styles.dateBottomPostcardNextCount} aria-hidden>
                     {selectedDaysCount}
                   </span>
                 ) : null}

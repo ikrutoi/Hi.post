@@ -1,6 +1,12 @@
 @use '@styles/config/uiLayout' as *;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
+/** Counted indicator buttons in calendar / list footers. */
+$footer-count-button-height: 1.7rem;
+/** Room to the right of the icon for a two-digit count (e.g. 12). */
+$footer-count-button-digit-slot: 1.4rem;
+$footer-count-button-width: 4.1rem;
+
 /** Одна строка footer chrome — как в HistoryListPanel / CartListPanel. */
 $history-footer-row-band: calc(
   #{iconButton.$toolbar-hit-size-card-pie-list-header} + 0.35rem

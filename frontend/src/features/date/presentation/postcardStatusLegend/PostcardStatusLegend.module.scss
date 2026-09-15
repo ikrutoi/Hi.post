@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/historyFooterChrome' as historyFooter;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
 .root {
@@ -154,6 +155,51 @@
   justify-self: start;
 }
 
+/** Footer count buttons — app frame fill, mini-pie section border. */
+.root.root-calendar .item:has(.count),
+.root.root-historyList .item:has(.count) {
+  box-sizing: border-box;
+  height: historyFooter.$footer-count-button-height;
+  min-height: historyFooter.$footer-count-button-height;
+  max-height: historyFooter.$footer-count-button-height;
+  width: historyFooter.$footer-count-button-width;
+  min-width: historyFooter.$footer-count-button-width;
+  max-width: historyFooter.$footer-count-button-width;
+  padding: 0 0.25rem;
+  border: 1px solid $color-app-strip;
+  border-radius: 0.35rem;
+  background-color: $color-app-frame;
+
+  .iconStack {
+    flex: 1 1 auto;
+    align-self: stretch;
+    justify-content: flex-start;
+    gap: 0.2rem;
+    min-width: 0;
+  }
+
+  .count {
+    position: static;
+    top: auto;
+    right: auto;
+    transform: none;
+    z-index: auto;
+    display: inline-block;
+    min-width: historyFooter.$footer-count-button-digit-slot;
+    height: auto;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    color: $color-font-enabled;
+  }
+}
+
 // .icon {
 //   flex-shrink: 0;
 //   color: $color-font-enabled-light;
@@ -307,17 +353,6 @@
   .item:disabled .icon,
   .item:disabled:active .icon {
     color: $color-font-disabled;
-  }
-
-  .count {
-    @include iconButton.toolbar-icon-count-badge;
-  }
-}
-
-.root-historyList.rootCalendarCartHistory {
-  .count {
-    top: -0.72rem;
-    right: -0.78rem;
   }
 }
 
