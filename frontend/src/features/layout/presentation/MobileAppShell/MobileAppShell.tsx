@@ -897,6 +897,13 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         }
       }
 
+      const fromCartOrHistory =
+        exitingListArchiveSlot || exitingHeaderCartHistoryStrip
+      if (fromCartOrHistory && factoryPostcardCount > 1) {
+        selectPlanPie(null)
+        return
+      }
+
       selectPlanPie(id)
 
       if (pie.dispatchDate != null) {
@@ -910,6 +917,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     },
     [
       dispatch,
+      factoryPostcardCount,
       planPies,
       selectPlanPie,
       activePieSide,

@@ -579,9 +579,14 @@ $mobile-date-calendar-chrome-gap: 0.125rem;
   min-width: historyFooter.$footer-count-button-width;
   max-width: historyFooter.$footer-count-button-width;
   padding: 0 0.25rem;
-  border: 1px solid $color-app-strip;
+  border: 1px solid transparent;
   border-radius: 0.35rem;
-  background-color: $color-app-frame;
+  background-color: transparent;
+
+  &:not(:disabled) {
+    border-color: $color-app-strip;
+    background-color: $color-app-frame;
+  }
 }
 
 .dateBottomPostcardNext {

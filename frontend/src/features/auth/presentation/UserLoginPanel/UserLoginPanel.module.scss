@@ -90,7 +90,7 @@ $list-panel-footer-stack-height: $user-panel-footer-band;
     }
 
     .footer {
-      background-color: transparent;
+      background: none;
     }
   }
 
@@ -480,7 +480,6 @@ $auth-mode-left-inactive-end: math.div(
   left: auto;
   bottom: auto;
   z-index: 2;
-  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -490,8 +489,7 @@ $auth-mode-left-inactive-end: math.div(
   max-height: $user-panel-chrome-height;
   padding: 0 0.35rem;
   box-sizing: border-box;
-  background-color: $user-panel-chrome-fill;
-  border-radius: $user-panel-chrome-radius;
+  background: none;
 }
 
 .logoutButton {

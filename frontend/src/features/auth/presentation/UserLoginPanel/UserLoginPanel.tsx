@@ -134,9 +134,6 @@ export const UserLoginPanel: React.FC = () => {
       {isAuthenticated ? (
         <div className={styles.panelFooterStack}>
           <footer className={styles.footer}>
-            {hasChromePattern ? (
-              <UserPanelChromePattern elementColors={chromePatternColors} />
-            ) : null}
             <button
               type="button"
               className={styles.logoutButton}
