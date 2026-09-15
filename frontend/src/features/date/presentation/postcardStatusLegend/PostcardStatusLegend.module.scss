@@ -2,6 +2,39 @@
 @use '@styles/config/historyFooterChrome' as historyFooter;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
+/** Calendar cart/history footer: shorter side of the glyph. */
+$calendar-cart-history-icon-min: 1.25rem;
+
+@mixin calendar-cart-history-status-icons {
+  .icon,
+  .item svg {
+    flex-shrink: 0;
+    width: $calendar-cart-history-icon-min;
+    height: $calendar-cart-history-icon-min;
+    min-width: $calendar-cart-history-icon-min;
+    min-height: $calendar-cart-history-icon-min;
+  }
+
+  .iconSend {
+    height: $calendar-cart-history-icon-min;
+    min-height: $calendar-cart-history-icon-min;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+    aspect-ratio: 1590 / 1284;
+  }
+
+  .iconBlocked,
+  .item svg.iconBlocked {
+    width: $calendar-cart-history-icon-min;
+    min-width: $calendar-cart-history-icon-min;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    aspect-ratio: 1280 / 1600;
+  }
+}
+
 .root {
   // flex: 0 0 50%;
   // width: 50%;
@@ -57,6 +90,10 @@
       height: auto;
       min-height: 0;
     }
+  }
+
+  &.root-calendar.rootCalendarCartHistory {
+    @include calendar-cart-history-status-icons;
   }
 
   &.root-calendar.rootCalendarDimmed {
@@ -449,25 +486,7 @@
   }
 
   .root-calendar.rootCalendarCartHistory {
-    .icon,
-    .item svg {
-      width: 1.125rem;
-      height: 1.125rem;
-      min-width: 1.125rem;
-      min-height: 1.125rem;
-    }
-
-    .iconSend {
-      width: 1.35rem;
-      min-width: 1.35rem;
-      height: 1.125rem;
-    }
-
-    .iconBlocked,
-    .item svg.iconBlocked {
-      height: auto;
-      min-height: 0;
-    }
+    @include calendar-cart-history-status-icons;
 
     .dot {
       width: $mobile-calendar-preview-indicator-dot-size;
