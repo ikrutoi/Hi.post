@@ -2624,7 +2624,13 @@ function DesktopFactoryTopRow({
     <AssemblyCardPieInnerProvider value={assemblyPie.inner}>
     <>
       <div className={styles.appMainContentLeftListSlot}>
-        <div className={styles.appMainContentLeftListPlaceholder}>
+        <div
+          className={clsx(
+            styles.appMainContentLeftListPlaceholder,
+            archiveChromeActive &&
+              styles.appMainContentLeftListPlaceholderArchive,
+          )}
+        >
           <ListPanelStackedHeader
             leadIconKey="panelDensity2"
             leadIconOverride={

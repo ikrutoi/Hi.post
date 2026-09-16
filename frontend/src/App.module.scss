@@ -441,6 +441,10 @@
   background-color: #fff;
 }
 
+.appMainContentLeftListPlaceholderArchive {
+  background-color: $color-app-inner;
+}
+
 /** Plan mini list header — CardPieNext glyph (1600×1280) slightly above archive header icon scale. */
 .planMiniHeaderCardPieNextBtn {
   $card-pie-next-icon-scale: 1.12;
