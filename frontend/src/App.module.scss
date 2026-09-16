@@ -156,27 +156,21 @@
   pointer-events: auto;
 }
 
-/** Cart/history: 1px blue frame behind the pie; sticks out 0.5rem left/right. */
-.desktopCentralPieWrapArchiveSideGuides {
-  overflow: visible;
+/** Cart/history/factory: ears behind the pie; 0.5rem left/right. */
+.desktopCentralPieWrap.desktopCentralPieWrapEars {
+  @include notebookTab.central-card-pie-ears;
+}
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: -0.5rem;
-    right: -0.5rem;
-    z-index: 0;
-    border-radius: 0.5rem;
-    box-sizing: border-box;
-    border: 1px solid blue;
-    pointer-events: none;
-  }
+.desktopCentralPieWrapEarsFactory::before {
+  @include notebookTab.central-card-pie-ears-factory-fill;
+}
 
-  > * {
-    z-index: 1;
-  }
+.desktopCentralPieWrapEarsCart::before {
+  @include notebookTab.central-card-pie-ears-cart-fill;
+}
+
+.desktopCentralPieWrapEarsHistory::before {
+  @include notebookTab.central-card-pie-ears-history-fill;
 }
 
 .desktopCentralPieToolbar {
@@ -192,7 +186,7 @@
   pointer-events: auto;
 }
 
-.desktopCentralPieToolbarArchive {
+.desktopCentralPieRow:has([data-central-pie-ears]) .desktopCentralPieToolbar {
   margin-left: 0.5rem;
 }
 

@@ -31,7 +31,7 @@ import {
   resolveCartArchiveViewMode,
   resolveHistoryArchiveViewMode,
 } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
-import { isCartOwnedNotebookStrip } from '@date/calendar/application/logic/calendarStripSection'
+import { isCartOwnedNotebookStrip, resolveCentralPieEarsMode } from '@date/calendar/application/logic/calendarStripSection'
 import {
   setCardPieListPanelOpen,
   setHistoryListPanelOpen,
@@ -604,6 +604,14 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     notebookStripSection,
   ])
 
+  const centralPieEarsMode =
+    mobileCentralPieDisplay === 'cardphotoTemplate' ||
+    mobileCentralPieDisplay === 'cardtextTemplate' ||
+    mobileCentralPieDisplay === 'addressTemplate' ||
+    mobileCentralPieDisplay === 'aromaPreview'
+      ? null
+      : resolveCentralPieEarsMode(notebookStripSection)
+
   const mobileArchiveCenterCycleHintViewMode = useMemo(():
     | 'list'
     | 'calendar'
@@ -1173,8 +1181,17 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                   />
                   <div className={styles.mobilePieStage}>
                   <div
-                    className={styles.mobilePieWrap}
+                    className={clsx(
+                      styles.mobilePieWrap,
+                      centralPieEarsMode === 'factory' &&
+                        styles.mobilePieWrapEarsFactory,
+                      centralPieEarsMode === 'cart' &&
+                        styles.mobilePieWrapEarsCart,
+                      centralPieEarsMode === 'history' &&
+                        styles.mobilePieWrapEarsHistory,
+                    )}
                     data-mobile-central-pie-mode={mobileCentralPieDisplay}
+                    data-central-pie-ears={centralPieEarsMode ?? undefined}
                   >
                       {mobileCentralPieDisplay === 'archive' &&
                       mobileCentralArchivePreview != null ? (
@@ -1346,12 +1363,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                       </div>
                     ) : null}
                     {showMobileCentralArchiveDeleteToolbar ? (
-                      <div
-                        className={clsx(
-                          styles.mobilePieToolbar,
-                          styles.mobilePieToolbarArchive,
-                        )}
-                      >
+                      <div className={styles.mobilePieToolbar}>
                         <Toolbar
                           section={
                             showMobileCentralPostcardPieCartToolbar

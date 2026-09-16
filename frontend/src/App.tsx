@@ -181,6 +181,7 @@ import {
 } from '@date/calendar/application/logic/cartStripDayPostcardSelection'
 import { resolveArchiveCenterPostcardCycle } from '@date/calendar/application/logic/archiveCenterPostcardCycle'
 import { syncArchiveCenterPostcardCalendarView } from '@date/calendar/application/logic/archiveCenterCalendarSync'
+import { resolveCentralPieEarsMode } from '@date/calendar/application/logic/calendarStripSection'
 import {
   resolveHistoryStripDayPostcardSelection,
 } from '@date/calendar/application/logic/historyStripDayPostcardSelection'
@@ -2496,6 +2497,9 @@ function DesktopFactoryTopRow({
     notebookStripTab,
   })
   const showEmptyArchive = !showArchivePie && archiveChromeActive
+  const centralPieEarsMode = addressCardPiePreview.showSurface
+    ? null
+    : resolveCentralPieEarsMode(notebookStripTab)
   const keepPlanAccent = !showArchivePie && !showEmptyArchive
   const planMiniPieCount = planPies.filter(
     (pie) => pie.id !== EMPTY_GUTTER_PLAN_PIE_ID,
@@ -2668,8 +2672,15 @@ function DesktopFactoryTopRow({
           <div
             className={clsx(
               styles.desktopCentralPieWrap,
-              showArchivePie && styles.desktopCentralPieWrapArchiveSideGuides,
+              centralPieEarsMode != null && styles.desktopCentralPieWrapEars,
+              centralPieEarsMode === 'factory' &&
+                styles.desktopCentralPieWrapEarsFactory,
+              centralPieEarsMode === 'cart' &&
+                styles.desktopCentralPieWrapEarsCart,
+              centralPieEarsMode === 'history' &&
+                styles.desktopCentralPieWrapEarsHistory,
             )}
+            data-central-pie-ears={centralPieEarsMode ?? undefined}
           >
             {showArchivePie ? (
               <CardPie
@@ -2708,12 +2719,7 @@ function DesktopFactoryTopRow({
             )}
           </div>
           {showArchivePie ? (
-            <div
-              className={clsx(
-                styles.desktopCentralPieToolbar,
-                styles.desktopCentralPieToolbarArchive,
-              )}
-            >
+            <div className={styles.desktopCentralPieToolbar}>
               <Toolbar
                 section={
                   showRightPostcardPieCartToolbar

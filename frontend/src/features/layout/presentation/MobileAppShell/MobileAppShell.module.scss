@@ -828,6 +828,10 @@
   width: var(--mobile-pie-size);
   margin-inline: auto;
   z-index: 3;
+
+  &:has([data-central-pie-ears]) .mobilePieToolbar {
+    left: calc(100% + 0.35rem + 0.5rem);
+  }
 }
 
 .mobilePieWrap {
@@ -836,26 +840,20 @@
   position: relative;
   overflow: hidden;
 
-  &[data-mobile-central-pie-mode='archive'] {
-    overflow: visible;
+  &[data-central-pie-ears] {
+    @include notebookTab.central-card-pie-ears;
+  }
 
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: -0.5rem;
-      right: -0.5rem;
-      z-index: 0;
-      border-radius: 0.5rem;
-      box-sizing: border-box;
-      border: 1px solid blue;
-      pointer-events: none;
-    }
+  &.mobilePieWrapEarsFactory::before {
+    @include notebookTab.central-card-pie-ears-factory-fill;
+  }
 
-    > * {
-      z-index: 1;
-    }
+  &.mobilePieWrapEarsCart::before {
+    @include notebookTab.central-card-pie-ears-cart-fill;
+  }
+
+  &.mobilePieWrapEarsHistory::before {
+    @include notebookTab.central-card-pie-ears-history-fill;
   }
 
   :global([class*='hubContainer']) {
@@ -866,11 +864,19 @@
 
   &[data-mobile-central-pie-mode='cardphotoTemplate'],
   &[data-mobile-central-pie-mode='cardtextTemplate'],
-  &[data-mobile-central-pie-mode='addressTemplate'],
-  &[data-mobile-central-pie-mode='emptyArchive'] {
+  &[data-mobile-central-pie-mode='addressTemplate'] {
     border-radius: 0.5rem;
     overflow: hidden;
     box-shadow: none;
+  }
+
+  &[data-mobile-central-pie-mode='emptyArchive'] {
+    border-radius: 0.5rem;
+    box-shadow: none;
+  }
+
+  &[data-central-pie-ears] {
+    overflow: visible;
   }
 
   &[data-mobile-central-pie-mode='cardphotoTemplate'],
@@ -1120,10 +1126,6 @@ $mobile-central-pie-envelope-empty-icon-width: 40%;
   align-items: center;
   justify-content: center;
   pointer-events: auto;
-
-  &.mobilePieToolbarArchive {
-    left: calc(100% + 0.35rem + 0.5rem);
-  }
 
   :global([class*='toolbarEditorPie']) {
     height: 100%;

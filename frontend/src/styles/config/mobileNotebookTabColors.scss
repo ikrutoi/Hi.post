@@ -402,3 +402,41 @@ $desktop-cart-list-toolbar-fill: $mobile-notebook-cart-toolbar-fade;
     $mobile-notebook-date-tab-aroma
   );
 }
+
+/**
+ * Central CardPie “ears”: 0.5rem left/right, behind the pie.
+ * Factory/history: 5 stacked section/status bands; cart: solid yellow.
+ */
+/** Как фон центральной секции фабрики при открытом cardphoto. */
+@mixin central-card-pie-ears-factory-fill {
+  @include mobile-notebook-date-tab-gutter-gradient;
+}
+
+@mixin central-card-pie-ears {
+  overflow: visible;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -0.5rem;
+    right: -0.5rem;
+    z-index: 0;
+    border-radius: 0.5rem;
+    box-sizing: border-box;
+    pointer-events: none;
+  }
+
+  > * {
+    z-index: 1;
+  }
+}
+
+@mixin central-card-pie-ears-cart-fill {
+  background: $color-preview-indicator-cart;
+}
+
+@mixin central-card-pie-ears-history-fill {
+  @include mobile-notebook-history-tab-gutter-gradient;
+}

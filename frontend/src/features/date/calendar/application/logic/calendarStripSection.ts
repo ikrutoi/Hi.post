@@ -61,6 +61,15 @@ export function isCartOwnedNotebookStrip(
   return notebookStripTab === 'cart' || notebookStripTab === 'cartdate'
 }
 
+/** Фон «ушек» центрального CardPie — по режиму полосы, не по archive source. */
+export function resolveCentralPieEarsMode(
+  notebookStripTab: DateStripSection,
+): 'factory' | 'cart' | 'history' {
+  if (notebookStripTab === 'history') return 'history'
+  if (isCartOwnedNotebookStrip(notebookStripTab)) return 'cart'
+  return 'factory'
+}
+
 /**
  * Ветка `cartdate`:
  * - `cartBlocked` — просроченная / blocked: календарь с нуля, сектор date пустой до Apply;
