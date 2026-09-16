@@ -604,13 +604,15 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     notebookStripSection,
   ])
 
+  const centralArchivePieVisible =
+    mobileCentralPieDisplay === 'archive' &&
+    mobileCentralArchivePieGate.mountedLocalId != null &&
+    mobileCentralArchivePieGate.mountedSource != null &&
+    mobileCentralArchivePieGate.contentOpaque
   const centralPieEarsMode =
-    mobileCentralPieDisplay === 'cardphotoTemplate' ||
-    mobileCentralPieDisplay === 'cardtextTemplate' ||
-    mobileCentralPieDisplay === 'addressTemplate' ||
-    mobileCentralPieDisplay === 'aromaPreview'
-      ? null
-      : resolveCentralPieEarsMode(notebookStripSection)
+    mobileCentralPieDisplay === 'assembly' || centralArchivePieVisible
+      ? resolveCentralPieEarsMode(notebookStripSection)
+      : null
 
   const mobileArchiveCenterCycleHintViewMode = useMemo(():
     | 'list'

@@ -2497,9 +2497,10 @@ function DesktopFactoryTopRow({
     notebookStripTab,
   })
   const showEmptyArchive = !showArchivePie && archiveChromeActive
-  const centralPieEarsMode = addressCardPiePreview.showSurface
-    ? null
-    : resolveCentralPieEarsMode(notebookStripTab)
+  const centralPieEarsMode =
+    addressCardPiePreview.showSurface || showEmptyArchive
+      ? null
+      : resolveCentralPieEarsMode(notebookStripTab)
   const keepPlanAccent = !showArchivePie && !showEmptyArchive
   const planMiniPieCount = planPies.filter(
     (pie) => pie.id !== EMPTY_GUTTER_PLAN_PIE_ID,
