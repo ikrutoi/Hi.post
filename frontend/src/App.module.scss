@@ -693,6 +693,35 @@
       #{$color-preview-indicator-error} 80% 100%
     );
   }
+
+  &[data-desktop-archive-section-peek='true'] {
+    &[data-desktop-factory-surface='cardphoto'] {
+      --desktop-factory-stack-bg: #{sectionGutter.$mobile-section-gutter-cardphoto};
+      --desktop-factory-toolbar-bg: #{$color-cardphoto-input};
+    }
+
+    &[data-desktop-factory-surface='cardtext'] {
+      --desktop-factory-stack-bg: #{sectionGutter.$mobile-section-gutter-cardtext};
+      --desktop-factory-toolbar-bg: #{$color-cardtext-input};
+    }
+
+    &[data-desktop-factory-surface='envelope'] {
+      --desktop-factory-stack-bg: #{sectionGutter.$mobile-section-gutter-envelope};
+      --desktop-factory-toolbar-bg: #{$color-envelope-recipient-input};
+    }
+
+    &[data-desktop-factory-surface='aroma'] {
+      --desktop-factory-stack-bg: #{sectionGutter.$mobile-section-gutter-aroma};
+      --desktop-factory-toolbar-bg: #{$color-aroma-input};
+    }
+
+    &[data-desktop-factory-surface='date'],
+    &[data-desktop-factory-surface='date-cart'],
+    &[data-desktop-factory-surface='date-history'] {
+      --desktop-factory-stack-bg: #{notebookTab.$mobile-notebook-date-tab-date};
+      --desktop-factory-toolbar-bg: #{$color-date-input};
+    }
+  }
 }
 
 .mainCardSectionToolbar {

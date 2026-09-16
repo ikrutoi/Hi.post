@@ -75,7 +75,7 @@ export const MobileFactoryToolbarShell: React.FC = () => {
     !envelopeAddressCreateMode &&
     !showMobileAddressListFactoryChrome
 
-  /** Archive (cart/history) section peek: lower band with copy affordance. */
+  /** Archive (cart/history) section peek: empty lower band (Copy is upper-right). */
   const showArchivePeekLowerToolbar =
     isMobileLayout && mobileArchiveSectionPeek
 

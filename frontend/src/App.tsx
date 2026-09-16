@@ -2203,6 +2203,12 @@ const App = () => {
   })
   /** Без `active` — cardPieCopy visually stays enabled only (toggle by action). */
   const postcardPieCartToolbarStateOverride = undefined
+  const archiveSectionPeek =
+    rightPieCardphotoPeekNoToolbar ||
+    rightPieCardtextPeekNoToolbar ||
+    rightPieEnvelopePeekNoToolbar ||
+    rightPieAromaPeekNoToolbar ||
+    rightPieDatePeekNoToolbar
 
   if (!authInitialized) {
     return <div className={styles.authBoot} aria-busy="true" />
@@ -2309,8 +2315,13 @@ const App = () => {
                 >
                   <div
                     className={styles.mainCardFactoryStack}
+                    data-desktop-archive-section-peek={
+                      archiveSectionPeek ? 'true' : undefined
+                    }
                     data-desktop-factory-surface={
-                      activeSection === 'history' ||
+                      archiveSectionPeek && activeSection === 'date'
+                        ? 'date'
+                        : activeSection === 'history' ||
                       (activeSection === 'date' &&
                         notebookStripTab === 'history') ||
                       (historyListPanelOpen && !notebookStripDateOverHistory)

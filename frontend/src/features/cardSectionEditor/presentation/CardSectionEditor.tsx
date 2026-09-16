@@ -162,6 +162,7 @@ export const CardSectionEditor: React.FC = () => {
       templateList={mobileTemplateList}
       toolbar={<MobileFactoryToolbarShell />}
       reserveToolbarBand={false}
+      archiveSectionPeek={mobileArchiveSectionPeek}
     >
       {activeSection === 'cardtext' && (
         <div className={styles.cardtextToolbarTop}>

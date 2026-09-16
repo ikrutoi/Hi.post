@@ -133,6 +133,25 @@
     width: auto !important;
     max-width: none;
   }
+
+  :global([class*='toolbarDate']),
+  :global([class*='toolbarCardtext']),
+  :global([class*='toolbarCardphoto']),
+  :global([class*='toolbarAroma']),
+  :global([class*='toolbarEnvelope']),
+  :global([class*='toolbarRecipients']) {
+    width: auto;
+    margin-inline: 0;
+    justify-content: flex-end;
+
+    :global([class*='toolbarGroup']) {
+      justify-content: flex-end;
+    }
+
+    :global([class*='toolbarKey']) {
+      margin-inline: 0;
+    }
+  }
 }
 
 .sideLeft {

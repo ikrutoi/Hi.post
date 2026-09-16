@@ -95,6 +95,80 @@
   &[data-mobile-section-surface='neutral'] {
     --mobile-section-surface-bg: transparent;
   }
+
+  /**
+   * Cart/history section peek: solid frame in the factory stripe (gutter)
+   * color; toolbars keep the lighter section input fill.
+   */
+  &[data-mobile-archive-section-peek='true'] {
+    background-image: none;
+
+    &::before {
+      background-image: none;
+    }
+
+    &[data-mobile-section-surface='cardphoto'] {
+      --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-cardphoto};
+      --mobile-factory-frame-bg: #{sectionGutter.$mobile-section-gutter-cardphoto};
+      background-color: sectionGutter.$mobile-section-gutter-cardphoto;
+
+      &::before {
+        background: sectionGutter.$mobile-section-gutter-cardphoto;
+      }
+    }
+
+    &[data-mobile-section-surface='cardtext'] {
+      --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-cardtext};
+      --mobile-factory-frame-bg: #{sectionGutter.$mobile-section-gutter-cardtext};
+      background-color: sectionGutter.$mobile-section-gutter-cardtext;
+
+      &::before {
+        background: sectionGutter.$mobile-section-gutter-cardtext;
+      }
+    }
+
+    &[data-mobile-section-surface='envelope'] {
+      --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-envelope};
+      --mobile-factory-frame-bg: #{sectionGutter.$mobile-section-gutter-envelope};
+      background-color: sectionGutter.$mobile-section-gutter-envelope;
+
+      &::before {
+        background: sectionGutter.$mobile-section-gutter-envelope;
+      }
+    }
+
+    &[data-mobile-section-surface='envelope-sender'] {
+      --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-envelope-sender};
+      --mobile-factory-frame-bg: #{sectionGutter.$mobile-section-gutter-envelope-sender};
+      background-color: sectionGutter.$mobile-section-gutter-envelope-sender;
+
+      &::before {
+        background: sectionGutter.$mobile-section-gutter-envelope-sender;
+      }
+    }
+
+    &[data-mobile-section-surface='aroma'] {
+      --mobile-section-surface-bg: #{sectionGutter.$mobile-section-gutter-aroma};
+      --mobile-factory-frame-bg: #{sectionGutter.$mobile-section-gutter-aroma};
+      background-color: sectionGutter.$mobile-section-gutter-aroma;
+
+      &::before {
+        background: sectionGutter.$mobile-section-gutter-aroma;
+      }
+    }
+
+    &[data-mobile-section-surface='date'],
+    &[data-mobile-section-surface='date-cart'],
+    &[data-mobile-section-surface='date-history'] {
+      --mobile-section-surface-bg: #{notebookTab.$mobile-notebook-date-tab-date};
+      --mobile-factory-frame-bg: #{notebookTab.$mobile-notebook-date-tab-date};
+      background-color: notebookTab.$mobile-notebook-date-tab-date;
+
+      &::before {
+        background: notebookTab.$mobile-notebook-date-tab-date;
+      }
+    }
+  }
 }
 
 .frameTemplateList {

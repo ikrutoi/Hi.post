@@ -22,6 +22,8 @@ type MobileFactorySectionFrameProps = {
   toolbar: React.ReactNode
   /** Archive peek: keep toolbar band height for background layout, hide toolbar UI. */
   reserveToolbarBand?: boolean
+  /** Cart/history section peek: solid factory section fill, not striped frame. */
+  archiveSectionPeek?: boolean
   children: React.ReactNode
 }
 
@@ -32,6 +34,7 @@ export const MobileFactorySectionFrame: React.FC<MobileFactorySectionFrameProps>
   templateList,
   toolbar,
   reserveToolbarBand = false,
+  archiveSectionPeek = false,
   children,
 }) => {
   const showToolbarSlot = !showTemplateList || templateListInCentralZone
@@ -46,6 +49,7 @@ export const MobileFactorySectionFrame: React.FC<MobileFactorySectionFrameProps>
     data-mobile-section-surface={surface}
     data-mobile-factory-section-frame="true"
     data-mobile-factory-peek-band={reserveToolbarBand ? 'true' : undefined}
+    data-mobile-archive-section-peek={archiveSectionPeek ? 'true' : undefined}
   >
     <div
       className={clsx(

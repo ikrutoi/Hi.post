@@ -38,7 +38,8 @@ export function useCardtextViewToolbarContent({
   const viewToolbarState = useAppSelector(
     selectToolbarSectionState('cardtextView'),
   )
-  const { assemblyCardtextSimplifiedPeek } = useMobileFactoryListChrome()
+  const { assemblyCardtextSimplifiedPeek, mobileArchiveSectionPeek } =
+    useMobileFactoryListChrome()
 
   const toolbarSection = resolveCardtextToolbarSection({
     cardtextAssetStatus,
@@ -64,7 +65,8 @@ export function useCardtextViewToolbarContent({
   const showToolbarControls =
     factorySessionActive &&
     !hideEmptyCreateToolbar &&
-    !assemblyCardtextSimplifiedPeek
+    !assemblyCardtextSimplifiedPeek &&
+    !mobileArchiveSectionPeek
 
   const groupsOverride = useMemo(() => {
     if (toolbarSection === 'cardtextView' && !cardtextViewInQuickList) {

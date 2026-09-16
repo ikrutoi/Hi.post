@@ -6,7 +6,7 @@ import { ArchivePeekLowerToolbar } from '@features/cardSectionEditor/presentatio
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { useCardphotoViewToolbarContent } from './useCardphotoViewToolbarContent'
 
-/** Desktop factory lower row — View icons, or archive peek copy only. */
+/** Desktop factory lower row — View icons, or empty archive peek band. */
 export const DesktopCardphotoViewToolbar: React.FC = () => {
   const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const activeSection = useAppSelector(selectActiveSection)
