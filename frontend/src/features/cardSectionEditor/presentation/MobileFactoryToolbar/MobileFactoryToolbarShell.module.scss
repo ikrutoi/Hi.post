@@ -260,6 +260,18 @@
     );
     @include mobile-factory-toolbar-row-full-bleed;
   }
+
+  /**
+   * Archive peek copy row reuses `.upperRow` / `.upperRowCardphoto`.
+   * Without full-bleed the tint is inset twice (row padding + edge slot)
+   * and top-only radii clip the lower band.
+   */
+  :global([class*='upperRow']) {
+    @include mobile-factory-toolbar-row-full-bleed;
+    height: 100%;
+    border-radius: 0;
+    overflow: hidden;
+  }
 }
 
 .rowUpper {

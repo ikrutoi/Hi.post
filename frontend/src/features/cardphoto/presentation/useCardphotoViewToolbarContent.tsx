@@ -24,7 +24,8 @@ export function useCardphotoViewToolbarContent({
   const viewToolbarState = useAppSelector(
     selectToolbarSectionState('cardphotoView'),
   )
-  const { assemblyCardphotoSimplifiedPeek } = useMobileFactoryListChrome()
+  const { assemblyCardphotoSimplifiedPeek, mobileArchiveSectionPeek } =
+    useMobileFactoryListChrome()
 
   const groupsOverride = useMemo(() => {
     if (assetToolbar === 'cardphotoView' && viewDismissIconKey === 'delete') {
@@ -55,7 +56,8 @@ export function useCardphotoViewToolbarContent({
     enabled &&
     !!activeImage &&
     assetToolbar === 'cardphotoView' &&
-    !assemblyCardphotoSimplifiedPeek
+    !assemblyCardphotoSimplifiedPeek &&
+    !mobileArchiveSectionPeek
 
   if (!show) return null
 

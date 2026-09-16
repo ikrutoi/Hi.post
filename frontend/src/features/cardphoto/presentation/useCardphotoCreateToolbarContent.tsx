@@ -22,14 +22,16 @@ export function useCardphotoCreateToolbarContent({
   const isCardphotoCreateSession = useAppSelector(
     selectIsCardphotoCreateSession,
   )
-  const { assemblyCardphotoSimplifiedPeek } = useMobileFactoryListChrome()
+  const { assemblyCardphotoSimplifiedPeek, mobileArchiveSectionPeek } =
+    useMobileFactoryListChrome()
   const groupsOverride = useCardphotoCreateToolbarGroups()
 
   const show =
     enabled &&
     assetToolbar === 'cardphotoCreate' &&
     isCardphotoCreateSession &&
-    !assemblyCardphotoSimplifiedPeek
+    !assemblyCardphotoSimplifiedPeek &&
+    !mobileArchiveSectionPeek
 
   if (!show) return null
 
