@@ -2319,19 +2319,22 @@ const App = () => {
                       archiveSectionPeek ? 'true' : undefined
                     }
                     data-desktop-factory-surface={
-                      archiveSectionPeek && activeSection === 'date'
-                        ? 'date'
-                        : activeSection === 'history' ||
-                      (activeSection === 'date' &&
-                        notebookStripTab === 'history') ||
-                      (historyListPanelOpen && !notebookStripDateOverHistory)
-                        ? 'date-history'
-                        : activeSection === 'date'
-                          ? notebookStripTab === 'cart' ||
-                            notebookStripTab === 'cartdate'
-                            ? 'date-cart'
-                            : 'date'
+                      archiveSectionPeek
+                        ? activeSection === 'date'
+                          ? 'date'
                           : (activeSection ?? 'neutral')
+                        : activeSection === 'history' ||
+                            (activeSection === 'date' &&
+                              notebookStripTab === 'history') ||
+                            (historyListPanelOpen &&
+                              !notebookStripDateOverHistory)
+                          ? 'date-history'
+                          : activeSection === 'date'
+                            ? notebookStripTab === 'cart' ||
+                              notebookStripTab === 'cartdate'
+                              ? 'date-cart'
+                              : 'date'
+                            : (activeSection ?? 'neutral')
                     }
                   >
                     {!isMobileLayout ? (
