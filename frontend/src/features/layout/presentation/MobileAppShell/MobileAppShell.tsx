@@ -609,9 +609,16 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     mobileCentralArchivePieGate.mountedLocalId != null &&
     mobileCentralArchivePieGate.mountedSource != null &&
     mobileCentralArchivePieGate.contentOpaque
+  const centralPieEarsGutterMode =
+    mobileCentralPieDisplay === 'cardphotoTemplate' ||
+    mobileCentralPieDisplay === 'cardtextTemplate' ||
+    mobileCentralPieDisplay === 'addressTemplate' ||
+    mobileCentralPieDisplay === 'aromaPreview'
+      ? null
+      : resolveCentralPieEarsMode(notebookStripSection)
   const centralPieEarsMode =
     mobileCentralPieDisplay === 'assembly' || centralArchivePieVisible
-      ? resolveCentralPieEarsMode(notebookStripSection)
+      ? centralPieEarsGutterMode
       : null
 
   const mobileArchiveCenterCycleHintViewMode = useMemo(():
@@ -1194,6 +1201,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                     )}
                     data-mobile-central-pie-mode={mobileCentralPieDisplay}
                     data-central-pie-ears={centralPieEarsMode ?? undefined}
+                    data-central-pie-ears-gutter={
+                      centralPieEarsGutterMode ?? undefined
+                    }
                   >
                       {mobileCentralPieDisplay === 'archive' &&
                       mobileCentralArchivePreview != null ? (

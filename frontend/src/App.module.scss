@@ -186,7 +186,7 @@
   pointer-events: auto;
 }
 
-.desktopCentralPieRow:has([data-central-pie-ears]) .desktopCentralPieToolbar {
+.desktopCentralPieRow:has([data-central-pie-ears-gutter]) .desktopCentralPieToolbar {
   margin-left: 0.5rem;
 }
 

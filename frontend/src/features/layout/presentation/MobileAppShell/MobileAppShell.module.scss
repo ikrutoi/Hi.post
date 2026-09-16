@@ -829,7 +829,7 @@
   margin-inline: auto;
   z-index: 3;
 
-  &:has([data-central-pie-ears]) .mobilePieToolbar {
+  &:has([data-central-pie-ears-gutter]) .mobilePieToolbar {
     left: calc(100% + 0.35rem + 0.5rem);
   }
 }

@@ -2497,10 +2497,10 @@ function DesktopFactoryTopRow({
     notebookStripTab,
   })
   const showEmptyArchive = !showArchivePie && archiveChromeActive
-  const centralPieEarsMode =
-    addressCardPiePreview.showSurface || showEmptyArchive
-      ? null
-      : resolveCentralPieEarsMode(notebookStripTab)
+  const centralPieEarsGutterMode = addressCardPiePreview.showSurface
+    ? null
+    : resolveCentralPieEarsMode(notebookStripTab)
+  const centralPieEarsMode = showEmptyArchive ? null : centralPieEarsGutterMode
   const keepPlanAccent = !showArchivePie && !showEmptyArchive
   const planMiniPieCount = planPies.filter(
     (pie) => pie.id !== EMPTY_GUTTER_PLAN_PIE_ID,
@@ -2682,6 +2682,7 @@ function DesktopFactoryTopRow({
                 styles.desktopCentralPieWrapEarsHistory,
             )}
             data-central-pie-ears={centralPieEarsMode ?? undefined}
+            data-central-pie-ears-gutter={centralPieEarsGutterMode ?? undefined}
           >
             {showArchivePie ? (
               <CardPie
