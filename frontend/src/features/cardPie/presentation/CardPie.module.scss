@@ -4,9 +4,12 @@
 
 /** Shared center disc for left (logo) and right (status) CardPie. */
 $pie-center-indicator-size: 1.75rem;
-/** Левый / центральный archive: видимый круг + hit-area. */
-$pie-center-logo-size: 2.6rem;
-$pie-center-logo-hit-size: 3.6rem;
+/** Видимый круг + hit центрального CardPie (моб. / десктоп), доля ширины пайа. */
+$pie-center-size-ratio: 22%;
+/** Desktop: глиф внутри круга = иконка тулбара × 1.25. */
+$pie-center-inner-icon-desktop: iconButton.$toolbar-icon-size-standard *
+  iconButton.$toolbar-desktop-scale *
+  1.25;
 $pie-center-right-hit-size: 3rem;
 $pie-center-logo-press-duration: 0.28s;
 /** Press pulse: +25% then back. */
@@ -89,23 +92,23 @@ $pie-center-cart-blocked-inner-stop: (
 .hubContainerFill.hubContainerRight {
   .pieCenterButton,
   .pieCenterButtonPointer {
-    width: $pie-center-logo-hit-size;
-    height: $pie-center-logo-hit-size;
+    width: $pie-center-size-ratio;
+    height: $pie-center-size-ratio;
   }
 
   .pieCenterIcon {
-    width: $pie-center-logo-size;
-    height: $pie-center-logo-size;
+    width: 100%;
+    height: 100%;
     border-width: 1px;
     border-style: solid;
     border-color: #fff;
-    box-sizing: content-box;
+    box-sizing: border-box;
     background-color: #fff;
   }
 
   .pieCenterIndicator.cartBlocked {
     @include preview-indicator-cart-blocked-ring(
-      $pie-center-logo-size * $pie-center-cart-blocked-ring-ratio
+      calc(#{$pie-center-size-ratio} * #{$pie-center-cart-blocked-ring-ratio})
     );
   }
 }
@@ -319,25 +322,38 @@ $pie-center-cart-blocked-inner-stop: (
 }
 
 .hubContainer:not(.hubContainerRight) .pieCenterButton {
-  width: $pie-center-logo-hit-size;
-  height: $pie-center-logo-hit-size;
+  width: $pie-center-size-ratio;
+  height: $pie-center-size-ratio;
   background-color: transparent;
   overflow: visible;
 }
 
 .hubContainer:not(.hubContainerRight) .pieCenterIcon {
-  width: $pie-center-logo-size;
-  height: $pie-center-logo-size;
+  width: 100%;
+  height: 100%;
   border-width: 1px;
   border-style: solid;
   border-color: #fff;
-  box-sizing: content-box;
+  box-sizing: border-box;
   background-color: #fff;
   color: var(--pie-center-logo-color-incomplete);
 }
 
 .hubContainer:not(.hubContainerRight) .pieCenterIconBrand {
   color: var(--logo-color, #008aed);
+}
+
+:global([data-shell-layout='desktop']) {
+  .hubContainer:not(.hubContainerRight) .pieCenterIcon svg,
+  .hubContainerFill.hubContainerRight .pieCenterIcon svg {
+    width: $pie-center-inner-icon-desktop;
+    height: $pie-center-inner-icon-desktop;
+  }
+
+  .hubContainerFill.hubContainerRight .pieCenterIcon svg.pieCenterAffordanceIcon {
+    width: $pie-center-inner-icon-desktop;
+    height: $pie-center-inner-icon-desktop;
+  }
 }
 
 /** Full assembly fill: +35% then back. */
