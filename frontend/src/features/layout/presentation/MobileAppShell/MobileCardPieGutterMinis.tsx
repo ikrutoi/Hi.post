@@ -18,6 +18,8 @@ import styles from './MobileAppShell.module.scss'
 
 type MobileCardPieGutterMinisProps = {
   layout?: 'mobile' | 'desktop'
+  /** Mobile: factory (left) vs cart/history (right). */
+  chrome?: 'factory' | 'archive'
   planPies: MobilePlanCardPie[]
   selectedPlanPieId: string | null
   /** Desktop grid: 1 — 3 columns, 2 — 4 columns. */
@@ -39,6 +41,7 @@ type MobileCardPieGutterMinisProps = {
 export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
   ({
     layout = 'mobile',
+    chrome = 'factory',
     planPies,
     selectedPlanPieId,
     highlightPlanPieId,
@@ -135,7 +138,7 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
         aria-label="Card pie plan"
         {...(layout === 'desktop'
           ? { 'data-density-level': density }
-          : {})}
+          : { 'data-mini-gutter-chrome': chrome })}
       >
         <div ref={listRef} className={styles.mobilePieGutterMiniList}>
           {displayPies.map(({ id, inner, sections }) => (

@@ -1167,6 +1167,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                     highlightAllPlanPies={gutterHighlightAllPlanPies}
                     highlightPlanPieIds={gutterHighlightPlanPieIds}
                     onSelectPlanPie={handleSelectPlanPie}
+                    chrome={
+                      activePieSide === 'right' ? 'archive' : 'factory'
+                    }
                   />
                   <div className={styles.mobilePieStage}>
                   <div

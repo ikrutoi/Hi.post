@@ -641,6 +641,13 @@
   margin-left: calc(0px - #{$list-entry-selection-accent-reserve});
   box-sizing: border-box;
   pointer-events: auto;
+  border: 1px solid $color-app-strip;
+  border-radius: 0.25rem;
+  padding-block: 0.25rem;
+
+  &[data-mini-gutter-chrome='factory'] .mobilePieGutterMiniList {
+    background-color: #fff;
+  }
 }
 
 .mobilePieGutterMiniShell.mobilePieGutterMiniShellDesktop {
@@ -651,6 +658,9 @@
   height: 100%;
   margin-left: 0;
   z-index: 1;
+  border: none;
+  border-radius: 0;
+  padding-block: 0;
 
   .mobilePieGutterMiniList {
     display: grid;
@@ -731,9 +741,9 @@
  */
 .mobilePieGutterMiniScrollTrack {
   position: absolute;
-  top: 0;
+  top: 0.25rem;
   right: 0;
-  bottom: 0;
+  bottom: 0.25rem;
   width: 4px;
   background-color: $color-font-disabled;
   border-radius: 999px;
