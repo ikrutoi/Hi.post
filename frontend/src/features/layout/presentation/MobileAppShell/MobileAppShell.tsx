@@ -1346,7 +1346,12 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                       </div>
                     ) : null}
                     {showMobileCentralArchiveDeleteToolbar ? (
-                      <div className={styles.mobilePieToolbar}>
+                      <div
+                        className={clsx(
+                          styles.mobilePieToolbar,
+                          styles.mobilePieToolbarArchive,
+                        )}
+                      >
                         <Toolbar
                           section={
                             showMobileCentralPostcardPieCartToolbar

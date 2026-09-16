@@ -2665,7 +2665,12 @@ function DesktopFactoryTopRow({
       </div>
       <div ref={cardPanelRef} className={styles.appMainTopCenterPanel}>
         <div className={styles.desktopCentralPieRow}>
-          <div className={styles.desktopCentralPieWrap}>
+          <div
+            className={clsx(
+              styles.desktopCentralPieWrap,
+              showArchivePie && styles.desktopCentralPieWrapArchiveSideGuides,
+            )}
+          >
             {showArchivePie ? (
               <CardPie
                 isProcessed={false}
@@ -2703,7 +2708,12 @@ function DesktopFactoryTopRow({
             )}
           </div>
           {showArchivePie ? (
-            <div className={styles.desktopCentralPieToolbar}>
+            <div
+              className={clsx(
+                styles.desktopCentralPieToolbar,
+                styles.desktopCentralPieToolbarArchive,
+              )}
+            >
               <Toolbar
                 section={
                   showRightPostcardPieCartToolbar

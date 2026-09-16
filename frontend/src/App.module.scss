@@ -156,6 +156,29 @@
   pointer-events: auto;
 }
 
+/** Cart/history: 1px blue frame behind the pie; sticks out 0.5rem left/right. */
+.desktopCentralPieWrapArchiveSideGuides {
+  overflow: visible;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -0.5rem;
+    right: -0.5rem;
+    z-index: 0;
+    border-radius: 0.5rem;
+    box-sizing: border-box;
+    border: 1px solid blue;
+    pointer-events: none;
+  }
+
+  > * {
+    z-index: 1;
+  }
+}
+
 .desktopCentralPieToolbar {
   grid-column: 3;
   justify-self: start;
@@ -167,6 +190,10 @@
   width: 2.4rem;
   height: 100%;
   pointer-events: auto;
+}
+
+.desktopCentralPieToolbarArchive {
+  margin-left: 0.5rem;
 }
 
 .desktopCentralPieEmpty {

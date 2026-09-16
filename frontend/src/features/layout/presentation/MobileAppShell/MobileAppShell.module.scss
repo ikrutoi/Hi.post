@@ -836,6 +836,28 @@
   position: relative;
   overflow: hidden;
 
+  &[data-mobile-central-pie-mode='archive'] {
+    overflow: visible;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: -0.5rem;
+      right: -0.5rem;
+      z-index: 0;
+      border-radius: 0.5rem;
+      box-sizing: border-box;
+      border: 1px solid blue;
+      pointer-events: none;
+    }
+
+    > * {
+      z-index: 1;
+    }
+  }
+
   :global([class*='hubContainer']) {
     box-shadow: none;
     border: none;
@@ -1098,6 +1120,10 @@ $mobile-central-pie-envelope-empty-icon-width: 40%;
   align-items: center;
   justify-content: center;
   pointer-events: auto;
+
+  &.mobilePieToolbarArchive {
+    left: calc(100% + 0.35rem + 0.5rem);
+  }
 
   :global([class*='toolbarEditorPie']) {
     height: 100%;
