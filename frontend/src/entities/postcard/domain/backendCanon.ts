@@ -4,8 +4,8 @@
  * IndexedDB `postcards` is the product source of truth. Laravel `postcards`
  * (image_path / message / draft|scheduled|sent|archived) is frozen: do not
  * add columns, relations, or write paths. Cloud copy today is an opaque
- * `user_postcard_snapshots.payload` of PostcardHydrated (sync payload v1)
- * plus phase 3 `user_postcards` rows (one Laravel row per postcard).
+ * `user_postcard_snapshots.payload` of PostcardHydrated (sync payload v1, read-only)
+ * plus phase 3+ `user_postcards` rows (one Laravel row per postcard, LWW sync).
  *
  * Local-only IDB stores (not a server entity): session, uiPreferences,
  * cardPieFavorites. Image blobs stay in IDB as cache; http mode also POSTs

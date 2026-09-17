@@ -37,6 +37,10 @@ export const postcardSyncSlice = createSlice({
     setAutoBackupPending(state, action: { payload: boolean }) {
       state.autoBackupPending = action.payload
     },
+    markV2SyncSucceeded(state) {
+      state.autoBackupPending = false
+      state.lastAutoBackupAt = new Date().toISOString()
+    },
     openRestorePrompt(
       state,
       action: { payload: { cloudUpdatedAt: string } },
@@ -112,6 +116,7 @@ export const {
   clearCloudBackupError,
   resetPostcardSyncState,
   setAutoBackupPending,
+  markV2SyncSucceeded,
   openRestorePrompt,
   dismissRestorePrompt,
   closeRestorePrompt,

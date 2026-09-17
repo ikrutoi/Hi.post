@@ -4,9 +4,9 @@ import {
   type PostcardHydrated,
 } from '@entities/postcard'
 import {
-  deleteV2Postcard,
-  upsertV2Postcard,
-} from '@features/sync/infrastructure/v2PostcardRemote'
+  enqueuePostcardDelete,
+  enqueuePostcardUpsert,
+} from '@features/sync/infrastructure/postcardV2PendingSync'
 
 const base = createStoreAdapter<PostcardHydrated>('postcards')
 
@@ -28,18 +28,10 @@ export const postcardsAdapter = {
   put: async (record: PostcardHydrated & { id: IDBValidKey }): Promise<void> => {
     const normalized = normalizePostcardRecord(record)
     await base.put(normalized)
-    try {
-      await upsertV2Postcard(normalized)
-    } catch {
-      // IndexedDB is source of truth locally; retry on next save.
-    }
+    enqueuePostcardUpsert(normalized)
   },
   deleteById: async (id: IDBValidKey): Promise<void> => {
     await base.deleteById(id)
-    try {
-      await deleteV2Postcard(String(id))
-    } catch {
-      // Local delete stays even if the server request fails.
-    }
+    enqueuePostcardDelete(String(id))
   },
 }

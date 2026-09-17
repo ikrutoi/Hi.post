@@ -7,7 +7,10 @@ import {
   clearAuthSession,
   saveAuthSession,
 } from '@features/auth/infrastructure/sessionStorage'
-import { rehydratePostcardsFromIdb } from '@features/sync/store/postcardSync.actions'
+import {
+  postcardLocalDataChanged,
+  rehydratePostcardsFromIdb,
+} from '@features/sync/store/postcardSync.actions'
 import { pullV2PostcardsIntoIdb } from '@features/sync/application/services/pullV2PostcardsIntoIdb'
 
 export const authListenerMiddleware = createListenerMiddleware()
@@ -23,6 +26,7 @@ async function pullV2AfterAuth(
   try {
     await pullV2PostcardsIntoIdb()
     listenerApi.dispatch(rehydratePostcardsFromIdb())
+    listenerApi.dispatch(postcardLocalDataChanged())
   } catch {
     // IndexedDB keeps whatever was already local.
   }

@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Domain\Postcard\BackendCanon;
+use App\Http\Controllers\Controller;
 use App\Models\UserPostcardSnapshot;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 
+/**
+ * Read-only legacy snapshot (phase 4). Writes go to /api/v2/postcards.
+ */
 class SyncPostcardController extends Controller
 {
-    private const MAX_PAYLOAD_BYTES = 10 * 1024 * 1024;
-
-    /** Opaque PostcardHydrated[] backup. Do not map this JSON onto frozen `postcards`. */
     public const SUPPORTED_PAYLOAD_VERSION = BackendCanon::SYNC_PAYLOAD_VERSION;
 
     public function show(Request $request): JsonResponse
@@ -33,42 +32,16 @@ class SyncPostcardController extends Controller
 
     public function update(Request $request): JsonResponse
     {
-        if (strlen($request->getContent()) > self::MAX_PAYLOAD_BYTES) {
-            throw ValidationException::withMessages([
-                'payload' => ['Snapshot payload is too large'],
-            ]);
-        }
-
-        $validated = $request->validate([
-            'version' => 'required|integer|in:' . self::SUPPORTED_PAYLOAD_VERSION,
-            'exportedAt' => 'nullable|date',
-            'postcards' => 'required|array',
-        ]);
-
-        $payload = [
-            'version' => $validated['version'],
-            'exportedAt' => $validated['exportedAt'] ?? now()->toIso8601String(),
-            'postcards' => $validated['postcards'],
-        ];
-
-        $snapshot = UserPostcardSnapshot::query()->updateOrCreate(
-            ['user_id' => $request->user()->id],
-            [
-                'payload_version' => $validated['version'],
-                'payload' => $payload,
-            ],
-        );
-
-        return response()->json($this->formatSnapshot($snapshot->fresh()));
+        return response()->json([
+            'message' => 'Snapshot backup is read-only. Use /api/v2/postcards.',
+        ], 410);
     }
 
     public function destroy(Request $request): JsonResponse
     {
-        UserPostcardSnapshot::query()
-            ->where('user_id', $request->user()->id)
-            ->delete();
-
-        return response()->json(['message' => 'Cloud backup deleted']);
+        return response()->json([
+            'message' => 'Snapshot backup is read-only. Use /api/v2/postcards.',
+        ], 410);
     }
 
     /**

@@ -87,6 +87,48 @@ class V2PostcardTest extends TestCase
             ->assertJsonCount(0, 'postcards');
     }
 
+    public function test_stale_upsert_does_not_overwrite_newer_row(): void
+    {
+        $token = $this->postJson('/api/register', [
+            'name' => 'Ada',
+            'email' => 'ada@hi.com',
+            'password' => 'secret12',
+        ])->assertCreated()->json('token');
+
+        $id = 'pc_lww';
+        $base = [
+            'status' => 'cart',
+            'price' => '1',
+            'localId' => 1,
+            'createdAt' => 100,
+            'date' => ['year' => 2026, 'month' => 9, 'day' => 17],
+            'postcard' => [
+                'cardphoto' => '',
+                'cardtext' => '',
+                'recipient' => '',
+                'aroma' => '0',
+            ],
+            'card' => ['id' => $id, 'thumbnailUrl' => ''],
+        ];
+
+        $this->withToken($token)
+            ->putJson("/api/v2/postcards/{$id}", array_merge($base, [
+                'status' => 'ready',
+                'updatedAt' => 200,
+            ]))
+            ->assertOk()
+            ->assertJsonPath('status', 'ready');
+
+        $this->withToken($token)
+            ->putJson("/api/v2/postcards/{$id}", array_merge($base, [
+                'status' => 'cart',
+                'updatedAt' => 150,
+            ]))
+            ->assertOk()
+            ->assertJsonPath('status', 'ready')
+            ->assertJsonPath('updatedAt', 200);
+    }
+
     public function test_guest_cannot_write_v2_postcards(): void
     {
         $this->putJson('/api/v2/postcards/x', [
@@ -96,5 +138,22 @@ class V2PostcardTest extends TestCase
             'date' => ['year' => 2026, 'month' => 1, 'day' => 1],
             'card' => ['id' => 'x'],
         ])->assertUnauthorized();
+    }
+
+    public function test_snapshot_write_is_gone(): void
+    {
+        $token = $this->postJson('/api/register', [
+            'name' => 'Ada',
+            'email' => 'ada@hi.com',
+            'password' => 'secret12',
+        ])->assertCreated()->json('token');
+
+        $this->withToken($token)
+            ->putJson('/api/sync/postcards', [
+                'version' => 1,
+                'exportedAt' => now()->toIso8601String(),
+                'postcards' => [],
+            ])
+            ->assertStatus(410);
     }
 }

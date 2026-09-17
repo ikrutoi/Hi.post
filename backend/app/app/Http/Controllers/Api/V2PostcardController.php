@@ -10,8 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 /**
- * Phase 3: one Laravel row per postcard (IndexedDB canon).
- * Frozen `postcards` is unused. Snapshot `/sync/postcards` stays until phase 4.
+ * Phase 3–4: one Laravel row per postcard (IndexedDB canon).
+ * Frozen `postcards` unused. Snapshot `/sync/postcards` is read-only.
  */
 class V2PostcardController extends Controller
 {
@@ -47,6 +47,16 @@ class V2PostcardController extends Controller
 
         $payload = $this->sanitize($validated['card']);
         $refs = $this->sanitize($validated['postcard'] ?? []);
+        $incomingUpdatedAt = (int) $validated['updatedAt'];
+
+        $existing = UserPostcard::query()
+            ->where('user_id', $request->user()->id)
+            ->where('id', $id)
+            ->first();
+
+        if ($existing && (int) $existing->client_updated_at > $incomingUpdatedAt) {
+            return response()->json($this->formatRow($existing));
+        }
 
         $row = UserPostcard::query()->updateOrCreate(
             [
