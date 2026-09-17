@@ -327,7 +327,6 @@ export function useDispatchPlanListEntries(
       const cardPieRefs: CardPieRefs = {
         cardphoto: String(cardphotoState?.appliedData?.id ?? ''),
         cardtext: String(cardtextState?.appliedData?.id ?? ''),
-        sender: String(envelopeRecord?.sender?.senderViewId ?? 'session'),
         recipient: String(recipientRef),
         aroma: String(selectedAroma?.index ?? ''),
       }
@@ -496,7 +495,6 @@ export function useDispatchPlanListEntries(
         const cardPieRefs: CardPieRefs = {
           cardphoto: String(cardphotoState?.appliedData?.id ?? ''),
           cardtext: String(cardtextState?.appliedData?.id ?? ''),
-          sender: String(envelopeRecord?.sender?.senderViewId ?? 'session'),
           recipient: String(recipientRef),
           aroma: String(selectedAroma?.index ?? ''),
         }

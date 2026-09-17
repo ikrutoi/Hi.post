@@ -36,7 +36,8 @@ export const emptyEnvelope = {
     senderViewId: null,
     applied: [],
     appliedData: null,
-    enabled: true,
+    enabled: false,
+    appliedLocked: false,
   } as SenderState,
   recipient: {
     currentView: 'recipientsView' as const,

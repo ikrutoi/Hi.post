@@ -47,14 +47,6 @@ export const initialRecipientsViewToolbarState: AddressViewToolbarState = {
   config: [...RECIPIENTS_VIEW_TOOLBAR],
 }
 
-export const SENDER_VIEW_TOOLBAR: ToolbarConfig = [
-  {
-    group: 'senderView',
-    icons: [{ key: 'edit', state: 'enabled' }],
-    status: 'enabled',
-  },
-]
-
 /** Mobile focused address view (lower scenario bar): star + edit, clear view. */
 export const ENVELOPE_MOBILE_ADDRESS_VIEW_TOOLBAR: ToolbarConfig = [
   {
@@ -189,24 +181,6 @@ export const ENVELOPE_DESKTOP_RECIPIENT_DETAIL_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-export const initialSenderViewToolbarState: AddressViewToolbarState = {
-  ...Object.fromEntries(flattenIcons(SENDER_VIEW_TOOLBAR)),
-  config: [...SENDER_VIEW_TOOLBAR],
-}
-
-export const SENDER_CREATE_TOOLBAR: ToolbarConfig = [
-  {
-    group: 'senderCreate',
-    icons: [{ key: 'applyMedium', state: 'disabled' }],
-    status: 'enabled',
-  },
-  {
-    group: 'close',
-    icons: [{ key: 'close', state: 'enabled' }],
-    status: 'enabled',
-  },
-]
-
 export const RECIPIENT_CREATE_TOOLBAR: ToolbarConfig = [
   {
     group: 'recipientCreate',
@@ -220,11 +194,6 @@ export const RECIPIENT_CREATE_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-export const initialSenderCreateToolbarState: AddressViewToolbarState = {
-  ...Object.fromEntries(flattenIcons(SENDER_CREATE_TOOLBAR)),
-  config: [...SENDER_CREATE_TOOLBAR],
-}
-
 export const initialRecipientCreateToolbarState: AddressViewToolbarState = {
   ...Object.fromEntries(flattenIcons(RECIPIENT_CREATE_TOOLBAR)),
   config: [...RECIPIENT_CREATE_TOOLBAR],
@@ -233,9 +202,7 @@ export const initialRecipientCreateToolbarState: AddressViewToolbarState = {
 export interface AddressViewSectionConfig extends BaseSectionConfig<
   AddressViewToolbarState,
   AddressViewKey,
-  | 'senderView'
   | 'recipientView'
   | 'recipientsView'
-  | 'senderCreate'
   | 'recipientCreate'
 > {}

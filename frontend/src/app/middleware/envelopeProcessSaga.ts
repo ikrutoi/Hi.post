@@ -111,59 +111,7 @@ export function* syncAddressViewToolbarAddList(): SagaIterator {
   const recipientEntries: AddressBookEntry[] = yield select(
     (s: RootState) => s.addressBook?.recipientEntries ?? [],
   )
-  const senderInList = filterInListEntries(senderEntries)
   const recipientInList = filterInListEntries(recipientEntries)
-
-  if (sender.currentView === 'senderCreate') {
-    const draft = sender.formDraft as AddressFields
-    const senderDraftComplete = isAddressDraftComplete(draft)
-    yield put(
-      updateToolbarIcon({
-        section: 'senderCreate',
-        key: 'addList',
-        value: {
-          state: resolveAddListToolbarState(
-            senderDraftComplete,
-            draft,
-            senderInList,
-          ),
-        },
-      }),
-    )
-    yield put(
-      updateToolbarIcon({
-        section: 'senderCreate',
-        key: 'applyMedium',
-        value: {
-          state: resolveApplyMediumToolbarState(draft),
-        },
-      }),
-    )
-  }
-
-  if (sender.currentView === 'senderView') {
-    const draft: AddressFields = yield select(selectSenderCardAddress)
-    yield put(
-      updateToolbarIcon({
-        section: 'senderView',
-        key: 'addList',
-        value: {
-          state: resolveAddListToolbarState(
-            isAddressDraftComplete(draft),
-            draft,
-            senderInList,
-          ),
-        },
-      }),
-    )
-    yield put(
-      updateToolbarIcon({
-        section: 'senderView',
-        key: 'close',
-        value: { state: 'enabled' },
-      }),
-    )
-  }
 
   if (recipient.currentView === 'recipientCreate') {
     const draft = recipient.formDraft as AddressFields
@@ -256,38 +204,15 @@ export function* processEnvelopeVisuals() {
   ])
 
   /** Счётчик только inList (и legacy без listStatus) — как в панели адресной книги */
-  const senderInListCount = (senderList ?? []).filter((item) =>
-    listStatusIsInQuickAddressBook(item.listStatus),
-  ).length
   const recipientInListCount = (recipientList ?? []).filter((item) =>
     listStatusIsInQuickAddressBook(item.listStatus),
   ).length
 
-  const hasSenderDraft = checkHasData(sender.viewDraft)
   const hasRecipientDraft = checkHasData(recipient.viewDraft)
 
-  const senderListPanelOpen: boolean = yield select(selectSenderListPanelOpen)
   const recipientListPanelOpenForToolbar: boolean = yield select(
     selectRecipientListPanelOpen,
   )
-
-  const senderToolbar = buildSenderToolbarState({
-    isComplete: senderComplete,
-    hasData: checkHasData(sender.viewDraft),
-    addressListCount: senderInListCount,
-    isCurrentAddressInList: isAddressInList(sender.viewDraft, senderList),
-    hasDraft: hasSenderDraft,
-    isAddressFormOpen: sender.currentView === 'senderCreate',
-    formIsEmpty: sender.formIsEmpty ?? true,
-    formDraftMatchesTemplate: doesDraftMatchInList(
-      sender.formDraft as AddressFields,
-      (senderList ?? []).filter((item) =>
-        listStatusIsInQuickAddressBook(item.listStatus),
-      ),
-    ),
-    senderListPanelOpen,
-    isEnabled: sender.enabled,
-  })
 
   const activeAddressList: 'sender' | 'recipients' | null =
     yield select(selectActiveAddressList)
@@ -318,7 +243,6 @@ export function* processEnvelopeVisuals() {
     recipientListPanelOpen: recipientListPanelOpenForToolbar,
   })
 
-  yield put(updateToolbarSection({ section: 'sender', value: senderToolbar }))
   yield put(
     updateToolbarSection({
       section: 'recipients',
@@ -349,43 +273,6 @@ export function* processEnvelopeVisuals() {
     updateToolbarSection({
       section: 'addressListRecipients',
       value: addressListApplyValue,
-    }),
-  )
-
-  const senderAppliedIds = sender.applied ?? []
-  const senderViewMatchesApplied =
-    sender.currentView === 'senderView' &&
-    sender.senderViewId != null &&
-    senderAppliedIds.length === 1 &&
-    senderAppliedIds[0] === sender.senderViewId
-
-  const senderDraftComplete =
-    sender.currentView === 'senderCreate'
-      ? isAddressDraftComplete(sender.formDraft as AddressFields)
-      : isAddressDraftComplete(sender.viewDraft as AddressFields)
-
-  /**
-   * Toggle off → Apply enabled (confirm no sender address).
-   * Toggle on → Apply only with a selected complete address (viewId + draft).
-   * Empty form + toggle on → disabled.
-   */
-  const senderApplyState = sender.currentView === 'senderCreate'
-    ? 'disabled'
-    : !sender.enabled
-      ? sender.appliedLocked || senderAppliedIds.length > 0
-        ? 'selected'
-        : 'enabled'
-      : senderViewMatchesApplied
-        ? 'selected'
-        : sender.senderViewId != null && senderDraftComplete
-          ? 'enabled'
-          : 'disabled'
-
-  yield put(
-    updateToolbarIcon({
-      section: 'sender',
-      key: 'apply',
-      value: { state: senderApplyState },
     }),
   )
 

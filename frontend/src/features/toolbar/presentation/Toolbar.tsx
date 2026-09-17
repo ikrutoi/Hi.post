@@ -237,7 +237,7 @@ export const Toolbar = ({
   const cardphotoListPanelDensity = useAppSelector(selectCardphotoListPanelDensity)
   const cardphotoListSortMode = useAppSelector(selectCardphotoListSortMode)
   const sortDirection =
-    section === 'addressListSender'
+    false
       ? senderSortDirection
       : section === 'addressListRecipient' ||
           section === 'addressListRecipients'
@@ -388,13 +388,13 @@ export const Toolbar = ({
       key === 'empty' &&
       iconIndex === 1
     const templateInQuickList =
-      section === 'senderView'
+      false
         ? senderTemplateInQuickList
         : section === 'recipientView'
           ? recipientTemplateInQuickList
           : false
     const createDraftInList =
-      section === 'senderCreate'
+      false
         ? senderCreateDraftInList
         : section === 'recipientCreate'
           ? recipientCreateDraftInList
@@ -402,7 +402,7 @@ export const Toolbar = ({
     const showCreateListCheck = key === 'addList' && createDraftInList
     const addressViewListStar =
       key === 'addList' &&
-      (section === 'senderView' || section === 'recipientView')
+      (false || section === 'recipientView')
     const cardtextViewListStar = key === 'addList' && section === 'cardtextView'
     const viewListStar = key === 'addList' && section === 'cardphotoView'
     const viewListStarFilled = viewListStar
@@ -434,12 +434,12 @@ export const Toolbar = ({
           ? getHistoryListSortIconForMode(historyListSortMode)
           : key === 'sortAZDown' &&
             (section === 'cardtextList' ||
-              section === 'addressListSender' ||
+              false ||
               section === 'addressListRecipient' ||
               section === 'addressListRecipients')
           ? (section === 'cardtextList'
               ? cardtextListSortDirection
-              : section === 'addressListSender'
+              : false
                 ? senderSortDirection
                 : recipientSortDirection) === 'asc'
             ? 'sortAZDown'
@@ -471,7 +471,7 @@ export const Toolbar = ({
 
     if (
       key === 'addList' &&
-      (section === 'senderView' ||
+      (false ||
         section === 'recipientView' ||
         section === 'cardtextView' ||
         section === 'cardphotoView') &&
@@ -484,7 +484,7 @@ export const Toolbar = ({
       buttonStatus =
         section === 'cardphotoView' ||
         section === 'cardtextView' ||
-        section === 'senderView' ||
+        false ||
         section === 'recipientView'
           ? 'active'
           : 'enabled'
@@ -532,7 +532,7 @@ export const Toolbar = ({
           senderAppliedIds.length === 1 &&
           senderAppliedIds[0] === senderViewIdForApply
         const applyMatchesPostcard =
-          section === 'sender'
+          false
             ? senderApplyMatches
             : section === 'recipients'
               ? recipientsMultiApplyMatches || recipientSingleApplyMatches
@@ -545,7 +545,7 @@ export const Toolbar = ({
      * Sender toggle on: Apply only with selected + complete address.
      * Empty form (no viewId / blank draft) → disabled — overrides force-enabled above.
      */
-    if (key === 'apply' && section === 'sender' && senderEnabled) {
+    if (key === 'apply' && false && senderEnabled) {
       if (
         senderFormVisiblyEmpty ||
         !senderDraftCompleteForApply ||
@@ -554,13 +554,13 @@ export const Toolbar = ({
         buttonStatus = 'disabled'
       }
     }
-    if (key === 'edit' && section === 'senderView' && senderViewEditMode) {
+    if (key === 'edit' && false && senderViewEditMode) {
       buttonStatus = 'active'
     }
     if (key === 'edit' && section === 'recipientView' && recipientViewEditMode) {
       buttonStatus = 'active'
     }
-    if (key === 'applyMedium' && section === 'senderCreate') {
+    if (key === 'applyMedium' && false) {
       const createEdit = addressCreateEditContext?.role === 'sender'
       buttonStatus =
         (!createEdit && senderCreateDraftInList) || !senderCreateDraftComplete
@@ -628,7 +628,7 @@ export const Toolbar = ({
         : buttonStatus
 
     const addressListBadgePulseSide =
-      key === 'addressList' && section === 'sender'
+      key === 'addressList' && false
         ? 'sender'
         : key === 'addressList' && section === 'recipients'
           ? 'recipient'
@@ -785,10 +785,10 @@ export const Toolbar = ({
           }
           if (
             (key === 'addList' || key === 'removeFromList') &&
-            (section === 'senderView' || section === 'recipientView')
+            (false || section === 'recipientView')
           ) {
             mobileAddressFocus?.triggerAddressListBadgePulse(
-              section === 'senderView' ? 'sender' : 'recipient',
+              false ? 'sender' : 'recipient',
             )
           }
           if (
@@ -806,13 +806,14 @@ export const Toolbar = ({
           const stopDefault = onActionClick?.(actionIconKey)
           if (stopDefault !== false) {
             const actionPayload =
-              actionIconKey === 'applyMedium' && section === 'senderCreate'
-                ? { draft: senderCreateFormDraft ?? undefined }
-                : actionIconKey === 'applyMedium' &&
-                    section === 'recipientCreate'
-                  ? { draft: recipientCreateFormDraft ?? undefined }
-                  : undefined
-            onAction(actionIconKey, actionPayload)
+              actionIconKey === 'applyMedium' &&
+              section === 'recipientCreate'
+                ? { draft: recipientCreateFormDraft ?? undefined }
+                : undefined
+            onAction(
+              actionIconKey,
+              actionPayload as Parameters<typeof onAction>[1],
+            )
             /** Apply в archive-edit → сразу упрощённый peek (saga допишет applied). */
             if (
               actionIconKey === 'apply' &&
@@ -881,7 +882,7 @@ export const Toolbar = ({
                   ? cardtextListPanelDensity
                   : section === 'cardphotoList' && key === 'panelDensity2'
                     ? cardphotoListPanelDensity
-                    : section === 'addressListSender' && key === 'panelDensity2'
+                    : false && key === 'panelDensity2'
                       ? senderAddressListPanelDensity
                       : (section === 'addressListRecipient' ||
                             section === 'addressListRecipients') &&

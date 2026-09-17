@@ -29,7 +29,7 @@ export const initialSender: SenderState = {
   applied: [],
   appliedData: null,
   appliedLocked: false,
-  enabled: true,
+  enabled: false,
 }
 
 function isComplete(data: AddressFields): boolean {

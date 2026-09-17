@@ -9,7 +9,7 @@ import {
   setRecipientViewDraft,
   setRecipientViewId,
 } from '@envelope/recipient/infrastructure/state'
-import { setSenderViewId } from '@envelope/sender/infrastructure/state'
+import { setRecipientViewId } from '@envelope/recipient/infrastructure/state'
 import type { AddressFields, IconKey } from '@shared/config/constants'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import type { AddressCardPiePreviewModel } from './useAddressCardPiePreview'
@@ -59,16 +59,12 @@ export function useAddressTemplatePreviewPieToolbar(
         return
       }
 
-      const section =
-        preview.role === 'sender' ? 'senderView' : 'recipientView'
+      if (preview.role === 'sender') return
 
-      if (preview.role === 'sender') {
-        dispatch(setSenderViewId(preview.id))
-      } else {
-        dispatch(setRecipientViewId(preview.id))
-        if (preview.source === 'form') {
-          dispatch(setRecipientViewDraft(preview.address as AddressFields))
-        }
+      const section = 'recipientView' as const
+      dispatch(setRecipientViewId(preview.id))
+      if (preview.source === 'form') {
+        dispatch(setRecipientViewDraft(preview.address as AddressFields))
       }
 
       if (key === 'edit') {

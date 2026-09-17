@@ -68,6 +68,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
+  const toolbarSection = 'recipientView' as const
   const isEditMode =
     viewOnly
       ? false
@@ -182,7 +183,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
 
   useEffect(() => {
     if (!isEditMode) return
-    const section = role === 'sender' ? 'senderView' : 'recipientView'
+    const section = 'recipientView' as const
     const handleMouseDown = (e: MouseEvent) => {
       const target = e.target
       if (!(target instanceof Element)) return
@@ -301,8 +302,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       }
       if (e.key === 'Enter') {
         e.preventDefault()
-        const section =
-          role === 'sender' ? 'senderView' : 'recipientView'
+        const section = 'recipientView' as const
         dispatch(toolbarAction({ section, key: 'edit' } as any))
         return
       }
@@ -339,8 +339,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     // Ignore blur shortly after opening edit (e.g. from list panel) so focus has time to land
     if (Date.now() - editModeOpenedAt.current < 200) return
 
-    const section =
-      role === 'sender' ? 'senderView' : 'recipientView'
+    const section = 'recipientView' as const
     dispatch(toolbarAction({ section, key: 'edit' } as any))
   }
 

@@ -8,6 +8,7 @@ export type {
 } from './domain/types/postcard.types'
 export {
   normalizePostcardRecord,
+  normalizePostcardRefs,
   postcardRefsFromCard,
   POSTCARD_STATUSES,
   POSTCARD_STATUSES_HIDDEN_ON_DATE_CALENDAR_THUMBNAIL,

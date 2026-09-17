@@ -8,18 +8,12 @@ import { useMobileScenarioToolbar } from '@features/cardSectionEditor/presentati
 import { closeAddressList, clearAddressListPreviewSnapshot } from '@envelope/infrastructure/state'
 import {
   selectActiveRecipientsToolbarState,
-  selectActiveSenderToolbarState,
   selectRecipientListPanelOpen,
-  selectSenderListPanelOpen,
 } from '@envelope/infrastructure/selectors'
 import { listStatusIsInQuickAddressBook } from '@envelope/domain/helpers'
-import { selectSenderEntriesState } from '@envelope/sender/infrastructure/selectors'
 import { selectRecipientEntriesState } from '@envelope/recipient/infrastructure/selectors'
 import { withDisabledToolbarGroups } from '@toolbar/domain/helpers'
-import {
-  ADDRESS_LIST_RECIPIENTS_TOOLBAR,
-  ADDRESS_LIST_SENDER_TOOLBAR,
-} from '@toolbar/domain/types/addressList.types'
+import { ADDRESS_LIST_RECIPIENTS_TOOLBAR } from '@toolbar/domain/types/addressList.types'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
 import type { IconKey, IconState } from '@shared/config/constants'
@@ -35,54 +29,47 @@ function readApplyState(raw: unknown): IconState {
   return 'disabled'
 }
 
-/** Mobile factory: нижний ряд — addressListSender / addressListRecipients toolbar. */
+/** Mobile factory: нижний ряд — addressListRecipients toolbar. */
 export const AddressListMobileFactoryLowerToolbar: React.FC = () => {
-  const senderListOpen = useAppSelector(selectSenderListPanelOpen)
   const recipientListOpen = useAppSelector(selectRecipientListPanelOpen)
   const activeSection = useAppSelector(selectActiveSection)
-  const senderEntries = useAppSelector(selectSenderEntriesState)
   const recipientEntries = useAppSelector(selectRecipientEntriesState)
   const { isMobileLayout } = useSizeFacade()
   const { showMobileAddressListFactoryChrome } = useMobileFactoryListChrome()
 
   const enabled =
     isMobileLayout &&
-    (senderListOpen || recipientListOpen) &&
+    recipientListOpen &&
     activeSection === 'envelope' &&
     showMobileAddressListFactoryChrome
 
   const listEmpty = useMemo(() => {
-    const entries = senderListOpen ? senderEntries : recipientEntries
-    return !entries.some((e) => listStatusIsInQuickAddressBook(e.listStatus))
-  }, [recipientEntries, senderEntries, senderListOpen])
+    return !recipientEntries.some((e) =>
+      listStatusIsInQuickAddressBook(e.listStatus),
+    )
+  }, [recipientEntries])
 
   const content = useMemo(() => {
     if (!enabled) return null
-    const role = senderListOpen ? 'sender' : 'recipient'
-    const baseToolbar = senderListOpen
-      ? ADDRESS_LIST_SENDER_TOOLBAR
-      : ADDRESS_LIST_RECIPIENTS_TOOLBAR
     return (
       <div
         className={clsx(
           styles.addressListToolbarRow,
-          role === 'sender'
-            ? styles.addressListToolbarRowSender
-            : styles.addressListToolbarRowRecipient,
+          styles.addressListToolbarRowRecipient,
         )}
-        data-address-list-toolbar-role={role}
+        data-address-list-toolbar-role="recipient"
       >
         <Toolbar
-          section={
-            senderListOpen ? 'addressListSender' : 'addressListRecipients'
-          }
+          section="addressListRecipients"
           groupsOverride={
-            listEmpty ? withDisabledToolbarGroups(baseToolbar) : undefined
+            listEmpty
+              ? withDisabledToolbarGroups(ADDRESS_LIST_RECIPIENTS_TOOLBAR)
+              : undefined
           }
         />
       </div>
     )
-  }, [enabled, listEmpty, senderListOpen])
+  }, [enabled, listEmpty])
 
   useMobileScenarioToolbar(content)
 
@@ -106,24 +93,20 @@ export const AddressListMobileFactoryUpperToolbar: React.FC<{
   const showReturn =
     placement === 'listHeader' || (isMobileLayout && placement === 'factory')
   const showApply = placement !== 'listHeader'
-  const senderListOpen = useAppSelector(selectSenderListPanelOpen)
-  const upperReturnSection = senderListOpen ? 'senderView' : 'recipientView'
-  const senderToolbar = useAppSelector(selectActiveSenderToolbarState)
   const recipientsToolbar = useAppSelector(selectActiveRecipientsToolbarState)
-  const applySection = senderListOpen ? 'sender' : 'recipients'
   const applyState = readApplyState(
-    senderListOpen ? senderToolbar.apply : recipientsToolbar.apply,
+    (recipientsToolbar as { apply?: unknown }).apply,
   )
 
   const applyToolbar = useMemo((): ToolbarConfig => {
     return [
       {
-        group: senderListOpen ? 'address' : 'recipients',
+        group: 'recipients',
         icons: [{ key: 'applyMedium', state: applyState }],
         status: 'enabled',
       },
     ]
-  }, [applyState, senderListOpen])
+  }, [applyState])
 
   const handleApplyAction = useCallback(
     (key: IconKey) => {
@@ -154,14 +137,14 @@ export const AddressListMobileFactoryUpperToolbar: React.FC<{
       className={clsx(
         styles.upperRow,
         placement === 'listHeader' && styles.upperRowListHeader,
-        senderListOpen ? styles.upperRowSender : styles.upperRowRecipient,
+        styles.upperRowRecipient,
       )}
-      data-address-list-toolbar-role={senderListOpen ? 'sender' : 'recipient'}
+      data-address-list-toolbar-role="recipient"
     >
       <div className={styles.upperApply}>
         {showApply ? (
           <Toolbar
-            section={applySection}
+            section="recipients"
             groupsOverride={applyToolbar}
             className={toolbarStyles.toolbarAromaUpperApply}
             onActionClick={handleApplyAction}
@@ -171,7 +154,7 @@ export const AddressListMobileFactoryUpperToolbar: React.FC<{
       {showReturn ? (
         <div className={styles.upperToolbar}>
           <Toolbar
-            section={upperReturnSection}
+            section="recipientView"
             groupsOverride={ADDRESS_LIST_FACTORY_UPPER_CLOSE_TOOLBAR}
             className={toolbarStyles.toolbarAromaUpperReturn}
             onActionClick={handleCloseAction}

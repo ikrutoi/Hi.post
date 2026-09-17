@@ -12,7 +12,6 @@ import type {
   CardtextKey,
   CardtextToolbarState,
   EnvelopeToolbarState,
-  EnvelopeKey,
   EditorPieKey,
   EditorPieToolbarState,
   CardPanelOverlayToolbarKey,
@@ -78,20 +77,14 @@ export const TOOLBAR_SECTIONS = [
   'cardphotoList',
   'cardtext',
   'history',
-  'sender',
-  // 'recipient',
   'recipients',
   'editorPie',
   'cardPanelOverlay',
   'sectionEditorMenu',
-  'addressListSender',
   'addressListRecipient',
   'addressListRecipients',
-  'savedRecipientAddress',
-  'senderView',
   'recipientView',
   'recipientsView',
-  'senderCreate',
   'recipientCreate',
   'cardtextList',
   'cardtextCreate',
@@ -122,19 +115,14 @@ export type ToolbarState = {
   cardtext: CardtextToolbarState & { config: ToolbarGroup[] }
   cardphotoList: CardphotoListToolbarState & { config: ToolbarGroup[] }
   history: HistoryToolbarState & { config: ToolbarGroup[] }
-  sender: EnvelopeToolbarState & { config: ToolbarGroup[] }
-  // recipient: EnvelopeToolbarState & { config: ToolbarGroup[] }
   recipients: EnvelopeToolbarState & { config: ToolbarGroup[] }
   editorPie: EditorPieToolbarState & { config: ToolbarGroup[] }
   cardPanelOverlay: CardPanelOverlayToolbarState & { config: ToolbarGroup[] }
   sectionEditorMenu: SectionEditorMenuToolbarState & { config: ToolbarGroup[] }
-  addressListSender: AddressListToolbarState & { config: ToolbarGroup[] }
   addressListRecipient: AddressListToolbarState & { config: ToolbarGroup[] }
   addressListRecipients: AddressListToolbarState & { config: ToolbarGroup[] }
-  senderView: AddressViewToolbarState & { config: ToolbarGroup[] }
   recipientView: AddressViewToolbarState & { config: ToolbarGroup[] }
   recipientsView: AddressViewToolbarState & { config: ToolbarGroup[] }
-  senderCreate: AddressViewToolbarState & { config: ToolbarGroup[] }
   recipientCreate: AddressViewToolbarState & { config: ToolbarGroup[] }
   cardtextList: CardtextListToolbarState & { config: ToolbarGroup[] }
   cardtextView: CardtextToolbarState & { config: ToolbarGroup[] }
@@ -203,8 +191,6 @@ export type ToolbarSectionConfigMap = {
     'cardphotoList'
   >
   cardtext: BaseSectionConfig<CardtextToolbarState, CardtextKey, 'cardtext'>
-  sender: BaseSectionConfig<EnvelopeToolbarState, EnvelopeKey, 'sender'>
-  // recipient: BaseSectionConfig<EnvelopeToolbarState, EnvelopeKey, 'recipient'>
   editorPie: BaseSectionConfig<EditorPieToolbarState, EditorPieKey, 'editorPie'>
   cardPanelOverlay: BaseSectionConfig<
     CardPanelOverlayToolbarState,
@@ -215,11 +201,6 @@ export type ToolbarSectionConfigMap = {
     SectionEditorMenuToolbarState,
     SectionEditorMenuKey,
     'sectionEditorMenu'
-  >
-  addressListSender: BaseSectionConfig<
-    AddressListToolbarState,
-    AddressListKey,
-    'addressListSender'
   >
   addressListRecipient: BaseSectionConfig<
     AddressListToolbarState,
@@ -236,11 +217,6 @@ export type ToolbarSectionConfigMap = {
     RecipientsKey,
     'recipients'
   >
-  senderView: BaseSectionConfig<
-    AddressViewToolbarState,
-    AddressViewKey,
-    'senderView'
-  >
   recipientView: BaseSectionConfig<
     AddressViewToolbarState,
     AddressViewKey,
@@ -250,11 +226,6 @@ export type ToolbarSectionConfigMap = {
     AddressViewToolbarState,
     AddressViewKey,
     'recipientsView'
-  >
-  senderCreate: BaseSectionConfig<
-    AddressViewToolbarState,
-    AddressViewKey,
-    'senderCreate'
   >
   recipientCreate: BaseSectionConfig<
     AddressViewToolbarState,
@@ -350,11 +321,7 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
           ? CardphotoListKey
           : S extends 'cardtext'
             ? CardtextKey
-            : S extends 'sender'
-              ? EnvelopeKey
-              : // : S extends 'recipient'
-                //   ? EnvelopeKey
-                S extends 'recipients'
+                : S extends 'recipients'
                 ? RecipientsKey
                 : S extends 'editorPie'
                   ? EditorPieKey
@@ -362,20 +329,14 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
                     ? CardPanelOverlayToolbarKey
                     : S extends 'sectionEditorMenu'
                       ? SectionEditorMenuKey
-                      : S extends 'addressListSender'
-                        ? AddressListKey
                         : S extends 'addressListRecipient'
                           ? AddressListKey
                           : S extends 'addressListRecipients'
                             ? AddressListKey
-                            : S extends 'senderView'
-                              ? AddressViewKey
                               : S extends 'recipientView'
                                 ? AddressViewKey
                                 : S extends 'recipientsView'
                                   ? AddressViewKey
-                                  : S extends 'senderCreate'
-                                    ? AddressViewKey
                                     : S extends 'recipientCreate'
                                       ? AddressViewKey
                                       : S extends 'cardtextList'

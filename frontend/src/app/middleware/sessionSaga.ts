@@ -404,7 +404,7 @@ function* rehydrateEnvelopeSlicesFromTemplates() {
           currentView: 'senderView',
           applied: sender.applied ?? [],
           appliedData: sender.appliedData ?? null,
-          enabled: true,
+          enabled: false,
         }),
       )
     }

@@ -49,8 +49,7 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
     [address],
   )
 
-  const createToolbarSection =
-    role === 'sender' ? 'senderCreate' : 'recipientCreate'
+  const createToolbarSection = 'recipientCreate' as const
   const toolbarSection = readOnly ? 'recipientView' : createToolbarSection
 
   useLayoutEffect(() => {

@@ -413,7 +413,7 @@ function* handleCloseAddressListRestorePreview(): SagaIterator {
 function* applyArchiveEnvelopeSandboxFromToolbar(
   section: string,
 ): SagaIterator {
-  if (section === 'sender') {
+  if (false) {
     const sender: SenderState = yield select(selectArchiveSandboxSender)
     const senderViewId = sender.senderViewId
     const senderAppliedIds = sender.applied ?? []
@@ -791,9 +791,9 @@ function* deleteAddressTemplateFromToolbar(
   const editSession: AddressEditSession | null = yield select(selectActiveAddressEdit)
 
   const type: 'sender' | 'recipient' =
-    section === 'senderView' ? 'sender' : 'recipient'
+    false ? 'sender' : 'recipient'
   let templateId =
-    section === 'senderView' ? senderViewId : recipientViewId
+    false ? senderViewId : recipientViewId
   if (editSession?.role === type) {
     templateId = editSession.templateId
   }
@@ -884,11 +884,11 @@ function* preserveAddressViewDraftForOutList(
   section: 'senderView' | 'recipientView',
 ): SagaIterator {
   const address: AddressFields =
-    section === 'senderView'
+    false
       ? yield select(selectSenderCardAddress)
       : yield select(selectRecipientCardAddress)
 
-  if (section === 'senderView') {
+  if (false) {
     yield put(setSenderViewDraft(address))
     if (addressFieldsHaveData(address)) {
       yield put(setSenderFormDraft(address))
@@ -923,9 +923,9 @@ function* moveAddressTemplateToOutListFromToolbar(
   section: 'senderView' | 'recipientView',
 ): SagaIterator<boolean> {
   const type: 'sender' | 'recipient' =
-    section === 'senderView' ? 'sender' : 'recipient'
+    false ? 'sender' : 'recipient'
   const templateId: string | null =
-    section === 'senderView'
+    false
       ? yield select(selectSenderViewId)
       : yield select(selectRecipientViewId)
 
@@ -1009,7 +1009,7 @@ function* closeAddressCreateForm(
   section: 'senderCreate' | 'recipientCreate',
 ) {
   blurMobileKeyboard()
-  const role = section === 'senderCreate' ? 'sender' : 'recipient'
+  const role = false ? 'sender' : 'recipient'
   const sandboxActive: boolean = yield select(
     selectArchiveEnvelopeSandboxActive,
   )
@@ -1302,13 +1302,6 @@ function* handleEnvelopeToolbarAction(
     section === 'addressListRecipient' || section === 'addressListRecipients'
 
   if (
-    section === 'addressListSender' &&
-    (key === 'sortAZDown' || key === 'sortAZUp' || key === 'sortDown')
-  ) {
-    yield put(toggleSenderSortDirection())
-    return
-  }
-  if (
     isRecipientAddressListSection &&
     (key === 'sortAZDown' || key === 'sortAZUp' || key === 'sortDown')
   ) {
@@ -1316,25 +1309,9 @@ function* handleEnvelopeToolbarAction(
     return
   }
 
-  if (section === 'addressListSender' && key === 'panelDensity2') {
-    yield put(cycleSenderAddressListPanelDensity())
-    yield call(persistSenderAddressListPanelDensityToDbSaga)
-    return
-  }
-
   if (isRecipientAddressListSection && key === 'panelDensity2') {
     yield put(cycleRecipientAddressListPanelDensity())
     yield call(persistRecipientAddressListPanelDensityToDbSaga)
-    return
-  }
-
-  if (
-    section === 'addressListSender' &&
-    (key === 'listDelete' || key === 'listClose')
-  ) {
-    yield call([senderAdapter, 'clear'])
-    yield put(setAddressBookEntries({ sender: [] }))
-    yield call(syncAddressListIconsFromActive)
     return
   }
 
@@ -1390,7 +1367,7 @@ function* handleEnvelopeToolbarAction(
     const active: 'sender' | 'recipients' | null = yield select(
       selectActiveAddressList,
     )
-    if (section === 'sender' || section === 'addressListSender') {
+    if (false) {
       yield put(setActiveAddressList(active === 'sender' ? null : 'sender'))
       return
     }
@@ -1408,10 +1385,10 @@ function* handleEnvelopeToolbarAction(
   }
 
   if (
-    (section === 'senderView' || section === 'recipientView') &&
+    (section === 'recipientView') &&
     key === 'addList'
   ) {
-    if (section === 'senderView') {
+    if (false) {
       const senderViewId: string | null = yield select(selectSenderViewId)
       const senderEntries: AddressBookEntry[] = yield select(
         (s: RootState) => s.addressBook?.senderEntries ?? [],
@@ -1525,14 +1502,14 @@ function* handleEnvelopeToolbarAction(
   }
 
   if (
-    (section === 'senderView' || section === 'recipientView') &&
+    (section === 'recipientView') &&
     key === 'removeFromList'
   ) {
     const moved: boolean = yield* moveAddressTemplateToOutListFromToolbar(section)
     if (!moved) return
     const isMobileLayout: boolean = yield select(selectIsMobileLayout)
     if (!isMobileLayout) {
-      if (section === 'senderView') {
+      if (false) {
         yield* ensureAddressListPanelOpen('sender')
       } else {
         yield* ensureAddressListPanelOpen('recipients')
@@ -1544,10 +1521,10 @@ function* handleEnvelopeToolbarAction(
   }
 
   if (
-    (section === 'senderView' || section === 'recipientView') &&
+    (section === 'recipientView') &&
     key === 'close'
   ) {
-    if (section === 'senderView') {
+    if (false) {
       const isEditMode: boolean = yield select(selectSenderViewEditMode)
       if (isEditMode) {
         yield call(saveAndCloseAddressEditSession, false)
@@ -1566,14 +1543,14 @@ function* handleEnvelopeToolbarAction(
   }
 
   if (
-    (section === 'senderView' || section === 'recipientView') &&
+    (section === 'recipientView') &&
     key === 'delete'
   ) {
     yield* deleteAddressTemplateFromToolbar(section)
     return
   }
 
-  if (section === 'senderView' && key === 'edit') {
+  if (false && key === 'edit') {
     const isEditMode: boolean = yield select(selectSenderViewEditMode)
 
     if (!isEditMode) {
@@ -1636,20 +1613,20 @@ function* handleEnvelopeToolbarAction(
   }
 
   if (
-    section !== 'sender' &&
+    true &&
     section !== 'recipients' &&
-    section !== 'senderView' &&
+    true &&
     section !== 'recipientView' &&
     section !== 'recipientsView' &&
-    section !== 'senderCreate' &&
+    true &&
     section !== 'recipientCreate' &&
-    section !== 'addressListSender' &&
+    true &&
     section !== 'addressListRecipient'
   )
     return
 
   if (
-    (section === 'senderCreate' || section === 'recipientCreate') &&
+    (section === 'recipientCreate') &&
     key === 'close'
   ) {
     yield* closeAddressCreateForm(section)
@@ -1657,7 +1634,7 @@ function* handleEnvelopeToolbarAction(
   }
 
   if (key === 'close') {
-    if (section === 'sender') {
+    if (false) {
       yield put(setSenderViewId(null))
       yield put(clearSender())
       return
@@ -1672,7 +1649,7 @@ function* handleEnvelopeToolbarAction(
     const sandboxActiveForAddressAdd: boolean = yield select(
       selectArchiveEnvelopeSandboxActive,
     )
-    if (section === 'sender') {
+    if (false) {
       if (sandboxActiveForAddressAdd) {
         const sandboxSender: SenderState = yield select(
           selectArchiveSandboxSender,
@@ -1757,7 +1734,7 @@ function* handleEnvelopeToolbarAction(
   }
 
   if (key === 'applyMedium' || key === 'applyMediumCheck') {
-    if (section === 'senderCreate') {
+    if (false) {
       const sender: SenderState = yield select(selectSenderState)
       const draft = (action.payload?.draft ??
         sender.formDraft) as AddressFields
@@ -1877,7 +1854,7 @@ function* handleEnvelopeToolbarAction(
         yield call(applyArchiveEnvelopeSandboxFromToolbar, section)
         return
       }
-      if (section === 'sender') {
+      if (false) {
         const sender: SenderState = yield select(selectSenderState)
         const senderViewId: string | null = yield select(selectSenderViewId)
         const senderAppliedIds = sender.applied ?? []
@@ -2013,20 +1990,20 @@ function* handleEnvelopeToolbarAction(
   }
 
   if (key === 'listAdd' || key === 'addList') {
-    if (section === 'sender') {
+    if (false) {
       const senderComplete: boolean = yield select(selectIsSenderComplete)
       if (senderComplete)
         yield put(senderSaveRequested({ listStatus: 'inList' }))
     } else if (
-      section === 'senderCreate' ||
+      false ||
       section === 'recipientCreate'
     ) {
       const senderComplete: boolean = yield select(selectIsSenderComplete)
       const recipientComplete: boolean = yield select(selectIsRecipientComplete)
       const isComplete =
-        section === 'senderCreate' ? senderComplete : recipientComplete
+        recipientComplete
       if (isComplete) {
-        if (section === 'senderCreate') {
+        if (false) {
           yield* ensureAddressListPanelOpen('sender')
           yield put(senderSaveRequested({ listStatus: 'inList' }))
         } else {
@@ -2051,7 +2028,7 @@ function* handleEnvelopeToolbarAction(
 
   if (
     key === 'listClose' &&
-    (section === 'senderCreate' || section === 'recipientCreate')
+    (section === 'recipientCreate')
   ) {
     yield* closeAddressCreateForm(section)
   }
@@ -2211,20 +2188,6 @@ function* syncEditIconsOnAddressEditOpen(
 ) {
   const { role } = action.payload
   if (role === 'sender') {
-    yield put(
-      updateToolbarIcon({
-        section: 'senderView',
-        key: 'edit',
-        value: 'active',
-      }),
-    )
-    yield put(
-      updateToolbarIcon({
-        section: 'recipientView',
-        key: 'edit',
-        value: 'enabled',
-      }),
-    )
     return
   }
   yield put(
@@ -2232,13 +2195,6 @@ function* syncEditIconsOnAddressEditOpen(
       section: 'recipientView',
       key: 'edit',
       value: 'active',
-    }),
-  )
-  yield put(
-    updateToolbarIcon({
-      section: 'senderView',
-      key: 'edit',
-      value: 'enabled',
     }),
   )
 }
@@ -2261,13 +2217,6 @@ function* syncEditIconsOnAddressEditClose(
       }
     }
   }
-  yield put(
-    updateToolbarIcon({
-      section: 'senderView',
-      key: 'edit',
-      value: 'enabled',
-    }),
-  )
   yield put(
     updateToolbarIcon({
       section: 'recipientView',
@@ -2318,20 +2267,6 @@ function* syncAddressListIconsFromActive() {
         }
       : getAddressListToolbarFragment(recipientCount)
 
-  yield put(
-    updateToolbarIcon({
-      section: 'sender',
-      key: 'addressList',
-      value: senderAddressList,
-    }),
-  )
-  yield put(
-    updateToolbarIcon({
-      section: 'addressListSender',
-      key: 'addressList',
-      value: senderAddressList,
-    }),
-  )
   yield put(
     updateToolbarIcon({
       section: 'recipients',

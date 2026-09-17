@@ -222,16 +222,11 @@ export const useEnvelopeFacade = () => {
   }
 
   const syncAddressFormToolbar = (
-    section: 'senderCreate' | 'recipientCreate',
+    section: 'recipientCreate',
     isAddressComplete: boolean,
   ) => {
-    const isSenderSection = section === 'senderCreate'
-    const draft = (
-      isSenderSection ? sender.formDraft : recipient.formDraft
-    ) as AddressFields
-    const inList = isSenderSection
-      ? senderInListEntries
-      : recipientInListEntries
+    const draft = recipient.formDraft as AddressFields
+    const inList = recipientInListEntries
     const addListState = resolveAddListToolbarState(
       isAddressComplete,
       draft,

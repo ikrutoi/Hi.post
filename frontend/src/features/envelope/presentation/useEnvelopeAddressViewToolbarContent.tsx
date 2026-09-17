@@ -168,11 +168,7 @@ export function useEnvelopeAddressViewToolbarContent({
   /** Lower View toolbar follows recipient; both applied → neutral tint band only. */
   const activeViewRole = bothFormsApplied ? null : 'recipient'
 
-  const senderToolbarSlot =
-    enabled &&
-    activeViewRole === 'sender' &&
-    senderView !== 'senderCreate' &&
-    !assemblySenderSimplifiedPeek
+  const senderToolbarSlot = false
 
   const recipientChromeSlot =
     enabled &&
@@ -212,23 +208,17 @@ export function useEnvelopeAddressViewToolbarContent({
       desktopKeepLowerRecipientsDuringCreate) &&
     recipientsMultiListReady
 
-  const section: 'senderView' | 'recipientView' | 'recipients' | null =
-    showSenderToolbar
-      ? 'senderView'
-      : showRecipientToolbar
-        ? 'recipientView'
-        : showRecipientsMultiToolbar
-          ? 'recipients'
-          : null
+  const section: 'recipientView' | 'recipients' | null =
+    showRecipientToolbar
+      ? 'recipientView'
+      : showRecipientsMultiToolbar
+        ? 'recipients'
+        : null
 
   const addressViewInQuickList =
-    section === 'senderView'
-      ? senderDisplayEntry != null &&
-        listStatusIsInQuickAddressBook(senderDisplayEntry.listStatus)
-      : section === 'recipientView'
-        ? recipientDisplayEntry != null &&
-          listStatusIsInQuickAddressBook(recipientDisplayEntry.listStatus)
-        : false
+    section === 'recipientView' &&
+    recipientDisplayEntry != null &&
+    listStatusIsInQuickAddressBook(recipientDisplayEntry.listStatus)
 
   const addressViewToolbar = useMemo((): ToolbarConfig => {
     if (section === 'recipientView' && recipientsFormViewIdsCount > 1) {
@@ -256,7 +246,7 @@ export function useEnvelopeAddressViewToolbarContent({
   const toolbarInner =
     showRecipientCreateToolbar ? (
       <Toolbar section="recipientCreate" />
-    ) : section === 'senderView' || section === 'recipientView' ? (
+    ) : section === 'recipientView' ? (
       <Toolbar section={section} groupsOverride={addressViewToolbar} />
     ) : section === 'recipients' ? (
       <Toolbar

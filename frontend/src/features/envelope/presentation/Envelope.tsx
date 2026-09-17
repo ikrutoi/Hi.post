@@ -307,20 +307,7 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
                 styles.envelopeSectionSender,
               )}
               data-envelope-mobile-focus-sender
-            >
-              {envelopePeekMode ? (
-                <EnvelopePeekAddressBlock
-                  key={
-                    listRowLocalId != null
-                      ? `peek-env-sender-${listRowLocalId}`
-                      : 'peek-env-sender'
-                  }
-                  role="sender"
-                  compact={isMobile}
-                  className={styles.envelopePeekBlock}
-                />
-              ) : null}
-            </div>
+            />
           </>
         )}
       </div>

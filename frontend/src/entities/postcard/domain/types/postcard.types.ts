@@ -90,7 +90,6 @@ export interface PostcardRecordMeta {
 export interface PostcardRefs {
   cardphoto: string
   cardtext: string
-  sender: string | null
   recipient: string
   aroma: string
 }
@@ -106,29 +105,34 @@ export function postcardRefsFromCard(card: Card): PostcardRefs {
   const appliedPhotoId =
     (card.cardphoto?.appliedData as { id?: string } | undefined)?.id ?? null
   const r = card.envelope?.recipient
-  const s = card.envelope?.sender
   const recipientRef =
     r?.applied?.[0] != null
       ? String(r.applied[0])
       : r?.recipientViewId != null
         ? String(r.recipientViewId)
         : ''
-  const senderRef =
-    s?.enabled === false
-      ? null
-      : s?.applied?.[0] != null
-        ? String(s.applied[0])
-        : s?.senderViewId != null
-          ? String(s.senderViewId)
-          : null
   const cardtextId =
     card.cardtext?.appliedData?.id ?? card.cardtext?.assetData?.id ?? ''
   return {
     cardphoto: appliedPhotoId ?? card.id,
     cardtext: cardtextId,
-    sender: senderRef,
     recipient: recipientRef,
     aroma: String(normalizeAromaItem(card.aroma).index),
+  }
+}
+
+/** Старые IDB-строки могли хранить `sender` в refs — в канон его не берём. */
+export function normalizePostcardRefs(
+  raw: PostcardRefs | (PostcardRefs & { sender?: unknown }) | null | undefined,
+  card: Card,
+): PostcardRefs {
+  const fromCard = postcardRefsFromCard(card)
+  if (raw == null) return fromCard
+  return {
+    cardphoto: String(raw.cardphoto ?? fromCard.cardphoto),
+    cardtext: String(raw.cardtext ?? fromCard.cardtext),
+    recipient: String(raw.recipient ?? fromCard.recipient),
+    aroma: String(raw.aroma ?? fromCard.aroma),
   }
 }
 
@@ -236,7 +240,7 @@ export function normalizePostcardRecord(raw: unknown): PostcardHydrated {
         : 'cart'
       : status
 
-  const postcard: PostcardRefs = row.postcard ?? postcardRefsFromCard(card)
+  const postcard: PostcardRefs = normalizePostcardRefs(row.postcard, card)
 
   const next: PostcardHydrated = {
     id,

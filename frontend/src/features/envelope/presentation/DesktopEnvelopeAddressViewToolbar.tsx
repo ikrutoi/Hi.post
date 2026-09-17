@@ -2,6 +2,7 @@ import React from 'react'
 import { useAppSelector } from '@app/hooks'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
+import { useArchiveEditPeekGate } from '@cardPanel/application/hooks/useArchiveEditPeekGate'
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { useEnvelopeAddressViewToolbarContent } from './useEnvelopeAddressViewToolbarContent'
@@ -10,8 +11,8 @@ import { useEnvelopeAddressViewToolbarContent } from './useEnvelopeAddressViewTo
 export const DesktopEnvelopeAddressViewToolbar: React.FC = () => {
   const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const activeSection = useAppSelector(selectActiveSection)
-  const { archiveCartEnvelopeSimplifiedPeek, archiveEditPeekGate } =
-    useMobileFactoryListChrome()
+  const { archiveCartEnvelopeSimplifiedPeek } = useMobileFactoryListChrome()
+  const archiveEditPeekGate = useArchiveEditPeekGate('envelope')
   const { rightPieEnvelopePeekNoToolbar } = useRightListArchiveMini()
   const envelopePeekMode =
     (rightPieEnvelopePeekNoToolbar && !archiveCartEnvelopeSimplifiedPeek) ||

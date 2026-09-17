@@ -5,12 +5,11 @@ import type { CardPieFavoriteTemplate, CardPieRefs } from '../../domain/types'
 const CARDPIE_FAVORITES_CHANGED_EVENT = 'cardpie-favorites-changed'
 
 export const buildCardPieRefsKey = (refs: CardPieRefs): string =>
-  [refs.cardphoto, refs.cardtext, refs.sender, refs.recipient, refs.aroma].join('|')
+  [refs.cardphoto, refs.cardtext, refs.recipient, refs.aroma].join('|')
 
 const sameRefs = (a: CardPieRefs, b: CardPieRefs): boolean =>
   a.cardphoto === b.cardphoto &&
   a.cardtext === b.cardtext &&
-  a.sender === b.sender &&
   a.recipient === b.recipient &&
   a.aroma === b.aroma
 
@@ -30,7 +29,12 @@ export async function listCardPieFavorites(): Promise<CardPieFavoriteTemplate[]>
     const next: CardPieFavoriteTemplate = {
       id,
       localId: row.localId,
-      refs: row.refs,
+      refs: {
+        cardphoto: String(row.refs?.cardphoto ?? ''),
+        cardtext: String(row.refs?.cardtext ?? ''),
+        recipient: String(row.refs?.recipient ?? ''),
+        aroma: String(row.refs?.aroma ?? ''),
+      },
     }
     hydrated.push(next)
     if (row.id !== id) {

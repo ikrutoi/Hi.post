@@ -111,7 +111,7 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   }, [isMobile, mobileFocus, recipientView])
 
   const handleAddressAddClick = useCallback(
-    (section: 'sender' | 'recipients', key: IconKey): void | false => {
+    (section: 'recipients', key: IconKey): void | false => {
       if (key !== 'addressAdd' || !isMobile || mobileFocus == null) return
       if (section !== 'recipients') return
 

@@ -3,13 +3,14 @@ import type { PostcardHydrated } from '@entities/postcard'
 import { normalizePostcardRecord } from '@entities/postcard'
 
 /** Текущая версия AppDB (см. `openDB` в `db/core.ts`). */
-export const APP_DB_VERSION = 17
+export const APP_DB_VERSION = 18
 
 type VersionChangeTx = IDBPTransaction<unknown, string[], 'versionchange'>
 
 /**
  * Приводит все строки `postcards` к каноническому виду: метаданные на корне,
  * без легаси `status` / `meta` на вложенном `card` (id по-прежнему ключ IDB).
+ * С v18 также выкидывает `postcard.sender` из refs.
  */
 export async function migratePostcardsToCanonicalShape(
   db: IDBPDatabase<unknown>,

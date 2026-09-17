@@ -634,7 +634,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         return
       if (el.closest('[data-envelope-address-surface]')) return
       if (senderViewEditMode) {
-        dispatch(toolbarAction({ section: 'senderView', key: 'edit' }))
+        dispatch(toolbarAction({ section: 'recipientView', key: 'edit' }))
         return
       }
       openAddressListFromFieldset('sender')

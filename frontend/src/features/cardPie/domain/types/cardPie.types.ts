@@ -75,7 +75,6 @@ export interface CardPieProps {
 export interface CardPieRefs {
   cardphoto: string
   cardtext: string
-  sender: string
   recipient: string
   aroma: string
 }

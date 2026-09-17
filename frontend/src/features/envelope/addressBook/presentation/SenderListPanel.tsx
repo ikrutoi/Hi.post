@@ -159,7 +159,7 @@ export const SenderListPanel: React.FC<Props> = ({
           }
           toolbar={
             combinedEntries.length > 0 ? (
-              <Toolbar section="addressListSender" />
+              <Toolbar section="addressListRecipients" />
             ) : (
               false
             )

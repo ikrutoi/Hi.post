@@ -206,23 +206,12 @@ function* cacheCartListPreviewForCard(card: Card): SagaIterator {
   )
 }
 
-function hasRequiredPostcardRefs(
-  refs: PostcardRefs,
-  envelope: EnvelopeSessionRecord,
-): boolean {
+function hasRequiredPostcardRefs(refs: PostcardRefs): boolean {
   const hasCardphoto = refs.cardphoto.trim().length > 0
   const hasCardtext = refs.cardtext.trim().length > 0
   const hasRecipient = refs.recipient.trim().length > 0
   const hasAroma = refs.aroma.trim().length > 0
-  const senderRequired = envelope.sender?.enabled === true
-  const hasSender = (refs.sender ?? '').trim().length > 0
-  return (
-    hasCardphoto &&
-    hasCardtext &&
-    hasRecipient &&
-    hasAroma &&
-    (!senderRequired || hasSender)
-  )
+  return hasCardphoto && hasCardtext && hasRecipient && hasAroma
 }
 
 export function* createPostcardsFromEditor(): SagaIterator<boolean> {
@@ -323,7 +312,7 @@ export function* createPostcardsFromEditor(): SagaIterator<boolean> {
         cardphoto: appliedCardphotoId,
         aroma: String(aromaForRefs.index),
       }
-      if (!hasRequiredPostcardRefs(refs, envelopeVariant)) continue
+      if (!hasRequiredPostcardRefs(refs)) continue
       const postcard: PostcardHydrated = {
         id: `${appliedCardphotoId}__${postcardLocalId}`,
         localId: postcardLocalId,
@@ -683,7 +672,7 @@ export function* handleToggleCartForDispatchBranch(
     cardphoto: appliedCardphotoId,
     aroma: String(aromaForRefs.index),
   }
-  if (!hasRequiredPostcardRefs(refs, envelopeVariant)) {
+  if (!hasRequiredPostcardRefs(refs)) {
     yield call(refreshRightSidebarBadgesFromPostcards)
     return false
   }

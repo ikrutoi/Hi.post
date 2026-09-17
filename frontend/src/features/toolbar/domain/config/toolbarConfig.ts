@@ -3,25 +3,18 @@ import {
   CARDPHOTO_TOOLBAR,
   CARDTEXT_KEYS,
   CARDTEXT_TOOLBAR,
-  ENVELOPE_KEYS,
   EDITOR_PIE_KEYS,
   EDITOR_PIE_TOOLBAR,
   CARD_PANEL_OVERLAY_KEYS,
   SECTION_EDITOR_MENU_KEYS,
   SECTION_EDITOR_MENU_TOOLBAR,
   initialCardphotoToolbarState,
-  initialSenderToolbarState,
-  // initialRecipientToolbarState,
   initialEditorPieToolbarState,
   initialCardPanelOverlayToolbarState,
   initialSectionEditorMenuToolbarState,
-  SENDER_TOOLBAR,
-  // RECIPIENT_TOOLBAR,
   CARD_PANEL_OVERLAY_TOOLBAR,
   ADDRESS_LIST_KEYS,
-  initialAddressListSenderToolbarState,
   initialAddressListRecipientToolbarState,
-  ADDRESS_LIST_SENDER_TOOLBAR,
   ADDRESS_LIST_RECIPIENT_TOOLBAR,
   RECIPIENTS_KEYS,
   initialRecipientsToolbarState,
@@ -57,12 +50,8 @@ import {
 import {
   RECIPIENTS_VIEW_TOOLBAR,
   VIEW_KEYS,
-  SENDER_VIEW_TOOLBAR,
-  SENDER_CREATE_TOOLBAR,
   RECIPIENT_CREATE_TOOLBAR,
   initialRecipientsViewToolbarState,
-  initialSenderViewToolbarState,
-  initialSenderCreateToolbarState,
   initialRecipientCreateToolbarState,
 } from '../types/addressView.types'
 import { initialCardtextToolbarState } from '@cardtext/domain/types'
@@ -199,37 +188,6 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     getBadges: (state: ToolbarState['cardtext']) => ({}),
   },
 
-  sender: {
-    keys: ENVELOPE_KEYS,
-    initialState: initialSenderToolbarState,
-    onAction: () => {},
-    getBadges: (state: ToolbarState['sender']) => {
-      const addressListBadge = (state.addressList as any)?.options?.badge
-      return {
-        cardUser: state.cardUser === 'enabled' ? 1 : null,
-        addressList:
-          addressListBadge && addressListBadge > 0 ? addressListBadge : null,
-      }
-    },
-    group: 'address',
-    toolbar: SENDER_TOOLBAR,
-  },
-
-  // recipient: {
-  //   keys: ENVELOPE_KEYS,
-  //   initialState: initialRecipientToolbarState,
-  //   onAction: (key, section) => console.log('Recipient action', key, section),
-  //   group: 'recipient',
-  //   getBadges: (state: ToolbarState['recipient']) => {
-  //     const addressListBadge = (state.addressList as any)?.options?.badge
-  //     return {
-  //       addressList:
-  //         addressListBadge && addressListBadge > 0 ? addressListBadge : null,
-  //     }
-  //   },
-  //   toolbar: RECIPIENT_TOOLBAR,
-  // },
-
   recipients: {
     keys: RECIPIENTS_KEYS,
     initialState: initialRecipientsToolbarState,
@@ -268,17 +226,6 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     toolbar: SECTION_EDITOR_MENU_TOOLBAR,
   },
 
-  addressListSender: {
-    keys: ADDRESS_LIST_KEYS,
-    initialState: initialAddressListSenderToolbarState,
-    onAction: (key, section, _editor, dispatch) => {
-      dispatch({ type: 'toolbar/action', payload: { section, key } })
-    },
-    group: 'address',
-    getBadges: (state: ToolbarState['addressListSender']) => ({}),
-    toolbar: ADDRESS_LIST_SENDER_TOOLBAR,
-  },
-
   addressListRecipient: {
     keys: ADDRESS_LIST_KEYS,
     initialState: initialAddressListRecipientToolbarState,
@@ -299,17 +246,6 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'address',
     getBadges: (state: ToolbarState['addressListRecipients']) => ({}),
     toolbar: ADDRESS_LIST_RECIPIENTS_TOOLBAR,
-  },
-
-  senderView: {
-    keys: VIEW_KEYS,
-    initialState: initialSenderViewToolbarState,
-    onAction: (key, section, _editor, dispatch) => {
-      dispatch({ type: 'toolbar/action', payload: { section, key } })
-    },
-    group: 'senderView',
-    getBadges: (state: ToolbarState['senderView']) => ({}),
-    toolbar: SENDER_VIEW_TOOLBAR,
   },
 
   recipientView: {
@@ -342,17 +278,6 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'recipientsView',
     getBadges: (state: ToolbarState['recipientsView']) => ({}),
     toolbar: RECIPIENTS_VIEW_TOOLBAR,
-  },
-
-  senderCreate: {
-    keys: VIEW_KEYS,
-    initialState: initialSenderCreateToolbarState,
-    onAction: (key, section, _editor, dispatch) => {
-      dispatch({ type: 'toolbar/action', payload: { section, key } })
-    },
-    group: 'senderCreate',
-    getBadges: (state: ToolbarState['senderCreate']) => ({}),
-    toolbar: SENDER_CREATE_TOOLBAR,
   },
 
   recipientCreate: {
