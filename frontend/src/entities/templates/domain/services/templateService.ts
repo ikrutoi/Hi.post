@@ -1,7 +1,6 @@
 import { nanoid } from 'nanoid'
 import {
   recipientTemplatesAdapter,
-  senderTemplatesAdapter,
   cardtextTemplatesAdapter,
 } from '@db/adapters/templateAdapters'
 import type {
@@ -196,8 +195,8 @@ export const templateService = {
   },
 
   async getAddressTemplates(type: AddressType): Promise<AddressTemplate[]> {
-    const adapter =
-      type === 'recipient' ? recipientTemplatesAdapter : senderTemplatesAdapter
+    if (type === 'sender') return []
+    const adapter = recipientTemplatesAdapter
 
     const records = await adapter.getAll()
 
@@ -217,8 +216,8 @@ export const templateService = {
     type: AddressType,
     id: number | string,
   ): Promise<AddressTemplate | null> {
-    const adapter =
-      type === 'recipient' ? recipientTemplatesAdapter : senderTemplatesAdapter
+    if (type === 'sender') return null
+    const adapter = recipientTemplatesAdapter
 
     const record = await adapter.getById(id)
     if (!record) return null
@@ -238,11 +237,11 @@ export const templateService = {
   async createAddressTemplate(
     payload: CreateAddressTemplatePayload,
   ): Promise<TemplateOperationResult> {
+    if (payload.type === 'sender') {
+      return { success: false, error: 'Sender templates are retired' }
+    }
     try {
-      const adapter =
-        payload.type === 'recipient'
-          ? recipientTemplatesAdapter
-          : senderTemplatesAdapter
+      const adapter = recipientTemplatesAdapter
 
       const maxLocalId = await adapter.getMaxLocalId()
       const localId = maxLocalId + 1
@@ -276,11 +275,11 @@ export const templateService = {
     id: number | string,
     payload: UpdateAddressTemplatePayload,
   ): Promise<TemplateOperationResult> {
+    if (type === 'sender') {
+      return { success: false, error: 'Sender templates are retired' }
+    }
     try {
-      const adapter =
-        type === 'recipient'
-          ? recipientTemplatesAdapter
-          : senderTemplatesAdapter
+      const adapter = recipientTemplatesAdapter
 
       const record = await adapter.getById(id)
       if (!record) {
@@ -320,11 +319,11 @@ export const templateService = {
     type: AddressType,
     id: number | string,
   ): Promise<TemplateOperationResult> {
+    if (type === 'sender') {
+      return { success: true, templateId: id }
+    }
     try {
-      const adapter =
-        type === 'recipient'
-          ? recipientTemplatesAdapter
-          : senderTemplatesAdapter
+      const adapter = recipientTemplatesAdapter
 
       await adapter.deleteById(id)
 

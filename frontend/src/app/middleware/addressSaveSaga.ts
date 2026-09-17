@@ -86,9 +86,10 @@ export function* handleAddressSave(
     | ReturnType<typeof recipientSaveRequested>
     | ReturnType<typeof senderSaveRequested>,
 ): SagaIterator {
-  const role: EnvelopeRole = recipientSaveRequested.match(action)
-    ? 'recipient'
-    : 'sender'
+  if (recipientSaveRequested.match(action) === false) {
+    return
+  }
+  const role: EnvelopeRole = 'recipient'
   /** Адрес в БД всегда; `inList` — в быстром списке шаблонов, `outList` — только запись (см. Apply без id). */
   const payload = (
     action as { payload?: AddressSaveRequestedPayload }

@@ -3,6 +3,7 @@ import type { StoreMap } from '@/db/types'
 import type { StoreAdapter } from '../../types'
 import { postcardsAdapter } from './postcardsAdapter'
 import { cardPieFavoritesAdapter } from './cardPieFavoritesAdapter'
+import { senderAdapter } from './senderAdapter'
 
 export const storeAdapters: {
   stockImages: StoreAdapter<StoreMap['stockImages']>
@@ -22,7 +23,7 @@ export const storeAdapters: {
   cardphotoImages: createStoreAdapter<StoreMap['cardphotoImages']>('cardphotoImages'),
   applyImage: createStoreAdapter<StoreMap['applyImage']>('applyImage'),
   cardtext: createStoreAdapter<StoreMap['cardtext']>('cardtext'),
-  sender: createStoreAdapter<StoreMap['sender']>('sender'),
+  sender: senderAdapter,
   recipient: createStoreAdapter<StoreMap['recipient']>('recipient'),
   postcards: postcardsAdapter,
   cardPieFavorites: cardPieFavoritesAdapter,

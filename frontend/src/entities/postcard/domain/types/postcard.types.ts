@@ -1,5 +1,6 @@
 import { DispatchDate } from '@/entities/date'
 import type { Card } from '@entities/card/domain/types'
+import { emptyEnvelope } from '@entities/envelope/domain/types'
 import { normalizeAromaItem } from '@entities/aroma/domain/types'
 import { LEGACY_LOCAL_ID_PROPERTY } from '@shared/config/legacyIndexedDb'
 import { getCurrentDate } from '@shared/utils/date'
@@ -76,6 +77,17 @@ function stripSessionFlagsFromCard(card: Card): Card {
   if (!('isProcessed' in (card as object))) return card
   const { isProcessed: _removed, ...rest } = card
   return rest as Card
+}
+
+function stripSenderFromCardEnvelope(card: Card): Card {
+  if (card.envelope == null) return card
+  return {
+    ...card,
+    envelope: {
+      ...card.envelope,
+      sender: { ...emptyEnvelope.sender },
+    },
+  }
 }
 
 export interface PostcardRecordMeta {
@@ -209,6 +221,7 @@ export function normalizePostcardRecord(raw: unknown): PostcardHydrated {
   let card = stripLegacyStatusFromCard(cardBase as Card)
   card = stripLegacyMetaFromCard(card)
   card = stripSessionFlagsFromCard(card)
+  card = stripSenderFromCardEnvelope(card)
 
   const localId = coercePostcardBodyId(row, card)
   const id = coercePostcardId(row, card, localId)

@@ -4,7 +4,6 @@ const storeSpecs = [
   { name: 'cardphotoImages', keyPath: 'id' as const },
   { name: 'applyImage', keyPath: 'id' as const },
   { name: 'cardtext', keyPath: 'id' as const },
-  { name: 'sender', keyPath: 'id' as const },
   { name: 'recipient', keyPath: 'id' as const },
   { name: 'postcards', keyPath: 'id' as const },
   { name: 'cardPieFavorites', keyPath: 'localId' as const },
