@@ -929,11 +929,7 @@ export function* hydrateAppSession() {
     }
 
     if (session.envelope) {
-      const { sender, recipient } = session.envelope
-
-      if (sender) {
-        yield put(restoreSender(sender))
-      }
+      const recipient = session.envelope.recipient
 
       if (recipient) {
         yield put(restoreRecipient(recipient))

@@ -194,7 +194,6 @@ function* handleFullCopy(
       yield put(applyFinal(donorPhoto))
     }
     yield put(setValue(donor.cardtext.assetData?.value ?? initialCardtextValue))
-    yield put(restoreSender(donor.envelope.sender))
     yield put(restoreRecipient(donor.envelope.recipient))
     yield put(setAroma(donor.aroma))
     yield put(setDate(donor.date))
@@ -220,7 +219,6 @@ function* handleSectionCopy(action: ReturnType<typeof copySectionToProcessed>) {
         )
         break
       case 'envelope':
-        yield put(restoreSender(donor.envelope.sender))
         yield put(restoreRecipient(donor.envelope.recipient))
         break
       case 'aroma':

@@ -1,8 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { AddressFields } from '@shared/config/constants'
-import { initialSender } from '@envelope/infrastructure/state/senderSlice'
 import { initialRecipient } from '@envelope/recipient/infrastructure/state/recipientSlice'
-import type { SenderState, SenderView } from '@envelope/domain/types'
 import type {
   RecipientState,
   RecipientView,
@@ -16,23 +14,6 @@ function isComplete(data: AddressFields): boolean {
 function hasAddressFields(data: AddressFields | null | undefined): boolean {
   if (data == null) return false
   return Object.values(data).some((v) => (v ?? '').trim() !== '')
-}
-
-function cloneSender(partial: Partial<SenderState>): SenderState {
-  const next: SenderState = {
-    ...initialSender,
-    ...partial,
-    formDraft: { ...initialSender.formDraft, ...partial.formDraft },
-    viewDraft: { ...initialSender.viewDraft, ...partial.viewDraft },
-    applied: [...(partial.applied ?? initialSender.applied)],
-  }
-  if (
-    !next.appliedLocked &&
-    ((next.applied?.length ?? 0) > 0 || next.appliedData != null)
-  ) {
-    next.appliedLocked = true
-  }
-  return next
 }
 
 function cloneRecipient(partial: Partial<RecipientState>): RecipientState {
@@ -56,7 +37,6 @@ function cloneRecipient(partial: Partial<RecipientState>): RecipientState {
 const initialState: ArchiveEnvelopeSandboxState = {
   localId: null,
   source: null,
-  sender: { ...initialSender },
   recipient: { ...initialRecipient },
 }
 
@@ -69,37 +49,13 @@ const archiveEnvelopeSandboxSlice = createSlice({
       action: PayloadAction<{
         localId: number
         source: 'cart' | 'history'
-        sender: Partial<SenderState>
         recipient: Partial<RecipientState>
-        /** Complete postcard envelope ⇒ empty/disabled sender is applied. */
         envelopeIsComplete?: boolean
       }>,
     ) {
-      const { localId, source, sender, recipient, envelopeIsComplete } =
-        action.payload
+      const { localId, source, recipient } = action.payload
       state.localId = localId
       state.source = source
-      state.sender = cloneSender({
-        ...sender,
-        appliedLocked:
-          Boolean(sender.appliedLocked) ||
-          (sender.applied?.length ?? 0) > 0 ||
-          Boolean(envelopeIsComplete),
-      })
-      /** Ensure edit drafts exist even if postcard only stored appliedData. */
-      if (
-        state.sender.appliedData != null &&
-        !Object.values(state.sender.viewDraft).some((v) => (v ?? '').trim() !== '')
-      ) {
-        state.sender.viewDraft = { ...state.sender.appliedData }
-        state.sender.formIsComplete = isComplete(state.sender.viewDraft)
-      }
-      if (
-        state.sender.senderViewId == null &&
-        (state.sender.applied?.length ?? 0) > 0
-      ) {
-        state.sender.senderViewId = state.sender.applied[0] ?? null
-      }
       state.recipient = cloneRecipient(recipient)
       if (
         state.recipient.appliedData != null &&
@@ -140,71 +96,39 @@ const archiveEnvelopeSandboxSlice = createSlice({
       return {
         localId: null,
         source: null,
-        sender: { ...initialSender },
         recipient: { ...initialRecipient },
       }
     },
 
-    updateArchiveSenderField(
-      state,
-      action: PayloadAction<{ field: keyof AddressFields; value: string }>,
-    ) {
-      const { field, value } = action.payload
-      if (state.sender.currentView === 'senderCreate') {
-        state.sender.formDraft[field] = value
-        state.sender.formIsComplete = isComplete(state.sender.formDraft)
-      } else {
-        state.sender.viewDraft[field] = value
-        state.sender.formIsComplete = isComplete(state.sender.viewDraft)
-      }
+    updateArchiveSenderField: {
+      reducer: () => {},
+      prepare: (payload: { field: keyof AddressFields; value: string }) => ({
+        payload,
+      }),
     },
-
-    setArchiveSenderEnabled(state, action: PayloadAction<boolean>) {
-      state.sender.enabled = action.payload
+    setArchiveSenderEnabled: {
+      reducer: () => {},
+      prepare: (payload: boolean) => ({ payload }),
     },
-
-    setArchiveSenderView(state, action: PayloadAction<SenderView>) {
-      state.sender.currentView = action.payload
+    setArchiveSenderView: {
+      reducer: () => {},
+      prepare: (payload: string) => ({ payload }),
     },
-
-    setArchiveSenderViewId(state, action: PayloadAction<string | null>) {
-      state.sender.senderViewId = action.payload
+    setArchiveSenderViewId: {
+      reducer: () => {},
+      prepare: (payload: string | null) => ({ payload }),
     },
-
-    setArchiveSenderApplied(state, action: PayloadAction<boolean>) {
-      if (!action.payload) {
-        const fromApplied = state.sender.appliedData
-        if (fromApplied != null) {
-          state.sender.viewDraft = { ...fromApplied }
-          state.sender.formIsComplete = isComplete(fromApplied)
-        } else {
-          state.sender.formIsComplete = isComplete(state.sender.viewDraft)
-        }
-        const appliedId = state.sender.applied?.[0]
-        if (appliedId) {
-          state.sender.senderViewId = appliedId
-        }
-        state.sender.currentView = 'senderView'
-        state.sender.applied = []
-        state.sender.appliedData = null
-        state.sender.appliedLocked = false
-      } else {
-        /** Confirm no sender address (toggle off). Keep viewDraft; clear applied payload. */
-        state.sender.applied = []
-        state.sender.appliedData = null
-        state.sender.appliedLocked = true
-      }
+    setArchiveSenderApplied: {
+      reducer: () => {},
+      prepare: (payload: boolean) => ({ payload }),
     },
-
-    setArchiveSenderAppliedWithData(
-      state,
-      action: PayloadAction<{ ids: string[]; data: AddressFields[] }>,
-    ) {
-      state.sender.applied = action.payload.ids
-      state.sender.appliedData =
-        action.payload.data.length === 1 ? action.payload.data[0] : null
-      state.sender.appliedLocked = true
+    setArchiveSenderAppliedWithData: {
+      reducer: () => {},
+      prepare: (payload: { ids: string[]; data: AddressFields[] }) => ({
+        payload,
+      }),
     },
+    clearArchiveSenderFormData: () => {},
 
     updateArchiveRecipientField(
       state,
@@ -258,12 +182,6 @@ const archiveEnvelopeSandboxSlice = createSlice({
       state.recipient.applied = action.payload.ids
       state.recipient.appliedData =
         action.payload.data.length === 1 ? action.payload.data[0] : null
-    },
-
-    clearArchiveSenderFormData(state) {
-      state.sender.formDraft = { ...initialSender.formDraft }
-      state.sender.formIsComplete = false
-      state.sender.formIsEmpty = true
     },
 
     clearArchiveRecipientFormData(state) {

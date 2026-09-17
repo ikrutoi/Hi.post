@@ -24,7 +24,6 @@ export function dispatchLoadArchiveEnvelopeSandbox(
     loadArchiveEnvelopeSandbox({
       localId: input.localId,
       source: input.source,
-      sender: envelope.sender,
       recipient: envelope.recipient,
       envelopeIsComplete: envelope.isComplete,
     }),

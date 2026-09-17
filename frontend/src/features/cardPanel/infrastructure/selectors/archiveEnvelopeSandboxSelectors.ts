@@ -1,5 +1,6 @@
 import type { RootState } from '@app/state'
 import { initialSection } from '@envelope/addressForm/domain/models'
+import { initialSender } from '@envelope/infrastructure/state/senderSlice'
 import type { AddressFields } from '@shared/config/constants'
 import { EMPTY_STRINGS } from '@shared/utils/helpers'
 import { createSelector } from '@reduxjs/toolkit'
@@ -14,23 +15,14 @@ export const selectArchiveEnvelopeSandboxLocalId = (
   state: RootState,
 ): number | null => state.archiveEnvelopeSandbox.localId
 
-export const selectArchiveSandboxSender = (state: RootState) =>
-  state.archiveEnvelopeSandbox.sender
+export const selectArchiveSandboxSender = () => initialSender
 
 export const selectArchiveSandboxRecipient = (state: RootState) =>
   state.archiveEnvelopeSandbox.recipient
 
-export const selectArchiveSandboxSenderAppliedLocked = (
-  state: RootState,
-): boolean => {
-  const sender = state.archiveEnvelopeSandbox.sender
-  return (
-    Boolean(sender.appliedLocked) || (sender.applied?.length ?? 0) > 0
-  )
-}
+export const selectArchiveSandboxSenderAppliedLocked = (): boolean => true
 
-export const selectArchiveSandboxSenderApplied = (state: RootState): string[] =>
-  state.archiveEnvelopeSandbox.sender.applied ?? EMPTY_STRINGS
+export const selectArchiveSandboxSenderApplied = (): string[] => EMPTY_STRINGS
 
 export const selectArchiveSandboxRecipientApplied = (
   state: RootState,
@@ -45,10 +37,7 @@ export const selectArchiveSandboxEnvelopeComplete = createSelector(
 
 export const selectArchiveSandboxAppliedSenderDisplayAddress = createSelector(
   [selectArchiveSandboxSender],
-  (sender): Readonly<AddressFields> => {
-    if (sender.appliedData != null) return sender.appliedData
-    return initialSection.data
-  },
+  (): Readonly<AddressFields> => initialSection.data,
 )
 
 export const selectArchiveSandboxAppliedRecipientDisplayAddress =

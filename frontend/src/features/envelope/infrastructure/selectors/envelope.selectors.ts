@@ -229,15 +229,12 @@ export const selectSenderSelectedId = createSelector(
 )
 
 export const selectEnvelopeSessionRecord = createSelector(
-  [selectSenderState, selectRecipientState],
-  (sender, recipient): EnvelopeSessionRecord => {
+  [selectRecipientState],
+  (recipient): EnvelopeSessionRecord => {
     const recipientApplied = (recipient.applied?.length ?? 0) > 0
-    const isComplete = recipientApplied
-
     return {
-      sender,
       recipient,
-      isComplete,
+      isComplete: recipientApplied,
     }
   },
 )

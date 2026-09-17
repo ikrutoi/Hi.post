@@ -280,40 +280,17 @@ function primarySenderDisplayLine(
   return tail.length > 0 ? tail : null
 }
 
-function senderMiniFromCard(card: Card): {
+function senderMiniFromCard(_card: Card): {
   senderBadgeShow: boolean
   senderDisplayName: string | null
   hasSenderAppliedData: boolean
   sender: Readonly<AddressFields> | null
 } {
-  const s = card.envelope?.sender
-  if (s == null || !s.enabled) {
-    return {
-      senderBadgeShow: false,
-      senderDisplayName: null,
-      hasSenderAppliedData: false,
-      sender: null,
-    }
-  }
-  const source =
-    s.appliedData ??
-    (s.applied.length > 0 ? s.viewDraft : null) ??
-    s.viewDraft ??
-    s.formDraft
-  const displayName = primarySenderDisplayLine(source)
-  const sender = snapshotSenderAddressFields(source ?? undefined)
-  const hasBookApply = s.applied.length > 0
-  const hasAppliedSnapshot = addressHasAnyField(s.appliedData)
-  const senderBadgeShow =
-    hasBookApply ||
-    hasAppliedSnapshot ||
-    addressHasAnyField(s.viewDraft) ||
-    addressHasAnyField(s.formDraft)
   return {
-    senderBadgeShow,
-    senderDisplayName: displayName,
-    hasSenderAppliedData: hasAppliedSnapshot,
-    sender,
+    senderBadgeShow: false,
+    senderDisplayName: null,
+    hasSenderAppliedData: false,
+    sender: null,
   }
 }
 

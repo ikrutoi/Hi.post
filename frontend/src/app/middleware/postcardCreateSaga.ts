@@ -66,7 +66,6 @@ import type { ImageRecord } from '@cardphoto/domain/types'
 import type {
   EnvelopeSessionRecord,
   RecipientState,
-  SenderState,
 } from '@envelope/domain/types'
 import type { AddressFields } from '@shared/config/constants'
 import type { DispatchDate } from '@entities/date'
@@ -141,11 +140,9 @@ function buildCartDuplicateKey(card: Card): string {
   const cardtext = card.cardtext as Partial<CardtextState> | undefined
   const envelope = card.envelope as Partial<EnvelopeSessionRecord> | undefined
   const recipient = envelope?.recipient as Partial<RecipientState> | undefined
-  const sender = envelope?.sender as Partial<SenderState> | undefined
   const aroma = card.aroma as Partial<AromaItem> | undefined
 
   const recipientAppliedIds = [...(recipient?.applied ?? [])].sort().join('|')
-  const senderAppliedIds = [...(sender?.applied ?? [])].sort().join('|')
   const cardtextBranch = cardtext?.appliedData ?? cardtext?.assetData
 
   return JSON.stringify({
@@ -161,12 +158,6 @@ function buildCartDuplicateKey(card: Card): string {
       recipientViewId: recipient?.recipientViewId ?? null,
       appliedIds: recipientAppliedIds,
       addr: normalizeAddressForDedupe(recipient?.appliedData ?? undefined),
-    },
-    sender: {
-      enabled: sender?.enabled ?? false,
-      senderViewId: sender?.senderViewId ?? null,
-      appliedIds: senderAppliedIds,
-      addr: normalizeAddressForDedupe(sender?.appliedData ?? undefined),
     },
     aromaIndex: aroma?.index ?? null,
   })

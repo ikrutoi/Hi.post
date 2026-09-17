@@ -1,8 +1,6 @@
-import type { SenderState } from './sender.types'
 import type { RecipientState } from '../../recipient/domain/types'
 
 export interface EnvelopeSessionRecord {
-  sender: SenderState
   recipient: RecipientState
   isComplete: boolean
 }

@@ -9,7 +9,7 @@ import type { EnvelopeSessionRecord } from '@envelope/domain/types'
 import { selectArchiveEnvelopeSandbox } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import { postcardLocalDataChanged } from '@features/sync/store/postcardSync.actions'
 
-/** Persist sandbox sender/recipient onto the archive postcard by localId. */
+/** Persist sandbox recipient onto the archive postcard by localId. */
 export function* persistArchiveEnvelopeSandbox(): SagaIterator {
   const sandbox = yield select(selectArchiveEnvelopeSandbox)
   if (sandbox.localId == null) return
@@ -18,11 +18,9 @@ export function* persistArchiveEnvelopeSandbox(): SagaIterator {
   const postcard = items.find((p) => p.localId === sandbox.localId)
   if (postcard == null) return
 
-  const sender = sandbox.sender
   const recipient = sandbox.recipient
   const recipientApplied = (recipient.applied?.length ?? 0) > 0
   const envelope: EnvelopeSessionRecord = {
-    sender: JSON.parse(JSON.stringify(sender)),
     recipient: JSON.parse(JSON.stringify(recipient)),
     isComplete: recipientApplied,
   }

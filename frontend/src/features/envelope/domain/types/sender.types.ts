@@ -24,7 +24,7 @@ export type SenderSortOptions = {
   direction: SenderSortDirection
 }
 
-/** Dormant card.envelope.sender shape; UI and templates are retired. */
+/** Redux leftover shape; not stored on card.envelope. */
 export type SenderState = {
   currentView: SenderView
   formDraft: AddressFields

@@ -1,6 +1,5 @@
 import { DispatchDate } from '@/entities/date'
 import type { Card } from '@entities/card/domain/types'
-import { emptyEnvelope } from '@entities/envelope/domain/types'
 import { normalizeAromaItem } from '@entities/aroma/domain/types'
 import { LEGACY_LOCAL_ID_PROPERTY } from '@shared/config/legacyIndexedDb'
 import { getCurrentDate } from '@shared/utils/date'
@@ -81,12 +80,12 @@ function stripSessionFlagsFromCard(card: Card): Card {
 
 function stripSenderFromCardEnvelope(card: Card): Card {
   if (card.envelope == null) return card
+  const { sender: _removed, ...envelope } = card.envelope as Card['envelope'] & {
+    sender?: unknown
+  }
   return {
     ...card,
-    envelope: {
-      ...card.envelope,
-      sender: { ...emptyEnvelope.sender },
-    },
+    envelope,
   }
 }
 

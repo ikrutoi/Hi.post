@@ -42,7 +42,6 @@ import {
 } from '@cardtext/infrastructure/state'
 import { selectCardtextIsComplete } from '@cardtext/infrastructure/selectors'
 import { cardtextValueForReadOnlyPreview } from '@cardtext/domain/editor/editor.types'
-import { restoreSender } from '@envelope/infrastructure/state'
 import { restoreRecipient } from '@envelope/recipient/infrastructure/state'
 import { selectIsEnvelopeReady } from '@envelope/infrastructure/selectors'
 import { syncEnvelopeFormsFromAppliedRequested } from '@envelope/infrastructure/state'
@@ -149,21 +148,6 @@ function* applyArchiveSectionFromPostcard(
       break
     }
     case 'envelope': {
-      const sender = card.envelope.sender
-      /**
-       * Cart/history envelope is complete ⇒ sender result is applied
-       * (address or empty/disabled). Force appliedLocked so archive peek
-       * shows postcardEdit, not the full sender toolbar.
-       */
-      yield put(
-        restoreSender({
-          ...sender,
-          appliedLocked:
-            Boolean(sender.appliedLocked) ||
-            (sender.applied?.length ?? 0) > 0 ||
-            Boolean(card.envelope.isComplete),
-        }),
-      )
       yield put(restoreRecipient(card.envelope.recipient))
       yield call(processEnvelopeVisuals)
       yield put(syncEnvelopeFormsFromAppliedRequested())

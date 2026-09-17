@@ -1,5 +1,5 @@
 import type { AddressFields, EnvelopeRole } from '@shared/config/constants'
-import type { RecipientState, SenderState } from '@envelope/domain/types'
+import type { RecipientState } from '@envelope/domain/types'
 
 export type ListStatus = 'outList' | 'inList'
 
@@ -14,31 +14,6 @@ export interface AddressTemplateItem {
 export type AddressRole = EnvelopeRole
 
 export const emptyEnvelope = {
-  sender: {
-    currentView: 'senderCreate' as const,
-    formDraft: {
-      name: '',
-      street: '',
-      zip: '',
-      city: '',
-      country: '',
-    } as AddressFields,
-    viewDraft: {
-      name: '',
-      street: '',
-      zip: '',
-      city: '',
-      country: '',
-    } as AddressFields,
-    formIsComplete: false,
-    formIsEmpty: true,
-    sortOptions: { sortedBy: 'name', direction: 'asc' },
-    senderViewId: null,
-    applied: [],
-    appliedData: null,
-    enabled: false,
-    appliedLocked: false,
-  } as SenderState,
   recipient: {
     currentView: 'recipientsView' as const,
     formDraft: {
