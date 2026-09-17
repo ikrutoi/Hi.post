@@ -47,6 +47,8 @@ final class BackendCanon
     public const FROZEN_TABLES = [
         'postcards',
         'sender_templates',
+        'recipient_templates',
+        'text_templates',
     ];
 
     public const LIVE_TABLES = [
@@ -58,6 +60,7 @@ final class BackendCanon
         'personal_access_tokens',
         'user_files',
         'user_postcards',
+        'user_library_items',
     ];
 
     /**

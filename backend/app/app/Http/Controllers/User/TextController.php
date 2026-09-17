@@ -5,6 +5,9 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+/**
+ * Frozen stub. Phase 5 cardtext templates are /api/v2/cardtexts.
+ */
 class TextController extends Controller
 {
     /**

@@ -9,6 +9,7 @@ export interface AddressTemplateItem {
   address: AddressFields
   listStatus: ListStatus
   favorite: boolean | null
+  updatedAt?: number
 }
 
 export type AddressRole = EnvelopeRole

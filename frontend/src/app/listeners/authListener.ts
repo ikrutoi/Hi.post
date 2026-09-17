@@ -12,6 +12,7 @@ import {
   rehydratePostcardsFromIdb,
 } from '@features/sync/store/postcardSync.actions'
 import { pullV2PostcardsIntoIdb } from '@features/sync/application/services/pullV2PostcardsIntoIdb'
+import { pullV2LibraryIntoIdb } from '@features/sync/application/services/pullV2LibraryIntoIdb'
 
 export const authListenerMiddleware = createListenerMiddleware()
 
@@ -25,6 +26,7 @@ async function pullV2AfterAuth(
   if (import.meta.env.VITE_AUTH_MODE !== 'http') return
   try {
     await pullV2PostcardsIntoIdb()
+    await pullV2LibraryIntoIdb()
     listenerApi.dispatch(rehydratePostcardsFromIdb())
     listenerApi.dispatch(postcardLocalDataChanged())
   } catch {

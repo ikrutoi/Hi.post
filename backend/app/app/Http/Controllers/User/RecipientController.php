@@ -5,6 +5,9 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+/**
+ * Frozen stub. Phase 5 address book is /api/v2/addresses (IndexedDB shape).
+ */
 class RecipientController extends Controller
 {
     /**

@@ -5,7 +5,8 @@
  * (image_path / message / draft|scheduled|sent|archived) is frozen: do not
  * add columns, relations, or write paths. Cloud copy today is an opaque
  * `user_postcard_snapshots.payload` of PostcardHydrated (sync payload v1, read-only)
- * plus phase 3+ `user_postcards` rows (one Laravel row per postcard, LWW sync).
+ * plus phase 3+ `user_postcards` rows and phase 5 `user_library_items`
+ * (addresses, cardtexts, cardphotos). Legacy recipient/text template tables are frozen.
  *
  * Local-only IDB stores (not a server entity): session, uiPreferences,
  * cardPieFavorites. Image blobs stay in IDB as cache; http mode also POSTs
@@ -54,6 +55,8 @@ export const BACKEND_ADDRESS_FIELDS = [
 export const FROZEN_LARAVEL_TABLES = [
   'postcards',
   'sender_templates',
+  'recipient_templates',
+  'text_templates',
 ] as const
 
 /**
@@ -69,6 +72,7 @@ export const LIVE_LARAVEL_TABLES = [
   'personal_access_tokens',
   'user_files',
   'user_postcards',
+  'user_library_items',
 ] as const
 
 /** IDB stores that become the new server model (phase 1+). */
@@ -76,6 +80,7 @@ export const IDB_CANON_STORES = [
   'postcards',
   'recipient',
   'cardtext',
+  'cardphotoImages',
 ] as const
 
 export type BackendPostcardCanonRow = {

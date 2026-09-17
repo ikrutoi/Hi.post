@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Models\ImageTemplate;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+/**
+ * Frozen user image-template CRUD. System catalog stays on GET templates/images/system.
+ * User cardphoto templates: /api/v2/cardphotos + /api/files.
+ */
 class ImageController extends Controller
 {
     /**
@@ -19,18 +22,9 @@ class ImageController extends Controller
 
     public function store(Request $request): JsonResponse
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'url' => 'required|url',
-        ]);
-
-        $template = ImageTemplate::create([
-            'title' => $validated['title'],
-            'url' => $validated['url'],
-            'type' => 'user',
-        ]);
-
-        return response()->json($template, 201);
+        return response()->json([
+            'message' => 'User image templates use /api/v2/cardphotos.',
+        ], 410);
     }
 
     /**

@@ -2,13 +2,18 @@ import { createStoreAdapter } from '@db/adapters/factory/createStoreAdapter'
 import type { StoreMap } from '@/db/types'
 import type { StoreAdapter } from '../../types'
 import { postcardsAdapter } from './postcardsAdapter'
+import { cardphotoImagesAdapter } from './cardphotoImagesAdapter'
 import { cardPieFavoritesAdapter } from './cardPieFavoritesAdapter'
 import { senderAdapter } from './senderAdapter'
+import { recipientAdapter } from './recipientAdapter'
+import { cardtextAdapter } from './cardtextAdapter'
 
 export const storeAdapters: {
   stockImages: StoreAdapter<StoreMap['stockImages']>
   userImages: StoreAdapter<StoreMap['userImages']>
-  cardphotoImages: StoreAdapter<StoreMap['cardphotoImages']>
+  cardphotoImages: StoreAdapter<StoreMap['cardphotoImages']> & {
+    putLocal: StoreAdapter<StoreMap['cardphotoImages']>['put']
+  }
   applyImage: StoreAdapter<StoreMap['applyImage']>
   cardtext: StoreAdapter<StoreMap['cardtext']>
   sender: StoreAdapter<StoreMap['sender']>
@@ -20,11 +25,11 @@ export const storeAdapters: {
 } = {
   stockImages: createStoreAdapter<StoreMap['stockImages']>('stockImages'),
   userImages: createStoreAdapter<StoreMap['userImages']>('userImages'),
-  cardphotoImages: createStoreAdapter<StoreMap['cardphotoImages']>('cardphotoImages'),
+  cardphotoImages: cardphotoImagesAdapter,
   applyImage: createStoreAdapter<StoreMap['applyImage']>('applyImage'),
-  cardtext: createStoreAdapter<StoreMap['cardtext']>('cardtext'),
+  cardtext: cardtextAdapter,
   sender: senderAdapter,
-  recipient: createStoreAdapter<StoreMap['recipient']>('recipient'),
+  recipient: recipientAdapter,
   postcards: postcardsAdapter,
   cardPieFavorites: cardPieFavoritesAdapter,
   session: createStoreAdapter<StoreMap['session']>('session'),
