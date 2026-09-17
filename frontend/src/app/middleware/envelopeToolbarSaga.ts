@@ -28,7 +28,7 @@ import {
   setSenderFormDraft,
   toggleSenderSortDirection,
   saveAddressRequested as senderSaveRequested,
-} from '@envelope/sender/infrastructure/state'
+} from '@envelope/infrastructure/state'
 import {
   clearRecipient,
   setRecipientApplied,
@@ -100,7 +100,7 @@ import {
   selectIsSenderComplete,
   selectSenderViewId,
   selectSenderAddress,
-} from '@envelope/sender/infrastructure/selectors'
+} from '@envelope/infrastructure/selectors'
 import {
   selectRecipientState,
   selectIsRecipientComplete,
@@ -287,25 +287,11 @@ function* closeAddressListIfOpen(): SagaIterator {
 function* captureAddressListPreviewSnapshot(
   mode: 'sender' | 'recipients',
 ): SagaIterator {
+  if (mode === 'sender') return
+
   const sandboxActive: boolean = yield select(
     selectArchiveEnvelopeSandboxActive,
   )
-  if (mode === 'sender') {
-    const sender: SenderState = sandboxActive
-      ? yield select(selectArchiveSandboxSender)
-      : yield select(selectSenderState)
-    yield put(
-      setAddressListPreviewSnapshot({
-        mode: 'sender',
-        sandbox: sandboxActive,
-        senderViewId: sender.senderViewId,
-        currentView: sender.currentView,
-        viewDraft: { ...sender.viewDraft },
-      }),
-    )
-    return
-  }
-
   const recipient: RecipientState = sandboxActive
     ? yield select(selectArchiveSandboxRecipient)
     : yield select(selectRecipientState)
@@ -333,6 +319,7 @@ function* restoreSandboxViewDraft(
   role: 'sender' | 'recipient',
   viewDraft: AddressFields,
 ): SagaIterator {
+  if (role === 'sender') return
   for (const [field, value] of Object.entries(viewDraft) as [
     keyof AddressFields,
     string,
@@ -348,18 +335,7 @@ function* restoreSandboxViewDraft(
 function* restoreAddressListPreviewSnapshot(
   snapshot: AddressListPreviewSnapshot,
 ): SagaIterator {
-  if (snapshot.mode === 'sender') {
-    if (snapshot.sandbox) {
-      yield put(setArchiveSenderViewId(snapshot.senderViewId))
-      yield put(setArchiveSenderView(snapshot.currentView))
-      yield call(restoreSandboxViewDraft, 'sender', snapshot.viewDraft)
-      return
-    }
-    yield put(setSenderViewId(snapshot.senderViewId))
-    yield put(setSenderView(snapshot.currentView))
-    yield put(setSenderViewDraft(snapshot.viewDraft))
-    return
-  }
+  if (snapshot.mode === 'sender') return
 
   if (snapshot.sandbox) {
     yield put(setArchiveRecipientViewId(snapshot.recipientViewId))
@@ -591,6 +567,7 @@ function* openAddressCreateEditForm(
   templateId: string,
   options?: { returnToList?: boolean; returnToFormPreview?: boolean },
 ): SagaIterator {
+  if (role === 'sender') return
   const activeSession: AddressEditSession | null = yield select(
     selectActiveAddressEdit,
   )
@@ -2047,23 +2024,15 @@ function* handleAddressSaveSuccess(
     }) => s.envelopeSelection?.addressFormViewRole ?? null,
   )
   if (formViewRole !== role) return
+  if (role === 'sender') return
   yield put(setAddressFormView({ show: false, role: null }))
-  if (role === 'sender') {
-    const sender: SenderState = yield select(selectSenderState)
-    const appliedId = sender.applied?.[0]
-    if (appliedId) {
-      yield put(setSenderViewId(appliedId))
-    }
-    yield put(setSenderView('senderView'))
+  const pendingIds: string[] = yield select(selectRecipientsPendingIds)
+  if (pendingIds.length === 1) {
+    yield put(setRecipientViewId(pendingIds[0]))
+    yield put(setRecipientView('recipientView'))
   } else {
-    const pendingIds: string[] = yield select(selectRecipientsPendingIds)
-    if (pendingIds.length === 1) {
-      yield put(setRecipientViewId(pendingIds[0]))
-      yield put(setRecipientView('recipientView'))
-    } else {
-      yield put(setRecipientViewId(null))
-      yield put(setRecipientView('recipientsView'))
-    }
+    yield put(setRecipientViewId(null))
+    yield put(setRecipientView('recipientsView'))
   }
 }
 

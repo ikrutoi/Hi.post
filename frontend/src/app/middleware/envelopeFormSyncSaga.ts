@@ -10,8 +10,8 @@ import {
   setSenderView,
   setSenderViewId,
   setSenderViewDraft,
-} from '@envelope/sender/infrastructure/state'
-import { selectSenderState } from '@envelope/sender/infrastructure/selectors'
+} from '@envelope/infrastructure/state'
+import { selectSenderState } from '@envelope/infrastructure/selectors'
 import {
   setRecipientView,
   setRecipientViewId,

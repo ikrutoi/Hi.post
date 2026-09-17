@@ -16,7 +16,7 @@ import {
 import { selectSelectedAroma } from '@aroma/infrastructure/selectors'
 import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
 import { selectEnvelopeSessionRecord } from '@features/envelope/infrastructure/selectors'
-import { selectSenderState } from '@envelope/sender/infrastructure/selectors'
+import { selectSenderState } from '@envelope/infrastructure/selectors'
 import {
   selectAppliedRecipientDisplayAddress,
   selectRecipientEntriesState,

@@ -2,7 +2,7 @@ import React from 'react'
 import { useAppSelector } from '@app/hooks'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
-import { selectSenderView } from '@envelope/sender/infrastructure/selectors'
+import { selectSenderView } from '@envelope/infrastructure/selectors'
 import {
   selectArchiveEnvelopeSandboxActive,
   selectArchiveSandboxRecipient,

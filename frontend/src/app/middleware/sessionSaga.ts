@@ -26,7 +26,7 @@ import {
   setSenderAppliedIds,
   setSenderAppliedWithData,
   setSenderAppliedData,
-} from '@envelope/sender/infrastructure/state'
+} from '@envelope/infrastructure/state'
 import { selectSizeCard } from '@layout/infrastructure/selectors'
 import { setSizeCard } from '@layout/infrastructure/state'
 import {
@@ -34,7 +34,7 @@ import {
   setRecipientView,
   setRecipientViewDraft,
 } from '@envelope/recipient/infrastructure/state'
-import { restoreSender } from '@envelope/sender/infrastructure/state'
+import { restoreSender } from '@envelope/infrastructure/state'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
 import { syncCardtextToolbarVisuals } from './cardtextHandlers'
 import { syncSectionMenuVisuals } from './sectionEditorMenuHandlers'
@@ -99,10 +99,10 @@ import {
   setRecipientViewId,
   setRecipientsViewIds,
 } from '@envelope/recipient/infrastructure/state'
-import { setSenderViewId, setSenderView } from '@envelope/sender/infrastructure/state'
+import { setSenderViewId, setSenderView } from '@envelope/infrastructure/state'
 import { selectRecipientViewId } from '@envelope/recipient/infrastructure/selectors'
-import { selectSenderViewId } from '@envelope/sender/infrastructure/selectors'
-import { selectSenderState } from '@envelope/sender/infrastructure/selectors'
+import { selectSenderViewId } from '@envelope/infrastructure/selectors'
+import { selectSenderState } from '@envelope/infrastructure/selectors'
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
 import { recipientAdapter } from '@db/adapters/storeAdapters'
 import { cartListBillableLocalIds } from '@cart/application/logic/cartListBillableLocalIds'

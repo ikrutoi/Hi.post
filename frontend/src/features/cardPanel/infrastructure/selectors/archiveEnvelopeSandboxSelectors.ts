@@ -39,13 +39,8 @@ export const selectArchiveSandboxRecipientApplied = (
 
 /** Same completeness rule as assembly `selectEnvelopeSessionRecord`. */
 export const selectArchiveSandboxEnvelopeComplete = createSelector(
-  [selectArchiveSandboxSender, selectArchiveSandboxRecipient],
-  (sender, recipient): boolean => {
-    const senderApplied =
-      Boolean(sender.appliedLocked) || (sender.applied?.length ?? 0) > 0
-    const recipientApplied = (recipient.applied?.length ?? 0) > 0
-    return senderApplied && recipientApplied
-  },
+  [selectArchiveSandboxRecipient],
+  (recipient): boolean => (recipient.applied?.length ?? 0) > 0,
 )
 
 export const selectArchiveSandboxAppliedSenderDisplayAddress = createSelector(

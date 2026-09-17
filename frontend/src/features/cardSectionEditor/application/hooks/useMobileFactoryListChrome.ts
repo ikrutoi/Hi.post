@@ -19,14 +19,8 @@ import {
   selectRecipientView,
 } from '@envelope/recipient/infrastructure/selectors'
 import {
-  selectSenderAppliedLocked,
-  selectSenderView,
-} from '@envelope/sender/infrastructure/selectors'
-import {
   selectArchiveEnvelopeSandboxActive,
-  selectArchiveSandboxSender,
   selectArchiveSandboxRecipient,
-  selectArchiveSandboxSenderAppliedLocked,
   selectArchiveSandboxRecipientApplied,
 } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import {
@@ -72,14 +66,8 @@ export function useMobileFactoryListChrome() {
   const cardphotoAppliedData = useAppSelector(selectCardphotoAppliedData)
   const recipientAppliedIds = useAppSelector(selectRecipientApplied)
   const recipientView = useAppSelector(selectRecipientView)
-  const senderAppliedLocked = useAppSelector(selectSenderAppliedLocked)
-  const senderView = useAppSelector(selectSenderView)
   const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
-  const sandboxSender = useAppSelector(selectArchiveSandboxSender)
   const sandboxRecipient = useAppSelector(selectArchiveSandboxRecipient)
-  const sandboxSenderAppliedLocked = useAppSelector(
-    selectArchiveSandboxSenderAppliedLocked,
-  )
   const sandboxRecipientAppliedIds = useAppSelector(
     selectArchiveSandboxRecipientApplied,
   )
@@ -175,20 +163,9 @@ export function useMobileFactoryListChrome() {
         : recipientAppliedIds.length > 0))
 
   /**
-   * После Apply sender — postcardEdit. Left assembly + right cart envelope sandbox.
+   * Sender is retired: envelope apply-peek follows recipient only.
    */
-  const assemblySenderSimplifiedPeek =
-    (activeSection === 'envelope' &&
-      activePieSide === 'left' &&
-      !cardPieEditEngaged &&
-      !mobileArchiveSectionPeek &&
-      senderView !== 'senderCreate' &&
-      senderAppliedLocked) ||
-    (archiveCartEnvelopeSimplifiedPeek &&
-      (sandboxActive
-        ? sandboxSender.currentView !== 'senderCreate'
-        : senderView !== 'senderCreate') &&
-      (sandboxActive ? sandboxSenderAppliedLocked : senderAppliedLocked))
+  const assemblySenderSimplifiedPeek = true
 
   /**
    * Сборная: после Apply aroma — картинка на всю секцию + postcardEdit.

@@ -24,24 +24,13 @@ import { EnvelopeMobileAddressForm } from './EnvelopeMobileAddressForm'
 import { useEnvelopeMobileAddressFocus } from './EnvelopeMobileAddressFocusContext'
 import { useArchiveEditPeekGate } from '@cardPanel/application/hooks/useArchiveEditPeekGate'
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
-import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { useAppSelector } from '@app/hooks'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
-import {
-  selectSenderView,
-  selectIsSenderEnabled,
-} from '../sender/infrastructure/selectors'
-import { setEnabled, setSenderApplied, setSenderView } from '../sender/infrastructure/state'
 import { selectRecipientView, selectRecipientAddressFormData, selectRecipientEntriesState } from '../recipient/infrastructure/selectors'
 import {
   selectArchiveEnvelopeSandboxActive,
-  selectArchiveSandboxSender,
   selectArchiveSandboxRecipient,
 } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
-import {
-  setArchiveSenderApplied,
-  setArchiveSenderEnabled,
-  setArchiveSenderView,
-} from '@cardPanel/infrastructure/state'
 import {
   isAddressDraftComplete,
   isAddressDraftEmpty,
@@ -59,23 +48,13 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
 }
 
 const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }) => {
-  const dispatch = useAppDispatch()
   const notebookTabsOuter = useSectionEditorNotebookTabsOuter()
   const lang = getSafeLang(i18n.language)
   const recipientFacade = useRecipientFacade()
   const isMobile = useAppSelector(selectIsMobileLayout)
   const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
-  const sandboxSender = useAppSelector(selectArchiveSandboxSender)
   const sandboxRecipient = useAppSelector(selectArchiveSandboxRecipient)
-  const sessionSenderView = useAppSelector(selectSenderView)
   const sessionRecipientView = useAppSelector(selectRecipientView)
-  const sessionSenderEnabled = useAppSelector(selectIsSenderEnabled)
-  const sessionSenderAppliedLocked = useAppSelector(
-    (s) => s.sender.appliedLocked === true,
-  )
-  const senderView = sandboxActive
-    ? sandboxSender.currentView
-    : sessionSenderView
   const recipientView = sandboxActive
     ? sandboxRecipient.currentView
     : sessionRecipientView
@@ -201,43 +180,6 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
       mobileFocus.clearFocus()
     }
   }, [mobileFocus])
-
-  /**
-   * Sender form is removed: confirm “no sender” so envelope completion
-   * still depends only on the recipient Apply.
-   */
-  useEffect(() => {
-    if (envelopePeekMode) return
-    const appliedLocked = sandboxActive
-      ? sandboxSender.appliedLocked === true
-      : sessionSenderAppliedLocked
-    const enabled = sandboxActive
-      ? sandboxSender.enabled === true
-      : sessionSenderEnabled
-    const view = sandboxActive ? sandboxSender.currentView : senderView
-    if (view === 'senderCreate') {
-      if (sandboxActive) dispatch(setArchiveSenderView('senderView'))
-      else dispatch(setSenderView('senderView'))
-    }
-    if (enabled) {
-      if (sandboxActive) dispatch(setArchiveSenderEnabled(false))
-      else dispatch(setEnabled(false))
-    }
-    if (!appliedLocked) {
-      if (sandboxActive) dispatch(setArchiveSenderApplied(true))
-      else dispatch(setSenderApplied(true))
-    }
-  }, [
-    dispatch,
-    envelopePeekMode,
-    sandboxActive,
-    sandboxSender.appliedLocked,
-    sandboxSender.enabled,
-    sandboxSender.currentView,
-    sessionSenderAppliedLocked,
-    sessionSenderEnabled,
-    senderView,
-  ])
 
   const envelopeWorkZone = showMobileAddressCreateForm ? (
     <EnvelopeMobileAddressForm lang={lang} />

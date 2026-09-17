@@ -11,7 +11,7 @@ import { CARD_SECTIONS } from '@shared/config/constants'
 import type { CardSection } from '@shared/config/constants'
 import { clearDate } from '@date/infrastructure/state'
 import { clear as clearAroma } from '@aroma/infrastructure/state'
-import { setSenderApplied } from '@envelope/sender/infrastructure/state'
+import { setSenderApplied } from '@envelope/infrastructure/state'
 import { setRecipientApplied } from '@envelope/recipient/infrastructure/state'
 import {
   clearText,

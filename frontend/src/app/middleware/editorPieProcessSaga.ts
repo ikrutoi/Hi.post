@@ -47,7 +47,7 @@ import {
   setSenderAppliedData,
   restoreSender,
   clearSender,
-} from '@envelope/sender/infrastructure/state'
+} from '@envelope/infrastructure/state'
 import {
   setValue,
   setStatus as setCardtextStatus,

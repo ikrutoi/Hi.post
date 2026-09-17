@@ -3,7 +3,7 @@ import {
   selectSenderState,
   selectSenderView,
   selectAppliedSenderDisplayAddress,
-} from '../../sender/infrastructure/selectors'
+} from '../../infrastructure/selectors'
 import {
   selectRecipientDisplayAddress,
   selectAppliedRecipientDisplayAddress,
@@ -38,7 +38,7 @@ import {
   setEnabled,
   clearSender,
   setSenderView,
-} from '../../sender/infrastructure/state'
+} from '../../infrastructure/state'
 import {
   toggleRecipientSelection,
   setRecipientsPendingIds,
@@ -47,7 +47,7 @@ import {
   closeAddressList,
   setAddressFormView,
 } from '../../infrastructure/state/envelopeSelectionSlice'
-import { setSenderViewId } from '../../sender/infrastructure/state'
+import { setSenderViewId } from '../../infrastructure/state'
 import { setRecipientViewId } from '../../recipient/infrastructure/state'
 import {
   clearRecipientsList,

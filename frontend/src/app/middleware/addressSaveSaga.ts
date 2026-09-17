@@ -1,7 +1,7 @@
 import { SagaIterator } from 'redux-saga'
 import { call, select, put, takeLeading } from 'redux-saga/effects'
 import { templateService } from '@entities/templates/domain/services/templateService'
-import { selectSenderState } from '@envelope/sender/infrastructure/selectors'
+import { selectSenderState } from '@envelope/infrastructure/selectors'
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
 import { updateGroupStatus } from '@toolbar/infrastructure/state'
 import {
@@ -14,14 +14,14 @@ import {
   setRecipientsViewIds,
   setRecipientsViewIdsSecondList,
 } from '@envelope/recipient/infrastructure/state'
-import { saveAddressRequested as senderSaveRequested } from '@envelope/sender/infrastructure/state'
+import { saveAddressRequested as senderSaveRequested } from '@envelope/infrastructure/state'
 import {
   setSenderViewId,
   setSenderView,
   clearSenderFormData,
   setSenderAppliedWithData,
   setSenderViewDraft,
-} from '@envelope/sender/infrastructure/state'
+} from '@envelope/infrastructure/state'
 import {
   addressSaveSuccess,
   setActiveAddressList,

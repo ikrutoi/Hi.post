@@ -12,7 +12,7 @@ import {
 import {
   selectAppliedSenderDisplayAddress,
   selectSenderApplied,
-} from '@envelope/sender/infrastructure/selectors'
+} from '@envelope/infrastructure/selectors'
 import {
   selectArchiveEnvelopeSandboxActive,
   selectArchiveSandboxAppliedSenderDisplayAddress,

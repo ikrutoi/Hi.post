@@ -14,7 +14,7 @@ import {
 } from '@cardphoto/infrastructure/selectors'
 import { selectCardtextState } from '@cardtext/infrastructure/selectors'
 import { selectAppliedRecipientDisplayAddress } from '@envelope/recipient/infrastructure/selectors'
-import { selectAppliedSenderDisplayAddress } from '@envelope/sender/infrastructure/selectors'
+import { selectAppliedSenderDisplayAddress } from '@envelope/infrastructure/selectors'
 import {
   selectArchiveEnvelopeSandboxActive,
   selectArchiveEnvelopeSandboxLocalId,

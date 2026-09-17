@@ -6,7 +6,7 @@ import {
   selectSenderState,
   selectSenderViewId,
   selectSenderEntriesState,
-} from '../../sender/infrastructure/selectors'
+} from './senderSelector'
 import {
   selectRecipientState,
   selectRecipientViewId,
@@ -231,11 +231,8 @@ export const selectSenderSelectedId = createSelector(
 export const selectEnvelopeSessionRecord = createSelector(
   [selectSenderState, selectRecipientState],
   (sender, recipient): EnvelopeSessionRecord => {
-    const senderApplied =
-      Boolean(sender.appliedLocked) || (sender.applied?.length ?? 0) > 0
     const recipientApplied = (recipient.applied?.length ?? 0) > 0
-    /** Apply нужен всегда, в т.ч. для выключенного/пустого отправителя. */
-    const isComplete = senderApplied && recipientApplied
+    const isComplete = recipientApplied
 
     return {
       sender,
@@ -252,9 +249,8 @@ export const selectIsEnvelopeReady = createSelector(
 
 /** True if mini-card / clear control should allow clearing envelope (any applied address). */
 export const selectHasEnvelopeAppliedContent = createSelector(
-  [selectSenderState, selectRecipientState],
-  (sender, recipient) =>
-    (sender.applied?.length ?? 0) > 0 || (recipient.applied?.length ?? 0) > 0,
+  [selectRecipientState],
+  (recipient) => (recipient.applied?.length ?? 0) > 0,
 )
 
 export const selectSenderInListEntries = createSelector(

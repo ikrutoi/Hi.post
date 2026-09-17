@@ -1,5 +1,5 @@
 import { Langs } from '@i18n/types'
-import { senderLayout } from '../../../sender/domain/types'
+import { senderLayout } from '../../../domain/types'
 import { recipientLayout } from '../../../recipient/domain/types'
 import type { AddressLayout } from '../../domain/types'
 import type { EnvelopeRole } from '@shared/config/constants'

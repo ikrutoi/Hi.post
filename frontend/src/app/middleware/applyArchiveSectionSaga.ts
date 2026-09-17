@@ -42,7 +42,7 @@ import {
 } from '@cardtext/infrastructure/state'
 import { selectCardtextIsComplete } from '@cardtext/infrastructure/selectors'
 import { cardtextValueForReadOnlyPreview } from '@cardtext/domain/editor/editor.types'
-import { restoreSender } from '@envelope/sender/infrastructure/state'
+import { restoreSender } from '@envelope/infrastructure/state'
 import { restoreRecipient } from '@envelope/recipient/infrastructure/state'
 import { selectIsEnvelopeReady } from '@envelope/infrastructure/selectors'
 import { syncEnvelopeFormsFromAppliedRequested } from '@envelope/infrastructure/state'

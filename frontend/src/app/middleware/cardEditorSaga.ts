@@ -33,7 +33,7 @@ import {
   setSenderAppliedData,
   restoreSender,
   clearSender,
-} from '@envelope/sender/infrastructure/state'
+} from '@envelope/infrastructure/state'
 import { selectIsEnvelopeReady } from '@envelope/infrastructure/selectors'
 import { selectIsDateComplete } from '@date/infrastructure/selectors'
 import {

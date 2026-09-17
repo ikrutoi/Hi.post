@@ -30,7 +30,7 @@ import {
 import {
   selectAppliedRecipientDisplayAddress,
 } from '@envelope/recipient/infrastructure/selectors'
-import { selectAppliedSenderDisplayAddress } from '@envelope/sender/infrastructure/selectors'
+import { selectAppliedSenderDisplayAddress } from '@envelope/infrastructure/selectors'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 // cspell:ignore Renderable
 import { cardtextHasRenderableContent } from '@cardtext/domain/editor/editor.types'

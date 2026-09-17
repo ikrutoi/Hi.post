@@ -3,7 +3,7 @@ import { useAppSelector } from '@app/hooks'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import { listStatusIsInQuickAddressBook } from '@envelope/domain/helpers'
 import { selectRecipientEntriesState } from '@envelope/recipient/infrastructure/selectors'
-import { selectSenderEntriesState } from '@envelope/sender/infrastructure/selectors'
+import { selectSenderEntriesState } from '@envelope/infrastructure/selectors'
 
 function sortEntriesByName(
   entries: AddressBookEntry[],

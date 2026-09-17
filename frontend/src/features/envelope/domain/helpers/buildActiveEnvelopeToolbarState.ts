@@ -1,6 +1,6 @@
 import type { AddressFields } from '@shared/config/constants'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
-import type { SenderState } from '@envelope/sender/domain/types'
+import type { SenderState } from '@envelope/domain/types'
 import type { RecipientState } from '@envelope/recipient/domain/types'
 import type { EnvelopeToolbarState } from '@toolbar/domain/types'
 import {

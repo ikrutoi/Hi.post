@@ -1,12 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { initialSection } from '../../../addressForm/domain/models'
+import { initialSection } from '../../addressForm/domain/models'
 import type { AddressFields } from '@shared/config/constants'
 import type {
   SenderState,
   SenderView,
   SenderSortOptions,
 } from '../../domain/types'
-import type { AddressSaveRequestedPayload } from '../../../domain/types/addressSave.types'
+import type { AddressSaveRequestedPayload } from '../../domain/types/addressSave.types'
 
 const DEFAULT_SENDER_SORT_OPTIONS: SenderSortOptions = {
   sortedBy: 'name',

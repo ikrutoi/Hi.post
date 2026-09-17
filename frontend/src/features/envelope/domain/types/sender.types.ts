@@ -1,4 +1,4 @@
-import { byKey } from '../../../addressForm/domain/types'
+import { byKey } from '../../addressForm/domain/types'
 import type { AddressLayout } from '@envelope/addressForm/domain/types'
 import type { AddressFields } from '@shared/config/constants'
 
@@ -24,6 +24,7 @@ export type SenderSortOptions = {
   direction: SenderSortDirection
 }
 
+/** Dormant card.envelope.sender shape; UI and templates are retired. */
 export type SenderState = {
   currentView: SenderView
   formDraft: AddressFields
@@ -34,10 +35,6 @@ export type SenderState = {
   senderViewId: string | null
   applied: string[]
   appliedData: AddressFields | null
-  /**
-   * Apply зафиксировал результат отправителя (в т.ч. пустой / тумблер выкл).
-   * Peek + скрытие тумблера; сброс через postcardEdit → setSenderApplied(false).
-   */
   appliedLocked: boolean
   enabled: boolean
 }

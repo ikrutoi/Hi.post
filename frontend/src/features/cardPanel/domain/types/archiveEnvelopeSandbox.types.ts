@@ -1,5 +1,5 @@
 import type { RecipientState } from '@envelope/recipient/domain/types'
-import type { SenderState } from '@envelope/sender/domain/types'
+import type { SenderState } from '@envelope/domain/types'
 
 /**
  * Dual-mode: right cart/history envelope edits live here — never in assembly

@@ -22,7 +22,7 @@ import {
 } from '@envelope/recipient/infrastructure/state'
 import {
   updateSenderField,
-} from '@envelope/sender/infrastructure/state'
+} from '@envelope/infrastructure/state'
 import {
   updateArchiveSenderField,
   updateArchiveRecipientField,

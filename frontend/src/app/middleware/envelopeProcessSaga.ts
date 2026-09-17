@@ -1,4 +1,4 @@
-import { select, put, takeEvery, call, all } from 'redux-saga/effects'
+import { select, put, takeEvery, call } from 'redux-saga/effects'
 import {
   updateRecipientField,
   clearRecipient,
@@ -10,11 +10,7 @@ import {
   setEnabled,
   clearSender,
   restoreSender,
-} from '@envelope/sender/infrastructure/state'
-import {
-  selectSenderState,
-  selectIsSenderComplete,
-} from '@envelope/sender/infrastructure/selectors'
+} from '@envelope/infrastructure/state'
 import {
   selectRecipientState,
   selectIsRecipientComplete,
@@ -23,7 +19,6 @@ import {
   selectRecipientsPendingIds,
   selectRecipientListPanelOpen,
   selectActiveAddressList,
-  selectSenderCardAddress,
   selectRecipientCardAddress,
 } from '@envelope/infrastructure/selectors'
 import {
@@ -49,7 +44,7 @@ import {
   setSenderAppliedIds,
   setSenderAppliedWithData,
   setSenderApplied,
-} from '@envelope/sender/infrastructure/state'
+} from '@envelope/infrastructure/state'
 import {
   setRecipientViewId,
   setRecipientsViewIds,
@@ -63,7 +58,6 @@ import {
 import { selectRecipientsList } from '@envelope/infrastructure/selectors'
 import {
   buildRecipientToolbarState,
-  buildSenderToolbarState,
   getAddressListToolbarFragment,
   isAddressInList,
   listStatusIsInQuickAddressBook,
@@ -81,16 +75,10 @@ import {
   addAddressTemplateRef,
   removeAddressTemplateRef,
 } from '@features/previewStrip/infrastructure/state'
-import {
-  recipientTemplatesAdapter,
-  senderTemplatesAdapter,
-} from '@db/adapters/templateAdapters'
+import { recipientTemplatesAdapter } from '@db/adapters/templateAdapters'
 import type { RootState } from '@app/state'
 import type { AddressFields } from '@shared/config/constants'
-import type {
-  RecipientState,
-  SenderState,
-} from '@envelope/domain/types'
+import type { RecipientState } from '@envelope/domain/types'
 import type { SagaIterator } from 'redux-saga'
 
 function filterInListEntries(
@@ -101,12 +89,8 @@ function filterInListEntries(
 
 /** senderView / recipientView / senderCreate / recipientCreate — addList по совпадению с inList. */
 export function* syncAddressViewToolbarAddList(): SagaIterator {
-  const sender: SenderState = yield select(selectSenderState)
   const recipient: RecipientState = yield select(selectRecipientState)
 
-  const senderEntries: AddressBookEntry[] = yield select(
-    (s: RootState) => s.addressBook?.senderEntries ?? [],
-  )
   const recipientEntries: AddressBookEntry[] = yield select(
     (s: RootState) => s.addressBook?.recipientEntries ?? [],
   )
@@ -167,7 +151,6 @@ export function* syncAddressViewToolbarAddList(): SagaIterator {
 export function* processEnvelopeVisuals() {
   yield* syncAddressViewToolbarAddList()
 
-  const sender: SenderState = yield select(selectSenderState)
   const recipient: RecipientState = yield select(selectRecipientState)
 
   const recipients: RecipientState[] = yield select(selectRecipientsList)
@@ -188,19 +171,14 @@ export function* processEnvelopeVisuals() {
     )
   }
 
-  const senderComplete: boolean = yield select(selectIsSenderComplete)
   const recipientComplete: boolean = yield select(selectIsRecipientComplete)
 
   const checkHasData = (data: Record<string, string>) =>
     Object.values(data).some((v) => v.trim() !== '')
 
-  const [senderList, recipientList]: [
-    Awaited<ReturnType<typeof senderTemplatesAdapter.getAll>>,
-    Awaited<ReturnType<typeof recipientTemplatesAdapter.getAll>>,
-  ] = yield all([
-    call([senderTemplatesAdapter, 'getAll']),
-    call([recipientTemplatesAdapter, 'getAll']),
-  ])
+  const recipientList: Awaited<
+    ReturnType<typeof recipientTemplatesAdapter.getAll>
+  > = yield call([recipientTemplatesAdapter, 'getAll'])
 
   /** Счётчик только inList (и legacy без listStatus) — как в панели адресной книги */
   const recipientInListCount = (recipientList ?? []).filter((item) =>

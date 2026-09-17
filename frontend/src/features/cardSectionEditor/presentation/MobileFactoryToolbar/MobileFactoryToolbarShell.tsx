@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { useAppSelector } from '@app/hooks'
 import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
 import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
-import { selectSenderView } from '@envelope/sender/infrastructure/selectors'
+import { selectSenderView } from '@envelope/infrastructure/selectors'
 import {
   selectArchiveEnvelopeSandboxActive,
   selectArchiveSandboxRecipient,

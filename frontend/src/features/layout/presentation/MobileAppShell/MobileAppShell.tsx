@@ -86,7 +86,7 @@ import {
   selectRecipientListPanelOpen,
 } from '@envelope/infrastructure/selectors'
 import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
-import { selectSenderView } from '@envelope/sender/infrastructure/selectors'
+import { selectSenderView } from '@envelope/infrastructure/selectors'
 import {
   selectArchiveEnvelopeSandboxActive,
   selectArchiveSandboxRecipient,

@@ -20,13 +20,11 @@ export function* persistArchiveEnvelopeSandbox(): SagaIterator {
 
   const sender = sandbox.sender
   const recipient = sandbox.recipient
-  const senderApplied =
-    Boolean(sender.appliedLocked) || (sender.applied?.length ?? 0) > 0
   const recipientApplied = (recipient.applied?.length ?? 0) > 0
   const envelope: EnvelopeSessionRecord = {
     sender: JSON.parse(JSON.stringify(sender)),
     recipient: JSON.parse(JSON.stringify(recipient)),
-    isComplete: senderApplied && recipientApplied,
+    isComplete: recipientApplied,
   }
 
   const nextPostcard: PostcardHydrated = {

@@ -14,7 +14,7 @@ import {
   setSenderApplied,
   setSenderView,
   setSenderViewId,
-} from '@envelope/sender/infrastructure/state'
+} from '@envelope/infrastructure/state'
 import {
   clearRecipientFormData,
   clearRecipientViewDraft,

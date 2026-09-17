@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { AddressFields } from '@shared/config/constants'
-import { initialSender } from '@envelope/sender/infrastructure/state/senderSlice'
+import { initialSender } from '@envelope/infrastructure/state/senderSlice'
 import { initialRecipient } from '@envelope/recipient/infrastructure/state/recipientSlice'
-import type { SenderState, SenderView } from '@envelope/sender/domain/types'
+import type { SenderState, SenderView } from '@envelope/domain/types'
 import type {
   RecipientState,
   RecipientView,

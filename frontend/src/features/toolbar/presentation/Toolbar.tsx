@@ -6,7 +6,7 @@ import { useToolbarFacade } from '../application/facades'
 import { useCardtextFacade } from '@cardtext/application/facades'
 import { useSizeFacade } from '@layout/application/facades'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
-import { selectSenderViewId, selectSenderApplied, selectIsSenderEnabled, selectSenderAddressFormData } from '@envelope/sender/infrastructure/selectors'
+import { selectSenderViewId, selectSenderApplied, selectIsSenderEnabled, selectSenderAddressFormData } from '@envelope/infrastructure/selectors'
 import {
   selectRecipientViewId,
   selectRecipientApplied,

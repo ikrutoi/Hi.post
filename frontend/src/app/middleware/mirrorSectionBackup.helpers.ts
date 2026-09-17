@@ -24,7 +24,7 @@ import {
 } from '@cardtext/infrastructure/state'
 import { selectCardtextEditorSessionSnapshot } from '@cardtext/infrastructure/selectors'
 import { selectCardtextIsComplete } from '@cardtext/infrastructure/selectors'
-import { restoreSender } from '@envelope/sender/infrastructure/state'
+import { restoreSender } from '@envelope/infrastructure/state'
 import { restoreRecipient } from '@envelope/recipient/infrastructure/state'
 import { selectIsEnvelopeReady } from '@envelope/infrastructure/selectors'
 import { syncEnvelopeFormsFromAppliedRequested } from '@envelope/infrastructure/state'
@@ -42,7 +42,7 @@ import {
 import { selectSelectedAroma } from '@aroma/infrastructure/selectors'
 import { setSectionComplete } from '@entities/cardEditor/infrastructure/state'
 import type { RootState } from '@app/state'
-import type { SenderState } from '@envelope/sender/domain/types'
+import type { SenderState } from '@envelope/domain/types'
 import type { RecipientState } from '@envelope/recipient/domain/types'
 import type { CardtextEditorSessionSnapshot } from '@cardtext/domain/editor/editor.types'
 

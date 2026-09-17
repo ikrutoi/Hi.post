@@ -2,9 +2,8 @@ import { RootState } from '@app/state'
 import { createSelector } from '@reduxjs/toolkit'
 import type { AddressFields } from '@shared/config/constants'
 import { EMPTY_STRINGS } from '@shared/utils/helpers'
-import { initialSection } from '../../../addressForm/domain/models'
-import { isAddressDraftComplete } from '../../../domain/helpers/resolveAddListToolbarState'
-import type { AddressBookEntry } from '../../../addressBook/domain/types'
+import { initialSection } from '../../addressForm/domain/models'
+import type { AddressBookEntry } from '../../addressBook/domain/types'
 import type { SenderState, SenderView } from '../../domain/types'
 
 const EMPTY_ADDRESS_BOOK_ENTRIES: AddressBookEntry[] = []
@@ -42,19 +41,10 @@ export const selectSenderCompletedFields = createSelector(
     ),
 )
 
-export const selectIsSenderComplete = createSelector(
-  [selectSenderState],
-  (sender) => {
-    if (sender.currentView === 'senderCreate') {
-      return isAddressDraftComplete(sender.formDraft)
-    }
-    /** Envelope form completeness = visible viewDraft, not addressAdd formDraft. */
-    return isAddressDraftComplete(sender.viewDraft)
-  },
-)
+/** Sender is retired: never blocks envelope completeness. */
+export const selectIsSenderComplete = (_state: RootState): boolean => true
 
-export const selectIsSenderEnabled = (state: RootState): boolean =>
-  state.sender.enabled
+export const selectIsSenderEnabled = (_state: RootState): boolean => false
 
 export const selectSenderViewId = (state: RootState): string | null =>
   state.sender.senderViewId
@@ -62,10 +52,8 @@ export const selectSenderViewId = (state: RootState): string | null =>
 export const selectSenderApplied = (state: RootState): string[] =>
   state.sender.applied ?? EMPTY_STRINGS
 
-/** Apply зафиксировал отправителя (адрес или пустой/выкл). */
-export const selectSenderAppliedLocked = (state: RootState): boolean =>
-  Boolean(state.sender.appliedLocked) ||
-  (state.sender.applied?.length ?? 0) > 0
+/** Sender is retired: treated as already confirmed empty. */
+export const selectSenderAppliedLocked = (_state: RootState): boolean => true
 
 export const selectAppliedSenderDisplayAddress = createSelector(
   [selectSenderState, selectSenderEntriesState],

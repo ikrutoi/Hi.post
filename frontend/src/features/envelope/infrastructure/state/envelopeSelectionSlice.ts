@@ -3,7 +3,7 @@ import type { PanelDensity2Size } from '@shared/ui/icons'
 import type { AddressFields } from '@shared/config/constants'
 import type { AddressBookMode } from '../../addressBook/domain/types'
 import type { AddressCreateEditContext, AddressEditSession } from '../../domain/types'
-import type { SenderView } from '../../sender/domain/types'
+import type { SenderView } from '../../domain/types'
 import type {
   CurrentRecipientsList,
   RecipientView,
