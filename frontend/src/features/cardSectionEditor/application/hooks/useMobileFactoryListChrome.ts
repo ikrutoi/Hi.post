@@ -13,7 +13,6 @@ import {
 } from '@cardtext/infrastructure/selectors'
 import {
   selectRecipientListPanelOpen,
-  selectSenderListPanelOpen,
 } from '@envelope/infrastructure/selectors'
 import {
   selectRecipientApplied,
@@ -59,9 +58,8 @@ export function useMobileFactoryListChrome() {
   const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
   const cardphotoListPanelOpen = useAppSelector(selectIsListPanelOpen)
   const cardtextListPanelOpen = useAppSelector(selectIsCardtextListPanelOpen)
-  const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
   const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
-  const addressListPanelOpen = senderListPanelOpen || recipientListPanelOpen
+  const addressListPanelOpen = recipientListPanelOpen
   const cardPieListPanelOpen = useAppSelector(selectIsCardPieListPanelOpen)
   const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
   const cartDatePickSessionActive = useAppSelector(

@@ -12,14 +12,11 @@ import {
   selectRecipientListPanelOpen,
   selectRecipientListPendingIds,
   selectRecipientsFormPreviewId,
-  selectSenderListPanelOpen,
-  selectSenderSelectedId,
 } from '@envelope/infrastructure/selectors'
 import {
   selectRecipientEntriesState,
   selectRecipientView,
 } from '@envelope/recipient/infrastructure/selectors'
-import { selectSenderEntriesState } from '@envelope/sender/infrastructure/selectors'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 
 export type AddressCardPiePreviewModel = {
@@ -51,18 +48,14 @@ export function useAddressCardPiePreview() {
   const dispatch = useAppDispatch()
   const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const activeSection = useAppSelector(selectActiveSection)
-  const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
   const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
-  const senderSelectedId = useAppSelector(selectSenderSelectedId)
   const recipientListPendingIds = useAppSelector(selectRecipientListPendingIds)
   const recipientsFormPreviewId = useAppSelector(selectRecipientsFormPreviewId)
   const recipientView = useAppSelector(selectRecipientView)
-  const senderEntries = useAppSelector(selectSenderEntriesState)
   const recipientEntries = useAppSelector(selectRecipientEntriesState)
 
   const listChromeActive =
-    activeSection === 'envelope' &&
-    (senderListPanelOpen || recipientListPanelOpen)
+    activeSection === 'envelope' && recipientListPanelOpen
 
   useEffect(() => {
     if (activeSection === 'envelope') return
@@ -79,12 +72,6 @@ export function useAddressCardPiePreview() {
   const listPreview = useMemo((): AddressCardPiePreviewModel | null => {
     if (!listChromeActive) return null
 
-    if (senderListPanelOpen && senderSelectedId) {
-      const entry = senderEntries.find((e) => e.id === senderSelectedId)
-      if (!entry) return null
-      return toPreview(entry, 'sender', 'list')
-    }
-
     if (recipientListPanelOpen && recipientListPendingIds.length > 0) {
       const lastId =
         recipientListPendingIds[recipientListPendingIds.length - 1]
@@ -96,9 +83,6 @@ export function useAddressCardPiePreview() {
     return null
   }, [
     listChromeActive,
-    senderListPanelOpen,
-    senderSelectedId,
-    senderEntries,
     recipientListPanelOpen,
     recipientListPendingIds,
     recipientEntries,

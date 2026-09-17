@@ -3,13 +3,8 @@ import clsx from 'clsx'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { useAppSelector } from '@app/hooks'
 import { useEnvelopeFacade } from '@envelope/application/facades'
-import { useSenderFacade } from '@envelope/sender/application/facades'
 import { useRecipientFacade } from '@envelope/recipient/application/facades'
-import {
-  selectActiveAddressEdit,
-  selectAddressCreateEditContext,
-} from '@envelope/infrastructure/selectors'
-import { selectSenderApplied, selectSenderView, selectSenderEntriesState } from '@envelope/sender/infrastructure/selectors'
+import { selectAddressCreateEditContext, selectActiveAddressEdit } from '@envelope/infrastructure/selectors'
 import {
   selectRecipientView,
   selectRecipientEntriesState,
@@ -17,8 +12,6 @@ import {
 import {
   selectArchiveEnvelopeSandboxActive,
   selectArchiveSandboxRecipient,
-  selectArchiveSandboxSender,
-  selectArchiveSandboxSenderApplied,
 } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
@@ -65,19 +58,14 @@ export function useEnvelopeAddressViewToolbarContent({
   const bothFormsApplied =
     assemblySenderSimplifiedPeek && assemblyRecipientSimplifiedPeek
   const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
-  const sandboxSender = useAppSelector(selectArchiveSandboxSender)
   const sandboxRecipient = useAppSelector(selectArchiveSandboxRecipient)
-  const sessionSenderView = useAppSelector(selectSenderView)
   const sessionRecipientView = useAppSelector(selectRecipientView)
-  const senderView = sandboxActive
-    ? sandboxSender.currentView
-    : sessionSenderView
   const recipientView = sandboxActive
     ? sandboxRecipient.currentView
     : sessionRecipientView
   const envelopeFacade = useEnvelopeFacade()
-  const senderFacade = useSenderFacade()
   const recipientFacade = useRecipientFacade()
+  const activeAddressEdit = useAppSelector(selectActiveAddressEdit)
   const recipientsFormViewIdsCount = recipientFacade.recipientsDisplayList.length
   const addressCreateEditContext = useAppSelector(selectAddressCreateEditContext)
   const desktopKeepLowerRecipientsDuringCreate =
@@ -88,46 +76,8 @@ export function useEnvelopeAddressViewToolbarContent({
     desktopKeepLowerRecipientsDuringCreate &&
     recipientsFormViewIdsCount === 1
   const recipientsMultiListReady = recipientsFormViewIdsCount > 1
-  const sessionSenderAppliedIds = useAppSelector(selectSenderApplied)
-  const sandboxSenderAppliedIds = useAppSelector(
-    selectArchiveSandboxSenderApplied,
-  )
-  const senderAppliedIds = sandboxActive
-    ? sandboxSenderAppliedIds
-    : sessionSenderAppliedIds
-  const activeAddressEdit = useAppSelector(selectActiveAddressEdit)
-  const senderEntries = useAppSelector(selectSenderEntriesState)
   const recipientEntries = useAppSelector(selectRecipientEntriesState)
-
-  const senderAddress = senderFacade.address
   const recipientAddress = recipientFacade.address
-
-  const senderIdForDisplay =
-    activeAddressEdit?.role === 'sender'
-      ? activeAddressEdit.templateId
-      : sandboxActive
-        ? (sandboxSender.senderViewId ?? senderAppliedIds[0] ?? null)
-        : (envelopeFacade.senderTemplateId ?? senderAppliedIds[0] ?? null)
-
-  const senderDisplayEntry = useMemo((): AddressBookEntry | null => {
-    if (!senderFacade.isEnabled || !senderIdForDisplay) return null
-    const fromBook = senderEntries.find((e) => e.id === senderIdForDisplay)
-    if (fromBook) return fromBook
-    if (!Object.values(senderAddress).some((v) => (v ?? '').trim() !== '')) {
-      return null
-    }
-    return {
-      id: senderIdForDisplay,
-      role: 'sender',
-      address: { ...senderAddress },
-      createdAt: new Date().toISOString(),
-    }
-  }, [
-    senderFacade.isEnabled,
-    senderIdForDisplay,
-    senderEntries,
-    senderAddress,
-  ])
 
   const recipientIdForDisplay =
     addressCreateEditContext?.role === 'recipient'
@@ -168,7 +118,6 @@ export function useEnvelopeAddressViewToolbarContent({
   /** Lower View toolbar follows recipient; both applied → neutral tint band only. */
   const activeViewRole = bothFormsApplied ? null : 'recipient'
 
-  const senderToolbarSlot = false
 
   const recipientChromeSlot =
     enabled &&
@@ -188,12 +137,6 @@ export function useEnvelopeAddressViewToolbarContent({
     !assemblyRecipientSimplifiedPeek
 
   const bothAppliedToolbarSlot = enabled && bothFormsApplied
-
-  const showSenderToolbar =
-    senderToolbarSlot &&
-    senderView === 'senderView' &&
-    senderFacade.isEnabled &&
-    senderDisplayEntry != null
 
   const showRecipientToolbar =
     recipientToolbarSlot &&
@@ -229,14 +172,12 @@ export function useEnvelopeAddressViewToolbarContent({
       : ENVELOPE_MOBILE_ADDRESS_VIEW_DELETE_TOOLBAR
   }, [addressViewInQuickList, recipientsFormViewIdsCount, section])
 
-  const slotRole: 'sender' | 'recipient' | 'complete' | null =
+  const slotRole: 'recipient' | 'complete' | null =
     bothAppliedToolbarSlot
       ? 'complete'
-      : senderToolbarSlot
-        ? 'sender'
-        : recipientChromeSlot || showRecipientCreateToolbar
-          ? 'recipient'
-          : null
+      : recipientChromeSlot || showRecipientCreateToolbar
+        ? 'recipient'
+        : null
 
   const hostRecipientChromeInEnvelopeSlot =
     slotRole === 'recipient' &&
@@ -286,7 +227,6 @@ export function useEnvelopeAddressViewToolbarContent({
       <div
         className={clsx(
           styles.envelopeAddressViewToolbarRow,
-          slotRole === 'sender' && styles.envelopeAddressViewToolbarRowSender,
           slotRole === 'recipient' &&
             styles.envelopeAddressViewToolbarRowRecipient,
           slotRole === 'complete' &&

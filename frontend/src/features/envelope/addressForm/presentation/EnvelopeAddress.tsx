@@ -1,36 +1,25 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import clsx from 'clsx'
-import { SenderView, RecipientView } from './AddressView'
+import { RecipientView } from './AddressView'
 import { RecipientsView } from './RecipientsView'
 import { AddressFormView } from './AddressFormView'
 import { useEnvelopeFacade } from '../../application/facades'
-import { useSenderFacade } from '../../sender/application/facades'
 import { useRecipientFacade } from '../../recipient/application/facades'
 import { useAppSelector, useAppDispatch } from '@app/hooks'
-import {
-  selectSenderApplied,
-  selectSenderView,
-  selectSenderEntriesState,
-} from '../../sender/infrastructure/selectors'
 import {
   selectRecipientView,
   selectRecipientEntriesState,
 } from '../../recipient/infrastructure/selectors'
-import { setSenderView, setSenderViewId } from '../../sender/infrastructure/state'
 import {
   setRecipientView,
   setRecipientViewId,
 } from '../../recipient/infrastructure/state'
 import {
   selectArchiveEnvelopeSandboxActive,
-  selectArchiveSandboxSender,
   selectArchiveSandboxRecipient,
-  selectArchiveSandboxSenderApplied,
   selectArchiveSandboxRecipientApplied,
 } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import {
-  setArchiveSenderView,
-  setArchiveSenderViewId,
   setArchiveRecipientView,
   setArchiveRecipientViewId,
 } from '@cardPanel/infrastructure/state'
@@ -45,16 +34,11 @@ import {
   selectAddressCreateEditContext,
   selectRecipientViewEditMode,
   selectRecipientsFormPreviewId,
-  selectSenderListPanelOpen,
-  selectSenderViewEditMode,
 } from '@envelope/infrastructure/selectors'
 import styles from './EnvelopeAddress.module.scss'
 import type { EnvelopeAddressProps } from '../domain/types'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
-import {
-  IconUsers,
-  IconUserSender,
-} from '@shared/ui/icons'
+import { IconUsers } from '@shared/ui/icons'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
@@ -69,46 +53,25 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   embedCreateForm = true,
 }) => {
   const envelopeFacade = useEnvelopeFacade()
-  const senderFacade = useSenderFacade()
   const recipientFacade = useRecipientFacade()
-  const facade = role === 'sender' ? senderFacade : recipientFacade
-  const { update, address: value } = facade
+  const { update, address: value } = recipientFacade
 
   const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)
-  const sandboxSender = useAppSelector(selectArchiveSandboxSender)
   const sandboxRecipient = useAppSelector(selectArchiveSandboxRecipient)
-  const sessionSenderAppliedIds = useAppSelector(selectSenderApplied)
-  const sandboxSenderAppliedIds = useAppSelector(
-    selectArchiveSandboxSenderApplied,
-  )
   const sandboxRecipientAppliedIds = useAppSelector(
     selectArchiveSandboxRecipientApplied,
   )
-  const senderAppliedIds = sandboxActive
-    ? sandboxSenderAppliedIds
-    : sessionSenderAppliedIds
   const activeAddressEdit = useAppSelector(selectActiveAddressEdit)
-  const editingTemplateId =
-    role === 'sender'
-      ? envelopeFacade.senderTemplateId
-      : envelopeFacade.recipientTemplateId
+  const editingTemplateId = envelopeFacade.recipientTemplateId
   const cardTemplateId =
-    role === 'sender'
-      ? activeAddressEdit?.role === 'sender'
-        ? activeAddressEdit.templateId
-        : (editingTemplateId ??
-          (sandboxActive ? sandboxSender.senderViewId : null) ??
-          senderAppliedIds[0] ??
+    activeAddressEdit?.role === 'recipient'
+      ? activeAddressEdit.templateId
+      : sandboxActive
+        ? (sandboxRecipient.recipientViewId ??
+          sandboxRecipientAppliedIds[0] ??
           null)
-      : activeAddressEdit?.role === 'recipient'
-        ? activeAddressEdit.templateId
-        : sandboxActive
-          ? (sandboxRecipient.recipientViewId ??
-            sandboxRecipientAppliedIds[0] ??
-            null)
-          : editingTemplateId
+        : editingTemplateId
 
-  const senderEntries = useAppSelector(selectSenderEntriesState)
   const recipientEntries = useAppSelector(selectRecipientEntriesState)
 
   const dispatch = useAppDispatch()
@@ -120,26 +83,19 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   } = useMobileFactoryListChrome()
   const bothFormsApplied =
     assemblySenderSimplifiedPeek && assemblyRecipientSimplifiedPeek
-  const sessionSenderView = useAppSelector(selectSenderView)
   const sessionRecipientView = useAppSelector(selectRecipientView)
-  const senderView = sandboxActive
-    ? sandboxSender.currentView
-    : sessionSenderView
   const recipientView = sandboxActive
     ? sandboxRecipient.currentView
     : sessionRecipientView
   const recipientSlotToolbar = useEnvelopeAddressViewToolbarContent({
-    enabled: role === 'recipient',
+    enabled: true,
     variant: 'envelopeSlot',
   })
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
-  const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const addressCreateEditContext = useAppSelector(selectAddressCreateEditContext)
   const recipientsFormPreviewId = useAppSelector(selectRecipientsFormPreviewId)
-  const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
 
   const recipientFieldsetRef = useRef<HTMLDivElement | null>(null)
-  const senderFieldsetRef = useRef<HTMLDivElement | null>(null)
 
   const recipientFieldsetContainerScrollRef = useRef<HTMLDivElement | null>(
     null,
@@ -154,37 +110,28 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     [],
   )
 
-  // console.log('recipient state', recipientFacade.state)
-  // console.log('sender state', senderFacade.state)
-  // console.log('envelope state', envelopeFacade.isEnvelopeComplete)
-
-  const hasRecipientAddressData =
-    role === 'recipient' &&
-    Object.values(value).some((v) => (v ?? '').trim() !== '')
+  const hasRecipientAddressData = Object.values(value).some(
+    (v) => (v ?? '').trim() !== '',
+  )
 
   const recipientsDisplayList = recipientFacade.recipientsDisplayList
   const keepLowerRecipientsDuringCreate =
     !isMobile &&
-    role === 'recipient' &&
     recipientView === 'recipientCreate' &&
     recipientsDisplayList.length >= 1
   const keepLowerRecipientCardDuringCreate =
     keepLowerRecipientsDuringCreate && recipientsDisplayList.length === 1
 
-  const recipientIdForDisplay =
-    role === 'recipient'
-      ? keepLowerRecipientCardDuringCreate &&
-        addressCreateEditContext?.role === 'recipient'
-        ? addressCreateEditContext.templateId
-        : sandboxActive
-          ? (sandboxRecipient.recipientViewId ??
-            sandboxRecipientAppliedIds[0] ??
-            null)
-          : (editingTemplateId ?? null)
-      : null
+  const recipientIdForDisplay = keepLowerRecipientCardDuringCreate &&
+    addressCreateEditContext?.role === 'recipient'
+    ? addressCreateEditContext.templateId
+    : sandboxActive
+      ? (sandboxRecipient.recipientViewId ??
+        sandboxRecipientAppliedIds[0] ??
+        null)
+      : (editingTemplateId ?? null)
 
   const recipientDisplayEntry = useMemo((): AddressBookEntry | null => {
-    if (role !== 'recipient') return null
     if (keepLowerRecipientCardDuringCreate) {
       return recipientsDisplayList[0] ?? null
     }
@@ -196,7 +143,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         (e) => e.id === recipientIdForDisplay,
       )
       if (fromBook) {
-        /** Prefer live sandbox/session draft when it has fields. */
         if (Object.values(value).some((v) => (v ?? '').trim() !== '')) {
           return {
             ...fromBook,
@@ -214,7 +160,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       createdAt: new Date().toISOString(),
     }
   }, [
-    role,
     recipientView,
     keepLowerRecipientCardDuringCreate,
     recipientsDisplayList,
@@ -224,25 +169,17 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   ])
 
   const showRecipientDetailCard = recipientDisplayEntry != null
-  const recipientAddressForView =
-    recipientDisplayEntry?.address ?? value
+  const recipientAddressForView = recipientDisplayEntry?.address ?? value
 
   const showRecipientsEnvelopeList =
-    role === 'recipient' &&
     recipientsDisplayList.length > 1 &&
     (recipientView !== 'recipientCreate' || keepLowerRecipientsDuringCreate)
 
   useEffect(() => {
-    if (role !== 'recipient') return
     if (recipientsFormPreviewId == null) return
     if (showRecipientsEnvelopeList) return
     dispatch(clearRecipientsFormPreviewId())
-  }, [
-    dispatch,
-    recipientsFormPreviewId,
-    role,
-    showRecipientsEnvelopeList,
-  ])
+  }, [dispatch, recipientsFormPreviewId, showRecipientsEnvelopeList])
 
   const applyRecipientEntry = useCallback(
     (entry: AddressBookEntry) => {
@@ -261,9 +198,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   )
 
   useEffect(() => {
-    if (role !== 'recipient') return
     if (recipientView === 'recipientCreate') return
-    // Recipients grid stays closed only while there are 2+ visible addresses.
     if (
       recipientView === 'recipientsView' &&
       recipientsDisplayList.length !== 1
@@ -316,7 +251,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       }
     }
   }, [
-    role,
     recipientView,
     recipientsDisplayList,
     editingTemplateId,
@@ -328,120 +262,9 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     sandboxActive,
   ])
 
-  const senderIdForDisplay =
-    role === 'sender'
-      ? (editingTemplateId ??
-        (sandboxActive ? sandboxSender.senderViewId : null) ??
-        senderAppliedIds[0] ??
-        null)
-      : null
-
-  const senderDisplayEntry = useMemo((): AddressBookEntry | null => {
-    if (role !== 'sender' || !senderFacade.isEnabled || !senderIdForDisplay) {
-      return null
-    }
-    const fromBook = senderEntries.find((e) => e.id === senderIdForDisplay)
-    if (fromBook) return fromBook
-    if (!Object.values(value).some((v) => (v ?? '').trim() !== '')) return null
-    return {
-      id: senderIdForDisplay,
-      role: 'sender',
-      address: { ...value },
-      createdAt: new Date().toISOString(),
-    }
-  }, [
-    role,
-    senderFacade.isEnabled,
-    senderIdForDisplay,
-    senderEntries,
-    value,
-  ])
-
-  const applySenderEntry = useCallback(
-    (entry: AddressBookEntry) => {
-      if (sandboxActive) {
-        dispatch(setArchiveSenderViewId(entry.id))
-      } else {
-        dispatch(setSenderViewId(entry.id))
-      }
-      ;(Object.entries(entry.address) as [keyof typeof value, string][]).forEach(
-        ([field, fieldValue]) => {
-          update(field as any, fieldValue)
-        },
-      )
-    },
-    [dispatch, update, sandboxActive],
-  )
-
-  const hasSenderAppliedToEnvelope = senderAppliedIds.length > 0
-  const hasSenderDraftAddress = Object.values(value).some(
-    (v) => (v ?? '').trim() !== '',
-  )
-  const showSenderDetailCard =
-    role === 'sender' &&
-    senderFacade.isEnabled &&
-    senderView === 'senderView' &&
-    senderDisplayEntry != null &&
-    (!isMobile ||
-      hasSenderAppliedToEnvelope ||
-      hasSenderDraftAddress ||
-      (editingTemplateId != null && !senderListPanelOpen))
-
-  const showSenderEmptyPlaceholder =
-    senderFacade.isEnabled &&
-    senderView !== 'senderCreate' &&
-    !showSenderDetailCard
-
-  const showRecipientEmptyPlaceholder =
-    recipientView !== 'recipientCreate' &&
-    !showRecipientDetailCard &&
-    !showRecipientsEnvelopeList
-
-  useEffect(() => {
-    if (role !== 'sender' || !senderFacade.isEnabled) return
-    if (senderView === 'senderCreate') return
-    // После Close на applied-карточке (senderEnvelopeView) не открываем карточку снова.
-    if (senderView === 'senderEnvelopeView') return
-    if (
-      isMobile &&
-      !hasSenderAppliedToEnvelope &&
-      editingTemplateId == null
-    ) {
-      return
-    }
-
-    if (senderDisplayEntry != null) {
-      if (
-        senderView !== 'senderView' ||
-        editingTemplateId !== senderDisplayEntry.id
-      ) {
-        applySenderEntry(senderDisplayEntry)
-        if (sandboxActive) {
-          dispatch(setArchiveSenderView('senderView'))
-        } else {
-          dispatch(setSenderView('senderView'))
-        }
-      }
-    }
-  }, [
-    role,
-    senderFacade.isEnabled,
-    senderDisplayEntry,
-    senderView,
-    editingTemplateId,
-    dispatch,
-    applySenderEntry,
-    isMobile,
-    hasSenderAppliedToEnvelope,
-    sandboxActive,
-  ])
-
-  const openAddressForm = (r: 'sender' | 'recipient') => {
-    envelopeFacade.setAddressFormViewState(true, r)
-    if (r === 'sender') {
-      if (sandboxActive) dispatch(setArchiveSenderView('senderCreate'))
-      else dispatch(setSenderView('senderCreate'))
-    } else if (sandboxActive) {
+  const openAddressForm = () => {
+    envelopeFacade.setAddressFormViewState(true, 'recipient')
+    if (sandboxActive) {
       dispatch(setArchiveRecipientView('recipientCreate'))
     } else {
       dispatch(setRecipientView('recipientCreate'))
@@ -449,16 +272,14 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   }
 
   const recipientsGridSelectedId =
-    role !== 'recipient'
-      ? null
-      : recipientView === 'recipientView'
-        ? sandboxActive
-          ? (sandboxRecipient.recipientViewId ?? null)
-          : (editingTemplateId ?? null)
-        : recipientView === 'recipientCreate' &&
-            addressCreateEditContext?.role === 'recipient'
-          ? (addressCreateEditContext.templateId ?? null)
-          : null
+    recipientView === 'recipientView'
+      ? sandboxActive
+        ? (sandboxRecipient.recipientViewId ?? null)
+        : (editingTemplateId ?? null)
+      : recipientView === 'recipientCreate' &&
+          addressCreateEditContext?.role === 'recipient'
+        ? (addressCreateEditContext.templateId ?? null)
+        : null
 
   const handleOpenRecipientFromList = (entry: AddressBookEntry) => {
     if (recipientsGridSelectedId === entry.id) {
@@ -501,46 +322,40 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     }
   }
 
-  const handlePlaceholderClick = (r: 'sender' | 'recipient') => {
+  const handlePlaceholderClick = () => {
     if (isMobile) {
-      if (!bothFormsApplied && mobileFocus != null && mobileFocus.dualSide !== r) {
-        mobileFocus.setDualSide(r)
+      if (
+        !bothFormsApplied &&
+        mobileFocus != null &&
+        mobileFocus.dualSide !== 'recipient'
+      ) {
+        mobileFocus.setDualSide('recipient')
       }
       return
     }
-    const entries = r === 'sender' ? senderEntries : recipientEntries
-    if (entries.length > 0) {
+    if (recipientEntries.length > 0) {
       dispatch(
         toolbarAction({
-          section: r === 'sender' ? 'sender' : 'recipients',
+          section: 'recipients',
           key: 'addressList',
         }),
       )
       return
     }
-    openAddressForm(r)
+    openAddressForm()
   }
 
-  /**
-   * Mobile: select address side (dual toggle + lower View toolbar).
-   * Does not enter focus chrome that hides the other form / envelope chrome.
-   */
   const trySelectMobileAddressSide = useCallback(
-    (targetRole: 'sender' | 'recipient', el: HTMLElement) => {
+    (el: HTMLElement) => {
       if (!isMobile || mobileFocus == null) return false
       if (bothFormsApplied) return false
-      /** Applied (Apply-peek) side is not selectable — toggle stays on editable form. */
-      if (targetRole === 'sender' && assemblySenderSimplifiedPeek) return false
-      if (targetRole === 'recipient' && assemblyRecipientSimplifiedPeek) {
+      if (assemblyRecipientSimplifiedPeek) {
         return false
       }
-      if (targetRole === 'sender' && senderView === 'senderCreate') return false
-      if (targetRole === 'recipient' && recipientView === 'recipientCreate') {
+      if (recipientView === 'recipientCreate') {
         return false
       }
-      const isEditMode =
-        targetRole === 'sender' ? senderViewEditMode : recipientViewEditMode
-      if (isEditMode) return false
+      if (recipientViewEditMode) return false
       if (
         el.closest(
           'button, a, input, textarea, select, [role="button"], [data-envelope-address-close], [data-address-edit-row], [data-scrollarea-track], [data-address-book-entry]',
@@ -548,8 +363,8 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       ) {
         return false
       }
-      if (mobileFocus.dualSide !== targetRole) {
-        mobileFocus.setDualSide(targetRole)
+      if (mobileFocus.dualSide !== 'recipient') {
+        mobileFocus.setDualSide('recipient')
       }
       mobileFocus.clearFocus()
       return true
@@ -558,27 +373,20 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       isMobile,
       mobileFocus,
       bothFormsApplied,
-      assemblySenderSimplifiedPeek,
       assemblyRecipientSimplifiedPeek,
-      senderView,
       recipientView,
-      senderViewEditMode,
       recipientViewEditMode,
     ],
   )
 
-  /** Same path as Toolbar → envelope saga (`handleEnvelopeToolbarAction`, key addressList). */
-  const openAddressListFromFieldset = useCallback(
-    (targetRole: 'sender' | 'recipient') => {
-      dispatch(
-        toolbarAction({
-          section: targetRole === 'sender' ? 'sender' : 'recipients',
-          key: 'addressList',
-        }),
-      )
-    },
-    [dispatch],
-  )
+  const openAddressListFromFieldset = useCallback(() => {
+    dispatch(
+      toolbarAction({
+        section: 'recipients',
+        key: 'addressList',
+      }),
+    )
+  }, [dispatch])
 
   const handleRecipientFieldsetMouseDownCapture = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -586,9 +394,8 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       const el = e.target as HTMLElement | null
       if (!fieldset || !el || !fieldset.contains(el)) return
 
-      /** Mobile: only select dualSide — never open address list from form click. */
       if (isMobile) {
-        if (trySelectMobileAddressSide('recipient', el)) {
+        if (trySelectMobileAddressSide(el)) {
           e.preventDefault()
           e.stopPropagation()
         }
@@ -604,7 +411,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         dispatch(toolbarAction({ section: 'recipientView', key: 'edit' }))
         return
       }
-      openAddressListFromFieldset('recipient')
+      openAddressListFromFieldset()
     },
     [
       dispatch,
@@ -615,204 +422,110 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     ],
   )
 
-  const handleSenderFieldsetMouseDownCapture = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      const fieldset = senderFieldsetRef.current
-      const el = e.target as HTMLElement | null
-      if (!fieldset || !el || !fieldset.contains(el)) return
-
-      /** Mobile: only select dualSide — never open address list from form click. */
-      if (isMobile) {
-        if (trySelectMobileAddressSide('sender', el)) {
-          e.preventDefault()
-          e.stopPropagation()
-        }
-        return
-      }
-
-      if (el.closest('button, a, input, textarea, select, [role="button"]'))
-        return
-      if (el.closest('[data-envelope-address-surface]')) return
-      if (senderViewEditMode) {
-        dispatch(toolbarAction({ section: 'recipientView', key: 'edit' }))
-        return
-      }
-      openAddressListFromFieldset('sender')
-    },
-    [
-      dispatch,
-      isMobile,
-      openAddressListFromFieldset,
-      senderViewEditMode,
-      trySelectMobileAddressSide,
-    ],
-  )
+  if (role !== 'recipient') return null
 
   return (
     <form
-      className={clsx(
-        styles.addressForm,
-        styles[`addressForm${roleLabel}`],
-        role === 'sender' && styles.addressFormSenderFill,
-      )}
+      className={clsx(styles.addressForm, styles[`addressForm${roleLabel}`])}
       onSubmit={(e) => e.preventDefault()}
     >
-      {senderFacade.isEnabled && role === 'sender' && (
-        <div className={styles.addressFormSenderBody}>
-          <div className={styles.addressFieldsetStack}>
-            <div
-              ref={senderFieldsetRef}
-              data-envelope-address-fieldset
-              role="group"
-              aria-label={roleLabel}
-              className={clsx(
-                styles.addressFieldset,
-                styles.addressFormSender,
-                senderView === 'senderCreate' && styles.addressFieldsetCreateOpen,
-              )}
-              onMouseDownCapture={handleSenderFieldsetMouseDownCapture}
-            >
-              <div className={styles.addressFieldsetInner}>
-                {senderView === 'senderCreate' ? (
-                  <AddressFormView
-                    key="senderCreate"
-                    role="sender"
-                    roleLabel={roleLabel}
-                    address={senderFacade.formDraft}
-                    onFieldChange={update}
-                    lang={lang}
-                  />
-                ) : showSenderDetailCard ? (
-                  <SenderView templateId={cardTemplateId!} address={value} />
-                ) : (
-                  <div
-                    role="button"
-                    tabIndex={0}
-                    className={clsx(
-                      styles.addressFormPlaceholder,
-                      styles.addressFormPlaceholderSender,
-                      styles.addressFormPlaceholderBg,
-                      styles.senderPlaceholderInset,
-                    )}
-                    onClick={() => handlePlaceholderClick('sender')}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault()
-                        handlePlaceholderClick('sender')
-                      }
-                    }}
-                    aria-label="Add sender address"
-                  >
-                    <IconUserSender
-                      className={styles.addressFormPlaceholderIconBg}
-                    />
-                  </div>
+      <div className={styles.addressFormRecipientBody}>
+        <div className={styles.addressFieldsetStack}>
+          <div
+            ref={recipientFieldsetRef}
+            data-envelope-address-fieldset
+            role="group"
+            aria-label="Recipients"
+            className={clsx(
+              styles.addressFieldset,
+              styles.addressFormRecipient,
+              styles.recipientFieldsetContent,
+              recipientSlotToolbar != null &&
+                styles.recipientFieldsetWithSlotToolbar,
+              showRecipientsEnvelopeList && styles.recipientFieldsetMulti,
+              showRecipientsEnvelopeList && styles.recipientFieldsetWithList,
+              recipientView === 'recipientCreate' &&
+                embedCreateForm &&
+                styles.addressFieldsetCreateOpen,
+            )}
+            onMouseDownCapture={handleRecipientFieldsetMouseDownCapture}
+          >
+            {recipientSlotToolbar != null ? (
+              <div
+                className={clsx(
+                  addressFormStyles.addressFormTopBar,
+                  addressFormStyles.addressFormTopBarSlot,
+                  recipientsDisplayList.length > 1 &&
+                    addressFormStyles.addressFormTopBarActionsEnd,
                 )}
+              >
+                {recipientSlotToolbar}
               </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {role === 'recipient' && (
-        <div className={styles.addressFormRecipientBody}>
-          <div className={styles.addressFieldsetStack}>
-            <div
-              ref={recipientFieldsetRef}
-              data-envelope-address-fieldset
-              role="group"
-              aria-label="Recipients"
-              className={clsx(
-                styles.addressFieldset,
-                styles.addressFormRecipient,
-                styles.recipientFieldsetContent,
-                recipientSlotToolbar != null &&
-                  styles.recipientFieldsetWithSlotToolbar,
-                showRecipientsEnvelopeList && styles.recipientFieldsetMulti,
-                showRecipientsEnvelopeList && styles.recipientFieldsetWithList,
-                recipientView === 'recipientCreate' &&
-                  embedCreateForm &&
-                  styles.addressFieldsetCreateOpen,
-              )}
-              onMouseDownCapture={handleRecipientFieldsetMouseDownCapture}
-            >
-              {recipientSlotToolbar != null ? (
-                <div
-                  className={clsx(
-                    addressFormStyles.addressFormTopBar,
-                    addressFormStyles.addressFormTopBarSlot,
-                    recipientsDisplayList.length > 1 &&
-                      addressFormStyles.addressFormTopBarActionsEnd,
-                  )}
-                >
-                  {recipientSlotToolbar}
-                </div>
-              ) : null}
-              {showRecipientsEnvelopeList ? (
-                <div
-                  ref={setRecipientFieldsetContainerScrollRef}
-                  className={styles.recipientFieldsetContainerScroll}
+            ) : null}
+            {showRecipientsEnvelopeList ? (
+              <div
+                ref={setRecipientFieldsetContainerScrollRef}
+                className={styles.recipientFieldsetContainerScroll}
+              />
+            ) : null}
+            <div className={styles.addressFieldsetInner}>
+              {recipientView === 'recipientCreate' && embedCreateForm ? (
+                <AddressFormView
+                  key="recipientCreate"
+                  role="recipient"
+                  roleLabel={roleLabel}
+                  address={recipientFacade.formDraft}
+                  onFieldChange={update}
+                  lang={lang}
+                  mobileFullscreen={isMobile}
                 />
-              ) : null}
-              <div className={styles.addressFieldsetInner}>
-                {recipientView === 'recipientCreate' && embedCreateForm ? (
-                  <AddressFormView
-                    key="recipientCreate"
-                    role="recipient"
-                    roleLabel={roleLabel}
-                    address={recipientFacade.formDraft}
-                    onFieldChange={update}
-                    lang={lang}
-                    mobileFullscreen={isMobile}
-                  />
-                ) : showRecipientsEnvelopeList ? (
-                  <RecipientsView
-                    entries={recipientsDisplayList}
-                    onRemove={recipientFacade.removeFromList}
-                    onOpenRecipient={handleOpenRecipientFromList}
-                    selectedId={recipientsGridSelectedId}
-                    scrollbarPortalTarget={
-                      recipientScrollContainerReady
-                        ? recipientFieldsetContainerScrollRef
-                        : undefined
+              ) : showRecipientsEnvelopeList ? (
+                <RecipientsView
+                  entries={recipientsDisplayList}
+                  onRemove={recipientFacade.removeFromList}
+                  onOpenRecipient={handleOpenRecipientFromList}
+                  selectedId={recipientsGridSelectedId}
+                  scrollbarPortalTarget={
+                    recipientScrollContainerReady
+                      ? recipientFieldsetContainerScrollRef
+                      : undefined
+                  }
+                />
+              ) : showRecipientDetailCard ? (
+                <RecipientView
+                  templateId={
+                    keepLowerRecipientCardDuringCreate
+                      ? (recipientDisplayEntry?.id ?? '')
+                      : (cardTemplateId ?? recipientDisplayEntry?.id ?? '')
+                  }
+                  address={recipientAddressForView}
+                  viewOnly={keepLowerRecipientCardDuringCreate}
+                />
+              ) : (
+                <div
+                  role="button"
+                  tabIndex={0}
+                  className={clsx(
+                    styles.addressFormPlaceholder,
+                    styles.addressFormPlaceholderRecipient,
+                    styles.addressFormPlaceholderBg,
+                  )}
+                  onClick={() => handlePlaceholderClick()}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      handlePlaceholderClick()
                     }
-                  />
-                ) : showRecipientDetailCard ? (
-                  <RecipientView
-                    templateId={
-                      keepLowerRecipientCardDuringCreate
-                        ? (recipientDisplayEntry?.id ?? '')
-                        : (cardTemplateId ?? recipientDisplayEntry?.id ?? '')
-                    }
-                    address={recipientAddressForView}
-                    viewOnly={keepLowerRecipientCardDuringCreate}
-                  />
-                ) : (
-                  <div
-                    role="button"
-                    tabIndex={0}
-                    className={clsx(
-                      styles.addressFormPlaceholder,
-                      styles.addressFormPlaceholderRecipient,
-                      styles.addressFormPlaceholderBg,
-                    )}
-                    onClick={() => handlePlaceholderClick('recipient')}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault()
-                        handlePlaceholderClick('recipient')
-                      }
-                    }}
-                    aria-label="Add recipients"
-                  >
-                    <IconUsers className={styles.addressFormPlaceholderIconBg} />
-                  </div>
-                )}
-              </div>
+                  }}
+                  aria-label="Add recipients"
+                >
+                  <IconUsers className={styles.addressFormPlaceholderIconBg} />
+                </div>
+              )}
             </div>
           </div>
         </div>
-      )}
+      </div>
     </form>
   )
 }

@@ -79,7 +79,6 @@ import type { AddressListPreviewSnapshot } from '@envelope/infrastructure/state/
 import {
   selectRecipientsPendingIds,
   selectRecipientListPanelOpen,
-  selectSenderListPanelOpen,
   selectActiveAddressList,
   selectAddressListPreviewSnapshot,
   selectAddressFormViewRole,
@@ -279,9 +278,8 @@ function* persistArchiveEnvelopeIfLeased(): SagaIterator {
 }
 
 function* closeAddressListIfOpen(): SagaIterator {
-  const senderOpen: boolean = yield select(selectSenderListPanelOpen)
   const recipientOpen: boolean = yield select(selectRecipientListPanelOpen)
-  if (senderOpen || recipientOpen) {
+  if (recipientOpen) {
     yield put(closeAddressList())
   }
 }
@@ -560,6 +558,8 @@ function* persistRecipientAddressListPanelDensityToDbSaga(): SagaIterator {
 function* ensureAddressListPanelOpen(
   mode: 'sender' | 'recipients',
 ): SagaIterator {
+  if (mode === 'sender') return
+
   yield call(closeCardPieListPanelAndSyncIconsSaga)
 
   const active: 'sender' | 'recipients' | null = yield select(

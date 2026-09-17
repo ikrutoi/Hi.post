@@ -83,10 +83,7 @@ export const selectRecipientListPanelOpen = createSelector(
   (s) => s.recipientListPanelOpen,
 )
 
-export const selectSenderListPanelOpen = createSelector(
-  [selectEnvelopeSelectionState],
-  (s) => s.senderListPanelOpen,
-)
+export const selectSenderListPanelOpen = (_state: RootState): boolean => false
 
 export const selectActiveAddressList = createSelector(
   [selectEnvelopeSelectionState],

@@ -126,9 +126,9 @@ export const envelopeSelectionSlice = createSlice({
     },
 
     setActiveAddressList(state, action: PayloadAction<AddressBookMode | null>) {
-      const mode = action.payload
+      const mode = action.payload === 'sender' ? null : action.payload
       state.activeAddressList = mode
-      state.senderListPanelOpen = mode === 'sender'
+      state.senderListPanelOpen = false
       state.recipientListPanelOpen = mode === 'recipients'
       state.recipientsFormPreviewId = null
     },

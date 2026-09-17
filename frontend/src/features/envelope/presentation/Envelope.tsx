@@ -135,13 +135,9 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
     isMobile &&
     addressAddSoloRole != null &&
     !envelopePeekMode
-  const mobileAddressCreateRole: 'sender' | 'recipient' | null =
-    isMobile && !envelopePeekMode
-      ? recipientView === 'recipientCreate'
-        ? 'recipient'
-        : senderView === 'senderCreate'
-          ? 'sender'
-          : null
+  const mobileAddressCreateRole: 'recipient' | null =
+    isMobile && !envelopePeekMode && recipientView === 'recipientCreate'
+      ? 'recipient'
       : null
   const showMobileAddressCreateForm = mobileAddressCreateRole != null
   const showEnvelopeTopCreate =
@@ -244,10 +240,7 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
   ])
 
   const envelopeWorkZone = showMobileAddressCreateForm ? (
-    <EnvelopeMobileAddressForm
-      role={mobileAddressCreateRole ?? 'recipient'}
-      lang={lang}
-    />
+    <EnvelopeMobileAddressForm lang={lang} />
   ) : (
     <div className={styles.envelopeWorkZone}>
       <div

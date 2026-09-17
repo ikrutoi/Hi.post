@@ -84,7 +84,6 @@ import {
 } from '@envelope/infrastructure/state'
 import {
   selectRecipientListPanelOpen,
-  selectSenderListPanelOpen,
 } from '@envelope/infrastructure/selectors'
 import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
 import { selectSenderView } from '@envelope/sender/infrastructure/selectors'
@@ -857,8 +856,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         notebookStripTab === 'history'
       const cardphotoListOpen = selectIsListPanelOpen(state)
       const cardtextListOpen = selectIsCardtextListPanelOpen(state)
-      const addressListOpen =
-        selectSenderListPanelOpen(state) || selectRecipientListPanelOpen(state)
+      const addressListOpen = selectRecipientListPanelOpen(state)
       const factoryTemplateListOpen =
         cardphotoListOpen || cardtextListOpen || addressListOpen
 
@@ -988,11 +986,10 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       }
 
       if (section === 'envelope' && currentActiveSection === 'envelope') {
-        const senderListOpen = selectSenderListPanelOpen(state)
         const recipientListOpen = selectRecipientListPanelOpen(state)
         // Leave address view / close lists — do not open lists from CardPie.
         dispatch(requestClearMobileAddressFocus())
-        if (senderListOpen || recipientListOpen) {
+        if (recipientListOpen) {
           dispatch(closeAddressList())
         }
         return

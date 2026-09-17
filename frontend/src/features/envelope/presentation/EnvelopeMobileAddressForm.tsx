@@ -6,7 +6,6 @@ import type { Lang } from '@i18n/types'
 import styles from './Envelope.module.scss'
 
 type Props = {
-  role: 'sender' | 'recipient'
   lang: Lang
 }
 

@@ -15,7 +15,6 @@ import {
   selectIsEnvelopeReady,
   selectRecipientsPendingIds,
   selectRecipientListPanelOpen,
-  selectSenderListPanelOpen,
   selectActiveAddressList,
   selectRecipientsList,
   selectRecipientTemplateId,
@@ -78,7 +77,7 @@ export const useEnvelopeFacade = () => {
   const isEnvelopeComplete = useAppSelector(selectIsEnvelopeReady)
   const recipientsPendingIds = useAppSelector(selectRecipientsPendingIds)
   const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
-  const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
+  const senderListPanelOpen = false
   const activeAddressList = useAppSelector(selectActiveAddressList)
   const listSelectedIds = useAppSelector(selectRecipientListPendingIds)
   const senderSelectedId = useAppSelector(selectSenderSelectedId)
@@ -177,22 +176,12 @@ export const useEnvelopeFacade = () => {
     dispatch(toggleRecipientSelection(entry.id))
   }
 
-  const selectSenderFromList = (entry: {
+  const selectSenderFromList = (_entry: {
     id: string
     address: Record<string, string>
-  }) => {
-    dispatch(setSenderViewId(entry.id))
-    ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
-      ([field, value]) => dispatch(updateSenderField({ field, value })),
-    )
-    dispatch(setSenderView('senderView'))
-    dispatch(closeAddressList())
-  }
+  }) => {}
 
-  const toggleSenderListPanelOpen = () => {
-    const next = activeAddressList === 'sender' ? null : 'sender'
-    dispatch(setActiveAddressList(next))
-  }
+  const toggleSenderListPanelOpen = () => {}
 
   const closeSenderListPanel = () => {
     dispatch(closeAddressList())
