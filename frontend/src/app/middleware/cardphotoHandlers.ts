@@ -23,6 +23,7 @@ import {
   setCardphotoListPanelOpen,
   clearUserOriginalDraftConfig,
 } from '@cardphoto/infrastructure/state'
+import { pushImageMetaToRemoteFiles } from '@features/files/application/pushImageMetaToRemoteFiles'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import {
   selectCardphotoAssetConfig,
@@ -437,6 +438,7 @@ export function* handleCropConfirm(): SagaIterator {
     }
 
     yield call(storeAdapters.cardphotoImages.put, finalImageMeta)
+    yield fork(pushCroppedPhotoToRemoteIfHttp, id)
 
     const oldProcessedUrl: string | undefined = yield select(
       (s: RootState) =>
@@ -922,5 +924,13 @@ export function* handleApplyAction2() {
     } catch (error) {
       console.error('Apply error:', error)
     }
+  }
+}
+
+function* pushCroppedPhotoToRemoteIfHttp(imageId: string): SagaIterator {
+  try {
+    yield call(pushImageMetaToRemoteFiles, imageId)
+  } catch {
+    // IndexedDB crop remains; hydrate can retry when http is on.
   }
 }

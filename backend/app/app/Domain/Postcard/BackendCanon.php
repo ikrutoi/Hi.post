@@ -56,6 +56,7 @@ final class BackendCanon
         'text_templates',
         'image_templates',
         'personal_access_tokens',
+        'user_files',
     ];
 
     /**

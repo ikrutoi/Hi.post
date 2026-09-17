@@ -8,6 +8,7 @@ use app\Http\Controllers\User\TextController as UserTextController;
 use app\Http\Controllers\User\RecipientController as UserRecipientController;
 use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Api\SyncPostcardController;
+use App\Http\Controllers\Api\UserFileController;
 use App\Http\Controllers\AuthController;
 
 Route::get('templates/images/system', [SystemImageController::class, 'index']);
@@ -29,6 +30,11 @@ Route::middleware(['auth:sanctum', \App\Http\Middleware\EnsureUserIsActive::clas
     Route::patch('/me', [AuthController::class, 'update']);
     Route::patch('/me/avatar', [AuthController::class, 'updateAvatar']);
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    Route::post('/files', [UserFileController::class, 'store']);
+    Route::get('/files/{id}', [UserFileController::class, 'show']);
+    Route::get('/files/{id}/{variant}', [UserFileController::class, 'variant']);
+    Route::delete('/files/{id}', [UserFileController::class, 'destroy']);
 
     Route::get('/sync/postcards', [SyncPostcardController::class, 'show']);
     Route::put('/sync/postcards', [SyncPostcardController::class, 'update']);

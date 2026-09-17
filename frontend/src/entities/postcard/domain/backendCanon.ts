@@ -7,7 +7,8 @@
  * `user_postcard_snapshots.payload` of PostcardHydrated (sync payload v1).
  *
  * Local-only IDB stores (not a server entity): session, uiPreferences,
- * cardPieFavorites, stockImages, userImages, cardphotoImages, applyImage.
+ * cardPieFavorites. Image blobs stay in IDB as cache; http mode also POSTs
+ * original/display/thumb to `user_files` and keeps `remoteFileId` on ImageMeta.
  * IDB `sender` object store is deleted. Laravel `sender_templates` stays
  * until a later migration; the client no longer calls it.
  */
@@ -65,6 +66,7 @@ export const LIVE_LARAVEL_TABLES = [
   'text_templates',
   'image_templates',
   'personal_access_tokens',
+  'user_files',
 ] as const
 
 /** IDB stores that become the new server model (phase 1+). */

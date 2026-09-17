@@ -46,6 +46,8 @@ export interface ImageMeta {
   parentImageId?: string
   rotation?: number
   imageAspectRatio?: number
+  /** Laravel `user_files` id (phase 2). Postcard JSON should store this, not blobs. */
+  remoteFileId?: string
   /** Подпись шаблона в списке / View (ручной ввод). */
   title?: string
 }
