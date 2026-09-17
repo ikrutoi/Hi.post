@@ -1,6 +1,8 @@
 import type { PostcardHydrated } from '@entities/postcard/domain/types/postcard.types'
+import { BACKEND_SYNC_PAYLOAD_VERSION } from '@entities/postcard/domain/backendCanon'
 
-export const POSTCARD_SYNC_PAYLOAD_VERSION = 1
+/** Opaque PostcardHydrated[] until phase 1+ schema. */
+export const POSTCARD_SYNC_PAYLOAD_VERSION = BACKEND_SYNC_PAYLOAD_VERSION
 
 export type PostcardSyncSnapshot = {
   version: number

@@ -5,11 +5,13 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+/**
+ * Retired. Client unhooked `templates/senders`. Table `sender_templates` is frozen.
+ *
+ * @see \App\Domain\Postcard\BackendCanon
+ */
 class SenderController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         //

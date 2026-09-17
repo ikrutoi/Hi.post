@@ -12,6 +12,7 @@ use App\Http\Controllers\AuthController;
 
 Route::get('templates/images/system', [SystemImageController::class, 'index']);
 
+/** Frozen legacy table. New postcard writes go through /sync/postcards until a new schema. */
 Route::apiResource('postcards', PostcardController::class);
 Route::apiResource('templates/images', UserImageController::class);
 Route::apiResource('templates/texts', UserTextController::class);

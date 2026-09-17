@@ -4,6 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * FROZEN (phase 0). Client no longer uses sender templates.
+ *
+ * @see \App\Domain\Postcard\BackendCanon
+ */
 class SenderTemplate extends Model
 {
     protected $fillable = [

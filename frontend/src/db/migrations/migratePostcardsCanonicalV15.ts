@@ -2,7 +2,7 @@ import type { IDBPDatabase, IDBPTransaction } from 'idb'
 import type { PostcardHydrated } from '@entities/postcard'
 import { normalizePostcardRecord } from '@entities/postcard'
 
-/** Текущая версия AppDB (см. `openDB` в `db/core.ts`). */
+/** Текущая версия AppDB (см. `openDB` в `db/core.ts`). Canon for Laravel phase 0+. */
 export const APP_DB_VERSION = 20
 
 type VersionChangeTx = IDBPTransaction<unknown, string[], 'versionchange'>

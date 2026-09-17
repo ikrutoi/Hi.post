@@ -9,7 +9,10 @@ use App\Models\Postcard;
 class PostcardController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * FROZEN CRUD over legacy `postcards` (phase 0).
+     * New postcard API must not land here — use sync snapshots, then a new schema.
+     *
+     * @see \App\Domain\Postcard\BackendCanon
      */
     public function index()
     {

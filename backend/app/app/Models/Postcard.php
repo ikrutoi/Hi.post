@@ -4,6 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * FROZEN (phase 0). Do not add fillable fields, relations, or write paths.
+ * Product postcard shape lives in IndexedDB + `user_postcard_snapshots`.
+ *
+ * @see \App\Domain\Postcard\BackendCanon
+ */
 class Postcard extends Model
 {
     protected $fillable = [

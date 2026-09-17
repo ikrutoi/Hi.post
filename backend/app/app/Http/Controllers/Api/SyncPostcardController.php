@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Domain\Postcard\BackendCanon;
 use App\Models\UserPostcardSnapshot;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -12,7 +13,8 @@ class SyncPostcardController extends Controller
 {
     private const MAX_PAYLOAD_BYTES = 10 * 1024 * 1024;
 
-    public const SUPPORTED_PAYLOAD_VERSION = 1;
+    /** Opaque PostcardHydrated[] backup. Do not map this JSON onto frozen `postcards`. */
+    public const SUPPORTED_PAYLOAD_VERSION = BackendCanon::SYNC_PAYLOAD_VERSION;
 
     public function show(Request $request): JsonResponse
     {
