@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react'
 import clsx from 'clsx'
 import { AddressFormView } from '../addressForm/presentation/AddressFormView'
-import { useSenderFacade } from '../sender/application/facades'
 import { useRecipientFacade } from '../recipient/application/facades'
 import type { Lang } from '@i18n/types'
 import styles from './Envelope.module.scss'
@@ -33,11 +32,10 @@ function keepKeyboardOnEmptyTouchStart(e: React.TouchEvent) {
   e.preventDefault()
 }
 
-export const EnvelopeMobileAddressForm: React.FC<Props> = ({ role, lang }) => {
-  const senderFacade = useSenderFacade()
+export const EnvelopeMobileAddressForm: React.FC<Props> = ({ lang }) => {
   const recipientFacade = useRecipientFacade()
-  const roleLabel = role === 'sender' ? 'Sender' : 'Recipients'
-  const facade = role === 'sender' ? senderFacade : recipientFacade
+  const roleLabel = 'Recipients'
+  const facade = recipientFacade
 
   const onPointerDown = useCallback(keepKeyboardOnEmptyPointerDown, [])
   const onTouchStart = useCallback(keepKeyboardOnEmptyTouchStart, [])
@@ -51,13 +49,11 @@ export const EnvelopeMobileAddressForm: React.FC<Props> = ({ role, lang }) => {
       <div
         className={clsx(
           styles.envelopeMobileCreateCard,
-          role === 'sender'
-            ? styles.envelopeMobileCreateCardSender
-            : styles.envelopeMobileCreateCardRecipient,
+          styles.envelopeMobileCreateCardRecipient,
         )}
       >
         <AddressFormView
-          role={role}
+          role="recipient"
           roleLabel={roleLabel}
           address={facade.formDraft}
           onFieldChange={facade.update}

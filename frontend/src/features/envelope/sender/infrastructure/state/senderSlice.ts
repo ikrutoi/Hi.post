@@ -6,16 +6,11 @@ import type {
   SenderView,
   SenderSortOptions,
 } from '../../domain/types'
-import type { ListStatus } from '@entities/envelope/domain/types'
 import type { AddressSaveRequestedPayload } from '../../../domain/types/addressSave.types'
 
 const DEFAULT_SENDER_SORT_OPTIONS: SenderSortOptions = {
   sortedBy: 'name',
   direction: 'asc',
-}
-
-function isFormDraftEmpty(data: AddressFields): boolean {
-  return !Object.values(data).some((v) => (v ?? '').trim() !== '')
 }
 
 export const initialSender: SenderState = {
@@ -32,131 +27,69 @@ export const initialSender: SenderState = {
   enabled: false,
 }
 
-function isComplete(data: AddressFields): boolean {
-  return Object.values(data).every((val) => (val ?? '').trim() !== '')
-}
-
+/**
+ * Sender is retired: keep action types for leftover sagas, ignore payloads.
+ */
 const senderSlice = createSlice({
   name: 'sender',
   initialState: initialSender,
   reducers: {
-    updateSenderField: (
-      state,
-      action: PayloadAction<{ field: keyof AddressFields; value: string }>,
-    ) => {
-      const { field, value } = action.payload
-      if (state.currentView === 'senderCreate') {
-        state.formDraft[field] = value
-        state.formIsComplete = isComplete(state.formDraft)
-      } else {
-        state.viewDraft[field] = value
-        state.formIsComplete = isComplete(state.viewDraft)
-      }
+    updateSenderField: {
+      reducer: () => initialSender,
+      prepare: (payload: { field: keyof AddressFields; value: string }) => ({
+        payload,
+      }),
     },
-
-    setEnabled: (state, action: PayloadAction<boolean>) => {
-      state.enabled = action.payload
+    setEnabled: {
+      reducer: () => initialSender,
+      prepare: (payload: boolean) => ({ payload }),
     },
-
-    restoreSender: (_state, action: PayloadAction<Partial<SenderState>>) => {
-      const next: SenderState = {
-        ...initialSender,
-        ...action.payload,
-      }
-      /**
-       * Legacy / archive hydrate: Apply мог зафиксировать пустого/выкл. отправителя
-       * только через appliedLocked; в старых открытках поле отсутствует.
-       * applied ids / appliedData ⇒ тоже считаем зафиксированным.
-       */
-      if (
-        !next.appliedLocked &&
-        ((next.applied?.length ?? 0) > 0 || next.appliedData != null)
-      ) {
-        next.appliedLocked = true
-      }
-      return next
+    restoreSender: {
+      reducer: () => initialSender,
+      prepare: (payload: Partial<SenderState>) => ({ payload }),
     },
-
     clearSender: () => initialSender,
-
-    setSenderAppliedIds: (state, action: PayloadAction<string[]>) => {
-      state.applied = action.payload
-      state.appliedLocked = action.payload.length > 0
+    setSenderAppliedIds: {
+      reducer: () => initialSender,
+      prepare: (payload: string[]) => ({ payload }),
     },
-
-    setSenderAppliedWithData: (
-      state,
-      action: PayloadAction<{ ids: string[]; data: AddressFields[] }>,
-    ) => {
-      state.applied = action.payload.ids
-      state.appliedData =
-        action.payload.data.length === 1 ? action.payload.data[0] : null
-      state.appliedLocked = true
+    setSenderAppliedWithData: {
+      reducer: () => initialSender,
+      prepare: (payload: { ids: string[]; data: AddressFields[] }) => ({
+        payload,
+      }),
     },
-
-    setSenderApplied: (state, action: PayloadAction<boolean>) => {
-      if (!action.payload) {
-        state.applied = []
-        state.appliedData = null
-        state.appliedLocked = false
-      } else {
-        /** Подтвердить результат без адреса (тумблер выкл / пустое поле). */
-        state.applied = []
-        state.appliedData = null
-        state.appliedLocked = true
-      }
+    setSenderApplied: {
+      reducer: () => initialSender,
+      prepare: (payload: boolean) => ({ payload }),
     },
-
-    setSenderAppliedData: (
-      state,
-      action: PayloadAction<AddressFields | null>,
-    ) => {
-      state.appliedData = action.payload
+    setSenderAppliedData: {
+      reducer: () => initialSender,
+      prepare: (payload: AddressFields | null) => ({ payload }),
     },
-
-    setSenderView: (state, action: PayloadAction<SenderView>) => {
-      const nextView = action.payload
-      if (nextView !== 'senderCreate') {
-        state.formIsEmpty = isFormDraftEmpty(state.formDraft)
-      }
-      state.currentView = nextView
+    setSenderView: {
+      reducer: () => initialSender,
+      prepare: (payload: SenderView) => ({ payload }),
     },
-
-    setSenderViewId: (state, action: PayloadAction<string | null>) => {
-      state.senderViewId = action.payload
+    setSenderViewId: {
+      reducer: () => initialSender,
+      prepare: (payload: string | null) => ({ payload }),
     },
-
-    clearSenderFormData(state) {
-      state.formDraft = { ...initialSection.data }
-      state.formIsComplete = false
-      state.formIsEmpty = true
+    clearSenderFormData: () => initialSender,
+    setSenderFormDraft: {
+      reducer: () => initialSender,
+      prepare: (payload: AddressFields) => ({ payload }),
     },
-
-    setSenderFormDraft(state, action: PayloadAction<AddressFields>) {
-      state.formDraft = action.payload
-      state.formIsComplete = isComplete(action.payload)
-      state.formIsEmpty = isFormDraftEmpty(action.payload)
+    clearSenderViewDraft: () => initialSender,
+    setSenderViewDraft: {
+      reducer: () => initialSender,
+      prepare: (payload: AddressFields) => ({ payload }),
     },
-
-    clearSenderViewDraft(state) {
-      state.viewDraft = { ...initialSection.data }
-      state.formIsComplete = false
+    toggleSenderSortDirection: () => initialSender,
+    saveAddressRequested: {
+      reducer: () => initialSender,
+      prepare: (payload?: AddressSaveRequestedPayload) => ({ payload }),
     },
-
-    setSenderViewDraft(state, action: PayloadAction<AddressFields>) {
-      state.viewDraft = action.payload
-      state.formIsComplete = isComplete(action.payload)
-    },
-
-    toggleSenderSortDirection(state) {
-      state.sortOptions.direction =
-        state.sortOptions.direction === 'asc' ? 'desc' : 'asc'
-    },
-
-    saveAddressRequested: (
-      _state,
-      _action: PayloadAction<AddressSaveRequestedPayload | undefined>,
-    ) => {},
   },
 })
 

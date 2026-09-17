@@ -4,7 +4,6 @@ import styles from './MiniEnvelope.module.scss'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import { useEnvelopeFacade } from '@envelope/application/facades'
 import { getEnvelopeRecipientCircleSteps } from './concentricCircleSteps'
-import { useSenderFacade } from '@/features/envelope/sender/application/facades'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 
 export const MiniEnvelope: React.FC = () => {
@@ -12,15 +11,13 @@ export const MiniEnvelope: React.FC = () => {
   const { setHovered, isSectionHovered } = useCardEditorFacade()
   const isHovered = isSectionHovered('envelope')
   const { appliedRecipientAddress, recipient } = useEnvelopeFacade()
-  const { state: senderState, isEnabled } = useSenderFacade()
 
   const listInner =
     centerStripListMirrorEnabled && mirrorInner != null ? mirrorInner : null
 
   const count =
     listInner != null ? listInner.recipientCount : recipient.applied.length
-  const hasSenderAppliedSession =
-    isEnabled && senderState.applied.length > 0
+  const hasSenderAppliedSession = false
   const senderBadgeFromList = listInner?.senderBadgeShow === true
   const showMini =
     listInner != null
