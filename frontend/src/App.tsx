@@ -2500,7 +2500,7 @@ function DesktopFactoryTopRow({
   const centralPieEarsGutterMode = addressCardPiePreview.showSurface
     ? null
     : resolveCentralPieEarsMode(notebookStripTab)
-  const centralPieEarsMode = showEmptyArchive ? null : centralPieEarsGutterMode
+  const centralPieEarsMode = centralPieEarsGutterMode
   const keepPlanAccent = !showArchivePie && !showEmptyArchive
   const planMiniPieCount = planPies.filter(
     (pie) => pie.id !== EMPTY_GUTTER_PLAN_PIE_ID,

@@ -617,7 +617,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       ? null
       : resolveCentralPieEarsMode(notebookStripSection)
   const centralPieEarsMode =
-    mobileCentralPieDisplay === 'assembly' || centralArchivePieVisible
+    mobileCentralPieDisplay === 'assembly' ||
+    mobileCentralPieDisplay === 'emptyArchive' ||
+    centralArchivePieVisible
       ? centralPieEarsGutterMode
       : null
 
