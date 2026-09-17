@@ -1,6 +1,6 @@
 import { createListenerMiddleware } from '@reduxjs/toolkit'
 import type { AuthResponse } from '@features/auth/domain/types/auth.types'
-import { logoutUserApi } from '@features/auth/api/auth.api'
+import { logoutUserApi, updateMeApi } from '@features/auth/api/auth.api'
 import { registerThunk, loginThunk } from '@features/auth/store/auth.thunks'
 import { logout, setAuth, updateUserPassportColors, updateUserPassportEmblemForm } from '@/features/auth/infrastructure/state/auth.slice'
 import {
@@ -50,13 +50,20 @@ authListenerMiddleware.startListening({
 
 authListenerMiddleware.startListening({
   actionCreator: updateUserPassportEmblemForm,
-  effect: async (_action, listenerApi) => {
+  effect: async (action, listenerApi) => {
     const state = listenerApi.getState() as {
       auth: { user: AuthResponse['user'] | null; token: string | null }
     }
     const { user, token } = state.auth
     if (user && token) {
       persistSession({ user, token })
+    }
+    if (import.meta.env.VITE_AUTH_MODE === 'http') {
+      try {
+        await updateMeApi({ passportEmblemForm: action.payload })
+      } catch {
+        // Local preference is kept; next fetchMe may overwrite.
+      }
     }
   },
 })

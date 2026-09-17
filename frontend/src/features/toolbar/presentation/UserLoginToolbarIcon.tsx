@@ -5,12 +5,14 @@ import {
   resolveGuestUserRegisteredElementColors,
   resolveUserRegisteredElementColors,
   type IconUserRegisteredElementColors,
+  type UserRegisteredEmblemForm,
 } from '@shared/ui/icons'
 import styles from './Toolbar.module.scss'
 
 type UserLoginToolbarIconProps = {
   userId?: string
   passportColors?: IconUserRegisteredElementColors | null
+  passportEmblemForm?: UserRegisteredEmblemForm | null
   guest?: boolean
   className?: string
 }
@@ -18,6 +20,7 @@ type UserLoginToolbarIconProps = {
 export const UserLoginToolbarIcon: React.FC<UserLoginToolbarIconProps> = ({
   userId,
   passportColors,
+  passportEmblemForm,
   guest = false,
   className,
 }) => {
@@ -29,7 +32,10 @@ export const UserLoginToolbarIcon: React.FC<UserLoginToolbarIconProps> = ({
 
   return (
     <span className={clsx(styles.toolbarUserChromeGlyph, className)} aria-hidden>
-      <IconUserRegisteredEmblem elementColors={elementColors} />
+      <IconUserRegisteredEmblem
+        elementColors={elementColors}
+        form={guest ? undefined : passportEmblemForm}
+      />
     </span>
   )
 }

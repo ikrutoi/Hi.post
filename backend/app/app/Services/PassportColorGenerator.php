@@ -6,13 +6,19 @@ use App\Models\User;
 
 class PassportColorGenerator
 {
+    /** Must match `ICON_USER_REGISTERED_ELEMENT_IDS` on the client. */
     /** @var list<string> */
     public const ELEMENT_IDS = [
         '1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
         '11', '12', '13', '14', '15', '16', '17', '18', '19',
+        '20', '21', '22', '23', '24',
     ];
 
-    private const SECTOR_COUNT = 19;
+    public const EMBLEM_FORMS = ['triangles', 'waves'];
+
+    public const DEFAULT_EMBLEM_FORM = 'triangles';
+
+    private const SECTOR_COUNT = 24;
 
     private const SATURATION_MIN = 58;
 
@@ -28,9 +34,11 @@ class PassportColorGenerator
     public function generate(string $userId): array
     {
         $colors = [];
+        $sectorAssignments = $this->shuffleSectorIndices($userId);
 
-        foreach (self::ELEMENT_IDS as $sectorIndex => $id) {
+        foreach (self::ELEMENT_IDS as $index => $id) {
             $random = $this->createSeededRandom("{$userId}:{$id}");
+            $sectorIndex = $sectorAssignments[$index] ?? 0;
             $colors[$id] = $this->pickColorInSector($sectorIndex, $random);
         }
 
@@ -49,6 +57,11 @@ class PassportColorGenerator
 
         if (! $this->isValidCode($user->passport_code)) {
             $user->passport_code = $this->generateCode($userId);
+            $needsSave = true;
+        }
+
+        if (! $this->isValidEmblemForm($user->passport_emblem_form)) {
+            $user->passport_emblem_form = self::DEFAULT_EMBLEM_FORM;
             $needsSave = true;
         }
 
@@ -86,6 +99,11 @@ class PassportColorGenerator
         return is_string($code) && preg_match('/^Hi-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}$/', $code) === 1;
     }
 
+    public function isValidEmblemForm(mixed $form): bool
+    {
+        return is_string($form) && in_array($form, self::EMBLEM_FORMS, true);
+    }
+
     /**
      * @param  array<string, mixed>|null  $colors
      */
@@ -103,6 +121,22 @@ class PassportColorGenerator
         }
 
         return true;
+    }
+
+    /**
+     * @return list<int>
+     */
+    private function shuffleSectorIndices(string $userId): array
+    {
+        $sectors = range(0, self::SECTOR_COUNT - 1);
+        $random = $this->createSeededRandom("{$userId}:sectors");
+
+        for ($i = count($sectors) - 1; $i > 0; $i--) {
+            $j = (int) floor($random() * ($i + 1));
+            [$sectors[$i], $sectors[$j]] = [$sectors[$j], $sectors[$i]];
+        }
+
+        return $sectors;
     }
 
     private function hashString(string $value): int

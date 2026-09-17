@@ -7,8 +7,13 @@ use App\Services\PassportColorGenerator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
+/**
+ * Account session for `VITE_AUTH_MODE=http` (phase 1).
+ * Postcard rows stay in IndexedDB; this payload is passport + identity only.
+ */
 class AuthController extends Controller
 {
     public function __construct(
@@ -76,6 +81,28 @@ class AuthController extends Controller
         return response()->json($this->formatUser($request->user()));
     }
 
+    public function update(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'name' => ['sometimes', 'string', 'max:255'],
+            'passportEmblemForm' => ['sometimes', 'string', Rule::in(PassportColorGenerator::EMBLEM_FORMS)],
+        ]);
+
+        $user = $request->user();
+
+        if (array_key_exists('name', $validated)) {
+            $user->name = $validated['name'];
+        }
+
+        if (array_key_exists('passportEmblemForm', $validated)) {
+            $user->passport_emblem_form = $validated['passportEmblemForm'];
+        }
+
+        $user->save();
+
+        return response()->json($this->formatUser($user->fresh()));
+    }
+
     public function updateAvatar(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -104,6 +131,7 @@ class AuthController extends Controller
      *     email: string,
      *     avatarUrl: string|null,
      *     passportColors: array<string, string>,
+     *     passportEmblemForm: string,
      *     passportCode: string
      * }
      */
@@ -117,6 +145,7 @@ class AuthController extends Controller
             'email' => $user->email,
             'avatarUrl' => $user->avatar_url,
             'passportColors' => $user->passport_colors,
+            'passportEmblemForm' => $user->passport_emblem_form,
             'passportCode' => $user->passport_code,
         ];
     }

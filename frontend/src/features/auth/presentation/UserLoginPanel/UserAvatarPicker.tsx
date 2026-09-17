@@ -30,7 +30,10 @@ export const UserAvatarPicker: React.FC<UserAvatarPickerProps> = ({
           <div className={styles.profileAvatar} aria-hidden>
             {registeredAvatarColors ? (
               <span className={styles.profileAvatarPlaceholder}>
-                <IconUserRegisteredEmblem elementColors={registeredAvatarColors} />
+                <IconUserRegisteredEmblem
+                  elementColors={registeredAvatarColors}
+                  form={user?.passportEmblemForm}
+                />
               </span>
             ) : null}
           </div>

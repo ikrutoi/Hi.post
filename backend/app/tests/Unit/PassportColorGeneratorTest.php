@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class PassportColorGeneratorTest extends TestCase
 {
-    public function test_generates_nineteen_hex_colors_deterministically(): void
+    public function test_generates_twenty_four_hex_colors_deterministically(): void
     {
         $generator = new PassportColorGenerator();
 
@@ -15,7 +15,7 @@ class PassportColorGeneratorTest extends TestCase
         $second = $generator->generate('42');
 
         $this->assertSame($first, $second);
-        $this->assertCount(19, $first);
+        $this->assertCount(24, $first);
 
         foreach (PassportColorGenerator::ELEMENT_IDS as $id) {
             $this->assertMatchesRegularExpression('/^#[0-9a-f]{6}$/', $first[$id]);
@@ -37,9 +37,10 @@ class PassportColorGeneratorTest extends TestCase
         $generator = new PassportColorGenerator();
         $colors = $generator->generate('42');
 
-        $this->assertSame('#d8815e', $colors['1']);
-        $this->assertSame('#31dfdf', $colors['10']);
-        $this->assertSame('#cc3541', $colors['19']);
+        $this->assertSame('#5e7fd8', $colors['1']);
+        $this->assertSame('#c931df', $colors['10']);
+        $this->assertSame('#cc358a', $colors['19']);
+        $this->assertSame('#e052db', $colors['24']);
     }
 
     public function test_generates_passport_code_deterministically(): void
