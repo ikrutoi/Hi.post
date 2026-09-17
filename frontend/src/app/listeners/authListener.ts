@@ -7,6 +7,8 @@ import {
   clearAuthSession,
   saveAuthSession,
 } from '@features/auth/infrastructure/sessionStorage'
+import { rehydratePostcardsFromIdb } from '@features/sync/store/postcardSync.actions'
+import { pullV2PostcardsIntoIdb } from '@features/sync/application/services/pullV2PostcardsIntoIdb'
 
 export const authListenerMiddleware = createListenerMiddleware()
 
@@ -14,24 +16,39 @@ const persistSession = (payload: AuthResponse) => {
   saveAuthSession(payload)
 }
 
+async function pullV2AfterAuth(
+  listenerApi: { dispatch: (action: unknown) => unknown },
+): Promise<void> {
+  if (import.meta.env.VITE_AUTH_MODE !== 'http') return
+  try {
+    await pullV2PostcardsIntoIdb()
+    listenerApi.dispatch(rehydratePostcardsFromIdb())
+  } catch {
+    // IndexedDB keeps whatever was already local.
+  }
+}
+
 authListenerMiddleware.startListening({
   actionCreator: setAuth,
-  effect: async (action) => {
+  effect: async (action, listenerApi) => {
     persistSession(action.payload)
+    await pullV2AfterAuth(listenerApi)
   },
 })
 
 authListenerMiddleware.startListening({
   actionCreator: registerThunk.fulfilled,
-  effect: async (action) => {
+  effect: async (action, listenerApi) => {
     persistSession(action.payload)
+    await pullV2AfterAuth(listenerApi)
   },
 })
 
 authListenerMiddleware.startListening({
   actionCreator: loginThunk.fulfilled,
-  effect: async (action) => {
+  effect: async (action, listenerApi) => {
     persistSession(action.payload)
+    await pullV2AfterAuth(listenerApi)
   },
 })
 

@@ -59,7 +59,7 @@ function* rehydratePostcardsFromIdbSaga(): SagaIterator {
       prev.id === next.id &&
       postcardCardphotoNeedsPersist(prev, next)
     ) {
-      yield call(postcardsAdapter.put, next)
+      yield call(postcardsAdapter.putLocal, next)
     }
   }
 

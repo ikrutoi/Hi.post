@@ -640,7 +640,7 @@ export function* hydrateAppSession() {
         prev.id === next.id &&
         postcardCardphotoNeedsPersist(prev, next)
       ) {
-        yield call(postcardsAdapter.put, next)
+        yield call(postcardsAdapter.putLocal, next)
       }
     }
     yield put(setItems(postcards))

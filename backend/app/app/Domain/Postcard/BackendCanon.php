@@ -57,6 +57,7 @@ final class BackendCanon
         'image_templates',
         'personal_access_tokens',
         'user_files',
+        'user_postcards',
     ];
 
     /**
