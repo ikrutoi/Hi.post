@@ -23,6 +23,7 @@ export async function pushImageMetaToRemoteFiles(
   const next: ImageMeta & { id: string } = {
     ...row,
     remoteFileId: uploaded.id,
+    timestamp: Date.now(),
   }
   await storeAdapters.cardphotoImages.put(next)
   return uploaded.id

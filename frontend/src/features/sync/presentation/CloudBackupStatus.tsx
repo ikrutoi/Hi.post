@@ -4,6 +4,7 @@ import {
   selectAutoBackupPending,
   selectLastAutoBackupAt,
 } from '../infrastructure/selectors/postcardSyncSelectors'
+import { isHttpAuthMode } from '@shared/config/authMode'
 import styles from './CloudBackupStatus.module.scss'
 
 function formatSyncDate(value: string | null | undefined): string | null {
@@ -31,7 +32,7 @@ export const CloudBackupStatus: React.FC = () => {
     return 'Postcards sync across devices when you are signed in.'
   }, [autoBackupPending, lastAutoBackupAt])
 
-  if (import.meta.env.VITE_AUTH_MODE !== 'http') {
+  if (!isHttpAuthMode()) {
     return null
   }
 

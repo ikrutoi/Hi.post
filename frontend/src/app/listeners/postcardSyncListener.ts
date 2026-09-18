@@ -10,14 +10,11 @@ import {
   flushPendingV2Sync,
   hasPendingV2Sync,
 } from '@features/sync/infrastructure/postcardV2PendingSync'
+import { isHttpAuthMode } from '@shared/config/authMode'
 
 const V2_SYNC_DEBOUNCE_MS = 3000
 
 export const postcardSyncListenerMiddleware = createListenerMiddleware()
-
-function isHttpAuthMode(): boolean {
-  return import.meta.env.VITE_AUTH_MODE === 'http'
-}
 
 postcardSyncListenerMiddleware.startListening({
   actionCreator: postcardLocalDataChanged,

@@ -1,5 +1,6 @@
 import type { ImageMeta } from '@cardphoto/domain/types'
 import { getApiErrorMessage } from '@shared/api/apiError'
+import { isHttpAuthMode } from '@shared/config/authMode'
 import {
   fetchUserFileVariantApi,
   uploadUserFileApi,
@@ -32,7 +33,7 @@ const httpFileRepository: FileRepository = {
 }
 
 export function getFileRepository(): FileRepository | null {
-  if (import.meta.env.VITE_AUTH_MODE === 'http') {
+  if (isHttpAuthMode()) {
     return httpFileRepository
   }
   return null

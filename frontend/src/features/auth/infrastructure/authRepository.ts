@@ -1,3 +1,4 @@
+import { isHttpAuthMode } from '@shared/config/authMode'
 import type {
   AuthResponse,
   LoginPayload,
@@ -14,7 +15,7 @@ export interface AuthRepository {
 }
 
 export function getAuthRepository(): AuthRepository {
-  if (import.meta.env.VITE_AUTH_MODE === 'http') {
+  if (isHttpAuthMode()) {
     return httpAuthRepository
   }
   return mockAuthRepository

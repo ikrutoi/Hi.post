@@ -1,6 +1,8 @@
 import { useEffect } from 'react'
 import { useAppDispatch } from '@app/hooks'
+import { isAuthSessionInvalid } from '@shared/api/apiError'
 import { setHttpUnauthorizedHandler } from '@shared/api/httpClient'
+import { isHttpAuthMode } from '@shared/config/authMode'
 import { getAuthRepository } from '../../infrastructure/authRepository'
 import {
   clearAuthSession,
@@ -28,16 +30,27 @@ export const useAuthInit = () => {
         return
       }
 
-      if (import.meta.env.VITE_AUTH_MODE === 'http') {
+      if (isHttpAuthMode()) {
         try {
           const user = await getAuthRepository().fetchMe()
           if (!cancelled) {
             dispatch(setAuth({ user, token: session.token }))
           }
-        } catch {
-          clearAuthSession()
-          if (!cancelled) {
-            dispatch(logout())
+        } catch (error) {
+          if (isAuthSessionInvalid(error)) {
+            clearAuthSession()
+            if (!cancelled) {
+              dispatch(logout())
+            }
+          } else if (session.user?.id) {
+            if (!cancelled) {
+              dispatch(setAuth(session))
+            }
+          } else {
+            clearAuthSession()
+            if (!cancelled) {
+              dispatch(logout())
+            }
           }
         }
       } else if (session.user?.id) {

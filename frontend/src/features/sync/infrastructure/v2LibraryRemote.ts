@@ -1,4 +1,5 @@
 import { readAuthSession } from '@features/auth/infrastructure/sessionStorage'
+import { isHttpAuthMode } from '@shared/config/authMode'
 import {
   deleteV2LibraryApi,
   fetchV2LibraryApi,
@@ -11,7 +12,7 @@ import type {
 
 function isHttpAuthed(): boolean {
   return (
-    import.meta.env.VITE_AUTH_MODE === 'http' &&
+    isHttpAuthMode() &&
     Boolean(readAuthSession()?.token)
   )
 }

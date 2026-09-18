@@ -7,6 +7,8 @@
  * `user_postcard_snapshots.payload` of PostcardHydrated (sync payload v1, read-only)
  * plus phase 3+ `user_postcards` rows and phase 5 `user_library_items`
  * (addresses, cardtexts, cardphotos). Legacy recipient/text template tables are frozen.
+ * Phase 6 cutover: `VITE_AUTH_MODE=http` on staging; IndexedDB remains the
+ * working cache. First login uploads local blobs then PUT `/v2` rows.
  *
  * Local-only IDB stores (not a server entity): session, uiPreferences,
  * cardPieFavorites. Image blobs stay in IDB as cache; http mode also POSTs

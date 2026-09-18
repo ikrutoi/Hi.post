@@ -13,6 +13,11 @@ import {
 } from '@features/sync/store/postcardSync.actions'
 import { pullV2PostcardsIntoIdb } from '@features/sync/application/services/pullV2PostcardsIntoIdb'
 import { pullV2LibraryIntoIdb } from '@features/sync/application/services/pullV2LibraryIntoIdb'
+import {
+  flushLocalIdbToV2AfterPull,
+  pushLocalIdbFilesToV2,
+} from '@features/sync/application/services/migrateLocalIdbToV2'
+import { isHttpAuthMode } from '@shared/config/authMode'
 
 export const authListenerMiddleware = createListenerMiddleware()
 
@@ -23,10 +28,12 @@ const persistSession = (payload: AuthResponse) => {
 async function pullV2AfterAuth(
   listenerApi: { dispatch: (action: unknown) => unknown },
 ): Promise<void> {
-  if (import.meta.env.VITE_AUTH_MODE !== 'http') return
+  if (!isHttpAuthMode()) return
   try {
+    await pushLocalIdbFilesToV2()
     await pullV2PostcardsIntoIdb()
     await pullV2LibraryIntoIdb()
+    await flushLocalIdbToV2AfterPull()
     listenerApi.dispatch(rehydratePostcardsFromIdb())
     listenerApi.dispatch(postcardLocalDataChanged())
   } catch {
@@ -81,7 +88,7 @@ authListenerMiddleware.startListening({
     if (user && token) {
       persistSession({ user, token })
     }
-    if (import.meta.env.VITE_AUTH_MODE === 'http') {
+    if (isHttpAuthMode()) {
       try {
         await updateMeApi({ passportEmblemForm: action.payload })
       } catch {
@@ -94,7 +101,7 @@ authListenerMiddleware.startListening({
 authListenerMiddleware.startListening({
   actionCreator: logout,
   effect: async () => {
-    if (import.meta.env.VITE_AUTH_MODE === 'http') {
+    if (isHttpAuthMode()) {
       try {
         await logoutUserApi()
       } catch {

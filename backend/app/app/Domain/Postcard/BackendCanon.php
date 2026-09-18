@@ -5,6 +5,7 @@ namespace App\Domain\Postcard;
 /**
  * Phase 0 inventory: freeze legacy Laravel postcards; new schema follows
  * IndexedDB AppDB `postcards` (PostcardHydrated), not `postcards` columns.
+ * Phase 6: client http mode treats v2 tables as the cloud copy; IDB is cache.
  *
  * @see frontend/src/entities/postcard/domain/backendCanon.ts
  */

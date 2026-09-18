@@ -1,5 +1,6 @@
 import type { PostcardHydrated } from '@entities/postcard'
 import { readAuthSession } from '@features/auth/infrastructure/sessionStorage'
+import { isHttpAuthMode } from '@shared/config/authMode'
 import { serializePostcardForV2 } from '../domain/serializePostcardForV2'
 import {
   deleteV2PostcardApi,
@@ -9,7 +10,7 @@ import {
 
 function isHttpAuthed(): boolean {
   return (
-    import.meta.env.VITE_AUTH_MODE === 'http' &&
+    isHttpAuthMode() &&
     Boolean(readAuthSession()?.token)
   )
 }
