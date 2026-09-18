@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -41,5 +42,27 @@ class UserPostcard extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function dispatchDate(): ?Carbon
+    {
+        $year = (int) $this->dispatch_year;
+        $month = (int) $this->dispatch_month;
+        $day = (int) $this->dispatch_day;
+        if ($year < 1 || $month < 1 || $day < 1) {
+            return null;
+        }
+
+        $date = Carbon::createSafe($year, $month, $day);
+        if ($date === false) {
+            return null;
+        }
+
+        return $date->startOfDay();
+    }
+
+    public function priceAmount(): float
+    {
+        return (float) str_replace(',', '.', (string) $this->price);
     }
 }
