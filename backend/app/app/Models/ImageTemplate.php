@@ -18,9 +18,4 @@ protected $fillable = [
     {
         return $this->belongsTo(User::class);
     }
-
-    public function postcards()
-    {
-        return $this->hasMany(Postcard::class);
-    }
 }

@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 /**
  * Phase 5: address / cardtext / cardphoto templates as IndexedDB-shaped JSON.
- * Do not write legacy recipient_templates, text_templates, or user image_templates.
+ * Do not write user rows to image_templates (system catalog only).
  */
 class V2LibraryController extends Controller
 {

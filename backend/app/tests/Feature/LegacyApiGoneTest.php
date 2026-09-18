@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class LegacyApiGoneTest extends TestCase
@@ -30,5 +31,16 @@ class LegacyApiGoneTest extends TestCase
     public function test_system_image_catalog_stays(): void
     {
         $this->getJson('/api/templates/images/system')->assertOk();
+    }
+
+    public function test_legacy_template_tables_are_dropped(): void
+    {
+        $this->assertFalse(Schema::hasTable('postcards'));
+        $this->assertFalse(Schema::hasTable('sender_templates'));
+        $this->assertFalse(Schema::hasTable('recipient_templates'));
+        $this->assertFalse(Schema::hasTable('text_templates'));
+        $this->assertTrue(Schema::hasTable('image_templates'));
+        $this->assertTrue(Schema::hasTable('user_postcards'));
+        $this->assertTrue(Schema::hasTable('user_postcard_snapshots'));
     }
 }

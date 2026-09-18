@@ -3,9 +3,9 @@
 namespace App\Domain\Postcard;
 
 /**
- * Phase 0 inventory: freeze legacy Laravel postcards; new schema follows
- * IndexedDB AppDB `postcards` (PostcardHydrated), not `postcards` columns.
- * Phase 6: client http mode treats v2 tables as the cloud copy; IDB is cache.
+ * Phase 0 inventory: IndexedDB AppDB `postcards` (PostcardHydrated) is the
+ * product shape. Legacy Laravel `postcards` / sender|recipient|text template
+ * tables are dropped. Phase 6: v2 tables are the cloud copy; IDB is cache.
  *
  * @see frontend/src/entities/postcard/domain/backendCanon.ts
  */
@@ -44,12 +44,16 @@ final class BackendCanon
         'country',
     ];
 
-    /** Do not add columns, relations, or writes. Tables stay until a later drop. */
-    public const FROZEN_TABLES = [
+    /** Dropped; do not recreate. */
+    public const DROPPED_TABLES = [
         'postcards',
         'sender_templates',
         'recipient_templates',
         'text_templates',
+    ];
+
+    /** Still in the DB: system catalog only — do not add user writes. */
+    public const FROZEN_TABLES = [
         'image_templates',
     ];
 
@@ -62,17 +66,5 @@ final class BackendCanon
         'user_library_items',
         'user_postcard_snapshots',
         'image_templates',
-    ];
-
-    /**
-     * Legacy `postcards.status` enum — not used by the client pipeline.
-     *
-     * @var list<string>
-     */
-    public const LEGACY_POSTCARD_STATUSES = [
-        'draft',
-        'scheduled',
-        'sent',
-        'archived',
     ];
 }

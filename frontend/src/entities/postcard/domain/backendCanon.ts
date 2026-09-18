@@ -1,20 +1,14 @@
 /**
  * Phase 0 — backend inventory vs IndexedDB postcard canon.
  *
- * IndexedDB `postcards` is the product source of truth. Laravel `postcards`
- * (image_path / message / draft|scheduled|sent|archived) is frozen: do not
- * add columns, relations, or write paths. Cloud copy today is an opaque
- * `user_postcard_snapshots.payload` of PostcardHydrated (sync payload v1, read-only)
- * plus phase 3+ `user_postcards` rows and phase 5 `user_library_items`
- * (addresses, cardtexts, cardphotos). Legacy recipient/text template tables are frozen.
- * Phase 6 cutover: `VITE_AUTH_MODE=http` on staging; IndexedDB remains the
- * working cache. First login uploads local blobs then PUT `/v2` rows.
+ * IndexedDB `postcards` is the product source of truth. Cloud copy is
+ * `user_postcards` + `user_library_items` + `user_files`. Snapshot
+ * `user_postcard_snapshots` is GET-only until v2 is populated.
+ * Phase 6: `VITE_AUTH_MODE=http`; IndexedDB remains the working cache.
  *
- * Local-only IDB stores (not a server entity): session, uiPreferences,
- * cardPieFavorites. Image blobs stay in IDB as cache; http mode also POSTs
- * original/display/thumb to `user_files` and keeps `remoteFileId` on ImageMeta.
- * IDB `sender` object store is deleted. Laravel `sender_templates` stays
- * until a later migration; the client no longer calls it.
+ * Local-only IDB stores: session, uiPreferences, cardPieFavorites.
+ * Image blobs stay in IDB as cache; http mode POSTs original/display/thumb
+ * to `user_files` (`remoteFileId` on ImageMeta).
  */
 export const BACKEND_CANON_PHASE = 0 as const
 
@@ -53,14 +47,16 @@ export const BACKEND_ADDRESS_FIELDS = [
   'country',
 ] as const
 
-/** Laravel tables that must not grow toward the old postcard product model. */
-export const FROZEN_LARAVEL_TABLES = [
+/** Dropped; do not recreate. */
+export const DROPPED_LARAVEL_TABLES = [
   'postcards',
   'sender_templates',
   'recipient_templates',
   'text_templates',
-  'image_templates',
 ] as const
+
+/** Still in the DB: system catalog only — do not add user writes. */
+export const FROZEN_LARAVEL_TABLES = ['image_templates'] as const
 
 /**
  * Auth, v2 cloud copy, files, read-only snapshot GET.
