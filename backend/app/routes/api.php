@@ -4,8 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PostcardController;
 use App\Http\Controllers\System\ImageController as SystemImageController;
 use App\Http\Controllers\User\ImageController as UserImageController;
-use app\Http\Controllers\User\TextController as UserTextController;
-use app\Http\Controllers\User\RecipientController as UserRecipientController;
+use App\Http\Controllers\User\RecipientController as UserRecipientController;
+use App\Http\Controllers\User\SenderController as UserSenderController;
+use App\Http\Controllers\User\TextController as UserTextController;
 use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Api\SyncPostcardController;
 use App\Http\Controllers\Api\UserFileController;
@@ -15,11 +16,12 @@ use App\Http\Controllers\AuthController;
 
 Route::get('templates/images/system', [SystemImageController::class, 'index']);
 
-/** Frozen legacy table. New postcard writes go through /sync/postcards until a new schema. */
+/** Frozen legacy CRUD (410). Cloud copy is /v2 + /files. System catalog stays above. */
 Route::apiResource('postcards', PostcardController::class);
 Route::apiResource('templates/images', UserImageController::class);
 Route::apiResource('templates/texts', UserTextController::class);
 Route::apiResource('templates/recipients', UserRecipientController::class);
+Route::apiResource('templates/senders', UserSenderController::class);
 
 Route::get('/analytics/users', [AnalyticsController::class, 'userStats']);
 Route::get('/analytics/upcoming', [AnalyticsController::class, 'upcomingStats']);

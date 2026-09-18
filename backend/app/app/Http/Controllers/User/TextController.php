@@ -2,51 +2,15 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Controllers\FrozenResourceController;
 
 /**
- * Frozen stub. Phase 5 cardtext templates are /api/v2/cardtexts.
+ * Frozen stub. Cardtext templates are /api/v2/cardtexts.
  */
-class TextController extends Controller
+class TextController extends FrozenResourceController
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    protected function successorMessage(): string
     {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return 'Text templates use /api/v2/cardtexts.';
     }
 }

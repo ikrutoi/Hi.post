@@ -44,24 +44,24 @@ final class BackendCanon
         'country',
     ];
 
-    /** Do not add columns, relations, or writes. */
+    /** Do not add columns, relations, or writes. Tables stay until a later drop. */
     public const FROZEN_TABLES = [
         'postcards',
         'sender_templates',
         'recipient_templates',
         'text_templates',
+        'image_templates',
     ];
 
+    /** Auth, v2 cloud copy, files, read-only snapshot, system catalog rows in image_templates. */
     public const LIVE_TABLES = [
         'users',
-        'user_postcard_snapshots',
-        'recipient_templates',
-        'text_templates',
-        'image_templates',
         'personal_access_tokens',
         'user_files',
         'user_postcards',
         'user_library_items',
+        'user_postcard_snapshots',
+        'image_templates',
     ];
 
     /**

@@ -2,52 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Postcard;
+use App\Http\Controllers\FrozenResourceController;
 
-class PostcardController extends Controller
+/**
+ * Frozen CRUD over legacy `postcards`. Use /api/v2/postcards.
+ *
+ * @see \App\Domain\Postcard\BackendCanon
+ */
+class PostcardController extends FrozenResourceController
 {
-    /**
-     * FROZEN CRUD over legacy `postcards` (phase 0).
-     * New postcard API must not land here — use sync snapshots, then a new schema.
-     *
-     * @see \App\Domain\Postcard\BackendCanon
-     */
-    public function index()
+    protected function successorMessage(): string
     {
-        return Postcard::where('is_active', true)->get();
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return 'Legacy postcards are frozen. Use /api/v2/postcards.';
     }
 }

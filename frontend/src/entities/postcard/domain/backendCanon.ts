@@ -59,22 +59,21 @@ export const FROZEN_LARAVEL_TABLES = [
   'sender_templates',
   'recipient_templates',
   'text_templates',
+  'image_templates',
 ] as const
 
 /**
- * Keep for auth / current sync vehicle / unused template CRUD stubs.
- * New postcard schema will not reuse `postcards` columns.
+ * Auth, v2 cloud copy, files, read-only snapshot GET.
+ * `image_templates` is live only for GET templates/images/system.
  */
 export const LIVE_LARAVEL_TABLES = [
   'users',
-  'user_postcard_snapshots',
-  'recipient_templates',
-  'text_templates',
-  'image_templates',
   'personal_access_tokens',
   'user_files',
   'user_postcards',
   'user_library_items',
+  'user_postcard_snapshots',
+  'image_templates',
 ] as const
 
 /** IDB stores that become the new server model (phase 1+). */
