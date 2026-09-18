@@ -10,7 +10,7 @@ export const fetchPostcardSyncApi = async (): Promise<PostcardSyncSnapshot | nul
     const response = await httpClient.get<PostcardSyncSnapshot>('/api/sync/postcards')
     return response.data
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.status === 404) {
+    if (axios.isAxiosError(error) && (error.response?.status === 404 || error.response?.status === 410)) {
       return null
     }
     throw error

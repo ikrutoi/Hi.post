@@ -2,8 +2,7 @@
  * Phase 0 — backend inventory vs IndexedDB postcard canon.
  *
  * IndexedDB `postcards` is the product source of truth. Cloud copy is
- * `user_postcards` + `user_library_items` + `user_files`. Snapshot
- * `user_postcard_snapshots` is GET-only until v2 is populated.
+ * `user_postcards` + `user_library_items` + `user_files`.
  * Phase 6: `VITE_AUTH_MODE=http`; IndexedDB remains the working cache.
  *
  * Local-only IDB stores: session, uiPreferences, cardPieFavorites.
@@ -53,13 +52,14 @@ export const DROPPED_LARAVEL_TABLES = [
   'sender_templates',
   'recipient_templates',
   'text_templates',
+  'user_postcard_snapshots',
 ] as const
 
 /** Still in the DB: system catalog only — do not add user writes. */
 export const FROZEN_LARAVEL_TABLES = ['image_templates'] as const
 
 /**
- * Auth, v2 cloud copy, files, read-only snapshot GET.
+ * Auth, v2 cloud copy, files.
  * `image_templates` is live only for GET templates/images/system.
  */
 export const LIVE_LARAVEL_TABLES = [
@@ -68,7 +68,6 @@ export const LIVE_LARAVEL_TABLES = [
   'user_files',
   'user_postcards',
   'user_library_items',
-  'user_postcard_snapshots',
   'image_templates',
 ] as const
 

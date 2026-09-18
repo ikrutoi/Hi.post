@@ -41,6 +41,6 @@ class LegacyApiGoneTest extends TestCase
         $this->assertFalse(Schema::hasTable('text_templates'));
         $this->assertTrue(Schema::hasTable('image_templates'));
         $this->assertTrue(Schema::hasTable('user_postcards'));
-        $this->assertTrue(Schema::hasTable('user_postcard_snapshots'));
+        $this->assertFalse(Schema::hasTable('user_postcard_snapshots'));
     }
 }

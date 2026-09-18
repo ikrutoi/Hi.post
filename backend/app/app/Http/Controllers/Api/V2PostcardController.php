@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Domain\Postcard\BackendCanon;
+use App\Domain\Postcard\PostcardPayloadSanitizer;
 use App\Http\Controllers\Controller;
 use App\Models\UserPostcard;
 use Illuminate\Http\JsonResponse;
@@ -10,8 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 /**
- * Phase 3–4: one Laravel row per postcard (IndexedDB canon).
- * Frozen `postcards` unused. Snapshot `/sync/postcards` is read-only.
+ * One Laravel row per postcard (IndexedDB canon).
  */
 class V2PostcardController extends Controller
 {
@@ -45,8 +45,8 @@ class V2PostcardController extends Controller
             'card' => ['required', 'array'],
         ]);
 
-        $payload = $this->sanitize($validated['card']);
-        $refs = $this->sanitize($validated['postcard'] ?? []);
+        $payload = PostcardPayloadSanitizer::sanitize($validated['card']);
+        $refs = PostcardPayloadSanitizer::sanitize($validated['postcard'] ?? []);
         $incomingUpdatedAt = (int) $validated['updatedAt'];
 
         $existing = UserPostcard::query()
@@ -97,31 +97,6 @@ class V2PostcardController extends Controller
     private function isValidClientId(string $id): bool
     {
         return $id !== '' && strlen($id) <= 64 && ! str_contains($id, '/');
-    }
-
-    /**
-     * @param  mixed  $value
-     * @return mixed
-     */
-    private function sanitize(mixed $value): mixed
-    {
-        if (is_array($value)) {
-            $out = [];
-            foreach ($value as $key => $item) {
-                if ($key === 'blob') {
-                    continue;
-                }
-                $out[$key] = $this->sanitize($item);
-            }
-
-            return $out;
-        }
-
-        if (is_string($value) && str_starts_with($value, 'blob:')) {
-            return '';
-        }
-
-        return $value;
     }
 
     /**

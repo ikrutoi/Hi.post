@@ -140,13 +140,17 @@ class V2PostcardTest extends TestCase
         ])->assertUnauthorized();
     }
 
-    public function test_snapshot_write_is_gone(): void
+    public function test_snapshot_routes_are_gone(): void
     {
         $token = $this->postJson('/api/register', [
             'name' => 'Ada',
             'email' => 'ada@hi.com',
             'password' => 'secret12',
         ])->assertCreated()->json('token');
+
+        $this->withToken($token)
+            ->getJson('/api/sync/postcards')
+            ->assertStatus(410);
 
         $this->withToken($token)
             ->putJson('/api/sync/postcards', [

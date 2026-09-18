@@ -5,7 +5,7 @@ namespace App\Domain\Postcard;
 /**
  * Phase 0 inventory: IndexedDB AppDB `postcards` (PostcardHydrated) is the
  * product shape. Legacy Laravel `postcards` / sender|recipient|text template
- * tables are dropped. Phase 6: v2 tables are the cloud copy; IDB is cache.
+ * tables are dropped. Snapshot table is imported into `user_postcards` then dropped.
  *
  * @see frontend/src/entities/postcard/domain/backendCanon.ts
  */
@@ -50,6 +50,7 @@ final class BackendCanon
         'sender_templates',
         'recipient_templates',
         'text_templates',
+        'user_postcard_snapshots',
     ];
 
     /** Still in the DB: system catalog only — do not add user writes. */
@@ -57,14 +58,13 @@ final class BackendCanon
         'image_templates',
     ];
 
-    /** Auth, v2 cloud copy, files, read-only snapshot, system catalog rows in image_templates. */
+    /** Auth, v2 cloud copy, files, system catalog rows in image_templates. */
     public const LIVE_TABLES = [
         'users',
         'personal_access_tokens',
         'user_files',
         'user_postcards',
         'user_library_items',
-        'user_postcard_snapshots',
         'image_templates',
     ];
 }
