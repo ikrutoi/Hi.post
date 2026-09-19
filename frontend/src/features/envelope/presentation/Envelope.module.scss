@@ -266,6 +266,20 @@
     @include envelope-toolbar-role-fill($color-envelope-recipient-input);
   }
 
+  /**
+   * Factory upper row: keep the solid tint on `.rowUpperBand` so 0.75rem
+   * top corners clip. This row is full-bleed and would otherwise paint square.
+   */
+  :global([data-mobile-factory-section-frame='true']) {
+    .envelopeToolbarRow,
+    .envelopeToolbarRowSender,
+    .envelopeToolbarRowRecipient,
+    .envelopeToolbarRowComplete {
+      background-color: transparent;
+      background-image: none;
+    }
+  }
+
   .envelopeToolbarSlotSender {
     flex: 0 0 auto;
     display: flex;

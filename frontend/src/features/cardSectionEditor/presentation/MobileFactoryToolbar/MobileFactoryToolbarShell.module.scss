@@ -443,7 +443,8 @@
     background-color: $color-envelope-recipient-input;
   }
 
-  .rowUpper:has(:global([class*='upperRowSender'])) .rowUpperBand {
+  .rowUpper:has(:global([class*='upperRowSender'])) .rowUpperBand,
+  .rowUpper:has(:global([class*='envelopeToolbarRowSender'])) .rowUpperBand {
     background-color: $color-envelope-sender-input;
   }
 }
