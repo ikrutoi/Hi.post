@@ -2772,3 +2772,8 @@
   transform-origin: center center;
   animation: toolbarBadgePulse 0.4s ease-in-out;
 }
+
+.toolbar .toolbarKey:has(.toolbarBadgePulse) {
+  overflow: visible;
+  z-index: 31;
+}

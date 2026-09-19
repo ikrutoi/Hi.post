@@ -24,6 +24,7 @@ import {
 } from '@date/calendar/infrastructure/state'
 import { dispatchCardPieToolbarIconState } from '@toolbar/application/syncCardPieToolbarIcons'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import { selectIsMobileLayout } from '@layout/infrastructure/selectors'
 
 export function useOpenCardphotoFactory() {
   const dispatch = useAppDispatch()
@@ -66,14 +67,16 @@ export function useOpenCardphotoFactory() {
         dispatch(setNotebookStripTab('date'))
       }
 
-      dispatch(setCardphotoListPanelOpen(false))
-      dispatch(
-        updateToolbarIcon({
-          section: 'cardphoto',
-          key: 'listCardphoto',
-          value: 'enabled',
-        }),
-      )
+      if (selectIsMobileLayout(state)) {
+        dispatch(setCardphotoListPanelOpen(false))
+        dispatch(
+          updateToolbarIcon({
+            section: 'cardphoto',
+            key: 'listCardphoto',
+            value: 'enabled',
+          }),
+        )
+      }
       dispatch(openCardphotoFromMiniStripRequested())
       dispatch(setActiveSection('cardphoto'))
     },

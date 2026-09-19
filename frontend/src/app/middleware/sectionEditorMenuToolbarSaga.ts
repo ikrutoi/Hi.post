@@ -2,8 +2,12 @@ import type { SagaIterator } from 'redux-saga'
 import { takeEvery, put, call, select } from 'redux-saga/effects'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { toolbarAction } from '@toolbar/application/helpers'
-import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
+import {
+  restoreEditorSession,
+  setActiveSection,
+} from '@entities/sectionEditorMenu/infrastructure/state'
 import { openCardphotoFromMiniStripRequested } from '@cardphoto/infrastructure/state'
+import { openDesktopEditorSectionTemplateListSaga } from '@features/cardSectionEditor/application/helpers/openEditorSectionTemplateList'
 import type { SectionEditorMenuKey } from '@toolbar/domain/types'
 import { selectCardPieCopyStripExpanded } from '@cart/infrastructure/selectors'
 import {
@@ -115,6 +119,8 @@ function* handleSectionEditorMenuActiveSectionChange(
     )
   }
 
+  yield call(openDesktopEditorSectionTemplateListSaga, activeKey)
+
   yield call(applySectionEditorMenuToolbarVisuals)
   yield call(syncRightSidebarHistoryHighlight, activeKey)
 }
@@ -131,6 +137,10 @@ export function* sectionEditorMenuSaga() {
   yield takeEvery(toolbarAction.type, handleSectionEditorMenuToolbarAction)
   yield takeEvery(
     setActiveSection.type,
+    handleSectionEditorMenuActiveSectionChange,
+  )
+  yield takeEvery(
+    restoreEditorSession.type,
     handleSectionEditorMenuActiveSectionChange,
   )
   yield takeEvery(

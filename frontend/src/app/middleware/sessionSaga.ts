@@ -168,6 +168,7 @@ import {
 } from '@cardphoto/application/helpers'
 import { syncCardphotoToolbarUiFlagsAfterSessionHydrate } from '@cardphoto/application/helpers/syncCardphotoToolbarUiFlagsAfterSessionHydrate'
 import { refreshRightSidebarBadgesFromPostcards } from './postcardCreateSaga'
+import { openDesktopEditorSectionTemplateListSaga } from '@features/cardSectionEditor/application/helpers/openEditorSectionTemplateList'
 
 export function* persistGlobalSession() {
   const cardphoto: CardphotoSessionRecord | null = yield select(
@@ -979,7 +980,6 @@ export function* hydrateAppSession() {
     yield call(exitEnvelopeCreateViewsAfterSessionRestore)
     yield call(syncEnvelopeStatus)
 
-    // При перезагрузке панели списков (Получатель / Отправитель) всегда скрыты
     yield put(closeAddressList())
 
     // Restore aroma and date after reload (so mini sections + CardPie update).
@@ -1038,6 +1038,13 @@ export function* hydrateAppSession() {
      * Hydrate otherwise restores leftover original as create chrome.
      */
     yield call(openCardphotoFromMiniStripSaga)
+    const sectionAfterHydrate: SectionEditorMenuKey | null = yield select(
+      selectActiveSection,
+    )
+    yield call(
+      openDesktopEditorSectionTemplateListSaga,
+      sectionAfterHydrate,
+    )
   }
 }
 

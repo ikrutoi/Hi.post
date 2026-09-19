@@ -760,7 +760,7 @@
   flex-direction: column;
   border: none;
   background-color: transparent;
-  overflow: hidden;
+  overflow: visible;
 
   &::before {
     content: '';

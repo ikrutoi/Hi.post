@@ -35,7 +35,9 @@
   background-color: transparent;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  /* clip X so full-bleed fill stays inset; visible Y so list badges can pulse above the row. */
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 .rowUpper,
@@ -59,7 +61,8 @@
 }
 
 .rowUpper {
-  overflow: hidden;
+  overflow-x: clip;
+  overflow-y: visible;
   z-index: 2;
   border-radius: 0.75rem 0.75rem 0 0;
 
