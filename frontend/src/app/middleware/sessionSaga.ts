@@ -166,7 +166,10 @@ import {
   openCardphotoFromMiniStripSaga,
   shouldSyncUserOriginalOnRebuild,
 } from '@cardphoto/application/helpers'
-import { syncCardphotoToolbarUiFlagsAfterSessionHydrate } from '@cardphoto/application/helpers/syncCardphotoToolbarUiFlagsAfterSessionHydrate'
+import {
+  loadCardphotoImageMetaFromIdb,
+  reviveImageMeta,
+} from '@cardphoto/application/helpers/loadCardphotoImageMetaFromIdb'
 import { refreshRightSidebarBadgesFromPostcards } from './postcardCreateSaga'
 import { openDesktopEditorSectionTemplateListSaga } from '@features/cardSectionEditor/application/helpers/openEditorSectionTemplateList'
 
@@ -709,14 +712,16 @@ export function* hydrateAppSession() {
         call([storeAdapters.stockImages, 'getById'], 'current_stock_image'),
         call([storeAdapters.userImages, 'getById'], CURRENT_EDITOR_IMAGE_ID),
         resolvedActiveMetaId
-          ? call([storeAdapters.cardphotoImages, 'getById'], resolvedActiveMetaId)
+          ? call(loadCardphotoImageMetaFromIdb, resolvedActiveMetaId)
           : null,
         call([storeAdapters.applyImage, 'getById'], 'current_apply_image'),
       ])
 
       const stockImageMeta = stockRec?.image ?? null
       const userImageMeta = userRec?.image ?? null
-      const applyImageMeta = applyRec?.image ?? null
+      const applyImageMeta: ImageMeta | null = applyRec?.image
+        ? yield call(reviveImageMeta, applyRec.image)
+        : null
 
       const idbById: IdbImageMetaSources = {
         cropOrProcessed: rawProcess,
@@ -726,17 +731,25 @@ export function* hydrateAppSession() {
       }
 
       const stockMeta = hydrateMeta(stockImageMeta)
-      const assetIdb = findIdbImageMetaById(assetData?.id, idbById)
-      const assetResolved =
-        assetIdb != null
-          ? hydrateMeta(assetIdb)
-          : hydrateSessionImageMeta(assetData, rawProcess)
+      let assetResolved: ImageMeta | null = null
+      if (assetData?.id && rawProcess?.id === assetData.id) {
+        assetResolved = rawProcess
+      } else if (assetData?.id) {
+        assetResolved = yield call(loadCardphotoImageMetaFromIdb, assetData.id)
+      }
+      if (!assetResolved) {
+        assetResolved = hydrateSessionImageMeta(assetData, rawProcess)
+      }
 
-      const appliedIdb = findIdbImageMetaById(applied?.id, idbById)
-      const appliedResolved =
-        appliedIdb != null
-          ? hydrateMeta(appliedIdb)
-          : hydrateSessionImageMeta(applied, applyImageMeta)
+      let appliedResolved: ImageMeta | null = null
+      if (applied?.id && rawProcess?.id === applied.id) {
+        appliedResolved = rawProcess
+      } else if (applied?.id) {
+        appliedResolved = yield call(loadCardphotoImageMetaFromIdb, applied.id)
+      }
+      if (!appliedResolved) {
+        appliedResolved = hydrateSessionImageMeta(applied, applyImageMeta)
+      }
 
       const appliedSameAsProcessedAsset =
         !!applied?.id &&
@@ -756,7 +769,7 @@ export function* hydrateAppSession() {
           : hydrateSessionImageMeta(userOriginalData, userImageMeta)
         : null
 
-      const processedMeta = hydrateMeta(rawProcess)
+      const processedMeta = rawProcess
 
       const activeImage =
         assetResolved ??

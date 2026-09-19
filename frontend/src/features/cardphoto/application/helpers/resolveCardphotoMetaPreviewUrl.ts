@@ -7,12 +7,12 @@ export function resolveCardphotoMetaPreviewUrl(
 ): string | null {
   if (!meta) return null
   const hydrated = hydrateMeta(meta)
-  const source = hydrated ?? meta
-  const thumb = source.thumbnail?.url?.trim()
+  if (!hydrated) return null
+  const thumb = hydrated.thumbnail?.url?.trim()
   if (thumb) return thumb
-  const url = source.url?.trim()
+  const url = hydrated.url?.trim()
   if (url) return url
-  const full = source.full?.url?.trim()
+  const full = hydrated.full?.url?.trim()
   if (full) return full
   return null
 }

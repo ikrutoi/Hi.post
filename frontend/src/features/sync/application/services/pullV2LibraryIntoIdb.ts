@@ -12,10 +12,31 @@ import type { AddressTemplateItem } from '@entities/envelope/domain/types'
 import type { CardtextContent } from '@cardtext/domain/types'
 import type { ImageMeta } from '@cardphoto/domain/types'
 
+async function pullKind<T extends { id: string }>(
+  kind: V2LibraryKind,
+  localRows: T[],
+  putLocal: (row: T) => Promise<void>,
+  asLocal: (item: V2LibraryItem) => T | null,
+  timeOf: (row: T) => number,
+  mergePair?: (local: T, remote: T) => T,
+): Promise<void> {
+  const remote = (await fetchV2Library(kind))
+    .map(asLocal)
+    .filter((row): row is T => row != null)
+  const { nextLocal, push } = mergeLibrary(localRows, remote, timeOf, mergePair)
+  for (const row of nextLocal) {
+    await putLocal(row)
+  }
+  for (const row of push) {
+    enqueueLibraryUpsert(kind, row as unknown as V2LibraryItem)
+  }
+}
+
 function mergeLibrary<T extends { id: string }>(
   localRows: T[],
   remoteRows: T[],
   timeOf: (row: T) => number,
+  mergePair?: (local: T, remote: T) => T,
 ): { nextLocal: T[]; push: T[] } {
   const localById = new Map(localRows.map((row) => [row.id, row]))
   const remoteById = new Map(remoteRows.map((row) => [row.id, row]))
@@ -36,11 +57,12 @@ function mergeLibrary<T extends { id: string }>(
       continue
     }
     if (local && remote) {
+      const coalesced = mergePair ? mergePair(local, remote) : null
       if (timeOf(local) > timeOf(remote)) {
-        nextLocal.push(local)
-        push.push(local)
+        nextLocal.push(coalesced ?? local)
+        push.push(coalesced ?? local)
       } else {
-        nextLocal.push(remote)
+        nextLocal.push(coalesced ?? remote)
       }
     }
   }
@@ -48,22 +70,45 @@ function mergeLibrary<T extends { id: string }>(
   return { nextLocal, push }
 }
 
-async function pullKind<T extends { id: string }>(
-  kind: V2LibraryKind,
-  localRows: T[],
-  putLocal: (row: T) => Promise<void>,
-  asLocal: (item: V2LibraryItem) => T | null,
-  timeOf: (row: T) => number,
-): Promise<void> {
-  const remote = (await fetchV2Library(kind))
-    .map(asLocal)
-    .filter((row): row is T => row != null)
-  const { nextLocal, push } = mergeLibrary(localRows, remote, timeOf)
-  for (const row of nextLocal) {
-    await putLocal(row)
-  }
-  for (const row of push) {
-    enqueueLibraryUpsert(kind, row as unknown as V2LibraryItem)
+function coalesceCardphotoPair(
+  local: ImageMeta & { id: string },
+  remote: ImageMeta & { id: string },
+): ImageMeta & { id: string } {
+  const localWins = Number(local.timestamp ?? 0) > Number(remote.timestamp ?? 0)
+  const winner = localWins ? local : remote
+  const other = localWins ? remote : local
+  const winnerHasBlob = winner.full?.blob instanceof Blob
+  const otherHasBlob = other.full?.blob instanceof Blob
+  const full = winnerHasBlob
+    ? winner.full
+    : otherHasBlob
+      ? {
+          ...winner.full,
+          blob: other.full.blob,
+          url: winner.full?.url || other.full.url,
+          width: winner.full?.width || other.full.width,
+          height: winner.full?.height || other.full.height,
+        }
+      : winner.full
+  const winnerThumbBlob = winner.thumbnail?.blob instanceof Blob
+  const otherThumbBlob = other.thumbnail?.blob instanceof Blob
+  const thumbnail = winnerThumbBlob
+    ? winner.thumbnail
+    : otherThumbBlob && other.thumbnail
+      ? {
+          ...other.thumbnail,
+          ...winner.thumbnail,
+          blob: other.thumbnail.blob,
+          url: winner.thumbnail?.url || other.thumbnail.url,
+        }
+      : winner.thumbnail
+  return {
+    ...winner,
+    id: winner.id,
+    url: winner.url || other.url,
+    full,
+    thumbnail,
+    remoteFileId: winner.remoteFileId || other.remoteFileId,
   }
 }
 
@@ -126,5 +171,6 @@ export async function pullV2LibraryIntoIdb(): Promise<void> {
     (row) => storeAdapters.cardphotoImages.putLocal(row),
     asCardphoto,
     (row) => Number(row.timestamp ?? 0),
+    coalesceCardphotoPair,
   )
 }

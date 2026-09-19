@@ -66,34 +66,26 @@
   z-index: 2;
   border-radius: 0.75rem 0.75rem 0 0;
 
-  &::before {
-    content: '';
-    position: absolute;
-    z-index: 0;
-    top: 0;
-    bottom: 0;
-    left: calc(
-      -1 *
-        var(
-          --mobile-factory-toolbar-inset-inline,
-          #{iconButton.$toolbar-factory-row-inset-inline}
-        )
-    );
-    right: calc(
-      -1 *
-        var(
-          --mobile-factory-toolbar-inset-inline,
-          #{iconButton.$toolbar-factory-row-inset-inline}
-        )
-    );
-    pointer-events: none;
-    background-color: transparent;
-  }
-
-  > * {
+  > *:not(.rowUpperBand) {
     position: relative;
     z-index: 1;
   }
+}
+
+.rowUpperBand {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  flex: none !important;
+  align-self: auto !important;
+  width: auto !important;
+  min-width: 0;
+  min-height: 0;
+  display: block !important;
+  border-radius: 0.75rem 0.75rem 0 0;
+  overflow: hidden;
+  background-color: transparent;
 }
 
 .rowUpper,
@@ -128,6 +120,10 @@
 
 .shell:not(:has(.rowLower > *)) {
   .rowUpper {
+    border-radius: 0.75rem;
+  }
+
+  .rowUpperBand {
     border-radius: 0.75rem;
   }
 }
@@ -279,7 +275,12 @@
 
 .rowUpper {
   :global([class*='upperRow']) {
-    @include mobile-factory-toolbar-row-full-bleed;
+    width: 100%;
+    margin-inline: 0;
+    border-radius: inherit;
+    background-color: transparent;
+    background-image: none;
+    overflow: visible;
   }
 
   :global([class*='toolbarCardphoto']) :global([class*='toolbarKey']),
@@ -412,68 +413,68 @@
 
 /** Section upper band: full slot width; row padding keeps icon edge insets. */
 :global([data-mobile-factory-section-frame='true'][data-mobile-section-surface='cardphoto']) {
-  .rowUpper:has(:global([class*='cardSectionToolbar']))::before,
-  .rowUpper:has(:global([class*='upperRowCardphoto']))::before,
-  .rowUpper:has(:global([class*='upperRow']))::before {
+  .rowUpper:has(:global([class*='cardSectionToolbar'])) .rowUpperBand,
+  .rowUpper:has(:global([class*='upperRowCardphoto'])) .rowUpperBand,
+  .rowUpper:has(:global([class*='upperRow'])) .rowUpperBand {
     background-color: $color-cardphoto-input;
   }
 }
 
 :global([data-mobile-factory-section-frame='true'][data-mobile-section-surface='cardtext']) {
-  .rowUpper:has(:global([class*='cardSectionToolbar']))::before,
-  .rowUpper:has(:global([class*='upperRowCardtext']))::before,
-  .rowUpper:has(:global([class*='upperRow']))::before {
+  .rowUpper:has(:global([class*='cardSectionToolbar'])) .rowUpperBand,
+  .rowUpper:has(:global([class*='upperRowCardtext'])) .rowUpperBand,
+  .rowUpper:has(:global([class*='upperRow'])) .rowUpperBand {
     background-color: $color-cardtext-input;
   }
 }
 
 :global([data-mobile-factory-section-frame='true'][data-mobile-section-surface='aroma']) {
-  .rowUpper:has(:global([class*='cardSectionToolbar']))::before,
-  .rowUpper:has(:global([class*='upperRowAroma']))::before {
+  .rowUpper:has(:global([class*='cardSectionToolbar'])) .rowUpperBand,
+  .rowUpper:has(:global([class*='upperRowAroma'])) .rowUpperBand {
     background-color: $color-aroma-input;
   }
 }
 
 :global([data-mobile-factory-section-frame='true'][data-mobile-section-surface='envelope']) {
-  .rowUpper:has(:global([class*='cardSectionToolbar']))::before,
-  .rowUpper:has(:global([class*='upperRowEnvelope']))::before,
-  .rowUpper:has(:global([class*='upperRowRecipient']))::before,
-  .rowUpper:has(:global([class*='envelopeToolbarRow']))::before {
+  .rowUpper:has(:global([class*='cardSectionToolbar'])) .rowUpperBand,
+  .rowUpper:has(:global([class*='upperRowEnvelope'])) .rowUpperBand,
+  .rowUpper:has(:global([class*='upperRowRecipient'])) .rowUpperBand,
+  .rowUpper:has(:global([class*='envelopeToolbarRow'])) .rowUpperBand {
     background-color: $color-envelope-recipient-input;
   }
 
-  .rowUpper:has(:global([class*='upperRowSender']))::before {
+  .rowUpper:has(:global([class*='upperRowSender'])) .rowUpperBand {
     background-color: $color-envelope-sender-input;
   }
 }
 
 :global([data-mobile-factory-section-frame='true'][data-mobile-section-surface='envelope-sender']) {
-  .rowUpper:has(:global([class*='upperRowSender']))::before,
-  .rowUpper:has(:global([class*='cardSectionToolbar']))::before {
+  .rowUpper:has(:global([class*='upperRowSender'])) .rowUpperBand,
+  .rowUpper:has(:global([class*='cardSectionToolbar'])) .rowUpperBand {
     background-color: $color-envelope-sender-input;
   }
 }
 
 :global([data-mobile-factory-section-frame='true'][data-mobile-section-surface='date']) {
-  .rowUpper:has(:global([data-mobile-factory-date-nav='true']))::before,
-  .rowUpper:has(:global([class*='cardSectionToolbar']))::before,
-  .rowUpper:has(:global([class*='upperRowDate']))::before {
+  .rowUpper:has(:global([data-mobile-factory-date-nav='true'])) .rowUpperBand,
+  .rowUpper:has(:global([class*='cardSectionToolbar'])) .rowUpperBand,
+  .rowUpper:has(:global([class*='upperRowDate'])) .rowUpperBand {
     background-color: $color-date-input;
   }
 }
 
 :global([data-mobile-factory-section-frame='true'][data-mobile-section-surface='date-cart']) {
-  .rowUpper:has(:global([data-mobile-factory-date-nav='true']))::before,
-  .rowUpper:has(:global([class*='cardSectionToolbar']))::before,
-  .rowUpper:has(:global([class*='upperRow']))::before {
+  .rowUpper:has(:global([data-mobile-factory-date-nav='true'])) .rowUpperBand,
+  .rowUpper:has(:global([class*='cardSectionToolbar'])) .rowUpperBand,
+  .rowUpper:has(:global([class*='upperRow'])) .rowUpperBand {
     background-color: notebookTab.$mobile-notebook-cart-toolbar-fade;
   }
 }
 
 :global([data-mobile-factory-section-frame='true'][data-mobile-section-surface='date-history']) {
-  .rowUpper:has(:global([data-mobile-factory-date-nav='true']))::before,
-  .rowUpper:has(:global([class*='cardSectionToolbar']))::before,
-  .rowUpper:has(:global([class*='upperRow']))::before {
+  .rowUpper:has(:global([data-mobile-factory-date-nav='true'])) .rowUpperBand,
+  .rowUpper:has(:global([class*='cardSectionToolbar'])) .rowUpperBand,
+  .rowUpper:has(:global([class*='upperRow'])) .rowUpperBand {
     background-color: transparent;
     background-image: linear-gradient(
       90deg,
@@ -508,7 +509,7 @@
   align-items: stretch;
   background-color: transparent;
   border: none;
-  border-radius: 0;
+  border-radius: inherit;
 
   > :global([class*='toolbar']),
   :global([class*='cardSectionToolbarHeader']),

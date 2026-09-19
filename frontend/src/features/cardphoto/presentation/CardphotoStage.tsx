@@ -7,7 +7,11 @@ import {
   initCardphoto,
   commitWorkingConfig,
   setCardphotoImageStageRect,
+  setAssetData,
 } from '../infrastructure/state'
+import { setAsset } from '@/entities/assetRegistry/infrastructure/state'
+import { loadCardphotoImageMetaFromIdb } from '@cardphoto/application/helpers/loadCardphotoImageMetaFromIdb'
+import { pickCardphotoDisplaySrc } from '@cardphoto/application/helpers/imageMetaLiveUrl'
 import {
   selectActiveImage,
   selectCardphotoAssetConfig,
@@ -19,6 +23,8 @@ import { useSizeFacade } from '@layout/application/facades'
 import { useToolbarFacade } from '@toolbar/application/facades'
 import { useCropState } from '../application/hooks'
 import styles from './CardphotoStage.module.scss'
+import viewStyles from './CardphotoView/CardphotoView.module.scss'
+import { IconSectionMenuCardphoto } from '@shared/ui/icons'
 import { useAssetRegistryFacade } from '@entities/assetRegistry/application/facade/assetRegistryFacade'
 import {
   prepareForRedux,
@@ -52,6 +58,7 @@ export const CardphotoStage = () => {
   const { sizeCard } = useSizeFacade()
 
   const [loadedSrc, setLoadedSrc] = useState<string | null>(null)
+  const [srcFailed, setSrcFailed] = useState(false)
   const [stagePx, setStagePx] = useState<{ width: number; height: number } | null>(
     null,
   )
@@ -105,13 +112,42 @@ export const CardphotoStage = () => {
   }, [])
 
   const asset = getAssetById(activeImage?.id ?? null)
-  const src = asset?.url || activeImage?.url || null
-  const imageReady = !!src && loadedSrc === src
+  const src = pickCardphotoDisplaySrc(activeImage, asset?.url)
+  const imageReady = !!src && loadedSrc === src && !srcFailed
 
   const alt = activeImage?.id
   const imageLayer = assetConfig?.image ?? null
 
-  const shouldShowImage = !!src && !!activeImage
+  const shouldShowImage = !!src && !!activeImage && !srcFailed
+
+  useEffect(() => {
+    setSrcFailed(false)
+    setLoadedSrc(null)
+  }, [src])
+
+  useEffect(() => {
+    const id = activeImage?.id
+    if (!id) return
+    if (src && !srcFailed) return
+
+    let cancelled = false
+    void (async () => {
+      const live = await loadCardphotoImageMetaFromIdb(id)
+      if (cancelled || !live) return
+      dispatch(setAssetData(prepareForRedux(live)))
+      dispatch(
+        setAsset({
+          id: live.id,
+          url: live.url,
+          thumbUrl: live.thumbnail?.url || live.url,
+        }),
+      )
+      setSrcFailed(false)
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [activeImage?.id, dispatch, src, srcFailed])
 
   const renderedImageBox = useMemo(() => {
     if (!imageLayer) return null
@@ -148,6 +184,7 @@ export const CardphotoStage = () => {
   }
 
   const showCropUi = !!activeImage && !!imageLayer
+  const showStagePlaceholder = !!activeImage && !shouldShowImage
 
   return (
     <div className={styles.cardphotoStage}>
@@ -165,18 +202,23 @@ export const CardphotoStage = () => {
                   key={src}
                   src={src}
                   alt={alt}
-                  onLoad={(e) => {
-                    if (e.currentTarget.src === src) setLoadedSrc(src)
+                  onLoad={() => {
+                    setLoadedSrc(src)
                   }}
-                  className={clsx(
-                    styles.cropImage,
-                    imageReady ? styles.fadeInVisible : styles.fadeIn,
-                  )}
+                  onError={() => {
+                    setSrcFailed(true)
+                  }}
+                  className={clsx(styles.cropImage, styles.fadeInVisible)}
                   style={imageStyle}
                 />
               </>
             )}
           </div>
+          {showStagePlaceholder ? (
+            <div className={viewStyles.emptyPlaceholderIcon} aria-hidden>
+              <IconSectionMenuCardphoto />
+            </div>
+          ) : null}
           {imageReady &&
             imageLayer &&
             cropToolbarState === 'active' &&
@@ -212,6 +254,10 @@ export const CardphotoStage = () => {
                   />
               </>
             )}
+        </div>
+      ) : showStagePlaceholder ? (
+        <div className={viewStyles.emptyPlaceholderIcon} aria-hidden>
+          <IconSectionMenuCardphoto />
         </div>
       ) : null}
     </div>

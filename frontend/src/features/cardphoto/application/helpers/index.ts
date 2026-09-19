@@ -19,6 +19,7 @@ export * from './resolveCardphotoMetaPreviewUrl'
 export * from './resolveCardphotoAddToolbarState'
 export * from './readCardphotoAddToolbarVisual'
 export * from './isCardphotoAssetFromUserOriginalWorkflow'
+export * from './imageMetaLiveUrl'
 export { loadUserOriginalImageMetaSaga } from './loadUserOriginalImageMeta'
 export {
   persistUserOriginalEditorDraftSaga,

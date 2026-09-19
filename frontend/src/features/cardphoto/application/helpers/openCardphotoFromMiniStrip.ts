@@ -13,8 +13,12 @@ import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
 import type { CardphotoState, ImageMeta, ImageRecord } from '@cardphoto/domain/types'
 import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
 import {
+  loadCardphotoImageMetaFromIdb,
+  reviveImageMeta,
+} from '@cardphoto/application/helpers/loadCardphotoImageMetaFromIdb'
+import { imageMetaHasLiveDisplayUrl } from '@cardphoto/application/helpers/imageMetaLiveUrl'
+import {
   fuelAssetRegistry,
-  hydrateMeta,
   hydrateSessionImageMeta,
   prepareForRedux,
 } from '@app/middleware/cardphotoHelpers'
@@ -24,27 +28,24 @@ import { syncToolbarContext } from '@app/middleware/cardphotoToolbarSaga'
 function* loadAppliedMetaForEditor(
   appliedData: ImageMeta,
 ): SagaIterator<ImageMeta | null> {
-  const id = appliedData.id
-  let fromIdb: ImageMeta | null = yield call(
-    [storeAdapters.cardphotoImages, 'getById'] as const,
-    id,
+  const fromIdb: ImageMeta | null = yield call(
+    loadCardphotoImageMetaFromIdb,
+    appliedData.id,
   )
+  if (fromIdb) return fromIdb
 
-  if (!fromIdb) {
-    const applyRec: ImageRecord | null = yield call(
-      [storeAdapters.applyImage, 'getById'] as const,
-      'current_apply_image',
+  const applyRec: ImageRecord | null = yield call(
+    [storeAdapters.applyImage, 'getById'] as const,
+    'current_apply_image',
+  )
+  if (applyRec?.image?.id === appliedData.id) {
+    return (
+      (yield call(reviveImageMeta, applyRec.image)) ??
+      hydrateSessionImageMeta(appliedData, applyRec.image)
     )
-    if (applyRec?.image?.id === id) {
-      fromIdb = applyRec.image
-    }
   }
 
-  return (
-    hydrateSessionImageMeta(appliedData, fromIdb) ??
-    hydrateMeta(fromIdb) ??
-    hydrateMeta(appliedData)
-  )
+  return hydrateSessionImageMeta(appliedData, null)
 }
 
 function* startCardphotoViewWithoutApply(
@@ -79,7 +80,12 @@ export function* openCardphotoFromMiniStripSaga(): SagaIterator {
   }
 
   const assetData = cardphotoState?.assetData
-  if (assetData?.id === appliedData.id) return
+  if (
+    assetData?.id === appliedData.id &&
+    imageMetaHasLiveDisplayUrl(assetData)
+  ) {
+    return
+  }
 
   const appliedMeta: ImageMeta | null = yield call(
     loadAppliedMetaForEditor,

@@ -7,7 +7,7 @@ import React, {
 import { IconListCardphoto } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { storeAdapters } from '@db/adapters/storeAdapters'
-import { hydrateMeta } from '@app/middleware/cardphotoHelpers'
+import { fillImageMetaThumbFromRemote } from '@features/files/application/pushImageMetaToRemoteFiles'
 import { collectReferencedBlobUrls } from '@app/middleware/blobUrlRevokeGuards'
 import { store } from '@app/state/store'
 import type { RootState } from '@app/state'
@@ -42,25 +42,34 @@ type Row = {
   timestamp: number
 }
 
+function isHttpUrl(u: string | null | undefined): boolean {
+  return typeof u === 'string' && /^https?:\/\//i.test(u.trim())
+}
+
 function buildThumbSrc(meta: ImageMeta): { src: string; revoke: boolean } {
-  const hydrated = hydrateMeta(meta)
-  if (!hydrated) return { src: '', revoke: false }
-  if (hydrated.thumbnail?.url) {
-    const url = hydrated.thumbnail.url
-    return {
-      src: url,
-      revoke: url.startsWith('blob:'),
-    }
+  if (meta.thumbnail?.blob instanceof Blob) {
+    const src = URL.createObjectURL(meta.thumbnail.blob)
+    return { src, revoke: true }
   }
-  if (hydrated.url) {
-    const url = hydrated.url
-    return { src: url, revoke: url.startsWith('blob:') }
+  if (meta.full?.blob instanceof Blob) {
+    const src = URL.createObjectURL(meta.full.blob)
+    return { src, revoke: true }
   }
-  if (hydrated.full?.url) {
-    const url = hydrated.full.url
-    return { src: url, revoke: url.startsWith('blob:') }
-  }
+  const url = (
+    meta.thumbnail?.url ||
+    meta.url ||
+    meta.full?.url ||
+    ''
+  ).trim()
+  if (isHttpUrl(url)) return { src: url, revoke: false }
   return { src: '', revoke: false }
+}
+
+async function resolveListThumbMeta(meta: ImageMeta): Promise<ImageMeta> {
+  const ready = buildThumbSrc(meta)
+  if (ready.src) return meta
+  const filled = await fillImageMetaThumbFromRemote(meta)
+  return filled ?? meta
 }
 
 function revokeUnreferencedListObjectUrls(urls: string[]) {
@@ -142,23 +151,34 @@ export const CardphotoListPanel: React.FC<Props> = ({
       const created: string[] = []
 
       for (const meta of inline) {
-        const { src, revoke } = buildThumbSrc(meta)
-        if (!src) continue
-        if (revoke) created.push(src)
-        nextRows.push({
-          id: meta.id,
-          src,
-          title: meta.title?.trim() || undefined,
-          timestamp: meta.timestamp ?? 0,
-        })
+        if (cancelled) return
+        try {
+          const live = await resolveListThumbMeta(meta)
+          const { src, revoke } = buildThumbSrc(live)
+          if (!src) continue
+          if (revoke) created.push(src)
+          nextRows.push({
+            id: meta.id,
+            src,
+            title: meta.title?.trim() || live.title?.trim() || undefined,
+            timestamp: meta.timestamp ?? live.timestamp ?? 0,
+          })
+          if (!cancelled) {
+            setRows([...nextRows])
+            objectUrlsRef.current = [...created]
+          }
+        } catch (e) {
+          console.error('CardphotoListPanel: skip template', meta.id, e)
+        }
       }
 
       if (cancelled) {
-        created.forEach((u) => revokeUnreferencedListObjectUrls([u]))
         return
       }
 
-      const prevRevoke = objectUrlsRef.current
+      const prevRevoke = objectUrlsRef.current.filter(
+        (u) => !created.includes(u),
+      )
       objectUrlsRef.current = created
       setRows(nextRows)
       revokeUnreferencedListObjectUrls(prevRevoke)

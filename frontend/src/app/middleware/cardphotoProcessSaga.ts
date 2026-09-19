@@ -57,6 +57,7 @@ import {
   validateImageSize,
   shouldSyncUserOriginalForState,
   persistUserOriginalRotationToIdbSaga,
+  imageMetaCanBecomeLive,
 } from '@cardphoto/application/helpers'
 import { openCardphotoFromMiniStripSaga } from '@cardphoto/application/helpers/openCardphotoFromMiniStrip'
 import { isCardphotoFilePickerRegistered } from '@cardphoto/application/helpers/cardphotoFilePickerBridge'
@@ -422,7 +423,9 @@ function* watchCardphotoImageStageRect(): SagaIterator {
 function* refreshCardphotoListCardphotoBadge(): SagaIterator {
   try {
     const all: ImageMeta[] = yield call(storeAdapters.cardphotoImages.getAll)
-    const n = all.filter((x) => x.status === 'inLine').length
+    const n = all.filter(
+      (x) => x.status === 'inLine' && imageMetaCanBecomeLive(x),
+    ).length
     yield put(
       updateToolbarIcon({
         section: 'cardphoto',

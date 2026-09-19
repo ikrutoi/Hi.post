@@ -133,6 +133,7 @@ export const MobileFactoryToolbarShell: React.FC = () => {
     >
       {showUpperRow ? (
         <div className={styles.rowUpper}>
+          <div className={styles.rowUpperBand} aria-hidden />
           <FactoryUpperToolbar includeDateCalendarNav />
         </div>
       ) : null}

@@ -64,3 +64,29 @@ export async function fillImageMetaBlobsFromRemote(
     },
   }
 }
+
+/** List thumbs: download only the small variant, not the full original. */
+export async function fillImageMetaThumbFromRemote(
+  meta: ImageMeta,
+): Promise<ImageMeta | null> {
+  const repo = getFileRepository()
+  if (!repo || !meta.remoteFileId) return null
+  if (meta.thumbnail?.blob instanceof Blob) return meta
+
+  let thumb: Blob
+  try {
+    thumb = await repo.downloadVariant(meta.remoteFileId, 'thumb')
+  } catch {
+    thumb = await repo.downloadVariant(meta.remoteFileId, 'original')
+  }
+  const thumbUrl = URL.createObjectURL(thumb)
+  return {
+    ...meta,
+    thumbnail: {
+      blob: thumb,
+      url: thumbUrl,
+      width: meta.thumbnail?.width || meta.width,
+      height: meta.thumbnail?.height || meta.height,
+    },
+  }
+}

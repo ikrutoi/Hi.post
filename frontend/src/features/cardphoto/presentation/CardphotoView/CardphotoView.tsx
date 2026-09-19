@@ -1,10 +1,13 @@
 import React from 'react'
 import clsx from 'clsx'
 import { useAppSelector } from '@app/hooks'
-import { selectActiveImage } from '@cardphoto/infrastructure/selectors'
+import {
+  selectActiveImage,
+  selectCardphotoAssetDisplayPreviewUrl,
+} from '@cardphoto/infrastructure/selectors'
 import styles from './CardphotoView.module.scss'
-import { IconSectionMenuCardphoto } from '@shared/ui/icons'
 import { CardphotoStage } from '../CardphotoStage'
+import { IconSectionMenuCardphoto } from '@shared/ui/icons'
 
 type Props = {
   className?: string
@@ -16,7 +19,8 @@ export const CardphotoView: React.FC<Props> = ({
   titleStripEditing,
 }) => {
   const activeImage = useAppSelector(selectActiveImage)
-  const showEmptyPlaceholder = !activeImage
+  const previewUrl = useAppSelector(selectCardphotoAssetDisplayPreviewUrl)
+  const showEmptyPlaceholder = !activeImage || !previewUrl
 
   return (
     <div

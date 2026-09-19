@@ -1,4 +1,4 @@
-import { all, call, put, select } from 'redux-saga/effects'
+import { call, put, select } from 'redux-saga/effects'
 import type { SagaIterator } from 'redux-saga'
 import { storeAdapters } from '@db/adapters/storeAdapters'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
@@ -16,6 +16,7 @@ import { getRandomStockMeta } from '@cardphoto/application/helpers/getRandomStoc
 import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
 import { ImageAsset } from '@/entities/assetRegistry/domain/types'
 import { setAssets } from '@/entities/assetRegistry/infrastructure/state'
+import { fillImageMetaBlobsFromRemote } from '@features/files/application/pushImageMetaToRemoteFiles'
 
 interface UpdateCropOptions {
   isFull?: boolean
@@ -204,7 +205,7 @@ export const hydrateSessionImageMeta = (
   fromIdb: ImageMeta | null | undefined,
 ): ImageMeta | null => {
   if (fromIdb && persisted?.id && fromIdb.id === persisted.id) {
-    return hydrateMeta(fromIdb)
+    return hydrateMeta(fromIdb) ?? hydrateMeta(persisted)
   }
   return hydrateMeta(persisted ?? null) ?? hydrateMeta(fromIdb ?? null)
 }
@@ -240,24 +241,29 @@ export function* resolveCardphotoPreviewUrlByMetaId(
   }
   if (!imageMetaId) return null
 
-  const [cropOrProcessed, applyRec, allCrops]: [
-    ImageMeta | null,
-    { image: ImageMeta } | null,
-    ImageMeta[],
-  ] = yield all([
-    call([storeAdapters.cardphotoImages, 'getById'], imageMetaId),
-    call([storeAdapters.applyImage, 'getById'], 'current_apply_image'),
-    call([storeAdapters.cardphotoImages, 'getAll']),
-  ])
-
-  const fromList = allCrops.find((m) => m.id === imageMetaId) ?? null
-  const sources: IdbImageMetaSources = {
-    cropOrProcessed: cropOrProcessed ?? fromList,
-    apply: applyRec?.image ?? null,
-    user: null,
-    stock: null,
+  const fromIdb: ImageMeta | null = yield call(
+    [storeAdapters.cardphotoImages, 'getById'],
+    imageMetaId,
+  )
+  let withBytes = fromIdb
+  if (fromIdb) {
+    try {
+      const filled: ImageMeta | null = yield call(
+        fillImageMetaBlobsFromRemote,
+        fromIdb,
+      )
+      if (filled) withBytes = filled
+    } catch {
+      withBytes = fromIdb
+    }
   }
-  const rawMeta = findIdbImageMetaById(imageMetaId, sources) ?? fromList
+
+  const applyRec: { image: ImageMeta } | null = withBytes
+    ? null
+    : yield call([storeAdapters.applyImage, 'getById'], 'current_apply_image')
+  const rawMeta =
+    withBytes ??
+    (applyRec?.image?.id === imageMetaId ? applyRec.image : null)
   const hydrated = hydrateMeta(rawMeta)
   if (!hydrated) return null
 

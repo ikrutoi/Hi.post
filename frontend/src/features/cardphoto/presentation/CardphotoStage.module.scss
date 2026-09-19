@@ -34,7 +34,10 @@
 }
 
 .cropContainer {
-  position: relative;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   user-select: none;
   overflow: hidden;
   flex-shrink: 0;
@@ -55,10 +58,9 @@
 
 .cropImage {
   display: block;
-  opacity: 0;
+  opacity: 1;
   transition: opacity 0.2s ease;
   object-fit: fill;
-  // will-change: transform — у compositor layer иногда остаётся 1px зазор у края.
 }
 
 .fadeIn {
