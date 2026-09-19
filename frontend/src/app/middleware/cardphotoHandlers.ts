@@ -88,6 +88,7 @@ import { selectCartItems, selectCartListSelectedLocalId } from '@cart/infrastruc
 import { selectHistoryListSelectedLocalId } from '@date/calendar/infrastructure/selectors'
 import { updateItem } from '@cart/infrastructure/state'
 import { postcardLocalDataChanged } from '@features/sync/store/postcardSync.actions'
+import { stampCardphotoListStatus } from '@cardphoto/application/helpers/stampCardphotoListStatus'
 import { requestArchiveSectionPeek } from '@cardPanel/infrastructure/state'
 import type { PostcardHydrated } from '@entities/postcard'
 
@@ -519,15 +520,13 @@ export function* handlePromoteProcessedToInlineSaga(): SagaIterator {
   if (!record) return
   if (record.status === 'inLine') return
 
-  const updated: ImageMeta = {
-    ...record,
-    status: 'inLine',
-  }
+  const updated = stampCardphotoListStatus(record, 'inLine')
 
   yield call(
     storeAdapters.cardphotoImages.put,
     updated as ImageMeta & { id: string },
   )
+  yield put(postcardLocalDataChanged())
 
   const hydrated = hydrateMeta(updated)
   if (!hydrated) return
@@ -554,15 +553,13 @@ export function* demoteCardphotoTemplateToOutLineByIdSaga(
   )
   if (!record || record.status !== 'inLine') return
 
-  const updated: ImageMeta = {
-    ...record,
-    status: 'outLine',
-  }
+  const updated = stampCardphotoListStatus(record, 'outLine')
 
   yield call(
     storeAdapters.cardphotoImages.put,
     updated as ImageMeta & { id: string },
   )
+  yield put(postcardLocalDataChanged())
 }
 
 export function* handleDemoteInlineTemplateSaga(): SagaIterator {
@@ -579,15 +576,13 @@ export function* handleDemoteInlineTemplateSaga(): SagaIterator {
   }
   if (!record || record.status !== 'inLine') return
 
-  const updated: ImageMeta = {
-    ...record,
-    status: 'outLine',
-  }
+  const updated = stampCardphotoListStatus(record, 'outLine')
 
   yield call(
     storeAdapters.cardphotoImages.put,
     updated as ImageMeta & { id: string },
   )
+  yield put(postcardLocalDataChanged())
 
   yield put(setProcessedImage(prepareForRedux(updated)))
   yield put(bumpCardphotoInlineTemplateList())

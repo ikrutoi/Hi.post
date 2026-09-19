@@ -20,6 +20,35 @@ type LibraryOp =
 const pendingPostcards = new Map<string, PostcardOp>()
 const pendingLibrary = new Map<string, LibraryOp>()
 
+const V2_SYNC_DEBOUNCE_MS = 3000
+let flushTimer: ReturnType<typeof setTimeout> | null = null
+let pageHideFlushBound = false
+
+function schedulePendingV2Flush(): void {
+  if (flushTimer != null) clearTimeout(flushTimer)
+  flushTimer = setTimeout(() => {
+    flushTimer = null
+    void flushPendingV2Sync()
+  }, V2_SYNC_DEBOUNCE_MS)
+  bindPageHideFlushOnce()
+}
+
+function bindPageHideFlushOnce(): void {
+  if (pageHideFlushBound || typeof window === 'undefined') return
+  pageHideFlushBound = true
+  const flushNow = () => {
+    if (flushTimer != null) {
+      clearTimeout(flushTimer)
+      flushTimer = null
+    }
+    void flushPendingV2Sync()
+  }
+  window.addEventListener('pagehide', flushNow)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') flushNow()
+  })
+}
+
 function libraryKey(kind: V2LibraryKind, id: string): string {
   return `${kind}:${id}`
 }
@@ -27,11 +56,13 @@ function libraryKey(kind: V2LibraryKind, id: string): string {
 export function enqueuePostcardUpsert(postcard: PostcardHydrated): void {
   if (!postcard.id) return
   pendingPostcards.set(postcard.id, { type: 'upsert', postcard })
+  schedulePendingV2Flush()
 }
 
 export function enqueuePostcardDelete(id: string): void {
   if (!id) return
   pendingPostcards.set(id, { type: 'delete' })
+  schedulePendingV2Flush()
 }
 
 export function enqueueLibraryUpsert(
@@ -44,11 +75,13 @@ export function enqueueLibraryUpsert(
     kind,
     item: { ...item, updatedAt: item.updatedAt ?? Date.now() },
   })
+  schedulePendingV2Flush()
 }
 
 export function enqueueLibraryDelete(kind: V2LibraryKind, id: string): void {
   if (!id) return
   pendingLibrary.set(libraryKey(kind, id), { type: 'delete', kind })
+  schedulePendingV2Flush()
 }
 
 export function hasPendingV2Sync(): boolean {

@@ -15,6 +15,7 @@ import {
 } from '@app/middleware/postcardCardphotoHydrate'
 import { refreshRightSidebarBadgesFromPostcards } from '@app/middleware/postcardCreateSaga'
 import { rehydratePostcardsFromIdb } from '@features/sync/store'
+import { syncCardphotoEditorListStatusFromIdbSaga } from '@cardphoto/application/helpers/syncCardphotoEditorListStatusFromIdb'
 
 function cartPostcardPreviewAssets(postcards: PostcardHydrated[]): ImageAsset[] {
   const assets: ImageAsset[] = []
@@ -71,6 +72,7 @@ function* rehydratePostcardsFromIdbSaga(): SagaIterator {
   }
 
   yield call(refreshRightSidebarBadgesFromPostcards)
+  yield call(syncCardphotoEditorListStatusFromIdbSaga)
 }
 
 export function* watchPostcardSyncRehydrate(): SagaIterator {

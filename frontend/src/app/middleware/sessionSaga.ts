@@ -9,6 +9,7 @@ import {
   restoreSession,
   applyFinal,
   clearApply,
+  setProcessedImage,
 } from '@cardphoto/infrastructure/state'
 import {
   updateRecipientField,
@@ -282,6 +283,7 @@ const SESSION_WATCH_ACTIONS = [
   applyFinal.type,
   clearApply.type,
   hydrateEditor.type,
+  setProcessedImage.type,
   setAroma.type,
   clearAroma.type,
   setDate.type,

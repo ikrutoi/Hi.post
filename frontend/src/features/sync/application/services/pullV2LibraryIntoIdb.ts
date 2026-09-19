@@ -136,9 +136,14 @@ function asCardtext(item: V2LibraryItem): (CardtextContent & { id: string }) | n
 
 function asCardphoto(item: V2LibraryItem): (ImageMeta & { id: string }) | null {
   if (item.id == null) return null
+  const timestamp = Math.max(
+    Number((item as unknown as ImageMeta).timestamp ?? 0),
+    libraryItemUpdatedAt(item),
+  )
   return {
     ...(item as unknown as ImageMeta),
     id: item.id,
+    timestamp,
   }
 }
 
@@ -170,7 +175,11 @@ export async function pullV2LibraryIntoIdb(): Promise<void> {
     listed as Array<ImageMeta & { id: string }>,
     (row) => storeAdapters.cardphotoImages.putLocal(row),
     asCardphoto,
-    (row) => Number(row.timestamp ?? 0),
+    (row) =>
+      Math.max(
+        Number(row.timestamp ?? 0),
+        libraryItemUpdatedAt(row as unknown as V2LibraryItem),
+      ),
     coalesceCardphotoPair,
   )
 }
