@@ -479,13 +479,7 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
 
 .addressFormPlaceholderRecipient.addressFormPlaceholderBg
   .addressFormPlaceholderIconBg {
-  color: $color-envelope-recipient-legend;
-  opacity: 0.14;
-}
-
-.addressFormPlaceholderRecipient.addressFormPlaceholderBg:hover
-  .addressFormPlaceholderIconBg {
-  opacity: 0.17;
+  color: $color-app-inner;
 }
 
 .recipientFieldsetContainerScroll {
