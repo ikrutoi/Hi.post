@@ -10,7 +10,7 @@
     height: 100%;
     width: auto;
     max-width: 100%;
-    aspect-ratio: 708 / 1024;
+    aspect-ratio: 1024 / 1481;
     flex: 0 0 auto;
     min-width: 0;
     min-height: 0;
@@ -18,7 +18,7 @@
     background-size: contain;
   }
 
-  /* Марка: база + слой цифр (тот же viewBox, что у base SVG). */
+  /* Марка конверта: mark_cart (корзина) или mark_paid (оплачена). */
   &StampComposite {
     position: relative;
     width: 100%;

@@ -4,6 +4,7 @@ services:
       context: ./backend/app
       dockerfile: ../docker/app/Dockerfile
     container_name: laravel_app
+    restart: unless-stopped
     ports:
       - '8000:8000'
     volumes:

@@ -1,7 +1,6 @@
 import React from 'react'
 import clsx from 'clsx'
 import type { PostcardStatus } from '@entities/postcard'
-import { useMarkStampYearCount } from '@envelope/application/hooks/useMarkStampYearCount'
 import { MarkStampComposite } from './MarkStampComposite'
 import styles from './Mark.module.scss'
 
@@ -23,7 +22,6 @@ export const Mark: React.FC<MarkProps> = ({
   simplifiedPeek,
   listArchivePostcardStatus,
 }) => {
-  const yearCount = useMarkStampYearCount(Boolean(simplifiedPeek))
   const isReadyStamp =
     simplifiedPeek &&
     (listArchivePostcardStatus === 'ready' ||
@@ -42,10 +40,7 @@ export const Mark: React.FC<MarkProps> = ({
               : styles.markStampNotActive,
         )}
       >
-        <MarkStampComposite
-          variant={isReadyStamp ? 'ready' : 'cart'}
-          yearCount={yearCount}
-        />
+        <MarkStampComposite variant={isReadyStamp ? 'ready' : 'cart'} />
       </div>
     </div>
   )
