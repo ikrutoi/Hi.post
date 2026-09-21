@@ -42,12 +42,11 @@ export const UserLoginPanel: React.FC = () => {
   const [panelView, setPanelView] = useState<UserPanelView>('hub')
 
   const handleClose = useCallback(() => {
-    if (!isAuthenticated && panelView !== 'hub') {
+    if (panelView !== 'hub') {
       setPanelView('hub')
       dispatch(clearAuthError())
       return
     }
-    setPanelView('hub')
     dispatch(setUserLoginPanelOpen(false))
     dispatch(
       updateToolbarIcon({
@@ -56,7 +55,7 @@ export const UserLoginPanel: React.FC = () => {
         value: 'enabled',
       }),
     )
-  }, [dispatch, isAuthenticated, panelView])
+  }, [dispatch, panelView])
 
   const handleGuestAuthModeChange = useCallback(
     (mode: GuestAuthMode) => {
@@ -75,29 +74,24 @@ export const UserLoginPanel: React.FC = () => {
     setPanelView(section)
   }, [])
 
-  const handleBackToHub = useCallback(() => {
-    setPanelView('hub')
-    dispatch(clearAuthError())
-  }, [dispatch])
-
   const displayName = user?.name ?? user?.email ?? 'Signed in'
-  const guestHeaderTitle =
-    guestAuthMode === 'register' ? 'Create account' : 'Sign in'
+  const cellTitle =
+    panelView === 'registration'
+      ? 'Registration'
+      : panelView === 'info'
+        ? 'Info'
+        : panelView === 'settings'
+          ? 'Settings'
+          : null
   const headerTitle =
     panelView === 'hub'
       ? isAuthenticated
         ? displayName
         : null
-      : panelView === 'registration'
-        ? isAuthenticated
-          ? displayName
-          : guestHeaderTitle
-        : panelView === 'info'
-          ? 'Info'
-          : 'Settings'
+      : cellTitle
   const showLogoutFooter = isAuthenticated && panelView === 'registration'
-  const showBackToHub = isAuthenticated && panelView !== 'hub'
-  const hideLeadIcon = !isAuthenticated
+  const isHub = panelView === 'hub'
+  const hideLeadIcon = !isAuthenticated || !isHub
   const chromePatternColors = useMemo(
     () =>
       isAuthenticated && user?.id != null
@@ -127,6 +121,7 @@ export const UserLoginPanel: React.FC = () => {
         hasChromePattern && styles.panelWithChromePattern,
         isAuthenticated && styles.panelSignedIn,
         !isAuthenticated && styles.panelGuest,
+        !isHub && styles.panelCellOpen,
       )}
     >
       <ListPanelStackedHeader
@@ -141,21 +136,20 @@ export const UserLoginPanel: React.FC = () => {
         }
         headerTopCenter={
           headerTitle ? (
-            <div className={styles.headerUserNameWrap}>
+            <div
+              className={clsx(
+                styles.headerUserNameWrap,
+                !isHub && styles.headerUserNameWrapCell,
+              )}
+            >
               <span className={styles.headerUserName}>{headerTitle}</span>
             </div>
           ) : null
         }
         toolbar={false}
         hideLeadIcon={hideLeadIcon}
-        onLeadIconClick={showBackToHub ? handleBackToHub : undefined}
-        leadIconAriaLabel={showBackToHub ? 'Back' : undefined}
         onClose={handleClose}
-        closeAriaLabel={
-          !isAuthenticated && panelView !== 'hub'
-            ? 'Back'
-            : 'Close account panel'
-        }
+        closeAriaLabel={isHub ? 'Close account panel' : 'Back'}
       />
       <div className={styles.panelScrollTrack} aria-hidden />
       <ScrollArea className={styles.listScrollArea}>

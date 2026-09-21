@@ -283,6 +283,23 @@ $user-panel-header-lead-edge-mobile: iconButton.$toolbar-mobile-toolbar-key-marg
   padding-inline-start: 0.75rem;
 }
 
+.panelCellOpen .headerUserNameWrap,
+.panelCellOpen.panelGuest .headerUserNameWrap {
+  padding-inline-start: $user-panel-header-lead-edge;
+  padding-inline-end: calc(
+    #{iconButton.$toolbar-hit-size-card-pie-list-header} + 0.3rem + 0.35rem
+  );
+}
+
+:global([data-shell-layout='mobile']) .panelCellOpen .headerUserNameWrap,
+:global([data-shell-layout='mobile']) .panelCellOpen.panelGuest .headerUserNameWrap {
+  padding-inline-start: $user-panel-header-lead-edge-mobile;
+}
+
+.headerUserNameWrapCell {
+  justify-content: flex-start;
+}
+
 .headerUserName {
   min-width: 0;
   font-size: 0.9rem;
