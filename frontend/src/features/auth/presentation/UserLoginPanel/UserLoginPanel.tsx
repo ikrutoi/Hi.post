@@ -42,6 +42,11 @@ export const UserLoginPanel: React.FC = () => {
   const [panelView, setPanelView] = useState<UserPanelView>('hub')
 
   const handleClose = useCallback(() => {
+    if (!isAuthenticated && panelView !== 'hub') {
+      setPanelView('hub')
+      dispatch(clearAuthError())
+      return
+    }
     setPanelView('hub')
     dispatch(setUserLoginPanelOpen(false))
     dispatch(
@@ -51,7 +56,7 @@ export const UserLoginPanel: React.FC = () => {
         value: 'enabled',
       }),
     )
-  }, [dispatch])
+  }, [dispatch, isAuthenticated, panelView])
 
   const handleGuestAuthModeChange = useCallback(
     (mode: GuestAuthMode) => {
@@ -82,7 +87,7 @@ export const UserLoginPanel: React.FC = () => {
     panelView === 'hub'
       ? isAuthenticated
         ? displayName
-        : 'Account'
+        : null
       : panelView === 'registration'
         ? isAuthenticated
           ? displayName
@@ -91,7 +96,8 @@ export const UserLoginPanel: React.FC = () => {
           ? 'Info'
           : 'Settings'
   const showLogoutFooter = isAuthenticated && panelView === 'registration'
-  const showBackToHub = panelView !== 'hub'
+  const showBackToHub = isAuthenticated && panelView !== 'hub'
+  const hideLeadIcon = !isAuthenticated
   const chromePatternColors = useMemo(
     () =>
       isAuthenticated && user?.id != null
@@ -108,9 +114,7 @@ export const UserLoginPanel: React.FC = () => {
           passportColors={user.passportColors}
           passportEmblemForm={user.passportEmblemForm}
         />
-      ) : (
-        <UserLoginToolbarIcon guest />
-      ),
+      ) : null,
     [isAuthenticated, user?.id, user?.passportColors, user?.passportEmblemForm],
   )
 
@@ -122,6 +126,7 @@ export const UserLoginPanel: React.FC = () => {
         styles.panelCompactNoToolbar,
         hasChromePattern && styles.panelWithChromePattern,
         isAuthenticated && styles.panelSignedIn,
+        !isAuthenticated && styles.panelGuest,
       )}
     >
       <ListPanelStackedHeader
@@ -135,15 +140,22 @@ export const UserLoginPanel: React.FC = () => {
           ) : undefined
         }
         headerTopCenter={
-          <div className={styles.headerUserNameWrap}>
-            <span className={styles.headerUserName}>{headerTitle}</span>
-          </div>
+          headerTitle ? (
+            <div className={styles.headerUserNameWrap}>
+              <span className={styles.headerUserName}>{headerTitle}</span>
+            </div>
+          ) : null
         }
         toolbar={false}
+        hideLeadIcon={hideLeadIcon}
         onLeadIconClick={showBackToHub ? handleBackToHub : undefined}
         leadIconAriaLabel={showBackToHub ? 'Back' : undefined}
         onClose={handleClose}
-        closeAriaLabel="Close account panel"
+        closeAriaLabel={
+          !isAuthenticated && panelView !== 'hub'
+            ? 'Back'
+            : 'Close account panel'
+        }
       />
       <div className={styles.panelScrollTrack} aria-hidden />
       <ScrollArea className={styles.listScrollArea}>
@@ -152,7 +164,7 @@ export const UserLoginPanel: React.FC = () => {
             styles.content,
             panelView === 'hub' && styles.contentHub,
           )}
-          aria-label={headerTitle}
+          aria-label={headerTitle ?? 'Account'}
         >
           {panelView === 'hub' ? (
             <UserPanelHub onOpenSection={handleOpenHubSection} />

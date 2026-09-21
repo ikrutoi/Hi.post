@@ -275,6 +275,14 @@ $user-panel-header-lead-edge-mobile: iconButton.$toolbar-mobile-toolbar-key-marg
   );
 }
 
+.panelGuest .headerUserNameWrap {
+  padding-inline-start: 0.75rem;
+}
+
+:global([data-shell-layout='mobile']) .panelGuest .headerUserNameWrap {
+  padding-inline-start: 0.75rem;
+}
+
 .headerUserName {
   min-width: 0;
   font-size: 0.9rem;

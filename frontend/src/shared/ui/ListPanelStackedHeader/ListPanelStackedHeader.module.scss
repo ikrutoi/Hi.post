@@ -561,6 +561,7 @@
 .closeBtn {
   @include panel-close-button;
   flex-shrink: 0;
+  margin-inline-start: auto;
   pointer-events: auto;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
