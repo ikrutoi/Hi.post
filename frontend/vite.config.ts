@@ -23,8 +23,8 @@ export default defineConfig(({ mode }) => {
     server: {
       host: '0.0.0.0',
       port: 3000,
-      // Cursor/ngrok tunnels send a non-localhost Host header; Vite 7 blocks those by default.
-      allowedHosts: ['.devtunnels.ms', '.ngrok-free.app', '.ngrok.io'],
+      // Vite 7 blocks unknown Host headers (LAN IP, Cursor Ports, tunnels).
+      allowedHosts: true,
       proxy: {
         '/api': {
           target: apiProxyTarget,
@@ -34,7 +34,7 @@ export default defineConfig(({ mode }) => {
     },
     preview: {
       host: '0.0.0.0',
-      allowedHosts: ['.devtunnels.ms', '.ngrok-free.app', '.ngrok.io'],
+      allowedHosts: true,
     },
     css: {
       preprocessorOptions: {

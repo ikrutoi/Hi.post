@@ -163,9 +163,20 @@ $list-panel-footer-stack-height: $user-panel-footer-band;
   min-height: 0;
 }
 
-/** Same diameter as desktop right-sidebar / mobile chrome userLogin. */
+/** Same diameter as `.toolbarRightSidebar` userLogin (home chrome + desktop sidebar). */
 $user-panel-header-mark-size: iconButton.$toolbar-logo-size-section-editor;
-$user-panel-header-mark-size-mobile: iconButton.$toolbar-logo-size-mobile-right-sidebar;
+$user-panel-header-mark-to-name-gap: 0.75rem;
+/** Same outer margin as Close, plus Close glyph inset inside its hit box. */
+$user-panel-header-close-margin: 0.3rem;
+$user-panel-header-close-glyph-pad: math.div(
+  iconButton.$toolbar-hit-size-card-pie-list-header -
+    iconButton.$toolbar-icon-size-card-pie-list-header,
+  2
+);
+$user-panel-header-lead-edge: $user-panel-header-close-margin +
+  $user-panel-header-close-glyph-pad;
+$user-panel-header-lead-edge-mobile: iconButton.$toolbar-mobile-toolbar-key-margin-inline +
+  $user-panel-header-close-glyph-pad;
 
 .headerUserNameWrap {
   width: 100%;
@@ -180,26 +191,43 @@ $user-panel-header-mark-size-mobile: iconButton.$toolbar-logo-size-mobile-right-
   padding-inline: calc(
     #{iconButton.$toolbar-hit-size-card-pie-list-header} + 0.3rem + 0.35rem
   );
+  padding-inline-start: calc(
+    #{iconButton.$toolbar-hit-size-card-pie-list-header} +
+      #{$user-panel-header-lead-edge} + 0.35rem
+  );
 }
 
 @mixin user-panel-header-mark($size) {
   width: $size;
   min-width: $size;
   height: $size;
+  max-width: $size;
+  max-height: $size;
+  padding: 0;
+  box-sizing: border-box;
 
-  :global([class*='toolbarUserChromeGlyph']),
-  :global([class*='toolbarUserChromeGlyph']) svg,
-  svg {
-    width: $size;
-    height: $size;
-    max-width: none;
-    max-height: none;
+  :global([class*='toolbarUserChromeGlyph']) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+    }
   }
 }
 
 .panelSignedIn {
   .headerUserNameWrap {
-    padding-inline-start: calc(#{$user-panel-header-mark-size} + 0.3rem + 0.35rem);
+    padding-inline-start: calc(
+      #{$user-panel-header-mark-size} + #{$user-panel-header-lead-edge} +
+      #{$user-panel-header-mark-to-name-gap}
+    );
   }
 
   :global([class*='headerLead']) {
@@ -209,19 +237,8 @@ $user-panel-header-mark-size-mobile: iconButton.$toolbar-logo-size-mobile-right-
   :global([data-shell-layout='mobile']) & {
     .headerUserNameWrap {
       padding-inline-start: calc(
-        var(
-            --mobile-right-sidebar-logo-size,
-            #{$user-panel-header-mark-size-mobile}
-          ) + 0.3rem + 0.35rem
-      );
-    }
-
-    :global([class*='headerLead']) {
-      @include user-panel-header-mark(
-        var(
-          --mobile-right-sidebar-logo-size,
-          #{$user-panel-header-mark-size-mobile}
-        )
+        #{$user-panel-header-mark-size} + #{$user-panel-header-lead-edge-mobile} +
+          #{$user-panel-header-mark-to-name-gap}
       );
     }
   }
@@ -235,6 +252,27 @@ $user-panel-header-mark-size-mobile: iconButton.$toolbar-logo-size-mobile-right-
 
 .panel :global([class*='headerLead']) {
   color: $color-font-enabled-light;
+}
+
+.panel
+  :global(
+    [class*='headerCardPieListArchive'] [class*='headerTopRow'] [class*='headerLeadGroup']
+  ) {
+  margin-inline-start: $user-panel-header-lead-edge;
+}
+
+:global([data-shell-layout='mobile']) .panel
+  :global(
+    [class*='headerCardPieListArchive'] [class*='headerTopRow'] [class*='headerLeadGroup']
+  ) {
+  margin-inline-start: $user-panel-header-lead-edge-mobile;
+}
+
+:global([data-shell-layout='mobile']) .panel .headerUserNameWrap {
+  padding-inline-start: calc(
+    #{iconButton.$toolbar-hit-size-card-pie-list-header} +
+      #{$user-panel-header-lead-edge-mobile} + 0.35rem
+  );
 }
 
 .headerUserName {
