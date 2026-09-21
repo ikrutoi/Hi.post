@@ -411,15 +411,20 @@
   }
 
   /**
-   * Peek postcardEdit is in an absolute left slot. `.rowUpper` already has
-   * factory row padding; slot `left: 1rem` was a second inset.
+   * Absolute edge slots (peek postcardEdit, list apply/close) sit inside
+   * `.rowUpper`, which already has factory row padding. Slot `left`/`right`
+   * 1rem was a second inset.
    */
-  :global([data-shell-layout='mobile']) & :global([class*='sideLeft']) {
-    left: 0;
-  }
+  :global([data-shell-layout='mobile']) & {
+    :global([class*='sideLeft']),
+    :global([class*='upperApply']) {
+      left: 0;
+    }
 
-  :global([data-shell-layout='mobile']) & :global([class*='sideRight']) {
-    right: 0;
+    :global([class*='sideRight']),
+    :global([class*='upperToolbar']) {
+      right: 0;
+    }
   }
 
   :global([class*='sideLeft']) :global(

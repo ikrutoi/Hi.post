@@ -163,6 +163,10 @@ $list-panel-footer-stack-height: $user-panel-footer-band;
   min-height: 0;
 }
 
+/** Same diameter as desktop right-sidebar / mobile chrome userLogin. */
+$user-panel-header-mark-size: iconButton.$toolbar-logo-size-section-editor;
+$user-panel-header-mark-size-mobile: iconButton.$toolbar-logo-size-mobile-right-sidebar;
+
 .headerUserNameWrap {
   width: 100%;
   min-width: 0;
@@ -176,6 +180,51 @@ $list-panel-footer-stack-height: $user-panel-footer-band;
   padding-inline: calc(
     #{iconButton.$toolbar-hit-size-card-pie-list-header} + 0.3rem + 0.35rem
   );
+}
+
+@mixin user-panel-header-mark($size) {
+  width: $size;
+  min-width: $size;
+  height: $size;
+
+  :global([class*='toolbarUserChromeGlyph']),
+  :global([class*='toolbarUserChromeGlyph']) svg,
+  svg {
+    width: $size;
+    height: $size;
+    max-width: none;
+    max-height: none;
+  }
+}
+
+.panelSignedIn {
+  .headerUserNameWrap {
+    padding-inline-start: calc(#{$user-panel-header-mark-size} + 0.3rem + 0.35rem);
+  }
+
+  :global([class*='headerLead']) {
+    @include user-panel-header-mark($user-panel-header-mark-size);
+  }
+
+  :global([data-shell-layout='mobile']) & {
+    .headerUserNameWrap {
+      padding-inline-start: calc(
+        var(
+            --mobile-right-sidebar-logo-size,
+            #{$user-panel-header-mark-size-mobile}
+          ) + 0.3rem + 0.35rem
+      );
+    }
+
+    :global([class*='headerLead']) {
+      @include user-panel-header-mark(
+        var(
+          --mobile-right-sidebar-logo-size,
+          #{$user-panel-header-mark-size-mobile}
+        )
+      );
+    }
+  }
 }
 
 /** Лого в шапке: enabled-light, не почти чёрный `$color-font-enabled`. */
@@ -205,6 +254,69 @@ $list-panel-footer-stack-height: $user-panel-footer-band;
   gap: 0.75rem;
   min-height: 100%;
   padding: 1rem 0.75rem 0.5rem 0.75rem;
+}
+
+.contentHub {
+  gap: 0;
+  @include list-panel-scroll-padding;
+}
+
+.hubGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 0.5rem;
+  width: 100%;
+  align-items: start;
+  justify-items: stretch;
+}
+
+.hubTile,
+.hubTileEmpty {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 1;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  border: 1px solid $color-app-strip;
+  background-color: #fff;
+}
+
+.hubTile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem;
+  margin: 0;
+  appearance: none;
+  cursor: pointer;
+  color: $color-font-enabled-light;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+
+  &:hover {
+    color: $color-font-enabled;
+    border-color: $color-section-light;
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.hubTileEmpty {
+  pointer-events: none;
+}
+
+.hubTileLabel {
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
 }
 
 .guestHint {
