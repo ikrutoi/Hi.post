@@ -4,9 +4,11 @@
 
 /** Shared center disc for left (logo) and right (status) CardPie. */
 $pie-center-indicator-size: 1.75rem;
-/** Видимый круг + hit центрального CardPie (моб. / десктоп), доля ширины пайа. */
+/** Видимый круг + hit центрального CardPie (десктоп), доля ширины пайа. */
 $pie-center-size-ratio: 22%;
-/** Desktop: глиф внутри круга = иконка тулбара × 1.25. */
+/** Мобильный центральный CardPie. */
+$pie-center-size-ratio-mobile: 24%;
+/** Desktop right pie: глиф статуса внутри круга = иконка тулбара × 1.25. */
 $pie-center-inner-icon-desktop: iconButton.$toolbar-icon-size-standard *
   iconButton.$toolbar-desktop-scale *
   1.25;
@@ -290,6 +292,10 @@ $pie-center-cart-blocked-inner-stop: (
     fill: currentColor;
   }
 
+  svg.pieCenterLogoMark :global([class*='fil']) {
+    fill: currentColor;
+  }
+
   /** Выше специфичности, чем `svg` выше — иначе иконка всегда 100% круга. */
   svg.pieCenterAffordanceIcon {
     width: iconButton.$toolbar-icon-size-standard;
@@ -344,7 +350,6 @@ $pie-center-cart-blocked-inner-stop: (
 }
 
 :global([data-shell-layout='desktop']) {
-  .hubContainer:not(.hubContainerRight) .pieCenterIcon svg,
   .hubContainerFill.hubContainerRight .pieCenterIcon svg {
     width: $pie-center-inner-icon-desktop;
     height: $pie-center-inner-icon-desktop;
@@ -353,6 +358,23 @@ $pie-center-cart-blocked-inner-stop: (
   .hubContainerFill.hubContainerRight .pieCenterIcon svg.pieCenterAffordanceIcon {
     width: $pie-center-inner-icon-desktop;
     height: $pie-center-inner-icon-desktop;
+  }
+}
+
+:global([data-shell-layout='mobile']) {
+  .hubContainer:not(.hubContainerRight) .pieCenterButton,
+  .hubContainerFill.hubContainerRight .pieCenterButton,
+  .hubContainerFill.hubContainerRight .pieCenterButtonPointer {
+    width: $pie-center-size-ratio-mobile;
+    height: $pie-center-size-ratio-mobile;
+  }
+
+  .hubContainerFill.hubContainerRight .pieCenterIndicator.cartBlocked {
+    @include preview-indicator-cart-blocked-ring(
+      calc(
+        #{$pie-center-size-ratio-mobile} * #{$pie-center-cart-blocked-ring-ratio}
+      )
+    );
   }
 }
 

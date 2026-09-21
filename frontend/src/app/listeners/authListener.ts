@@ -101,7 +101,7 @@ authListenerMiddleware.startListening({
 authListenerMiddleware.startListening({
   actionCreator: logout,
   effect: async () => {
-    if (isHttpAuthMode()) {
+    if (isHttpAuthMode() && readAuthSession()?.token) {
       try {
         await logoutUserApi()
       } catch {

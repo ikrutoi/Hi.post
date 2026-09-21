@@ -409,6 +409,28 @@
     flex: 0 0 auto;
     width: auto;
   }
+
+  /**
+   * Peek postcardEdit is in an absolute left slot. `.rowUpper` already has
+   * factory row padding; slot `left: 1rem` was a second inset.
+   */
+  :global([data-shell-layout='mobile']) & :global([class*='sideLeft']) {
+    left: 0;
+  }
+
+  :global([data-shell-layout='mobile']) & :global([class*='sideRight']) {
+    right: 0;
+  }
+
+  :global([class*='sideLeft']) :global(
+      [class*='toolbar']:not([class*='toolbarKey']):not(
+          [class*='toolbarGroup']
+        ):not([class*='toolbarBadge']):not([class*='toolbarIcon'])
+    ) {
+    flex: 0 0 auto;
+    width: auto;
+    justify-content: flex-start;
+  }
 }
 
 /** Section upper band: full slot width; row padding keeps icon edge insets. */

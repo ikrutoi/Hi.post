@@ -37,6 +37,10 @@ export const useAuthInit = () => {
             dispatch(setAuth({ user, token: session.token }))
           }
         } catch (error) {
+          const latestToken = readAuthSession()?.token
+          if (latestToken && latestToken !== session.token) {
+            return
+          }
           if (isAuthSessionInvalid(error)) {
             clearAuthSession()
             if (!cancelled) {

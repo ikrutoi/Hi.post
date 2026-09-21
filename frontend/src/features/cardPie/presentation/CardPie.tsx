@@ -4,7 +4,6 @@ import { AROMA_IMAGES_THUMB } from '@entities/aroma/domain/types'
 import { MONTH_NAMES } from '@entities/date/constants'
 import {
   IconUsers,
-  IconLogoRound,
   IconCart,
   IconHistoryV2,
   IconSectionMenuCardphoto,
@@ -37,6 +36,7 @@ import {
   expandEnvelopeRecipientsForBg,
 } from '../domain/pieScatteredBackground'
 import { PieScatteredBackgroundText } from './PieScatteredBackgroundText'
+import LogoMark from '@shared/assets/logo/logo.svg?react'
 import styles from './CardPie.module.scss'
 
 const STROKE_WIDTH = 24
@@ -975,7 +975,7 @@ export const CardPie: React.FC<CardPieProps> = ({
             }}
           >
             {station === 'left' ? (
-              <IconLogoRound aria-hidden />
+              <LogoMark aria-hidden className={styles.pieCenterLogoMark} />
             ) : (
               <span
                 className={clsx(
