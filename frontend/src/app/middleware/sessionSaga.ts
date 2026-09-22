@@ -166,6 +166,7 @@ import { CardSection } from '@shared/config/constants'
 import {
   openCardphotoFromMiniStripSaga,
   shouldSyncUserOriginalOnRebuild,
+  syncCardphotoToolbarUiFlagsAfterSessionHydrate,
 } from '@cardphoto/application/helpers'
 import {
   loadCardphotoImageMetaFromIdb,
