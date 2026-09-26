@@ -686,6 +686,16 @@
   min-height: 0;
 }
 
+.envelopeSeal {
+  position: absolute;
+  z-index: 4;
+  pointer-events: none;
+  display: block;
+  max-width: none;
+  max-height: none;
+  transform-origin: center;
+}
+
 .envelopeMark {
   grid-row: 1 / 9;
   grid-column: 4 / 5;

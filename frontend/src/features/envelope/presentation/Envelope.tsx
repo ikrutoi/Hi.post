@@ -323,6 +323,7 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
   const body = (
     <div
       className={styles.envelope}
+      data-envelope-section
       data-envelope-mobile-form={
         showMobileAddressCreateForm ? 'true' : undefined
       }

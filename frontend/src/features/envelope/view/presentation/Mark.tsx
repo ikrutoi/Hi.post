@@ -7,6 +7,7 @@ import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiv
 import { useMarkStampYearCount } from '@envelope/application/hooks/useMarkStampYearCount'
 import { stampAroma99ColorsForSlot } from '@envelope/domain/stampAroma99Colors'
 import { MarkStampComposite } from './MarkStampComposite'
+import { EnvelopeSeal } from '@envelope/presentation/EnvelopeSeal'
 import styles from './Mark.module.scss'
 
 export type MarkProps = {
@@ -52,12 +53,14 @@ export const Mark: React.FC<MarkProps> = ({
               ? stampClassForArchiveStatus(listArchivePostcardStatus)
               : styles.markStampNotActive,
         )}
+        data-envelope-stamp
       >
         <MarkStampComposite
           variant={isReadyStamp ? 'ready' : 'cart'}
           aromaColors={stampAroma99ColorsForSlot(aromaSlot)}
           yearCount={yearCount}
         />
+        <EnvelopeSeal />
       </div>
     </div>
   )

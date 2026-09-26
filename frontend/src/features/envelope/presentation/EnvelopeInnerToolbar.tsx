@@ -24,7 +24,17 @@ import { useEnvelopeMobileAddressFocus } from './EnvelopeMobileAddressFocusConte
 import { readAddressAddToolbarMeta } from './readAddressAddToolbarMeta'
 import { useRecipientsChromeCount } from '@envelope/addressForm/presentation/RecipientsToolbarMark'
 import { AddressNextCycleButton } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar/AddressNextCycleButton'
+import { reshuffleEnvelopeSeal } from './EnvelopeSeal'
 import styles from './Envelope.module.scss'
+
+/** Временно: перерисовать печать. Потом удалить. */
+const ENVELOPE_SEAL_DEBUG_RETURN_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'debug',
+    icons: [{ key: 'undo', state: 'enabled' }],
+    status: 'enabled',
+  },
+]
 
 /** После Apply sender/recipient: одна иконка postcardEdit (IconCardPieEdit). */
 const ADDRESS_APPLY_PEEK_TOOLBAR: ToolbarConfig = [
@@ -176,6 +186,12 @@ export const EnvelopeInnerToolbar: React.FC = () => {
     isMobile && focusRole === 'recipient' && mobileFocus != null
   const bothFormsApplied =
     assemblySenderSimplifiedPeek && assemblyRecipientSimplifiedPeek
+  const handleSealReshuffle = useCallback((key: IconKey): void | false => {
+    if (key !== 'undo') return
+    reshuffleEnvelopeSeal()
+    return false
+  }, [])
+
   const handleFocusClose = useCallback(
     (key: IconKey): void | false => {
       if (key !== 'close' || mobileFocus == null || focusRole == null) return
@@ -253,6 +269,12 @@ export const EnvelopeInnerToolbar: React.FC = () => {
           ) : showAddressNext ? (
             <AddressNextCycleButton count={recipientsCount} />
           ) : null}
+          <Toolbar
+            section="recipientView"
+            groupsOverride={ENVELOPE_SEAL_DEBUG_RETURN_TOOLBAR}
+            className={toolbarStyles.toolbarAromaUpperReturn}
+            onActionClick={handleSealReshuffle}
+          />
         </div>
       )}
     </div>
