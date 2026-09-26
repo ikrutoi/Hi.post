@@ -1,19 +1,28 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import sealUrl from '@shared/assets/stamps/seal.svg?url'
+import sealNoOutlineUrl from '@shared/assets/stamps/seal_noOutline.svg?url'
+import sealOutline01Url from '@shared/assets/stamps/seal_outline_01.svg?url'
+import sealOutline02Url from '@shared/assets/stamps/seal_outline_02.svg?url'
 import styles from './Envelope.module.scss'
+
+const SEAL_OUTLINES = [sealOutline01Url, sealOutline02Url] as const
 
 const SEAL_WIDTH_RATIO = 0.28
 const SEAL_SHIFT_LEFT_RATIO = 0.03
 const SEAL_SHIFT_RIGHT_RATIO = 0.06
 const SEAL_SHIFT_UP_RATIO = 0.05
 const SEAL_SHIFT_DOWN_RATIO = 0.03
-const SEAL_ROTATION_DEG = 45
+const SEAL_ROTATION_DEG = 40
 
 type SealJitter = {
   /** Доля ширины секции: X −0.03…0.06, Y −0.05…0.03. */
   x: number
   y: number
+  /** Поворот основы, ±40°. */
   rotate: number
+  /** Какое кольцо лежит поверх центра. */
+  outline: 0 | 1
+  /** Поворот кольца, 0…360°. */
+  outlineRotate: number
 }
 
 type SealPlace = {
@@ -39,6 +48,8 @@ function randomJitter(): SealJitter {
       -SEAL_SHIFT_UP_RATIO +
       Math.random() * (SEAL_SHIFT_UP_RATIO + SEAL_SHIFT_DOWN_RATIO),
     rotate: (Math.random() * 2 - 1) * SEAL_ROTATION_DEG,
+    outline: Math.random() < 0.5 ? 0 : 1,
+    outlineRotate: Math.random() * 360,
   }
 }
 
@@ -91,24 +102,45 @@ export const EnvelopeSeal: React.FC = () => {
     return () => observer.disconnect()
   }, [reshuffleTick])
 
-  return (
-    <img
-      ref={sealRef}
-      src={sealUrl}
-      alt=""
-      draggable={false}
-      className={styles.envelopeSeal}
-      style={
-        place == null
-          ? { visibility: 'hidden' }
-          : {
-              left: place.left,
-              top: place.top,
-              width: place.size,
-              height: place.size,
-              transform: `rotate(${place.rotate}deg)`,
-            }
+  const jitter = jitterRef.current
+  const hidden = place == null
+  const frame = hidden
+    ? { visibility: 'hidden' as const }
+    : {
+        left: place.left,
+        top: place.top,
+        width: place.size,
+        height: place.size,
       }
-    />
+
+  return (
+    <>
+      <img
+        ref={sealRef}
+        src={sealNoOutlineUrl}
+        alt=""
+        draggable={false}
+        className={styles.envelopeSeal}
+        style={
+          hidden
+            ? frame
+            : { ...frame, transform: `rotate(${place.rotate}deg)` }
+        }
+      />
+      <img
+        src={SEAL_OUTLINES[jitter?.outline ?? 0]}
+        alt=""
+        draggable={false}
+        className={styles.envelopeSealOutline}
+        style={
+          hidden
+            ? frame
+            : {
+                ...frame,
+                transform: `rotate(${jitter?.outlineRotate ?? 0}deg)`,
+              }
+        }
+      />
+    </>
   )
 }

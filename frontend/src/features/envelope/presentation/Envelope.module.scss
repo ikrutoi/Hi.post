@@ -686,7 +686,8 @@
   min-height: 0;
 }
 
-.envelopeSeal {
+.envelopeSeal,
+.envelopeSealOutline {
   position: absolute;
   z-index: 4;
   pointer-events: none;
@@ -694,6 +695,10 @@
   max-width: none;
   max-height: none;
   transform-origin: center;
+}
+
+.envelopeSealOutline {
+  z-index: 5;
 }
 
 .envelopeMark {
