@@ -3,9 +3,15 @@ export type {
   PostcardHydrated,
   PostcardRecordMeta,
   PostcardRefs,
+  PostcardSeal,
   PostcardsDaySummary,
   PostcardStatus,
 } from './domain/types/postcard.types'
+export {
+  applyPostcardSeal,
+  createPostcardSeal,
+  postcardKeepsSeal,
+} from './domain/postcardSeal'
 export type {
   BackendPostcardCanonRow,
   BackendPostcardStatus,

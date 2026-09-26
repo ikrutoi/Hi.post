@@ -1,7 +1,8 @@
 import React from 'react'
 import clsx from 'clsx'
-import type { PostcardStatus } from '@entities/postcard'
+import { postcardKeepsSeal, type PostcardStatus } from '@entities/postcard'
 import { useAppSelector } from '@app/hooks'
+import { selectCartItems } from '@cart/infrastructure/selectors'
 import { selectAromaDisplayAroma } from '@aroma/infrastructure/selectors'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { useMarkStampYearCount } from '@envelope/application/hooks/useMarkStampYearCount'
@@ -30,8 +31,16 @@ export const Mark: React.FC<MarkProps> = ({
 }) => {
   const yearCount = useMarkStampYearCount(Boolean(simplifiedPeek))
   const displayAroma = useAppSelector(selectAromaDisplayAroma)
-  const { listRowInner, rightPieEnvelopePeekNoToolbar } =
+  const { listRowInner, listRowLocalId, rightPieEnvelopePeekNoToolbar } =
     useRightListArchiveMini()
+  const postcards = useAppSelector(selectCartItems)
+  const storedSeal =
+    simplifiedPeek &&
+    listArchivePostcardStatus != null &&
+    postcardKeepsSeal(listArchivePostcardStatus)
+      ? (postcards.find((item) => item.localId === listRowLocalId)?.seal ??
+        null)
+      : null
   const aromaSlot =
     simplifiedPeek && rightPieEnvelopePeekNoToolbar
       ? (listRowInner?.aroma?.index ?? null)
@@ -60,7 +69,7 @@ export const Mark: React.FC<MarkProps> = ({
           aromaColors={stampAroma99ColorsForSlot(aromaSlot)}
           yearCount={yearCount}
         />
-        <EnvelopeSeal />
+        <EnvelopeSeal pose={storedSeal} />
       </div>
     </div>
   )

@@ -105,9 +105,23 @@ export interface PostcardRefs {
   aroma: string
 }
 
+/** Постановка печати. Доли ширины секции конверта, не пиксели. */
+export type PostcardSeal = {
+  x: number
+  y: number
+  /** Поворот основы, градусы. */
+  rotate: number
+  /** 0 — seal_outline_01, 1 — seal_outline_02. */
+  outline: 0 | 1
+  /** Поворот кольца, градусы. */
+  outlineRotate: number
+}
+
 export interface Postcard extends PostcardRecordMeta {
   status: PostcardStatus
   postcard: PostcardRefs
+  /** Есть только у sent и delivered. */
+  seal?: PostcardSeal
 }
 
 export type PostcardHydrated = Postcard & { card: Card }
@@ -253,6 +267,10 @@ export function normalizePostcardRecord(raw: unknown): PostcardHydrated {
       : status
 
   const postcard: PostcardRefs = normalizePostcardRefs(row.postcard, card)
+  const seal =
+    cartStatusNormalized === 'sent' || cartStatusNormalized === 'delivered'
+      ? readPostcardSeal(row.seal)
+      : undefined
 
   const next: PostcardHydrated = {
     id,
@@ -264,6 +282,32 @@ export function normalizePostcardRecord(raw: unknown): PostcardHydrated {
     updatedAt,
     postcard,
     card,
+    ...(seal ? { seal } : {}),
   }
   return next
+}
+
+function readPostcardSeal(raw: unknown): PostcardSeal | undefined {
+  if (raw == null || typeof raw !== 'object') return undefined
+  const seal = raw as Partial<PostcardSeal>
+  if (
+    typeof seal.x !== 'number' ||
+    typeof seal.y !== 'number' ||
+    typeof seal.rotate !== 'number' ||
+    typeof seal.outlineRotate !== 'number' ||
+    (seal.outline !== 0 && seal.outline !== 1) ||
+    !Number.isFinite(seal.x) ||
+    !Number.isFinite(seal.y) ||
+    !Number.isFinite(seal.rotate) ||
+    !Number.isFinite(seal.outlineRotate)
+  ) {
+    return undefined
+  }
+  return {
+    x: seal.x,
+    y: seal.y,
+    rotate: seal.rotate,
+    outline: seal.outline,
+    outlineRotate: seal.outlineRotate,
+  }
 }

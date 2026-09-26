@@ -1,6 +1,6 @@
 import { call, put, select, takeEvery } from 'redux-saga/effects'
 import type { SagaIterator } from 'redux-saga'
-import type { PostcardHydrated } from '@entities/postcard'
+import { applyPostcardSeal, type PostcardHydrated } from '@entities/postcard'
 import { postcardsAdapter } from '@db/adapters/storeAdapters'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { cyclePostcardDebugStatus, updateItem } from '@cart/infrastructure/state'
@@ -22,11 +22,11 @@ function* handleCyclePostcardDebugStatus(
   if (postcard == null) return
 
   const nextStatus = nextDebugPostcardStatus(postcard.status)
-  const next: PostcardHydrated = {
+  const next: PostcardHydrated = applyPostcardSeal({
     ...postcard,
     status: nextStatus,
     updatedAt: Date.now(),
-  }
+  })
 
   yield call([postcardsAdapter, 'put'], next)
   yield put(updateItem(next))

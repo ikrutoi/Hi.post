@@ -128,7 +128,7 @@ import {
 } from './postcardCardphotoHydrate'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
 import type { SessionData } from '@entities/db/domain/types'
-import type { PostcardHydrated } from '@entities/postcard'
+import { applyPostcardSeal, type PostcardHydrated } from '@entities/postcard'
 import {
   cardImageMetaLookupIdsFromCard,
   cardRuntimePreviewUrlFromCard,
@@ -634,18 +634,21 @@ function cartPostcardPreviewAssets(
 export function* hydrateAppSession() {
   try {
     const rawPostcards: PostcardHydrated[] = yield call(postcardsAdapter.getAll)
-    const postcards: PostcardHydrated[] = yield call(
+    const refreshed: PostcardHydrated[] = yield call(
       refreshPostcardsCardphotoUrls,
       rawPostcards,
     )
+    const postcards = refreshed.map(applyPostcardSeal)
     for (let i = 0; i < postcards.length; i++) {
       const next = postcards[i]
       const prev = rawPostcards[i]
+      const sealChanged =
+        JSON.stringify(prev?.seal ?? null) !== JSON.stringify(next?.seal ?? null)
       if (
         prev &&
         next &&
         prev.id === next.id &&
-        postcardCardphotoNeedsPersist(prev, next)
+        (postcardCardphotoNeedsPersist(prev, next) || sealChanged)
       ) {
         yield call(postcardsAdapter.putLocal, next)
       }

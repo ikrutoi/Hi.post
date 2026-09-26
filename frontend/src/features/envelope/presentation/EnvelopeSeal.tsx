@@ -1,4 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import {
+  createPostcardSeal,
+  type PostcardSeal,
+} from '@entities/postcard'
 import sealNoOutlineUrl from '@shared/assets/stamps/seal_noOutline.svg?url'
 import sealOutline01Url from '@shared/assets/stamps/seal_outline_01.svg?url'
 import sealOutline02Url from '@shared/assets/stamps/seal_outline_02.svg?url'
@@ -7,23 +11,6 @@ import styles from './Envelope.module.scss'
 const SEAL_OUTLINES = [sealOutline01Url, sealOutline02Url] as const
 
 const SEAL_WIDTH_RATIO = 0.28
-const SEAL_SHIFT_LEFT_RATIO = 0.03
-const SEAL_SHIFT_RIGHT_RATIO = 0.06
-const SEAL_SHIFT_UP_RATIO = 0.05
-const SEAL_SHIFT_DOWN_RATIO = 0.03
-const SEAL_ROTATION_DEG = 40
-
-type SealJitter = {
-  /** Доля ширины секции: X −0.03…0.06, Y −0.05…0.03. */
-  x: number
-  y: number
-  /** Поворот основы, ±40°. */
-  rotate: number
-  /** Какое кольцо лежит поверх центра. */
-  outline: 0 | 1
-  /** Поворот кольца, 0…360°. */
-  outlineRotate: number
-}
 
 type SealPlace = {
   left: number
@@ -39,30 +26,33 @@ export function reshuffleEnvelopeSeal(): void {
   sealReshuffleListeners.forEach((listener) => listener())
 }
 
-function randomJitter(): SealJitter {
-  return {
-    x:
-      -SEAL_SHIFT_LEFT_RATIO +
-      Math.random() * (SEAL_SHIFT_LEFT_RATIO + SEAL_SHIFT_RIGHT_RATIO),
-    y:
-      -SEAL_SHIFT_UP_RATIO +
-      Math.random() * (SEAL_SHIFT_UP_RATIO + SEAL_SHIFT_DOWN_RATIO),
-    rotate: (Math.random() * 2 - 1) * SEAL_ROTATION_DEG,
-    outline: Math.random() < 0.5 ? 0 : 1,
-    outlineRotate: Math.random() * 360,
-  }
+type EnvelopeSealProps = {
+  /** Сохранённая постановка sent/delivered. Без неё — случайная, для теста в фабрике. */
+  pose?: PostcardSeal | null
 }
 
-export const EnvelopeSeal: React.FC = () => {
+export const EnvelopeSeal: React.FC<EnvelopeSealProps> = ({ pose = null }) => {
   const sealRef = useRef<HTMLImageElement>(null)
-  const jitterRef = useRef<SealJitter | null>(null)
-  if (jitterRef.current == null) jitterRef.current = randomJitter()
+  const poseRef = useRef(pose)
+  poseRef.current = pose
+  const jitterRef = useRef<PostcardSeal | null>(pose)
+  if (pose) {
+    jitterRef.current = pose
+  } else if (jitterRef.current == null) {
+    jitterRef.current = createPostcardSeal()
+  }
+  const wasLockedRef = useRef(pose != null)
+  if (!pose && wasLockedRef.current) {
+    jitterRef.current = createPostcardSeal()
+  }
+  wasLockedRef.current = pose != null
   const [place, setPlace] = useState<SealPlace | null>(null)
   const [reshuffleTick, setReshuffleTick] = useState(0)
 
   useEffect(() => {
     const listener = () => {
-      jitterRef.current = randomJitter()
+      if (poseRef.current) return
+      jitterRef.current = createPostcardSeal()
       setReshuffleTick((tick) => tick + 1)
     }
     sealReshuffleListeners.add(listener)
@@ -100,7 +90,7 @@ export const EnvelopeSeal: React.FC = () => {
     const section = stamp.closest('[data-envelope-section]')
     if (section instanceof HTMLElement) observer.observe(section)
     return () => observer.disconnect()
-  }, [reshuffleTick])
+  }, [reshuffleTick, pose])
 
   const jitter = jitterRef.current
   const hidden = place == null
