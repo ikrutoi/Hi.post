@@ -1,3 +1,4 @@
+import './stampCountFont.scss'
 import stampAroma99Source from '@shared/assets/stamps/stamp_aroma_99.svg?raw'
 import type { StampAroma99Colors } from '@envelope/domain/stampAroma99Colors'
 
@@ -40,7 +41,7 @@ export function buildStampAroma99Svg(
 
   const label = countLabel(yearCount)
   const countMarkup = label
-    ? `<text id="count" x="${COUNT_RIGHT}" y="${COUNT_BASELINE}" text-anchor="end" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="${COUNT_FONT_SIZE}" fill="${colors.countHi}" transform="translate(${COUNT_RIGHT} 0) scale(${COUNT_SCALE_X} 1) translate(${-COUNT_RIGHT} 0)">${label}</text>`
+    ? `<text id="count" x="${COUNT_RIGHT}" y="${COUNT_BASELINE}" text-anchor="end" font-family="Barlow, sans-serif" font-weight="700" font-size="${COUNT_FONT_SIZE}" fill="${colors.countHi}" transform="translate(${COUNT_RIGHT} 0) scale(${COUNT_SCALE_X} 1) translate(${-COUNT_RIGHT} 0)">${label}</text>`
     : ''
   svg = svg.replace(/<path id="count"[\s\S]*?\/>/, countMarkup)
   return svg
