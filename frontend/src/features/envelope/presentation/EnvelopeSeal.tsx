@@ -3,9 +3,10 @@ import {
   createPostcardSeal,
   type PostcardSeal,
 } from '@entities/postcard'
-import sealNoOutlineUrl from '@shared/assets/stamps/seal_noOutline.svg?url'
+import type { DispatchDate } from '@entities/date/domain/types'
 import sealOutline01Url from '@shared/assets/stamps/seal_outline_01.svg?url'
 import sealOutline02Url from '@shared/assets/stamps/seal_outline_02.svg?url'
+import { buildSealNoOutlineSvg } from './sealNoOutlineSvg'
 import styles from './Envelope.module.scss'
 
 const SEAL_OUTLINES = [sealOutline01Url, sealOutline02Url] as const
@@ -29,10 +30,15 @@ export function reshuffleEnvelopeSeal(): void {
 type EnvelopeSealProps = {
   /** Сохранённая постановка sent/delivered. Без неё — случайная, для теста в фабрике. */
   pose?: PostcardSeal | null
+  /** Дата на печати. Без неё печать не показываем. */
+  date?: DispatchDate | null
 }
 
-export const EnvelopeSeal: React.FC<EnvelopeSealProps> = ({ pose = null }) => {
-  const sealRef = useRef<HTMLImageElement>(null)
+export const EnvelopeSeal: React.FC<EnvelopeSealProps> = ({
+  pose = null,
+  date = null,
+}) => {
+  const sealRef = useRef<HTMLDivElement>(null)
   const poseRef = useRef(pose)
   poseRef.current = pose
   const jitterRef = useRef<PostcardSeal | null>(pose)
@@ -90,10 +96,10 @@ export const EnvelopeSeal: React.FC<EnvelopeSealProps> = ({ pose = null }) => {
     const section = stamp.closest('[data-envelope-section]')
     if (section instanceof HTMLElement) observer.observe(section)
     return () => observer.disconnect()
-  }, [reshuffleTick, pose])
+  }, [reshuffleTick, pose, date])
 
   const jitter = jitterRef.current
-  const hidden = place == null
+  const hidden = place == null || date == null
   const frame = hidden
     ? { visibility: 'hidden' as const }
     : {
@@ -105,16 +111,18 @@ export const EnvelopeSeal: React.FC<EnvelopeSealProps> = ({ pose = null }) => {
 
   return (
     <>
-      <img
+      <div
         ref={sealRef}
-        src={sealNoOutlineUrl}
-        alt=""
-        draggable={false}
         className={styles.envelopeSeal}
         style={
-          hidden
+          hidden || date == null
             ? frame
             : { ...frame, transform: `rotate(${place.rotate}deg)` }
+        }
+        dangerouslySetInnerHTML={
+          date == null
+            ? undefined
+            : { __html: buildSealNoOutlineSvg(date) }
         }
       />
       <img

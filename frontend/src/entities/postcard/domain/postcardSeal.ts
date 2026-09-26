@@ -6,8 +6,8 @@ import type {
 
 const SEAL_SHIFT_LEFT_RATIO = 0.03
 const SEAL_SHIFT_RIGHT_RATIO = 0.06
-const SEAL_SHIFT_UP_RATIO = 0.05
-const SEAL_SHIFT_DOWN_RATIO = 0.03
+const SEAL_SHIFT_UP_RATIO = 0.06
+const SEAL_SHIFT_DOWN_RATIO = 0.02
 const SEAL_ROTATION_DEG = 40
 
 export function postcardKeepsSeal(status: PostcardStatus): boolean {
