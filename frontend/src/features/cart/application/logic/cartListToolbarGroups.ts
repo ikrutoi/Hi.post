@@ -7,6 +7,8 @@ import type { ToolbarConfig } from '@toolbar/domain/types/toolbar.types'
 export function cartListToolbarGroups(options: {
   listSegment: CartListStatusSegment
   checkedCount: number
+  /** Все оплачиваемые строки корзины отмечены — галочка на checkBox. */
+  allChecked: boolean
   hasRows: boolean
 }): ToolbarConfig {
   const hideSelectAll = options.listSegment === 'cartBlocked'
@@ -18,11 +20,15 @@ export function cartListToolbarGroups(options: {
       : CART_LIST_TOOLBAR
   ).map((group) => ({
     ...group,
-    icons: group.icons.map((icon) =>
-      icon.key === 'listDelete'
-        ? { ...icon, state: canDelete ? 'enabled' : 'disabled' }
-        : icon,
-    ),
+    icons: group.icons.map((icon) => {
+      if (icon.key === 'listDelete') {
+        return { ...icon, state: canDelete ? 'enabled' : 'disabled' }
+      }
+      if (icon.key === 'checkBox') {
+        return { ...icon, state: options.allChecked ? 'active' : 'enabled' }
+      }
+      return icon
+    }),
   }))
   return options.hasRows ? groups : withDisabledToolbarGroups(groups)
 }

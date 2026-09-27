@@ -310,14 +310,27 @@ export const CartListPanel: React.FC<Props> = ({
       ? 'cardBlocked'
       : 'cart')
 
+  const allBillableChecked =
+    entriesProp == null &&
+    listSegment === 'cart' &&
+    billableCartLocalIds.length > 0 &&
+    checkedBillableCount === billableCartLocalIds.length
+
   const cartListHeaderToolbarGroups = useMemo(
     () =>
       cartListToolbarGroups({
         listSegment: entriesProp != null ? 'cart' : listSegment,
         checkedCount: entriesProp != null ? 0 : checkedBillableCount,
+        allChecked: allBillableChecked,
         hasRows,
       }),
-    [checkedBillableCount, entriesProp, hasRows, listSegment],
+    [
+      allBillableChecked,
+      checkedBillableCount,
+      entriesProp,
+      hasRows,
+      listSegment,
+    ],
   )
 
   return (

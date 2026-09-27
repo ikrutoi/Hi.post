@@ -43,11 +43,17 @@ export const CartListMobileFactoryLowerToolbar: React.FC = () => {
   const hasRows = cartHasVisibleRows(cartItems, listSegment)
 
   const cartListToolbarGroupsOverride = useMemo(() => {
-    const billable = new Set(cartListBillableLocalIds(cartItems))
+    const billableIds = cartListBillableLocalIds(cartItems)
+    const billable = new Set(billableIds)
     const checkedCount = checkedLocalIds.filter((id) => billable.has(id)).length
+    const allChecked =
+      listSegment === 'cart' &&
+      billableIds.length > 0 &&
+      checkedCount === billableIds.length
     return cartListToolbarGroups({
       listSegment,
       checkedCount,
+      allChecked,
       hasRows,
     })
   }, [cartItems, checkedLocalIds, hasRows, listSegment])
