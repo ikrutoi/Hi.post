@@ -5,8 +5,16 @@
   grid-row: 1 / 2;
   margin-bottom: 0.25rem;
 
+  :global([data-shell-layout='desktop']) & {
+    column-gap: 0.5rem;
+    box-sizing: border-box;
+    height: calc(0.78rem * 1.5 + 0.7rem);
+    min-height: calc(0.78rem * 1.5 + 0.7rem);
+    max-height: calc(0.78rem * 1.5 + 0.7rem);
+  }
+
   :global([data-shell-layout='mobile']) & {
-    gap: 0.125rem;
+    gap: var(--mobile-date-calendar-chrome-gap, 0.35rem);
     margin-bottom: 0;
     box-sizing: border-box;
     height: var(--mobile-date-calendar-chrome-row-height, 2rem);

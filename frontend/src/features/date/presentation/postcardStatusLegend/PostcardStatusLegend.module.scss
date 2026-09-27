@@ -192,6 +192,52 @@ $calendar-cart-history-icon-min: 1.25rem;
   justify-self: start;
 }
 
+/** Календарный футер cart/history: кнопки не выше строки дней недели. */
+:global([data-shell-layout='desktop']) {
+  .rootCalendarCartHistory {
+    height: 100%;
+
+    .row {
+      height: 100%;
+    }
+
+    .item {
+      align-self: center;
+      padding-block: 0;
+    }
+
+    .icon,
+    .item svg {
+      width: 0.95rem;
+      height: 0.95rem;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .iconSend {
+      width: auto;
+      height: 0.95rem;
+      min-height: 0;
+    }
+
+    .iconBlocked,
+    .item svg.iconBlocked {
+      width: 0.95rem;
+      height: auto;
+      min-height: 0;
+    }
+  }
+
+  .root.root-historyList.rootCalendarCartHistory .item:has(.count),
+  .root.root-calendar.rootCalendarCartHistory .item:has(.count) {
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    align-self: center;
+    padding-block: 0.04rem;
+  }
+}
+
 /** Footer count buttons — app frame fill, mini-pie section border. */
 .root.root-calendar .item:has(.count),
 .root.root-historyList .item:has(.count) {

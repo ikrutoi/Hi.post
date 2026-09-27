@@ -11,6 +11,11 @@
   margin: 0.2rem 0.75rem;
   text-transform: uppercase;
 
+  :global([data-shell-layout='desktop']) & {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
   :global([data-shell-layout='mobile']) & {
     margin: 0;
     box-sizing: border-box;
@@ -48,6 +53,12 @@
   line-height: 1.1;
   text-transform: uppercase;
   transition: color 0.2s ease;
+
+  :global([data-shell-layout='desktop']) & {
+    height: calc(0.78rem * 1.5);
+    max-height: calc(0.78rem * 1.5);
+    box-sizing: border-box;
+  }
 
   :global([data-shell-layout='mobile']) & {
     min-width: 3.15rem;

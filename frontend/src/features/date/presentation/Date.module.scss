@@ -5,7 +5,10 @@
 @use '@styles/mixins/sectionToolbarRow' as sectionToolbarRow;
 
 $mobile-date-calendar-chrome-row-height: 2rem;
-$mobile-date-calendar-chrome-gap: 0.125rem;
+$mobile-date-calendar-chrome-gap: 0.35rem;
+
+/** Строка подписей дней недели плюс 0.7rem, как у хедера. */
+$calendar-weekday-row-height: calc(0.78rem * 1.5 + 0.7rem);
 
 .date {
   display: flex;
@@ -470,6 +473,45 @@ $mobile-date-calendar-chrome-gap: 0.125rem;
   margin-top: 0.75rem;
   min-width: 0;
 
+  /**
+   * Фабрика, корзина и история: высота строки дней недели и белый фон футера истории.
+   */
+  :global([data-shell-layout='desktop']) & {
+    position: relative;
+    box-sizing: border-box;
+    height: $calendar-weekday-row-height;
+    min-height: $calendar-weekday-row-height;
+    max-height: $calendar-weekday-row-height;
+    margin-top: 0.25rem;
+    padding: 0 0.35rem;
+    background-color: #fff;
+    overflow: hidden;
+
+    /**
+     * postcardNext — в центре первой колонки, как IconCart в футере истории:
+     * 5 колонок, column-gap 0.35rem, padding ряда 0.35rem.
+     */
+    .dateBottomPostcardNextGroup {
+      position: absolute;
+      top: 50%;
+      left: calc(0.35rem + (100% - 2.1rem) / 10);
+      margin-left: 0;
+      transform: translate(-50%, -50%);
+    }
+
+    .dateBottomPostcardNextGroupCounted {
+      height: auto;
+      min-height: 0;
+      max-height: none;
+      align-self: center;
+      padding-block: 0.04rem;
+    }
+
+    .dateBottomPostcardNext {
+      height: 0.95rem;
+    }
+  }
+
   :global([data-shell-layout='mobile']) & {
     flex: 0 0 $mobile-date-calendar-chrome-row-height;
     height: $mobile-date-calendar-chrome-row-height;
@@ -662,10 +704,24 @@ $mobile-date-calendar-chrome-gap: 0.125rem;
 .historyFooterIndicators {
   @include historyFooter.history-footer-indicators-shell-calendar;
   flex: 0 0 auto;
+
+  /** Высоту и белый фон задаёт общий ряд `.dateBottomToggle`. */
+  :global([data-shell-layout='desktop']) & {
+    height: 100%;
+    min-height: 0;
+    padding: 0;
+    background-color: transparent;
+    width: 100%;
+    max-width: 100%;
+  }
 }
 
 .historyFooterIndicatorsInner {
   @include historyFooter.history-footer-indicators-inner;
+
+  :global([data-shell-layout='desktop']) & {
+    height: 100%;
+  }
 }
 
 .dateBottomToggleHistoryGroup {

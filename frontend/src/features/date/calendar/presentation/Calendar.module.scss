@@ -10,13 +10,18 @@
   max-width: 100%;
   min-height: 0;
 
+  :global([data-shell-layout='desktop']) & {
+    grid-template-rows: auto minmax(0, 1fr);
+    align-self: stretch;
+  }
+
   :global([data-shell-layout='mobile']) & {
     display: flex;
     flex-direction: column;
     flex: 1 1 auto;
     height: 100%;
     min-height: 0;
-    gap: var(--mobile-date-calendar-chrome-gap, 0.125rem);
+    gap: var(--mobile-date-calendar-chrome-gap, 0.35rem);
     align-content: stretch;
   }
 }
@@ -30,15 +35,23 @@
   gap: 0;
   min-height: 0;
 
+  :global([data-shell-layout='desktop']) & {
+    column-gap: 0.5rem;
+    row-gap: 0.5rem;
+    grid-template-rows: repeat(6, auto);
+    align-self: center;
+    height: auto;
+  }
+
   :global([data-shell-layout='mobile']) & {
     flex: 1 1 auto;
     width: 100%;
     min-height: 0;
-    margin-bottom: var(--mobile-date-calendar-chrome-gap, 0.125rem);
+    margin-bottom: var(--mobile-date-calendar-chrome-gap, 0.35rem);
     grid-column: unset;
     grid-row: unset;
     grid-template-rows: repeat(6, auto);
-    gap: var(--mobile-date-calendar-chrome-gap, 0.125rem);
+    gap: var(--mobile-date-calendar-chrome-gap, 0.35rem);
     align-content: center;
     align-self: stretch;
   }
