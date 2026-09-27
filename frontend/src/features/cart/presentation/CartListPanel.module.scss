@@ -243,6 +243,32 @@ $cart-list-panel-inline-end-inset: calc(
   }
 }
 
+.cartHeaderSegmentIcon {
+  svg {
+    width: 1.05rem;
+    height: 1.05rem;
+    display: block;
+    flex-shrink: 0;
+  }
+}
+
+/** IconCart рисует глиф с scale 1.25 — уменьшаем бокс, чтобы он совпал с blocked. */
+.cartHeaderSegmentIconCart svg {
+  width: 0.84rem;
+  height: 0.84rem;
+}
+
+.cart:not([aria-pressed='true']) .cartHeaderSegmentIcon svg,
+.cartBlocked:not([aria-pressed='true']) .cartHeaderSegmentIcon svg {
+  width: 0.82rem;
+  height: 0.82rem;
+}
+
+.cart:not([aria-pressed='true']) .cartHeaderSegmentIconCart svg {
+  width: 0.66rem;
+  height: 0.66rem;
+}
+
 .cartHeaderSegmentCount {
   position: absolute;
   top: 0;

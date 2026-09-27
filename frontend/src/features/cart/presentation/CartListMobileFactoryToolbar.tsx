@@ -6,7 +6,9 @@ import { useMobileScenarioToolbar } from '@features/cardSectionEditor/presentati
 import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import { buildNotebookCartTabCommandsMobile } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
-import { CART_LIST_TOOLBAR } from '@toolbar/domain/types/cartList.types'
+import { cartListBillableLocalIds } from '@cart/application/logic/cartListBillableLocalIds'
+import { cartListToolbarGroups } from '@cart/application/logic/cartListToolbarGroups'
+import { selectCartListCheckedLocalIds } from '@cart/infrastructure/selectors'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { CartHeaderSegments } from './CartHeaderSegments'
 import {
@@ -29,6 +31,7 @@ export const CartListMobileFactoryLowerToolbar: React.FC = () => {
   const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
   const cartItems = useAppSelector(selectCartItems)
   const listSegment = useAppSelector(selectCartListStatusSegment)
+  const checkedLocalIds = useAppSelector(selectCartListCheckedLocalIds)
   const { isMobileLayout } = useSizeFacade()
   const { showMobileCartListFactoryChrome } = useMobileFactoryListChrome()
 
@@ -40,9 +43,14 @@ export const CartListMobileFactoryLowerToolbar: React.FC = () => {
   const hasRows = cartHasVisibleRows(cartItems, listSegment)
 
   const cartListToolbarGroupsOverride = useMemo(() => {
-    if (listSegment !== 'cartBlocked') return undefined
-    return CART_LIST_TOOLBAR.filter((group) => group.group !== 'cartList')
-  }, [listSegment])
+    const billable = new Set(cartListBillableLocalIds(cartItems))
+    const checkedCount = checkedLocalIds.filter((id) => billable.has(id)).length
+    return cartListToolbarGroups({
+      listSegment,
+      checkedCount,
+      hasRows,
+    })
+  }, [cartItems, checkedLocalIds, hasRows, listSegment])
 
   const content = useMemo(() => {
     if (!enabled) return null
@@ -52,12 +60,12 @@ export const CartListMobileFactoryLowerToolbar: React.FC = () => {
           <Toolbar
             section="cartList"
             groupsOverride={cartListToolbarGroupsOverride}
-            justifyGroupsEnd={cartListToolbarGroupsOverride != null}
+            justifyGroupsEnd={listSegment === 'cartBlocked'}
           />
         ) : null}
       </div>
     )
-  }, [enabled, hasRows, cartListToolbarGroupsOverride])
+  }, [enabled, hasRows, cartListToolbarGroupsOverride, listSegment])
 
   useMobileScenarioToolbar(content)
 

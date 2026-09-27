@@ -6,10 +6,9 @@ import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import { IconCardBlocked, IconCart } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
-import { CART_LIST_TOOLBAR } from '@toolbar/domain/types/cartList.types'
-import { withDisabledToolbarGroups } from '@toolbar/domain/helpers'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import { cartListBillableLocalIds } from '@cart/application/logic/cartListBillableLocalIds'
+import { cartListToolbarGroups } from '@cart/application/logic/cartListToolbarGroups'
 import { useCartFacade } from '../application/facades'
 import {
   selectCartItems,
@@ -262,6 +261,11 @@ export const CartListPanel: React.FC<Props> = ({
   }, [entriesProp, entriesFromStore])
 
   const hasRows = entries.length > 0
+  const checkedBillableCount = useMemo(
+    () =>
+      billableCartLocalIds.filter((id) => checkedLocalIdSet.has(id)).length,
+    [billableCartLocalIds, checkedLocalIdSet],
+  )
   /**
    * У футера «неактивные» только в режиме `cart` из стора. В `cartBlocked` — все строки сверху,
    * как у активных в обычной корзине.
@@ -306,13 +310,15 @@ export const CartListPanel: React.FC<Props> = ({
       ? 'cardBlocked'
       : 'cart')
 
-  const cartListHeaderToolbarGroups = useMemo(() => {
-    const groups =
-      entriesProp != null || listSegment !== 'cartBlocked'
-        ? CART_LIST_TOOLBAR
-        : CART_LIST_TOOLBAR.filter((group) => group.group !== 'cartList')
-    return hasRows ? groups : withDisabledToolbarGroups(groups)
-  }, [entriesProp, hasRows, listSegment])
+  const cartListHeaderToolbarGroups = useMemo(
+    () =>
+      cartListToolbarGroups({
+        listSegment: entriesProp != null ? 'cart' : listSegment,
+        checkedCount: entriesProp != null ? 0 : checkedBillableCount,
+        hasRows,
+      }),
+    [checkedBillableCount, entriesProp, hasRows, listSegment],
+  )
 
   return (
     <div

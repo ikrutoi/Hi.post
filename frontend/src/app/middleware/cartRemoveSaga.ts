@@ -19,7 +19,7 @@ import { applyRightListArchiveToolbarVisuals } from '@toolbar/application/syncRi
 import { refreshRightSidebarBadgesFromPostcards } from './postcardCreateSaga'
 import { postcardLocalDataChanged } from '@features/sync/store/postcardSync.actions'
 
-function* handleRemoveCartPostcard(
+export function* handleRemoveCartPostcard(
   action: ReturnType<typeof removeCartPostcard>,
 ): SagaIterator {
   const localId = action.payload

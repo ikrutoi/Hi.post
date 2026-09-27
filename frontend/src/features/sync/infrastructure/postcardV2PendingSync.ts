@@ -1,4 +1,6 @@
 import type { PostcardHydrated } from '@entities/postcard'
+import { readAuthSession } from '@features/auth/infrastructure/sessionStorage'
+import { isHttpAuthMode } from '@shared/config/authMode'
 import {
   deleteV2Postcard,
   upsertV2Postcard,
@@ -17,8 +19,42 @@ type LibraryOp =
   | { type: 'upsert'; kind: V2LibraryKind; item: V2LibraryItem }
   | { type: 'delete'; kind: V2LibraryKind }
 
+const DELETE_TOMBSTONE_KEY = 'hi.post.v2.postcardDeleteIds'
+
 const pendingPostcards = new Map<string, PostcardOp>()
 const pendingLibrary = new Map<string, LibraryOp>()
+
+function readDeleteTombstones(): string[] {
+  if (typeof localStorage === 'undefined') return []
+  try {
+    const raw = localStorage.getItem(DELETE_TOMBSTONE_KEY)
+    const parsed: unknown = raw ? JSON.parse(raw) : []
+    if (!Array.isArray(parsed)) return []
+    return parsed.filter((id): id is string => typeof id === 'string' && id !== '')
+  } catch {
+    return []
+  }
+}
+
+function writeDeleteTombstones(ids: string[]): void {
+  if (typeof localStorage === 'undefined') return
+  if (ids.length === 0) {
+    localStorage.removeItem(DELETE_TOMBSTONE_KEY)
+    return
+  }
+  localStorage.setItem(DELETE_TOMBSTONE_KEY, JSON.stringify(ids))
+}
+
+function persistDeleteTombstones(): void {
+  const ids = [...pendingPostcards.entries()]
+    .filter(([, op]) => op.type === 'delete')
+    .map(([id]) => id)
+  writeDeleteTombstones(ids)
+}
+
+for (const id of readDeleteTombstones()) {
+  pendingPostcards.set(id, { type: 'delete' })
+}
 
 const V2_SYNC_DEBOUNCE_MS = 3000
 let flushTimer: ReturnType<typeof setTimeout> | null = null
@@ -62,7 +98,17 @@ export function enqueuePostcardUpsert(postcard: PostcardHydrated): void {
 export function enqueuePostcardDelete(id: string): void {
   if (!id) return
   pendingPostcards.set(id, { type: 'delete' })
+  persistDeleteTombstones()
   schedulePendingV2Flush()
+}
+
+/** Ids removed locally but not yet confirmed on the server. */
+export function pendingPostcardDeleteIds(): ReadonlySet<string> {
+  const ids = new Set<string>()
+  for (const [id, op] of pendingPostcards) {
+    if (op.type === 'delete') ids.add(id)
+  }
+  return ids
 }
 
 export function enqueueLibraryUpsert(
@@ -90,6 +136,7 @@ export function hasPendingV2Sync(): boolean {
 
 export async function flushPendingV2Sync(): Promise<void> {
   if (!hasPendingV2Sync()) return
+  if (isHttpAuthMode() && !readAuthSession()?.token) return
 
   const postcardBatch = [...pendingPostcards.entries()]
   const libraryBatch = [...pendingLibrary.entries()]
@@ -104,6 +151,7 @@ export async function flushPendingV2Sync(): Promise<void> {
       if (!pendingPostcards.has(id)) pendingPostcards.set(id, op)
     }
   }
+  persistDeleteTombstones()
 
   for (const [key, op] of libraryBatch) {
     try {

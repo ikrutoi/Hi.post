@@ -10,6 +10,7 @@ import {
 } from '@cart/infrastructure/state'
 import { endCartCalendarDatePick } from '@date/calendar/infrastructure/state'
 import { releaseCartDatePickListEntryOwnership } from '@date/calendar/application/logic/cartDatePickListEntryOwnership'
+import { IconCardBlocked, IconCart } from '@shared/ui/icons'
 import styles from './CartListPanel.module.scss'
 
 export const CartHeaderSegments: React.FC<{
@@ -59,7 +60,18 @@ export const CartHeaderSegments: React.FC<{
           <span className={styles.cartHeaderSegmentCount} aria-hidden>
             {cartSegmentCounts.cart}
           </span>
-        ) : null}
+        ) : (
+          <span
+            className={clsx(
+              styles.cartHeaderSegmentCount,
+              styles.cartHeaderSegmentIcon,
+              styles.cartHeaderSegmentIconCart,
+            )}
+            aria-hidden
+          >
+            <IconCart />
+          </span>
+        )}
       </button>
       <button
         type="button"
@@ -76,7 +88,17 @@ export const CartHeaderSegments: React.FC<{
           <span className={styles.cartHeaderSegmentCount} aria-hidden>
             {cartSegmentCounts.cartBlocked}
           </span>
-        ) : null}
+        ) : (
+          <span
+            className={clsx(
+              styles.cartHeaderSegmentCount,
+              styles.cartHeaderSegmentIcon,
+            )}
+            aria-hidden
+          >
+            <IconCardBlocked />
+          </span>
+        )}
       </button>
     </div>
   )

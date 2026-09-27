@@ -15,6 +15,7 @@ import {
 } from '@app/middleware/postcardCardphotoHydrate'
 import { refreshRightSidebarBadgesFromPostcards } from '@app/middleware/postcardCreateSaga'
 import { rehydratePostcardsFromIdb } from '@features/sync/store'
+import { pendingPostcardDeleteIds } from '@features/sync/infrastructure/postcardV2PendingSync'
 import { syncCardphotoEditorListStatusFromIdbSaga } from '@cardphoto/application/helpers/syncCardphotoEditorListStatusFromIdb'
 
 function cartPostcardPreviewAssets(postcards: PostcardHydrated[]): ImageAsset[] {
@@ -45,7 +46,12 @@ function cartPostcardPreviewAssets(postcards: PostcardHydrated[]): ImageAsset[] 
 }
 
 function* rehydratePostcardsFromIdbSaga(): SagaIterator {
-  const rawPostcards: PostcardHydrated[] = yield call(postcardsAdapter.getAll)
+  const deletedIds = pendingPostcardDeleteIds()
+  for (const id of deletedIds) {
+    yield call([postcardsAdapter, 'deleteById'], id)
+  }
+  const loaded: PostcardHydrated[] = yield call(postcardsAdapter.getAll)
+  const rawPostcards = loaded.filter((row) => !deletedIds.has(row.id))
   const postcards: PostcardHydrated[] = yield call(
     refreshPostcardsCardphotoUrls,
     rawPostcards,

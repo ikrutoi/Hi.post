@@ -23,7 +23,7 @@ export const CART_LIST_TOOLBAR: ToolbarConfig = [
   },
   {
     group: 'actions',
-    icons: [{ key: 'listDelete', state: 'enabled' }],
+    icons: [{ key: 'listDelete', state: 'disabled' }],
     status: 'enabled',
   },
 ]

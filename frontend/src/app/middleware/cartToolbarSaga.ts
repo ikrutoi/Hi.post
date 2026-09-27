@@ -1,4 +1,4 @@
-import { all, put, select, takeEvery } from 'redux-saga/effects'
+import { all, call, put, select, takeEvery } from 'redux-saga/effects'
 import { SagaIterator } from 'redux-saga'
 import type { PostcardHydrated } from '@entities/postcard'
 import { cartListBillableLocalIds } from '@cart/application/logic/cartListBillableLocalIds'
@@ -6,13 +6,18 @@ import {
   selectCartItems,
   selectCartListCheckedLocalIds,
   selectCartListPanelOpen,
+  selectCartListStatusSegment,
 } from '@cart/infrastructure/selectors'
 import {
+  removeCartPostcard,
   setCartListCheckedLocalIds,
   setCartListPanelOpen,
 } from '@cart/infrastructure/state'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import { handleRemoveCartPostcard } from './cartRemoveSaga'
+
+let cartListDeleteInFlight = false
 
 function syncCartListCheckBoxToolbarIcon(allChecked: boolean): ReturnType<
   typeof updateToolbarIcon
@@ -63,6 +68,28 @@ function* handleCartListToolbarAction(
       yield put(syncCartListCheckBoxToolbarIcon(true))
     }
     return
+  }
+
+  if (key === 'listDelete') {
+    if (cartListDeleteInFlight) return
+    cartListDeleteInFlight = true
+    try {
+      const segment: ReturnType<typeof selectCartListStatusSegment> =
+        yield select(selectCartListStatusSegment)
+      if (segment !== 'cart') return
+
+      const items: PostcardHydrated[] = yield select(selectCartItems)
+      const checked: number[] = yield select(selectCartListCheckedLocalIds)
+      const billable = new Set(cartListBillableLocalIds(items))
+      const ids = checked.filter((id) => billable.has(id))
+      if (ids.length === 0) return
+
+      for (const localId of ids) {
+        yield call(handleRemoveCartPostcard, removeCartPostcard(localId))
+      }
+    } finally {
+      cartListDeleteInFlight = false
+    }
   }
 }
 
