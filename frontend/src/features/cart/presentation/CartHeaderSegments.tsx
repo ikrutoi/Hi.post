@@ -65,7 +65,6 @@ export const CartHeaderSegments: React.FC<{
             className={clsx(
               styles.cartHeaderSegmentCount,
               styles.cartHeaderSegmentIcon,
-              styles.cartHeaderSegmentIconCart,
             )}
             aria-hidden
           >

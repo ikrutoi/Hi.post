@@ -127,8 +127,11 @@ function cardphotoUrlsFromCard(card: Card): {
       ? card.thumbnailUrl
       : null
 
-  const previewUrl = thumb || main || full || cardTn || null
-  const factoryDisplayUrl = main || full || thumb || cardTn || null
+  const durable = [main, full, thumb, cardTn].find(
+    (url) => url != null && !url.startsWith('blob:'),
+  )
+  const previewUrl = durable || main || full || thumb || cardTn || null
+  const factoryDisplayUrl = previewUrl
   const isComplete = Boolean(previewUrl)
   return {
     previewUrl,

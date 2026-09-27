@@ -15,6 +15,28 @@ import type {
 } from '../../domain/types'
 import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
 
+/** http/data сначала, затем живой blob реестра. Сохранённый thumbnail blob часто уже мёртвый. */
+function liveCardphotoPreviewUrl(
+  applyImage: ImageMeta | null,
+  asset: { url?: string | null; thumbUrl?: string | null } | null | undefined,
+): string | null {
+  const meta = [applyImage?.url, applyImage?.full?.url, applyImage?.thumbnail?.url]
+  const registry = [asset?.thumbUrl, asset?.url]
+  for (const url of [...meta, ...registry]) {
+    if (typeof url !== 'string') continue
+    const trimmed = url.trim()
+    if (!trimmed || trimmed.startsWith('blob:')) continue
+    return trimmed
+  }
+  for (const url of registry) {
+    if (typeof url === 'string' && url.trim() !== '') return url.trim()
+  }
+  for (const url of meta) {
+    if (typeof url === 'string' && url.trim() !== '') return url.trim()
+  }
+  return null
+}
+
 function toLightImageMeta(meta: ImageMeta | null): ImageMeta | null {
   if (!meta) return null
   return {
@@ -310,14 +332,9 @@ export const selectCardphotoPreview = createSelector(
 
     // `applyFinal` обновляет `appliedData` раньше, чем assetRegistry; в реестре могут остаться
     // старые blob: — тогда превью ломается (картинка пропадает, в src остаётся «мертвая» ссылка).
-    const previewUrl =
-      isComplete
-        ? applyImage?.thumbnail?.url ||
-          applyImage?.url ||
-          asset?.thumbUrl ||
-          asset?.url ||
-          null
-        : null
+    const previewUrl = isComplete
+      ? liveCardphotoPreviewUrl(applyImage, asset)
+      : null
 
     return {
       previewUrl,

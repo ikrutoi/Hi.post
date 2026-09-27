@@ -5,16 +5,10 @@ const strokeRound = {
   strokeLinejoin: 'round' as const,
 }
 
-/** New art is 1600 viewBox vs older 1280 icons — scale so the glyph matches toolbar weight. */
-const CART_GLYPH_SCALE = 1.25
-
-export const IconCart = ({
-  style,
-  ...props
-}: React.SVGProps<SVGSVGElement>) => (
+export const IconCart = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 1600 1600"
+    viewBox="0 0 1280 1360"
     fillRule="evenodd"
     clipRule="evenodd"
     imageRendering="optimizeQuality"
@@ -22,34 +16,57 @@ export const IconCart = ({
     textRendering="geometricPrecision"
     fill="currentColor"
     {...props}
-    style={{
-      transform: `scale(${CART_GLYPH_SCALE})`,
-      transformOrigin: 'center',
-      ...style,
-    }}
   >
     <path
       fill="none"
       stroke="currentColor"
       strokeWidth={107.498}
-      {...strokeRound}
-      d="M591 871V165c0-56 45-101 101-101h707c56 0 101 45 101 101v706c0 56-45 101-101 101H692c-56 0-101-45-101-101"
+      strokeLinecap="round"
+      d="M262 1204c-49 0-89-36-95-78L56 581"
     />
-    <path
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={106.665}
-      {...strokeRound}
-      d="m591 720 253-253c47-45 105-45 152 0l252 253M1147 618l51-50c47-45 104-45 151 0l152 152"
-    />
-    <circle cx={671} cy={1468} r={125} fill="currentColor" />
-    <circle cx={1234} cy={1468} r={125} fill="currentColor" />
     <path
       fill="none"
       stroke="currentColor"
       strokeWidth={107.498}
       {...strokeRound}
-      d="M243 493H99m144 0 207 695m546 0H450m546 0h77m-353 0h707"
+      d="M315 875V169c0-56 45-101 101-101h707c56 0 101 45 101 101v706c0 56-45 101-101 101H416c-56 0-101-45-101-101"
     />
+    <path
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={107.498}
+      {...strokeRound}
+      d="m538 976 232-454 424 425"
+    />
+    <path
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={107.498}
+      {...strokeRound}
+      d="m316 450 454 72-232 454"
+    />
+    <path
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={107.498}
+      {...strokeRound}
+      d="M1194 947 770 522l453-231"
+    />
+    <path
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={107.498}
+      {...strokeRound}
+      d="m698 68 72 454-454-72"
+    />
+    <path
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={107.498}
+      {...strokeRound}
+      d="M1223 291 770 522 698 68"
+    />
+    <circle cx={541} cy={1227} r={125} fill="currentColor" />
+    <circle cx={999} cy={1227} r={125} fill="currentColor" />
   </svg>
 )

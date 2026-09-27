@@ -128,6 +128,20 @@ $pie-center-cart-blocked-inner-stop: (
   display: block;
 }
 
+/** Фото сектора cardphoto. Обычный img: SVG-pattern его не рисует поверх фона «ушей». */
+.piePhotoSector {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  top: 0;
+  width: 50%;
+  height: 50%;
+  max-width: none;
+  object-fit: cover;
+  pointer-events: none;
+  clip-path: polygon(0.4% 84.2%, 0.4% 0.4%, 84.2% 0.4%, 100% 100%);
+}
+
 .svg {
   width: 100%;
   height: 100%;
@@ -435,10 +449,30 @@ $pie-center-cart-blocked-inner-stop: (
   }
 }
 
-.hubContainer:not(.hubContainerRight) .pieCenterIconDoublePressHint,
-.hubContainerRight .pieCenterIconDoublePressHint {
+.hubContainer:not(.hubContainerRight) .pieCenterIconDoublePressHint {
   transform-origin: center center;
   animation: pieCenterLogoDoublePressHint 1.5s ease-in-out 1;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+/** Корзина/история: одна пульсация центра, +18%. */
+@keyframes pieCenterArchivePressHint {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.18);
+  }
+}
+
+.hubContainerRight .pieCenterIconDoublePressHint {
+  transform-origin: center center;
+  animation: pieCenterArchivePressHint 0.45s ease-in-out 1;
 
   @media (prefers-reduced-motion: reduce) {
     animation: none;

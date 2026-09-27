@@ -1,6 +1,7 @@
 import React from 'react'
 import clsx from 'clsx'
 import { AROMA_IMAGES_THUMB } from '@entities/aroma/domain/types'
+import { useListCardPreviewUrl } from '@entities/card/application/hooks/useListCardPreviewUrl'
 import { MONTH_NAMES } from '@entities/date/constants'
 import {
   IconUsers,
@@ -146,6 +147,26 @@ export const CardPie: React.FC<CardPieProps> = ({
   const { setHovered, hoveredSection } = useCardEditorFacade()
 
   const cardData = pieInner ?? data?.data
+  const archiveCardphoto =
+    listArchiveSource != null ? cardData?.cardphoto : undefined
+  const archivePhotoCandidate = (() => {
+    if (archiveCardphoto == null) return null
+    const factoryUrl =
+      'factoryDisplayUrl' in archiveCardphoto
+        ? archiveCardphoto.factoryDisplayUrl
+        : null
+    for (const url of [factoryUrl, archiveCardphoto.previewUrl]) {
+      if (typeof url !== 'string') continue
+      const trimmed = url.trim()
+      if (!trimmed || trimmed.startsWith('blob:')) continue
+      return trimmed
+    }
+    return archiveCardphoto.previewUrl ?? null
+  })()
+  const { displayUrl: resolvedArchivePhotoUrl } = useListCardPreviewUrl(
+    archiveCardphoto?.id,
+    archivePhotoCandidate,
+  )
   const isReady =
     pieSections != null ? isPostcardPieAllComplete(pieSections) : facadeReady
   /**
@@ -168,7 +189,9 @@ export const CardPie: React.FC<CardPieProps> = ({
   const cardtextColorKey = cardData?.cardtext?.style?.color ?? 'forestGreen'
   const cardtextFillVar = `var(--color-font-${cardtextColorKey})`
   const photoUrl = sections.cardphoto
-    ? (cardData?.cardphoto?.previewUrl ?? null)
+    ? listArchiveSource != null
+      ? (resolvedArchivePhotoUrl ?? cardData?.cardphoto?.previewUrl ?? null)
+      : (cardData?.cardphoto?.previewUrl ?? null)
     : null
   const aromaIndex = cardData?.aroma?.index
   const aromaImageUrl =
@@ -330,19 +353,16 @@ export const CardPie: React.FC<CardPieProps> = ({
             {sections.cardphoto && photoUrl && (
               <pattern
                 id={photoFillId}
-                patternUnits="objectBoundingBox"
-                patternContentUnits="objectBoundingBox"
-                x="0"
-                y="0"
-                width="1"
-                height="1"
+                patternUnits="userSpaceOnUse"
+                width="5120"
+                height="5120"
               >
                 <image
                   href={photoUrl}
-                  x="0"
-                  y="0"
-                  width="1"
-                  height="1"
+                  x="10"
+                  y="10"
+                  width="2550"
+                  height="2550"
                   preserveAspectRatio="xMidYMid slice"
                 />
               </pattern>
@@ -844,6 +864,14 @@ export const CardPie: React.FC<CardPieProps> = ({
             /> */}
           </g>
         </svg>
+        {photoUrl ? (
+          <img
+            className={styles.piePhotoSector}
+            src={photoUrl}
+            alt=""
+            draggable={false}
+          />
+        ) : null}
       </div>
       <div
         className={clsx(

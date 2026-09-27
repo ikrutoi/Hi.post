@@ -262,21 +262,10 @@ $cart-list-panel-inline-end-inset: calc(
   }
 }
 
-/** IconCart рисует глиф с scale 1.25 — уменьшаем бокс, чтобы он совпал с blocked. */
-.cartHeaderSegmentIconCart svg {
-  width: 0.84rem;
-  height: 0.84rem;
-}
-
 .cart:not([aria-pressed='true']) .cartHeaderSegmentIcon svg,
 .cartBlocked:not([aria-pressed='true']) .cartHeaderSegmentIcon svg {
   width: 0.82rem;
   height: 0.82rem;
-}
-
-.cart:not([aria-pressed='true']) .cartHeaderSegmentIconCart svg {
-  width: 0.66rem;
-  height: 0.66rem;
 }
 
 .cartHeaderSegmentCount {
@@ -520,18 +509,8 @@ $cart-list-panel-inline-end-inset: calc(
   color: $color-app-inner;
 }
 
-/** IconCart applies glyph scale 1.25 — shrink empty active placeholder to match blocked. */
 .listEmptyIconCartWrap {
   display: contents;
-
-  :global([data-shell-layout='mobile']) & {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transform: scale(0.8);
-    transform-origin: center;
-  }
 }
 
 @include mobile-list-empty-icon-card-section;
