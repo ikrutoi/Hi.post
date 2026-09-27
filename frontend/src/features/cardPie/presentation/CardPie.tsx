@@ -88,6 +88,7 @@ export const CardPie: React.FC<CardPieProps> = ({
   rightPieCenterEmpty = false,
   rightPieCenterArchiveCycleHint = false,
   rightPieCenterArchiveCycleHintViewMode = null,
+  cardphotoThumb = false,
 }) => {
   const pieDefsUid = React.useId().replace(/:/g, '')
   const [centerPressSeq, setCenterPressSeq] = React.useState(0)
@@ -149,7 +150,7 @@ export const CardPie: React.FC<CardPieProps> = ({
   const cardData = pieInner ?? data?.data
   const archiveCardphoto =
     listArchiveSource != null ? cardData?.cardphoto : undefined
-  const archivePhotoCandidate = (() => {
+  const archiveFullCandidate = (() => {
     if (archiveCardphoto == null) return null
     const factoryUrl =
       'factoryDisplayUrl' in archiveCardphoto
@@ -163,9 +164,17 @@ export const CardPie: React.FC<CardPieProps> = ({
     }
     return archiveCardphoto.previewUrl ?? null
   })()
+  const archiveThumbUrl =
+    archiveCardphoto != null && 'thumbUrl' in archiveCardphoto
+      ? archiveCardphoto.thumbUrl
+      : null
+  const archivePhotoCandidate = cardphotoThumb
+    ? (archiveThumbUrl ?? archiveFullCandidate)
+    : archiveFullCandidate
   const { displayUrl: resolvedArchivePhotoUrl } = useListCardPreviewUrl(
     archiveCardphoto?.id,
     archivePhotoCandidate,
+    cardphotoThumb ? { preferThumb: true } : undefined,
   )
   const isReady =
     pieSections != null ? isPostcardPieAllComplete(pieSections) : facadeReady
@@ -188,10 +197,23 @@ export const CardPie: React.FC<CardPieProps> = ({
     .filter((line) => line.length > 0)
   const cardtextColorKey = cardData?.cardtext?.style?.color ?? 'forestGreen'
   const cardtextFillVar = `var(--color-font-${cardtextColorKey})`
+  const factoryThumbUrl =
+    cardphotoThumb &&
+    cardData?.cardphoto != null &&
+    'thumbUrl' in cardData.cardphoto &&
+    typeof cardData.cardphoto.thumbUrl === 'string' &&
+    cardData.cardphoto.thumbUrl.trim() !== ''
+      ? cardData.cardphoto.thumbUrl.trim()
+      : null
   const photoUrl = sections.cardphoto
     ? listArchiveSource != null
-      ? (resolvedArchivePhotoUrl ?? cardData?.cardphoto?.previewUrl ?? null)
-      : (cardData?.cardphoto?.previewUrl ?? null)
+      ? (resolvedArchivePhotoUrl ??
+        (cardphotoThumb ? archiveThumbUrl : null) ??
+        cardData?.cardphoto?.previewUrl ??
+        null)
+      : cardphotoThumb
+        ? (factoryThumbUrl ?? cardData?.cardphoto?.previewUrl ?? null)
+        : (cardData?.cardphoto?.previewUrl ?? null)
     : null
   const aromaIndex = cardData?.aroma?.index
   const aromaImageUrl =

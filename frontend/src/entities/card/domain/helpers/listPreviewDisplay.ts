@@ -42,16 +42,32 @@ function pickPreviewUrl(
 export type ListPreviewDisplayOptions = {
   /** Живой blob: из редактора / current_session (не переживает reload). */
   allowBlobPreview?: boolean
+  /** Сектор пая: сначала registry/candidate thumb, полный кадр только как запас. */
+  preferThumb?: boolean
 }
 
 /** URL для `<img>`: кэш саги (в т.ч. свежий blob:) → registry → http(s)/data. */
 export function resolveListPreviewDisplayUrl(
   input: ListPreviewDisplayInput & ListPreviewDisplayOptions,
 ): string | null {
-  const cached = input.cachedUrl?.trim()
-  if (cached) return cached
-
+  const cached = input.cachedUrl?.trim() || null
   const allowPersistedBlob = input.allowBlobPreview ?? false
+
+  if (input.preferThumb) {
+    const registryThumb = pickPreviewUrl(input.registryThumbUrl, true)
+    const registryFull = pickPreviewUrl(input.registryUrl, true)
+    const distinctRegistryThumb =
+      registryThumb && registryThumb !== registryFull ? registryThumb : null
+    return (
+      pickPreviewUrl(input.previewUrl, allowPersistedBlob) ||
+      distinctRegistryThumb ||
+      cached ||
+      registryThumb ||
+      registryFull
+    )
+  }
+
+  if (cached) return cached
 
   /** Registry blobs are recreated on hydrate — always usable in-session. */
   return (

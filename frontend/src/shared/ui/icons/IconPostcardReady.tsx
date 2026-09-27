@@ -1,18 +1,73 @@
 import React from 'react'
 
+/** Стандартный холст иконок — 128×128, в SVG это 1280. Более крупный холст рисуем пропорционально больше. */
+const ARTBOARD_STANDARD = 1280
+const ARTBOARD_SCALE = 1440 / ARTBOARD_STANDARD
+
+const strokeRound = {
+  strokeLinecap: 'round' as const,
+  strokeLinejoin: 'round' as const,
+}
+
+const strokeCap = {
+  strokeLinecap: 'round' as const,
+}
+
 export const IconPostcardReady = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 1280 1280"
+    xmlSpace="preserve"
+    viewBox="0 0 1440 1440"
     fill="none"
-    stroke="currentColor"
-    strokeWidth={106.666}
-    strokeLinecap="round"
-    strokeLinejoin="round"
+    fillRule="evenodd"
+    clipRule="evenodd"
+    imageRendering="optimizeQuality"
+    shapeRendering="geometricPrecision"
+    textRendering="geometricPrecision"
     {...props}
+    style={{ scale: ARTBOARD_SCALE, ...props.style }}
   >
-    <path d="M966 767v341c0 62-51 113-113 113H172c-62 0-113-51-113-113V427c0-62 51-113 113-113h24M528 372l189 190 505-505" />
-    <path d="m58 968 252-252c47-45 104-45 151 0l252 252" />
-    <path d="m612 867 51-50c47-45 104-45 151 0l151 151" />
+    <g stroke="currentColor">
+      <path
+        {...strokeRound}
+        strokeWidth={122.499}
+        d="m682 381 189 189 505-505"
+      />
+      <path
+        {...strokeRound}
+        strokeWidth={107.498}
+        d="M967 1003v281c0 55-45 101-101 101H159c-56 0-101-46-101-101"
+      />
+      <path
+        {...strokeCap}
+        strokeWidth={107.498}
+        d="m281 1384 232-454 424 425"
+      />
+      <path
+        {...strokeCap}
+        strokeWidth={107.498}
+        d="m59 858 454 72-232 454"
+      />
+      <path
+        {...strokeCap}
+        strokeWidth={107.498}
+        d="M937 1355 513 930l252-129"
+      />
+      <path
+        {...strokeCap}
+        strokeWidth={107.498}
+        d="m441 477 72 453-454-72"
+      />
+      <path
+        {...strokeCap}
+        strokeWidth={107.498}
+        d="M765 801 513 930l-72-453"
+      />
+      <path
+        {...strokeRound}
+        strokeWidth={107.498}
+        d="M440 476H159c-56 0-101 45-101 101v707c0 55 45 101 101 101M967 817v467"
+      />
+    </g>
   </svg>
 )

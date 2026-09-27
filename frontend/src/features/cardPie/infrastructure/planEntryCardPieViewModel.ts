@@ -19,6 +19,7 @@ export function emptyCardPieInnerData(): CardPieInnerData {
   return {
     cardphoto: {
       previewUrl: null,
+      thumbUrl: null,
       factoryDisplayUrl: null,
       isComplete: false,
       id: 'empty',
@@ -47,6 +48,7 @@ export function cardPieInnerFromEditorActiveData(
   return {
     cardphoto: {
       previewUrl: cardphoto?.previewUrl ?? null,
+      thumbUrl: cardphoto?.thumbUrl ?? null,
       factoryDisplayUrl: cardphoto?.previewUrl ?? null,
       isComplete: Boolean(cardphoto?.isComplete),
       id: cardphoto?.id ?? 'empty',

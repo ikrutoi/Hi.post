@@ -16,6 +16,8 @@ import {
 export type ListCardPreviewUrlOptions = {
   /** Как в списках до resilience: processed / current_session — blob: из сессии. */
   previewIsProcessed?: boolean
+  /** Сначала thumb. Кэш полного кадра остаётся запасным. */
+  preferThumb?: boolean
 }
 
 export type ListCardPreviewUrlResult = {
@@ -71,6 +73,7 @@ export function useListCardPreviewUrl(
     registryThumbUrl: asset?.thumbUrl ?? null,
     registryUrl: asset?.url ?? null,
     allowBlobPreview,
+    preferThumb: options?.preferThumb,
   })
 
   const onPreviewImgError = useCallback(() => {

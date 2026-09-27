@@ -37,6 +37,25 @@ function liveCardphotoPreviewUrl(
   return null
 }
 
+/** Превью для мелкого сектора пая: thumbnail, не полный кадр. */
+function liveCardphotoThumbUrl(
+  applyImage: ImageMeta | null,
+  asset: { url?: string | null; thumbUrl?: string | null } | null | undefined,
+): string | null {
+  const meta = [applyImage?.thumbnail?.url]
+  const registry = [asset?.thumbUrl]
+  for (const url of [...meta, ...registry]) {
+    if (typeof url !== 'string') continue
+    const trimmed = url.trim()
+    if (!trimmed || trimmed.startsWith('blob:')) continue
+    return trimmed
+  }
+  for (const url of [...meta, ...registry]) {
+    if (typeof url === 'string' && url.trim() !== '') return url.trim()
+  }
+  return null
+}
+
 function toLightImageMeta(meta: ImageMeta | null): ImageMeta | null {
   if (!meta) return null
   return {
@@ -335,9 +354,13 @@ export const selectCardphotoPreview = createSelector(
     const previewUrl = isComplete
       ? liveCardphotoPreviewUrl(applyImage, asset)
       : null
+    const thumbUrl = isComplete
+      ? liveCardphotoThumbUrl(applyImage, asset)
+      : null
 
     return {
       previewUrl,
+      thumbUrl,
       isComplete,
       id: id || 'empty',
     }

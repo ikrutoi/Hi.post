@@ -86,6 +86,7 @@ export const HistoryListPieEntry: React.FC<HistoryListPieEntryProps> = ({
       ...emptyCardPieInnerData(),
       cardphoto: {
         previewUrl: displayUrl,
+        thumbUrl: null,
         factoryDisplayUrl: displayUrl,
         isComplete: true,
         id: cardId ?? 'history-list',

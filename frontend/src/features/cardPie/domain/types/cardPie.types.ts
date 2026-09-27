@@ -70,6 +70,8 @@ export interface CardPieProps {
   rightPieCenterArchiveCycleHint?: boolean
   /** list / calendar — часть ключа «одна подсказка на режим + форму». */
   rightPieCenterArchiveCycleHintViewMode?: 'list' | 'calendar' | null
+  /** Центральный пай: в секторе фото рисовать thumbnail, не полный кадр. */
+  cardphotoThumb?: boolean
 }
 
 export interface CardPieRefs {

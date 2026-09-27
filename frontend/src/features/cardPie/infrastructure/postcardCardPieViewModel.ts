@@ -24,6 +24,8 @@ export type CardPieInnerData = {
   cardphoto: {
     /** Мини-пирог / паттерн: сначала thumbnail. */
     previewUrl: string | null
+    /** Уменьшенное превью для сектора фото центрального пая. */
+    thumbUrl: string | null
     /** Полноразмерное отображение в фабрике (зеркало / peek). */
     factoryDisplayUrl: string | null
     isComplete: boolean
@@ -103,6 +105,7 @@ function recipientDisplayFields(
 
 function cardphotoUrlsFromCard(card: Card): {
   previewUrl: string | null
+  thumbUrl: string | null
   factoryDisplayUrl: string | null
   isComplete: boolean
   id: string
@@ -132,9 +135,14 @@ function cardphotoUrlsFromCard(card: Card): {
   )
   const previewUrl = durable || main || full || thumb || cardTn || null
   const factoryDisplayUrl = previewUrl
+  const durableThumb = [thumb, cardTn].find(
+    (url) => url != null && !url.startsWith('blob:'),
+  )
+  const thumbUrl = durableThumb || thumb || cardTn || null
   const isComplete = Boolean(previewUrl)
   return {
     previewUrl,
+    thumbUrl,
     factoryDisplayUrl,
     isComplete,
     id: card.id,
