@@ -42,7 +42,7 @@ export function buildSealNoOutlineSvg(
 ): string {
   const { dayMonth, year } = sealDateLines(date)
   const font = barlowReady ? 'Barlow, sans-serif' : 'Arial, sans-serif'
-  const dateText = `<text x="2560" y="2987" text-anchor="middle" font-family="${font}" font-weight="700" font-size="846" fill="#000">${dayMonth}</text><text x="2560" y="3936" text-anchor="middle" font-family="${font}" font-weight="700" font-size="846" fill="#000">${year}</text>`
+  const dateText = `<text x="2560" y="2987" text-anchor="middle" font-family="${font}" font-weight="600" font-size="846" fill="#000">${dayMonth}</text><text x="2560" y="3936" text-anchor="middle" font-family="${font}" font-weight="600" font-size="846" fill="#000">${year}</text>`
   const end = sealSource.lastIndexOf('</g>')
   const body =
     end >= 0

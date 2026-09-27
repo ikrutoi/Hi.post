@@ -3,6 +3,8 @@ import stampDelivered99Source from '@shared/assets/stamps/stamp_delivered_99.svg
 
 /** Правый край и низ контура `countYear` в viewBox марки. */
 const COUNT_RIGHT = 3872
+/** Двузначное число чуть правее однозначного. */
+const COUNT_RIGHT_TWO = COUNT_RIGHT + 320
 const COUNT_BASELINE = 9492
 /** Рост контура «1» в `countYear`. */
 const COUNT_FONT_SIZE = 4100
@@ -42,12 +44,9 @@ export function buildStampDeliveredSvg(yearCount: number | null): string {
     return svg
   }
 
-  const fontSize =
-    label != null && label.length > 1
-      ? Math.round(COUNT_FONT_SIZE * 0.85)
-      : COUNT_FONT_SIZE
+  const countRight = label != null && label.length > 1 ? COUNT_RIGHT_TWO : COUNT_RIGHT
   const countMarkup = label
-    ? `<text id="countYear" x="${COUNT_RIGHT}" y="${COUNT_BASELINE}" text-anchor="end" font-family="Barlow, sans-serif" font-weight="700" font-size="${fontSize}" fill="${COUNT_INK}" transform="translate(${COUNT_RIGHT} 0) scale(${COUNT_SCALE_X} 1) translate(${-COUNT_RIGHT} 0)">${label}</text>`
+    ? `<text id="countYear" x="${countRight}" y="${COUNT_BASELINE}" text-anchor="end" font-family="Barlow, sans-serif" font-weight="600" font-size="${COUNT_FONT_SIZE}" fill="${COUNT_INK}" transform="translate(${countRight} 0) scale(${COUNT_SCALE_X} 1) translate(${-countRight} 0)">${label}</text>`
     : ''
   return svg.replace(/<path id="countYear"[\s\S]*?\/>/, countMarkup)
 }
