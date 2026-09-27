@@ -128,20 +128,6 @@ $pie-center-cart-blocked-inner-stop: (
   display: block;
 }
 
-/** Фото сектора cardphoto. Обычный img: SVG-pattern его не рисует поверх фона «ушей». */
-.piePhotoSector {
-  position: absolute;
-  z-index: 2;
-  left: 0;
-  top: 0;
-  width: 50%;
-  height: 50%;
-  max-width: none;
-  object-fit: cover;
-  pointer-events: none;
-  clip-path: polygon(0.4% 84.2%, 0.4% 0.4%, 84.2% 0.4%, 100% 100%);
-}
-
 .svg {
   width: 100%;
   height: 100%;

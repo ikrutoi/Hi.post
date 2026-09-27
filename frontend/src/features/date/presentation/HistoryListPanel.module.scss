@@ -14,7 +14,8 @@ $list-panel-compact-header-band: calc(
 );
 $list-panel-scroll-inset: 0.35rem;
 $list-panel-footer-bottom-inset: 0.5rem;
-$list-panel-footer-bottom-inset-mobile: 0.35rem;
+/** Как у футера календаря на mobile: снизу без отдельного зазора. */
+$list-panel-footer-bottom-inset-mobile: 0;
 @use '@styles/config/historyFooterChrome' as historyFooter;
 
 $list-panel-footer-row-band: historyFooter.$history-footer-row-band;

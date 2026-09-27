@@ -353,16 +353,19 @@ export const CardPie: React.FC<CardPieProps> = ({
             {sections.cardphoto && photoUrl && (
               <pattern
                 id={photoFillId}
-                patternUnits="userSpaceOnUse"
-                width="5120"
-                height="5120"
+                patternUnits="objectBoundingBox"
+                patternContentUnits="objectBoundingBox"
+                x="0"
+                y="0"
+                width="1"
+                height="1"
               >
                 <image
                   href={photoUrl}
-                  x="10"
-                  y="10"
-                  width="2550"
-                  height="2550"
+                  x="0"
+                  y="0"
+                  width="1"
+                  height="1"
                   preserveAspectRatio="xMidYMid slice"
                 />
               </pattern>
@@ -864,14 +867,6 @@ export const CardPie: React.FC<CardPieProps> = ({
             /> */}
           </g>
         </svg>
-        {photoUrl ? (
-          <img
-            className={styles.piePhotoSector}
-            src={photoUrl}
-            alt=""
-            draggable={false}
-          />
-        ) : null}
       </div>
       <div
         className={clsx(
