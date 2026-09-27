@@ -7,7 +7,10 @@ import { IconCardBlocked, IconCart } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
-import { cartListBillableLocalIds } from '@cart/application/logic/cartListBillableLocalIds'
+import {
+  cartListBillableLocalIds,
+  cartListBlockedLocalIds,
+} from '@cart/application/logic/cartListBillableLocalIds'
 import { cartListToolbarGroups } from '@cart/application/logic/cartListToolbarGroups'
 import { useCartFacade } from '../application/facades'
 import {
@@ -213,10 +216,21 @@ export const CartListPanel: React.FC<Props> = ({
     () => cartListBillableLocalIds(cartItems),
     [cartItems],
   )
+  const blockedLocalIds = useMemo(
+    () => cartListBlockedLocalIds(cartItems),
+    [cartItems],
+  )
+  const selectableLocalIds =
+    listSegment === 'cartBlocked' ? blockedLocalIds : billableCartLocalIds
 
   /** Синхронизация галочки в toolbar checkBox при ручном выборе строк. */
   useEffect(() => {
-    if (entriesProp != null || listSegment !== 'cart') return
+    if (
+      entriesProp != null ||
+      (listSegment !== 'cart' && listSegment !== 'cartBlocked')
+    ) {
+      return
+    }
 
     const validIds = new Set(cartItems.map((p) => p.localId))
     const pruned = checkedLocalIds.filter((id) => validIds.has(id))
@@ -226,8 +240,8 @@ export const CartListPanel: React.FC<Props> = ({
     }
 
     const allChecked =
-      billableCartLocalIds.length > 0 &&
-      billableCartLocalIds.every((id) => checkedLocalIdSet.has(id))
+      selectableLocalIds.length > 0 &&
+      selectableLocalIds.every((id) => checkedLocalIdSet.has(id))
     dispatch(
       updateToolbarIcon({
         section: 'cartList',
@@ -236,7 +250,7 @@ export const CartListPanel: React.FC<Props> = ({
       }),
     )
   }, [
-    billableCartLocalIds,
+    selectableLocalIds,
     cartItems,
     checkedLocalIdSet,
     checkedLocalIds,
@@ -261,11 +275,6 @@ export const CartListPanel: React.FC<Props> = ({
   }, [entriesProp, entriesFromStore])
 
   const hasRows = entries.length > 0
-  const checkedBillableCount = useMemo(
-    () =>
-      billableCartLocalIds.filter((id) => checkedLocalIdSet.has(id)).length,
-    [billableCartLocalIds, checkedLocalIdSet],
-  )
   /**
    * У футера «неактивные» только в режиме `cart` из стора. В `cartBlocked` — все строки сверху,
    * как у активных в обычной корзине.
@@ -310,23 +319,26 @@ export const CartListPanel: React.FC<Props> = ({
       ? 'cardBlocked'
       : 'cart')
 
-  const allBillableChecked =
+  const checkedSelectableCount = useMemo(
+    () => selectableLocalIds.filter((id) => checkedLocalIdSet.has(id)).length,
+    [checkedLocalIdSet, selectableLocalIds],
+  )
+  const allSelectableChecked =
     entriesProp == null &&
-    listSegment === 'cart' &&
-    billableCartLocalIds.length > 0 &&
-    checkedBillableCount === billableCartLocalIds.length
+    selectableLocalIds.length > 0 &&
+    checkedSelectableCount === selectableLocalIds.length
 
   const cartListHeaderToolbarGroups = useMemo(
     () =>
       cartListToolbarGroups({
         listSegment: entriesProp != null ? 'cart' : listSegment,
-        checkedCount: entriesProp != null ? 0 : checkedBillableCount,
-        allChecked: allBillableChecked,
+        checkedCount: entriesProp != null ? 0 : checkedSelectableCount,
+        allChecked: allSelectableChecked,
         hasRows,
       }),
     [
-      allBillableChecked,
-      checkedBillableCount,
+      allSelectableChecked,
+      checkedSelectableCount,
       entriesProp,
       hasRows,
       listSegment,
@@ -356,9 +368,7 @@ export const CartListPanel: React.FC<Props> = ({
             <Toolbar
               section="cartList"
               groupsOverride={cartListHeaderToolbarGroups}
-              justifyGroupsEnd={
-                entriesProp == null && listSegment === 'cartBlocked'
-              }
+              justifyGroupsEnd={false}
             />
           }
         />
@@ -395,7 +405,10 @@ export const CartListPanel: React.FC<Props> = ({
                       checkedLocalIdSet.has(item.postcard.localId)
                     }
                     onToggleChecked={
-                      listSegment === 'cart' ? handleToggleEntryChecked : undefined
+                      entriesProp == null &&
+                      (listSegment === 'cart' || listSegment === 'cartBlocked')
+                        ? handleToggleEntryChecked
+                        : undefined
                     }
                   />
                 ))}

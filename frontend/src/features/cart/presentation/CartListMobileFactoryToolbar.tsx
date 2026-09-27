@@ -6,7 +6,10 @@ import { useMobileScenarioToolbar } from '@features/cardSectionEditor/presentati
 import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import { buildNotebookCartTabCommandsMobile } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
-import { cartListBillableLocalIds } from '@cart/application/logic/cartListBillableLocalIds'
+import {
+  cartListBillableLocalIds,
+  cartListBlockedLocalIds,
+} from '@cart/application/logic/cartListBillableLocalIds'
 import { cartListToolbarGroups } from '@cart/application/logic/cartListToolbarGroups'
 import { selectCartListCheckedLocalIds } from '@cart/infrastructure/selectors'
 import { getToolbarIcon } from '@shared/utils/icons'
@@ -44,15 +47,20 @@ export const CartListMobileFactoryLowerToolbar: React.FC = () => {
 
   const cartListToolbarGroupsOverride = useMemo(() => {
     const billableIds = cartListBillableLocalIds(cartItems)
-    const billable = new Set(billableIds)
-    const checkedCount = checkedLocalIds.filter((id) => billable.has(id)).length
+    const selectableIds =
+      listSegment === 'cartBlocked'
+        ? cartListBlockedLocalIds(cartItems)
+        : billableIds
+    const selectable = new Set(selectableIds)
+    const checkedSelectableCount = checkedLocalIds.filter((id) =>
+      selectable.has(id),
+    ).length
     const allChecked =
-      listSegment === 'cart' &&
-      billableIds.length > 0 &&
-      checkedCount === billableIds.length
+      selectableIds.length > 0 &&
+      checkedSelectableCount === selectableIds.length
     return cartListToolbarGroups({
       listSegment,
-      checkedCount,
+      checkedCount: checkedSelectableCount,
       allChecked,
       hasRows,
     })
@@ -66,7 +74,7 @@ export const CartListMobileFactoryLowerToolbar: React.FC = () => {
           <Toolbar
             section="cartList"
             groupsOverride={cartListToolbarGroupsOverride}
-            justifyGroupsEnd={listSegment === 'cartBlocked'}
+            justifyGroupsEnd={false}
           />
         ) : null}
       </div>

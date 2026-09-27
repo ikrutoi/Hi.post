@@ -1,7 +1,10 @@
 import { all, call, put, select, takeEvery } from 'redux-saga/effects'
 import { SagaIterator } from 'redux-saga'
 import type { PostcardHydrated } from '@entities/postcard'
-import { cartListBillableLocalIds } from '@cart/application/logic/cartListBillableLocalIds'
+import {
+  cartListBillableLocalIds,
+  cartListBlockedLocalIds,
+} from '@cart/application/logic/cartListBillableLocalIds'
 import {
   selectCartItems,
   selectCartListCheckedLocalIds,
@@ -46,24 +49,28 @@ function* handleCartListToolbarAction(
   if (section !== 'cartList') return
 
   if (key === 'checkBox') {
+    const segment: ReturnType<typeof selectCartListStatusSegment> =
+      yield select(selectCartListStatusSegment)
     const items: PostcardHydrated[] = yield select(selectCartItems)
-    const billableIds = cartListBillableLocalIds(items)
-    if (billableIds.length === 0) {
-      yield put(setCartListCheckedLocalIds([]))
+    const targetIds =
+      segment === 'cartBlocked'
+        ? cartListBlockedLocalIds(items)
+        : cartListBillableLocalIds(items)
+    if (targetIds.length === 0) {
       yield put(syncCartListCheckBoxToolbarIcon(false))
       return
     }
 
     const checked: number[] = yield select(selectCartListCheckedLocalIds)
-    const billableSet = new Set(billableIds)
-    const allChecked = billableIds.every((id) => checked.includes(id))
+    const targetSet = new Set(targetIds)
+    const allChecked = targetIds.every((id) => checked.includes(id))
 
     if (allChecked) {
-      const next = checked.filter((id) => !billableSet.has(id))
+      const next = checked.filter((id) => !targetSet.has(id))
       yield put(setCartListCheckedLocalIds(next))
       yield put(syncCartListCheckBoxToolbarIcon(false))
     } else {
-      const next = [...new Set([...checked, ...billableIds])]
+      const next = [...new Set([...checked, ...targetIds])]
       yield put(setCartListCheckedLocalIds(next))
       yield put(syncCartListCheckBoxToolbarIcon(true))
     }
@@ -76,12 +83,16 @@ function* handleCartListToolbarAction(
     try {
       const segment: ReturnType<typeof selectCartListStatusSegment> =
         yield select(selectCartListStatusSegment)
-      if (segment !== 'cart') return
+      if (segment !== 'cart' && segment !== 'cartBlocked') return
 
       const items: PostcardHydrated[] = yield select(selectCartItems)
       const checked: number[] = yield select(selectCartListCheckedLocalIds)
-      const billable = new Set(cartListBillableLocalIds(items))
-      const ids = checked.filter((id) => billable.has(id))
+      const target = new Set(
+        segment === 'cartBlocked'
+          ? cartListBlockedLocalIds(items)
+          : cartListBillableLocalIds(items),
+      )
+      const ids = checked.filter((id) => target.has(id))
       if (ids.length === 0) return
 
       for (const localId of ids) {

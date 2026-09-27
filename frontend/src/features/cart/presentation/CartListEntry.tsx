@@ -71,7 +71,9 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
   const isBlockedEntry = previewStatus === 'cartBlocked'
   /** В «Заблокированных» без серого `inactive`. */
   const inactive = variant === 'inactive' && !isBlockedEntry
-  const showCartCheckbox = !isBlockedEntry && !inactive
+  const showCartCheckbox = isBlockedEntry
+    ? onCheckedChange != null
+    : !inactive && onCheckedChange != null
   const labelForAria = [detailLine ? `${dateLabel}, ${detailLine}` : dateLabel, priceLine]
     .filter(Boolean)
     .join(', ')
@@ -165,20 +167,6 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
           </button>
         </div>
       ) : null}
-      {isBlockedEntry ? (
-        <div className={styles.shellDateEditSlot}>
-          <button
-            type="button"
-            className={styles.shellDateEditBtn}
-            aria-label="Edit postcard date"
-            title="Edit postcard date"
-            aria-pressed={dateEditHighlight}
-            onClick={handleDateEditClick}
-          >
-            {getToolbarIcon({ key: 'dateEdit' })}
-          </button>
-        </div>
-      ) : null}
       <div
         className={styles.root}
         data-focused={isFocused ? 'true' : undefined}
@@ -238,6 +226,18 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
                 {priceLine}
               </div>
             </div>
+          ) : null}
+          {isBlockedEntry ? (
+            <button
+              type="button"
+              className={`${styles.shellDateEditBtn} ${styles.rowDateEditBtn}`}
+              aria-label="Edit postcard date"
+              title="Edit postcard date"
+              aria-pressed={dateEditHighlight}
+              onClick={handleDateEditClick}
+            >
+              {getToolbarIcon({ key: 'dateEdit' })}
+            </button>
           ) : null}
         </div>
       </div>

@@ -146,6 +146,11 @@ $list-entry-corner-radius: 0.75rem;
   }
 }
 
+.rowDateEditBtn {
+  flex-shrink: 0;
+  margin-left: 0.35rem;
+}
+
 .root {
   position: relative;
   box-sizing: border-box;

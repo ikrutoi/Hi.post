@@ -90,7 +90,7 @@ $cart-list-panel-inline-end-inset: calc(
     padding-bottom: calc(#{$section-inner-toolbar-height-desktop} + 0.5rem);
 
     &.panelNoFooter {
-      padding-bottom: 0;
+      padding-bottom: 0.5rem;
     }
 
     .panelScrollTrack {
@@ -105,7 +105,7 @@ $cart-list-panel-inline-end-inset: calc(
     }
 
     &.panelNoFooter .panelScrollTrack {
-      bottom: calc(0px - #{$list-panel-scroll-inset});
+      bottom: calc(0.5rem - #{$list-panel-scroll-inset});
     }
   }
 
@@ -123,6 +123,16 @@ $cart-list-panel-inline-end-inset: calc(
         #{$list-panel-list-footer-gap}
     );
 
+    &.panelNoFooter {
+      padding-bottom: $list-panel-list-footer-gap;
+
+      .panelScrollTrack {
+        bottom: calc(
+          #{$list-panel-list-footer-gap} - #{$list-panel-scroll-inset}
+        );
+      }
+    }
+
     &.panelFactoryChrome {
       padding-top: $list-panel-list-footer-gap;
 
@@ -138,10 +148,10 @@ $cart-list-panel-inline-end-inset: calc(
 }
 
 .panelNoFooter {
-  padding-bottom: 0;
+  padding-bottom: $list-panel-list-footer-gap;
 
   .panelScrollTrack {
-    bottom: calc(0px - #{$list-panel-scroll-inset});
+    bottom: calc(#{$list-panel-list-footer-gap} - #{$list-panel-scroll-inset});
   }
 }
 
