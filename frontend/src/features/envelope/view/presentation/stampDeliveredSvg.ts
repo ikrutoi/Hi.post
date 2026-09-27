@@ -42,8 +42,12 @@ export function buildStampDeliveredSvg(yearCount: number | null): string {
     return svg
   }
 
+  const fontSize =
+    label != null && label.length > 1
+      ? Math.round(COUNT_FONT_SIZE * 0.85)
+      : COUNT_FONT_SIZE
   const countMarkup = label
-    ? `<text id="countYear" x="${COUNT_RIGHT}" y="${COUNT_BASELINE}" text-anchor="end" font-family="Barlow, sans-serif" font-weight="700" font-size="${COUNT_FONT_SIZE}" fill="${COUNT_INK}" transform="translate(${COUNT_RIGHT} 0) scale(${COUNT_SCALE_X} 1) translate(${-COUNT_RIGHT} 0)">${label}</text>`
+    ? `<text id="countYear" x="${COUNT_RIGHT}" y="${COUNT_BASELINE}" text-anchor="end" font-family="Barlow, sans-serif" font-weight="700" font-size="${fontSize}" fill="${COUNT_INK}" transform="translate(${COUNT_RIGHT} 0) scale(${COUNT_SCALE_X} 1) translate(${-COUNT_RIGHT} 0)">${label}</text>`
     : ''
   return svg.replace(/<path id="countYear"[\s\S]*?\/>/, countMarkup)
 }
