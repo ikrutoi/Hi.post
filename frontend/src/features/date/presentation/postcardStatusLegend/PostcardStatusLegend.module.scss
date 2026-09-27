@@ -208,21 +208,21 @@ $calendar-cart-history-icon-min: 1.25rem;
 
     .icon,
     .item svg {
-      width: 0.95rem;
-      height: 0.95rem;
+      width: 1.1rem;
+      height: 1.1rem;
       min-width: 0;
       min-height: 0;
     }
 
     .iconSend {
       width: auto;
-      height: 0.95rem;
+      height: 1.1rem;
       min-height: 0;
     }
 
     .iconBlocked,
     .item svg.iconBlocked {
-      width: 0.95rem;
+      width: 1.1rem;
       height: auto;
       min-height: 0;
     }
@@ -230,11 +230,11 @@ $calendar-cart-history-icon-min: 1.25rem;
 
   .root.root-historyList.rootCalendarCartHistory .item:has(.count),
   .root.root-calendar.rootCalendarCartHistory .item:has(.count) {
-    height: auto;
+    height: calc(100% - 0.4rem);
     min-height: 0;
     max-height: none;
     align-self: center;
-    padding-block: 0.04rem;
+    padding-block: 0;
   }
 }
 

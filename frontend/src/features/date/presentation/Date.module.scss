@@ -7,8 +7,8 @@
 $mobile-date-calendar-chrome-row-height: 2rem;
 $mobile-date-calendar-chrome-gap: 0.35rem;
 
-/** Строка подписей дней недели плюс 0.7rem, как у хедера. */
-$calendar-weekday-row-height: calc(0.78rem * 1.5 + 0.7rem);
+/** Строка подписей дней недели плюс 0.95rem. */
+$calendar-weekday-row-height: calc(0.78rem * 1.5 + 0.95rem);
 
 .date {
   display: flex;
@@ -482,7 +482,7 @@ $calendar-weekday-row-height: calc(0.78rem * 1.5 + 0.7rem);
     height: $calendar-weekday-row-height;
     min-height: $calendar-weekday-row-height;
     max-height: $calendar-weekday-row-height;
-    margin-top: 0.25rem;
+    margin-top: 0;
     padding: 0 0.35rem;
     background-color: #fff;
     overflow: hidden;
@@ -500,15 +500,15 @@ $calendar-weekday-row-height: calc(0.78rem * 1.5 + 0.7rem);
     }
 
     .dateBottomPostcardNextGroupCounted {
-      height: auto;
+      height: calc(100% - 0.4rem);
       min-height: 0;
       max-height: none;
       align-self: center;
-      padding-block: 0.04rem;
+      padding-block: 0;
     }
 
     .dateBottomPostcardNext {
-      height: 0.95rem;
+      height: 1.1rem;
     }
   }
 
