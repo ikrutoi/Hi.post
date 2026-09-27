@@ -23,7 +23,7 @@ export function createPostcardSeal(): PostcardSeal {
       -SEAL_SHIFT_UP_RATIO +
       Math.random() * (SEAL_SHIFT_UP_RATIO + SEAL_SHIFT_DOWN_RATIO),
     rotate: (Math.random() * 2 - 1) * SEAL_ROTATION_DEG,
-    outline: Math.random() < 0.5 ? 0 : 1,
+    outline: Math.floor(Math.random() * 4) as 0 | 1 | 2 | 3,
     outlineRotate: Math.random() * 360,
   }
 }

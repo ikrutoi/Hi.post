@@ -6,10 +6,18 @@ import {
 import type { DispatchDate } from '@entities/date/domain/types'
 import sealOutline01Url from '@shared/assets/stamps/seal_outline_01.svg?url'
 import sealOutline02Url from '@shared/assets/stamps/seal_outline_02.svg?url'
+import sealOutline03Url from '@shared/assets/stamps/seal_outline_03.svg?url'
+import sealOutline04Url from '@shared/assets/stamps/seal_outline_04.svg?url'
+import { BARLOW_FONT, isBarlowReady } from '@shared/fonts/loadAppFonts'
 import { buildSealNoOutlineSvg } from './sealNoOutlineSvg'
 import styles from './Envelope.module.scss'
 
-const SEAL_OUTLINES = [sealOutline01Url, sealOutline02Url] as const
+const SEAL_OUTLINES = [
+  sealOutline01Url,
+  sealOutline02Url,
+  sealOutline03Url,
+  sealOutline04Url,
+] as const
 
 const SEAL_WIDTH_RATIO = 0.28
 
@@ -54,6 +62,18 @@ export const EnvelopeSeal: React.FC<EnvelopeSealProps> = ({
   wasLockedRef.current = pose != null
   const [place, setPlace] = useState<SealPlace | null>(null)
   const [reshuffleTick, setReshuffleTick] = useState(0)
+  const [barlowReady, setBarlowReady] = useState(isBarlowReady)
+
+  useEffect(() => {
+    if (barlowReady) return
+    let cancelled = false
+    void document.fonts.load(BARLOW_FONT).then(() => {
+      if (!cancelled) setBarlowReady(true)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [barlowReady])
 
   useEffect(() => {
     const listener = () => {
@@ -122,7 +142,7 @@ export const EnvelopeSeal: React.FC<EnvelopeSealProps> = ({
         dangerouslySetInnerHTML={
           date == null
             ? undefined
-            : { __html: buildSealNoOutlineSvg(date) }
+            : { __html: buildSealNoOutlineSvg(date, barlowReady) }
         }
       />
       <img

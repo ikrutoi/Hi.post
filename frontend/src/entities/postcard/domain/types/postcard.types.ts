@@ -111,8 +111,8 @@ export type PostcardSeal = {
   y: number
   /** Поворот основы, градусы. */
   rotate: number
-  /** 0 — seal_outline_01, 1 — seal_outline_02. */
-  outline: 0 | 1
+  /** 0–3: seal_outline_01 … seal_outline_04. */
+  outline: 0 | 1 | 2 | 3
   /** Поворот кольца, градусы. */
   outlineRotate: number
 }
@@ -295,7 +295,10 @@ function readPostcardSeal(raw: unknown): PostcardSeal | undefined {
     typeof seal.y !== 'number' ||
     typeof seal.rotate !== 'number' ||
     typeof seal.outlineRotate !== 'number' ||
-    (seal.outline !== 0 && seal.outline !== 1) ||
+    (seal.outline !== 0 &&
+      seal.outline !== 1 &&
+      seal.outline !== 2 &&
+      seal.outline !== 3) ||
     !Number.isFinite(seal.x) ||
     !Number.isFinite(seal.y) ||
     !Number.isFinite(seal.rotate) ||

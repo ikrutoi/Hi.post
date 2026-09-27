@@ -1,6 +1,5 @@
 import type { DispatchDate } from '@entities/date/domain/types'
 import sealSource from '@shared/assets/stamps/seal_noOutline.svg?raw'
-import '../view/presentation/stampCountFont.scss'
 
 const MONTHS = [
   'JAN',
@@ -33,15 +32,21 @@ export function sealDateLines(date: DispatchDate): {
   return { dayMonth: `${day} ${month}`, year: String(date.year) }
 }
 
-/** Основа печати: стандартные «26 SEP / 2026» заменены на дату открытки. */
-export function buildSealNoOutlineSvg(date: DispatchDate): string {
+/**
+ * Основа печати. Пока Barlow не загружен, дата рисуется Arial:
+ * SVG-текст с ещё не скачанным шрифтом браузер не показывает.
+ */
+export function buildSealNoOutlineSvg(
+  date: DispatchDate,
+  barlowReady: boolean,
+): string {
   const { dayMonth, year } = sealDateLines(date)
-  const dateText = `<text x="2560" y="2987" text-anchor="middle" font-family="Barlow, sans-serif" font-weight="700" font-size="846" fill="#000">${dayMonth}</text><text x="2560" y="3936" text-anchor="middle" font-family="Barlow, sans-serif" font-weight="700" font-size="846" fill="#000">${year}</text>`
-  const start = sealSource.indexOf('<path id="day_month"')
+  const font = barlowReady ? 'Barlow, sans-serif' : 'Arial, sans-serif'
+  const dateText = `<text x="2560" y="2987" text-anchor="middle" font-family="${font}" font-weight="700" font-size="846" fill="#000">${dayMonth}</text><text x="2560" y="3936" text-anchor="middle" font-family="${font}" font-weight="700" font-size="846" fill="#000">${year}</text>`
   const end = sealSource.lastIndexOf('</g>')
   const body =
-    start >= 0 && end > start
-      ? sealSource.slice(0, start) + dateText + sealSource.slice(end)
+    end >= 0
+      ? sealSource.slice(0, end) + dateText + sealSource.slice(end)
       : sealSource
   return body
     .replace(/<\?xml[\s\S]*?\?>/, '')

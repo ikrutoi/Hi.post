@@ -6,10 +6,8 @@ import { useAppSelector } from '@app/hooks'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { selectDraftDispatchDates } from '@date/infrastructure/selectors'
 import { firstDispatchDate } from '@envelope/presentation/sealNoOutlineSvg'
-import { selectAromaDisplayAroma } from '@aroma/infrastructure/selectors'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { useMarkStampYearCount } from '@envelope/application/hooks/useMarkStampYearCount'
-import { stampAroma99ColorsForSlot } from '@envelope/domain/stampAroma99Colors'
 import { MarkStampComposite } from './MarkStampComposite'
 import { EnvelopeSeal } from '@envelope/presentation/EnvelopeSeal'
 import styles from './Mark.module.scss'
@@ -33,9 +31,7 @@ export const Mark: React.FC<MarkProps> = ({
   listArchivePostcardStatus,
 }) => {
   const yearCount = useMarkStampYearCount(Boolean(simplifiedPeek))
-  const displayAroma = useAppSelector(selectAromaDisplayAroma)
-  const { listRowInner, listRowLocalId, rightPieEnvelopePeekNoToolbar } =
-    useRightListArchiveMini()
+  const { listRowLocalId } = useRightListArchiveMini()
   const postcards = useAppSelector(selectCartItems)
   const draftDates = useAppSelector(selectDraftDispatchDates)
   const storedPostcard =
@@ -50,10 +46,6 @@ export const Mark: React.FC<MarkProps> = ({
     : simplifiedPeek
       ? null
       : firstDispatchDate(draftDates)
-  const aromaSlot =
-    simplifiedPeek && rightPieEnvelopePeekNoToolbar
-      ? (listRowInner?.aroma?.index ?? null)
-      : (displayAroma?.index ?? null)
   const isReadyStamp =
     simplifiedPeek &&
     (listArchivePostcardStatus === 'ready' ||
@@ -73,11 +65,7 @@ export const Mark: React.FC<MarkProps> = ({
         )}
         data-envelope-stamp
       >
-        <MarkStampComposite
-          variant={isReadyStamp ? 'ready' : 'cart'}
-          aromaColors={stampAroma99ColorsForSlot(aromaSlot)}
-          yearCount={yearCount}
-        />
+        <MarkStampComposite yearCount={yearCount} />
         {sealDate != null ? (
           <EnvelopeSeal pose={storedSeal} date={sealDate} />
         ) : null}
