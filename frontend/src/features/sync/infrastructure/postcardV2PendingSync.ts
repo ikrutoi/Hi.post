@@ -13,7 +13,7 @@ import {
 
 type PostcardOp =
   | { type: 'upsert'; postcard: PostcardHydrated }
-  | { type: 'delete' }
+  | { type: 'delete'; localId: number | null }
 
 type LibraryOp =
   | { type: 'upsert'; kind: V2LibraryKind; item: V2LibraryItem }
@@ -24,19 +24,36 @@ const DELETE_TOMBSTONE_KEY = 'hi.post.v2.postcardDeleteIds'
 const pendingPostcards = new Map<string, PostcardOp>()
 const pendingLibrary = new Map<string, LibraryOp>()
 
-function readDeleteTombstones(): string[] {
+type DeleteTombstone = { id: string; localId: number | null }
+
+function readDeleteTombstones(): DeleteTombstone[] {
   if (typeof localStorage === 'undefined') return []
   try {
     const raw = localStorage.getItem(DELETE_TOMBSTONE_KEY)
     const parsed: unknown = raw ? JSON.parse(raw) : []
     if (!Array.isArray(parsed)) return []
-    return parsed.filter((id): id is string => typeof id === 'string' && id !== '')
+    const tombstones: DeleteTombstone[] = []
+    for (const item of parsed) {
+      if (typeof item === 'string' && item !== '') {
+        tombstones.push({ id: item, localId: null })
+        continue
+      }
+      if (item == null || typeof item !== 'object') continue
+      const id = (item as { id?: unknown }).id
+      const localId = (item as { localId?: unknown }).localId
+      if (typeof id !== 'string' || id === '') continue
+      tombstones.push({
+        id,
+        localId: typeof localId === 'number' ? localId : null,
+      })
+    }
+    return tombstones
   } catch {
     return []
   }
 }
 
-function writeDeleteTombstones(ids: string[]): void {
+function writeDeleteTombstones(ids: DeleteTombstone[]): void {
   if (typeof localStorage === 'undefined') return
   if (ids.length === 0) {
     localStorage.removeItem(DELETE_TOMBSTONE_KEY)
@@ -46,14 +63,17 @@ function writeDeleteTombstones(ids: string[]): void {
 }
 
 function persistDeleteTombstones(): void {
-  const ids = [...pendingPostcards.entries()]
-    .filter(([, op]) => op.type === 'delete')
-    .map(([id]) => id)
+  const ids = [...pendingPostcards.entries()].flatMap(([id, op]) =>
+    op.type === 'delete' ? [{ id, localId: op.localId }] : [],
+  )
   writeDeleteTombstones(ids)
 }
 
-for (const id of readDeleteTombstones()) {
-  pendingPostcards.set(id, { type: 'delete' })
+for (const tombstone of readDeleteTombstones()) {
+  pendingPostcards.set(tombstone.id, {
+    type: 'delete',
+    localId: tombstone.localId,
+  })
 }
 
 const V2_SYNC_DEBOUNCE_MS = 3000
@@ -91,13 +111,24 @@ function libraryKey(kind: V2LibraryKind, id: string): string {
 
 export function enqueuePostcardUpsert(postcard: PostcardHydrated): void {
   if (!postcard.id) return
+  if (isPostcardPendingDelete(postcard)) return
   pendingPostcards.set(postcard.id, { type: 'upsert', postcard })
   schedulePendingV2Flush()
 }
 
-export function enqueuePostcardDelete(id: string): void {
+export function enqueuePostcardDelete(
+  id: string,
+  localId?: number | null,
+): void {
   if (!id) return
-  pendingPostcards.set(id, { type: 'delete' })
+  const prev = pendingPostcards.get(id)
+  const nextLocalId =
+    typeof localId === 'number'
+      ? localId
+      : prev?.type === 'delete'
+        ? prev.localId
+        : null
+  pendingPostcards.set(id, { type: 'delete', localId: nextLocalId })
   persistDeleteTombstones()
   schedulePendingV2Flush()
 }
@@ -109,6 +140,28 @@ export function pendingPostcardDeleteIds(): ReadonlySet<string> {
     if (op.type === 'delete') ids.add(id)
   }
   return ids
+}
+
+export function isPostcardPendingDelete(row: {
+  id?: unknown
+  localId?: number
+}): boolean {
+  const id = row.id != null && row.id !== '' ? String(row.id) : ''
+  if (id && pendingPostcardDeleteIds().has(id)) return true
+  if (typeof row.localId !== 'number') return false
+  for (const op of pendingPostcards.values()) {
+    if (op.type === 'delete' && op.localId === row.localId) return true
+  }
+  return false
+}
+
+function isNotFound(error: unknown): boolean {
+  return (
+    typeof error === 'object' &&
+    error != null &&
+    'response' in error &&
+    (error as { response?: { status?: number } }).response?.status === 404
+  )
 }
 
 export function enqueueLibraryUpsert(
@@ -147,7 +200,8 @@ export async function flushPendingV2Sync(): Promise<void> {
     try {
       if (op.type === 'delete') await deleteV2Postcard(id)
       else await upsertV2Postcard(op.postcard)
-    } catch {
+    } catch (error) {
+      if (op.type === 'delete' && isNotFound(error)) continue
       if (!pendingPostcards.has(id)) pendingPostcards.set(id, op)
     }
   }

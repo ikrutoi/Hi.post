@@ -1,7 +1,7 @@
 import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects'
 import { nanoid } from 'nanoid'
 import { postcardsAdapter, storeAdapters } from '@db/adapters/storeAdapters'
-import { pendingPostcardDeleteIds } from '@features/sync/infrastructure/postcardV2PendingSync'
+import { isPostcardPendingDelete } from '@features/sync/infrastructure/postcardV2PendingSync'
 import { selectCardphotoSessionRecord } from '@cardphoto/infrastructure/selectors'
 import {
   commitWorkingConfig,
@@ -634,12 +634,9 @@ function cartPostcardPreviewAssets(
 
 export function* hydrateAppSession() {
   try {
-    const deletedIds = pendingPostcardDeleteIds()
-    for (const id of deletedIds) {
-      yield call([postcardsAdapter, 'deleteById'], id)
-    }
+    yield call([postcardsAdapter, 'purgePendingDeletes'])
     const loaded: PostcardHydrated[] = yield call(postcardsAdapter.getAll)
-    const rawPostcards = loaded.filter((row) => !deletedIds.has(row.id))
+    const rawPostcards = loaded.filter((row) => !isPostcardPendingDelete(row))
     const refreshed: PostcardHydrated[] = yield call(
       refreshPostcardsCardphotoUrls,
       rawPostcards,

@@ -193,7 +193,7 @@ import {
   IconCardPie,
   IconAddressCheck,
   IconCardPieCheck,
-  IconCardBlocked,
+  IconPostcardBlocked,
   IconDateEdit,
   IconDateNext,
   IconAddCartList,
@@ -433,8 +433,8 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconAddressCheck />
     case 'cardPieCheck':
       return <IconCardPieCheck />
-    case 'cardBlocked':
-      return <IconCardBlocked />
+    case 'postcardBlocked':
+      return <IconPostcardBlocked />
     case 'dateEdit':
       return <IconDateEdit />
     case 'addCartList':

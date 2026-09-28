@@ -118,7 +118,7 @@ export const ICON_KEYS = [
   'cardPie',
   'addressCheck',
   'cardPieCheck',
-  'cardBlocked',
+  'postcardBlocked',
   'dateEdit',
   'addCartList',
   'historyPanel',

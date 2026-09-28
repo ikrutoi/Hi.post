@@ -17,8 +17,22 @@ $pie-center-logo-press-duration: 0.28s;
 /** Press pulse: +25% then back. */
 $pie-center-press-scale: 1.25;
 /** Жёлтое кольцо вокруг красной заливки (`cartBlocked`), доля от диаметра круга.
- * Inner red radius = (1 − 2×ratio) × outer → 0.15 ⇒ 70%. */
+ * Inner red diameter = (1 − 2×ratio) × outer → 0.15 ⇒ 70% (мини-паи). */
 $pie-center-cart-blocked-ring-ratio: 0.15;
+/** Центральная кнопка: красный круг = 75% ширины жёлтого. */
+@mixin pie-center-button-cart-blocked {
+  box-sizing: border-box;
+  border-width: 0;
+  border-color: transparent;
+  background-color: $color-preview-indicator-cart;
+  background-image: radial-gradient(
+    circle closest-side,
+    $color-preview-indicator-error 0%,
+    $color-preview-indicator-error 75%,
+    $color-preview-indicator-cart 75%,
+    $color-preview-indicator-cart 100%
+  );
+}
 $pie-center-cart-blocked-ring: $pie-center-indicator-size *
   $pie-center-cart-blocked-ring-ratio;
 $pie-center-cart-blocked-ring-right: $pie-center-indicator-size *
@@ -109,9 +123,7 @@ $pie-center-cart-blocked-inner-stop: (
   }
 
   .pieCenterIndicator.cartBlocked {
-    @include preview-indicator-cart-blocked-ring(
-      calc(#{$pie-center-size-ratio} * #{$pie-center-cart-blocked-ring-ratio})
-    );
+    @include pie-center-button-cart-blocked;
   }
 }
 
@@ -370,11 +382,7 @@ $pie-center-cart-blocked-inner-stop: (
   }
 
   .hubContainerFill.hubContainerRight .pieCenterIndicator.cartBlocked {
-    @include preview-indicator-cart-blocked-ring(
-      calc(
-        #{$pie-center-size-ratio-mobile} * #{$pie-center-cart-blocked-ring-ratio}
-      )
-    );
+    @include pie-center-button-cart-blocked;
   }
 }
 

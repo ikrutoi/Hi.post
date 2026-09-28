@@ -10,7 +10,7 @@ import {
 } from '@cart/infrastructure/state'
 import { endCartCalendarDatePick } from '@date/calendar/infrastructure/state'
 import { releaseCartDatePickListEntryOwnership } from '@date/calendar/application/logic/cartDatePickListEntryOwnership'
-import { IconCardBlocked, IconCart } from '@shared/ui/icons'
+import { IconPostcardBlocked, IconCart } from '@shared/ui/icons'
 import styles from './CartListPanel.module.scss'
 
 export const CartHeaderSegments: React.FC<{
@@ -95,7 +95,7 @@ export const CartHeaderSegments: React.FC<{
             )}
             aria-hidden
           >
-            <IconCardBlocked />
+            <IconPostcardBlocked />
           </span>
         )}
       </button>

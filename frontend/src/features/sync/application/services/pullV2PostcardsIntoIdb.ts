@@ -4,9 +4,8 @@ import {
 import { postcardsAdapter } from '@db/adapters/storeAdapters/postcardsAdapter'
 import { mergePostcardsLastWriteWins } from '../../domain/mergePostcardsLastWriteWins'
 import {
-  enqueuePostcardUpsert,
   flushPendingV2Sync,
-  pendingPostcardDeleteIds,
+  isPostcardPendingDelete,
 } from '../../infrastructure/postcardV2PendingSync'
 import { fetchV2Postcards } from '../../infrastructure/v2PostcardRemote'
 
@@ -15,15 +14,12 @@ import { fetchV2Postcards } from '../../infrastructure/v2PostcardRemote'
  */
 export async function pullV2PostcardsIntoIdb(): Promise<number> {
   await flushPendingV2Sync()
-  const deletedIds = pendingPostcardDeleteIds()
-  for (const id of deletedIds) {
-    await postcardsAdapter.deleteById(id)
-  }
+  await postcardsAdapter.purgePendingDeletes()
   const remote = (await fetchV2Postcards())
     .map(normalizePostcardRecord)
-    .filter((row) => !deletedIds.has(row.id))
+    .filter((row) => !isPostcardPendingDelete(row))
   const local = (await postcardsAdapter.getAll()).filter(
-    (row) => !deletedIds.has(row.id),
+    (row) => !isPostcardPendingDelete(row),
   )
   const { nextLocal, push } = mergePostcardsLastWriteWins(local, remote)
 

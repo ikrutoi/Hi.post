@@ -3,7 +3,7 @@ import { cardListPreviewUrlFromCard } from '@entities/card/domain/helpers'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
-import { IconCardBlocked, IconCart } from '@shared/ui/icons'
+import { IconPostcardBlocked, IconCart } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
@@ -309,14 +309,14 @@ export const CartListPanel: React.FC<Props> = ({
     return cartListTotalDisplayFromPostcards(postcards)
   }, [checkedTotalDisplay, entries, sumCheckedOnly])
 
-  /** Total footer only for billable cart; hidden for blocked segment from store. */
+  /** Сумма только у обычной корзины и только когда в списке есть строки. */
   const showCartFooter =
-    entriesProp != null || listSegment === 'cart'
+    hasRows && (entriesProp != null || listSegment === 'cart')
 
   const listLeadIconKey =
     leadIconKeyOverride ??
     (entriesProp == null && listSegment === 'cartBlocked'
-      ? 'cardBlocked'
+      ? 'postcardBlocked'
       : 'cart')
 
   const checkedSelectableCount = useMemo(
@@ -433,7 +433,7 @@ export const CartListPanel: React.FC<Props> = ({
           ) : (
             <div className={styles.listEmpty} aria-hidden>
               {entriesProp == null && listSegment === 'cartBlocked' ? (
-                <IconCardBlocked className={styles.listEmptyIcon} />
+                <IconPostcardBlocked className={styles.listEmptyIcon} />
               ) : (
                 <span className={styles.listEmptyIconCartWrap}>
                   <IconCart className={styles.listEmptyIcon} />

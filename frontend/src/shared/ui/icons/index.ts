@@ -19,7 +19,7 @@ export * from './IconAddressTemplates'
 export * from './IconAddressList'
 
 export * from './IconCart'
-export * from './IconCardBlocked'
+export * from './IconPostcardBlocked'
 export * from './IconAddCart'
 export * from './IconAddCartList'
 export * from './IconAddList'

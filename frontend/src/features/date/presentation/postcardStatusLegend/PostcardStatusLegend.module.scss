@@ -15,6 +15,17 @@ $calendar-cart-history-icon-min: 1.25rem;
   aspect-ratio: 1590 / 1284;
 }
 
+/** Холст postcardBlocked 1280×1440: ширина — стандартный слот, высота из холста. */
+@mixin icon-blocked-box($slot) {
+  width: $slot;
+  min-width: $slot;
+  max-width: $slot;
+  height: auto;
+  min-height: auto;
+  max-height: none;
+  aspect-ratio: 1280 / 1440;
+}
+
 /** Холст Cart 1440×1360 при стандарте 1280. */
 @mixin icon-cart-box($slot) {
   width: calc(#{$slot} * 1440 / 1280);
@@ -47,12 +58,7 @@ $calendar-cart-history-icon-min: 1.25rem;
 
   .iconBlocked,
   .item svg.iconBlocked {
-    width: $calendar-cart-history-icon-min;
-    min-width: $calendar-cart-history-icon-min;
-    height: auto;
-    min-height: 0;
-    max-height: none;
-    aspect-ratio: 1280 / 1600;
+    @include icon-blocked-box($calendar-cart-history-icon-min);
   }
 }
 
@@ -112,9 +118,9 @@ $calendar-cart-history-icon-min: 1.25rem;
       @include icon-cart-box(1rem);
     }
 
-    .iconBlocked {
-      height: auto;
-      min-height: 0;
+    .iconBlocked,
+    .item svg.iconBlocked {
+      @include icon-blocked-box(1rem);
     }
   }
 
@@ -183,9 +189,9 @@ $calendar-cart-history-icon-min: 1.25rem;
       @include icon-cart-box(1rem);
     }
 
-    .iconBlocked {
-      height: auto;
-      min-height: 0;
+    .iconBlocked,
+    .item svg.iconBlocked {
+      @include icon-blocked-box(1rem);
     }
   }
 }
@@ -258,9 +264,7 @@ $calendar-cart-history-icon-min: 1.25rem;
 
     .iconBlocked,
     .item svg.iconBlocked {
-      width: 1.1rem;
-      height: auto;
-      min-height: 0;
+      @include icon-blocked-box(1.1rem);
     }
   }
 
@@ -568,8 +572,7 @@ $calendar-cart-history-icon-min: 1.25rem;
 
     .iconBlocked,
     .item svg.iconBlocked {
-      height: auto;
-      min-height: 0;
+      @include icon-blocked-box(1rem);
     }
 
     .dot {
@@ -626,8 +629,7 @@ $calendar-cart-history-icon-min: 1.25rem;
 
     .iconBlocked,
     .item svg.iconBlocked {
-      height: auto;
-      min-height: 0;
+      @include icon-blocked-box(1.125rem);
     }
 
     .dot {

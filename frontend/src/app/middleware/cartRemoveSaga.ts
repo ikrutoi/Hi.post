@@ -18,6 +18,7 @@ import { setHistoryListSelectedLocalId } from '@date/calendar/infrastructure/sta
 import { applyRightListArchiveToolbarVisuals } from '@toolbar/application/syncRightListArchiveToolbarVisuals'
 import { refreshRightSidebarBadgesFromPostcards } from './postcardCreateSaga'
 import { postcardLocalDataChanged } from '@features/sync/store/postcardSync.actions'
+import { flushPendingV2Sync } from '@features/sync/infrastructure/postcardV2PendingSync'
 
 export function* handleRemoveCartPostcard(
   action: ReturnType<typeof removeCartPostcard>,
@@ -30,9 +31,13 @@ export function* handleRemoveCartPostcard(
 
   const selectionAdvance = resolveArchiveSelectionAdvance(stateBefore, localId)
 
-  if (row.id) {
+  if (row.id || row.localId != null) {
     try {
-      yield call([postcardsAdapter, 'deleteById'], row.id)
+      yield call(
+        [postcardsAdapter, 'deleteStoredPostcard'],
+        row.localId,
+        row.id,
+      )
     } catch (e) {
       console.error('removeCartPostcard: IDB delete failed', e)
     }
@@ -71,6 +76,7 @@ export function* handleRemoveCartPostcard(
   }
 
   yield call(refreshRightSidebarBadgesFromPostcards)
+  yield call(flushPendingV2Sync)
   yield put(postcardLocalDataChanged())
 }
 

@@ -23,7 +23,7 @@ import { applyRightListArchiveToolbarVisuals } from '@toolbar/application/syncRi
 import type { PostcardHydrated } from '@entities/postcard'
 import {
   IconCart,
-  IconCardBlocked,
+  IconPostcardBlocked,
   IconPostcardSend,
   IconPostcardReady,
   IconPostcardDelivered,
@@ -362,7 +362,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
               >
                 <span className={clsx(styles.dot, styles.dotCartBlocked)} />
                 <span className={styles.iconStack}>
-                  <IconCardBlocked
+                  <IconPostcardBlocked
                     className={clsx(styles.icon, styles.iconBlocked)}
                   />
                   {statusCount('cartBlocked')}
