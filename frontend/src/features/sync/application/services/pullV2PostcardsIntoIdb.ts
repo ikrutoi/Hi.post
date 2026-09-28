@@ -4,8 +4,10 @@ import {
 import { postcardsAdapter } from '@db/adapters/storeAdapters/postcardsAdapter'
 import { mergePostcardsLastWriteWins } from '../../domain/mergePostcardsLastWriteWins'
 import {
+  enqueuePostcardUpsert,
   flushPendingV2Sync,
   isPostcardPendingDelete,
+  isPostcardPendingUpsert,
 } from '../../infrastructure/postcardV2PendingSync'
 import { fetchV2Postcards } from '../../infrastructure/v2PostcardRemote'
 
@@ -21,7 +23,22 @@ export async function pullV2PostcardsIntoIdb(): Promise<number> {
   const local = (await postcardsAdapter.getAll()).filter(
     (row) => !isPostcardPendingDelete(row),
   )
-  const { nextLocal, push } = mergePostcardsLastWriteWins(local, remote)
+  const retainLocalOnlyIds = new Set(
+    local.flatMap((row) =>
+      row.id && isPostcardPendingUpsert(row.id) ? [row.id] : [],
+    ),
+  )
+  const { nextLocal, push } = mergePostcardsLastWriteWins(
+    local,
+    remote,
+    retainLocalOnlyIds,
+  )
+  const keptIds = new Set(nextLocal.map((row) => row.id))
+
+  for (const row of local) {
+    if (!row.id || keptIds.has(row.id)) continue
+    await postcardsAdapter.forgetLocal(row.id)
+  }
 
   for (const row of nextLocal) {
     await postcardsAdapter.putLocal(row)

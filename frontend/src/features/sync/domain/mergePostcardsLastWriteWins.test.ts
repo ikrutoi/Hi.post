@@ -34,6 +34,7 @@ describe('mergePostcardsLastWriteWins', () => {
     const { nextLocal, push } = mergePostcardsLastWriteWins(
       [localNewer, localOnly],
       [remoteOlder, remoteOnly],
+      new Set(['b']),
     )
 
     const byId = Object.fromEntries(nextLocal.map((row) => [row.id, row]))
@@ -41,6 +42,16 @@ describe('mergePostcardsLastWriteWins', () => {
     expect(byId.b?.id).toBe('b')
     expect(byId.c?.status).toBe('sent')
     expect(push.map((row) => row.id).sort()).toEqual(['a', 'b'])
+  })
+
+  it('drops a local row the server no longer has', () => {
+    const deletedElsewhere = stub({ id: 'gone', updatedAt: 30, status: 'cartBlocked' })
+    const { nextLocal, push } = mergePostcardsLastWriteWins(
+      [deletedElsewhere],
+      [],
+    )
+    expect(nextLocal).toEqual([])
+    expect(push).toEqual([])
   })
 
   it('keeps remote when updatedAt is equal', () => {

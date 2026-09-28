@@ -44,6 +44,21 @@ async function deleteStoredPostcard(
   }
 }
 
+async function forgetLocal(id: string): Promise<void> {
+  const rows = await base.getAll()
+  const keys = new Set<IDBValidKey>()
+  keys.add(id)
+  if (/^\d+$/.test(id)) keys.add(Number(id))
+  for (const row of rows) {
+    const raw = row as PostcardHydrated & { id?: IDBValidKey }
+    if (raw.id == null) continue
+    if (raw.id === id || String(raw.id) === id) keys.add(raw.id)
+  }
+  for (const key of keys) {
+    await base.deleteById(key)
+  }
+}
+
 async function purgePendingDeletes(): Promise<void> {
   const rows = await base.getAll()
   for (const row of rows) {
@@ -62,6 +77,7 @@ export const postcardsAdapter = {
   ...base,
   putLocal,
   deleteStoredPostcard,
+  forgetLocal,
   purgePendingDeletes,
   getAll: async () => (await base.getAll()).map(normalizePostcardRecord),
   getById: async (id: IDBValidKey) => {

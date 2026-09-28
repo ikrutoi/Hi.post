@@ -11,10 +11,14 @@ function updatedAt(row: PostcardHydrated): number {
   return row.updatedAt ?? row.createdAt ?? 0
 }
 
-/** Last-write-wins by `updatedAt`. Equal timestamps keep remote. */
+/** Last-write-wins by `updatedAt`. Equal timestamps keep remote.
+ * A local row missing on the server was deleted elsewhere, unless its id is
+ * still waiting to be uploaded (`retainLocalOnlyIds`).
+ */
 export function mergePostcardsLastWriteWins(
   localRows: PostcardHydrated[],
   remoteRows: PostcardHydrated[],
+  retainLocalOnlyIds: ReadonlySet<string> = new Set(),
 ): PostcardLwwMerge {
   const localById = new Map(localRows.map((row) => [row.id, row]))
   const remoteById = new Map(remoteRows.map((row) => [row.id, row]))
@@ -27,8 +31,10 @@ export function mergePostcardsLastWriteWins(
     const remote = remoteById.get(id)
 
     if (local && !remote) {
-      nextLocal.push(local)
-      push.push(local)
+      if (local.id && retainLocalOnlyIds.has(local.id)) {
+        nextLocal.push(local)
+        push.push(local)
+      }
       continue
     }
 

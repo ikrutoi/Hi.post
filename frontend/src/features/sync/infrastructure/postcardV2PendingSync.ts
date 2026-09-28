@@ -116,6 +116,10 @@ export function enqueuePostcardUpsert(postcard: PostcardHydrated): void {
   schedulePendingV2Flush()
 }
 
+export function isPostcardPendingUpsert(id: string): boolean {
+  return pendingPostcards.get(id)?.type === 'upsert'
+}
+
 export function enqueuePostcardDelete(
   id: string,
   localId?: number | null,
