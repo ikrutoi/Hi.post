@@ -253,21 +253,6 @@ $cart-list-panel-inline-end-inset: calc(
   }
 }
 
-.cartHeaderSegmentIcon {
-  svg {
-    width: 1.05rem;
-    height: 1.05rem;
-    display: block;
-    flex-shrink: 0;
-  }
-}
-
-.cart:not([aria-pressed='true']) .cartHeaderSegmentIcon svg,
-.cartBlocked:not([aria-pressed='true']) .cartHeaderSegmentIcon svg {
-  width: 0.82rem;
-  height: 0.82rem;
-}
-
 .cartHeaderSegmentCount {
   position: absolute;
   top: 0;
