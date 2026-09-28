@@ -41,7 +41,7 @@ import {
 } from '@layout/presentation/MobileAppShell/useMobilePlanCardPies'
 import { clearViewAroma } from '@aroma/infrastructure/state'
 import { CardSectionEditor } from '@features/cardSectionEditor/presentation/CardSectionEditor'
-import { openEditorSectionTemplateList } from '@features/cardSectionEditor/application/helpers'
+import { openEditorSectionTemplateList, skipNextDesktopEditorTemplateListOpen } from '@features/cardSectionEditor/application/helpers'
 import { FactoryUpperToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import { DesktopDateCalendarToolbarSlider } from '@date/dateHeader/presentation/MobileDateCalendarToolbarSlider'
 import { DesktopEnvelopeAddressViewToolbar } from '@envelope/presentation/DesktopEnvelopeAddressViewToolbar'
@@ -761,6 +761,7 @@ const App = () => {
       } else {
         flushSync(() => {
           exitSectionPostcardEditToPeek(section)
+          skipNextDesktopEditorTemplateListOpen()
           dispatch(setActiveSection(section))
           /**
            * Keep right/cart chrome (peek hides list). Do not close cart or

@@ -1,2 +1,2 @@
 export { renderCardSection } from './renderCardSection'
-export { openEditorSectionTemplateList } from './openEditorSectionTemplateList'
+export { openEditorSectionTemplateList, skipNextDesktopEditorTemplateListOpen } from './openEditorSectionTemplateList'

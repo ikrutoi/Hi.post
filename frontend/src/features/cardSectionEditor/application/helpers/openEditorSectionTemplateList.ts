@@ -7,6 +7,13 @@ import { selectIsMobileLayout } from '@layout/infrastructure/selectors'
 import type { CardSection } from '@shared/config/constants'
 import type { AppDispatch } from '@app/state'
 
+/** Archive peek sets this so the following `setActiveSection` does not open lists. */
+let skipNextDesktopTemplateListOpen = false
+
+export function skipNextDesktopEditorTemplateListOpen(): void {
+  skipNextDesktopTemplateListOpen = true
+}
+
 /**
  * Desktop right column: open the section template list when entering edit
  * for photo / text / envelope. Mobile factory chrome stays closed.
@@ -33,6 +40,10 @@ export function openEditorSectionTemplateList(
 export function* openDesktopEditorSectionTemplateListSaga(
   section: string | null | undefined,
 ): SagaIterator {
+  if (skipNextDesktopTemplateListOpen) {
+    skipNextDesktopTemplateListOpen = false
+    return
+  }
   const isMobileLayout: boolean = yield select(selectIsMobileLayout)
   if (isMobileLayout) return
   if (section === 'cardphoto') {
