@@ -15,6 +15,16 @@ $calendar-cart-history-icon-min: 1.25rem;
   aspect-ratio: 1590 / 1284;
 }
 
+/** Холст Cart 1440×1360 при стандарте 1280. */
+@mixin icon-cart-box($slot) {
+  width: calc(#{$slot} * 1440 / 1280);
+  min-width: calc(#{$slot} * 1440 / 1280);
+  max-width: none;
+  height: calc(#{$slot} * 1360 / 1280);
+  min-height: calc(#{$slot} * 1360 / 1280);
+  max-height: none;
+}
+
 @mixin calendar-cart-history-status-icons {
   .icon,
   .item svg {
@@ -28,6 +38,11 @@ $calendar-cart-history-icon-min: 1.25rem;
   .iconSend,
   .item svg.iconSend {
     @include icon-send-box($calendar-cart-history-icon-min);
+  }
+
+  .iconCart,
+  .item svg.iconCart {
+    @include icon-cart-box($calendar-cart-history-icon-min);
   }
 
   .iconBlocked,
@@ -92,6 +107,11 @@ $calendar-cart-history-icon-min: 1.25rem;
       @include icon-send-box(1rem);
     }
 
+    .iconCart,
+    .item svg.iconCart {
+      @include icon-cart-box(1rem);
+    }
+
     .iconBlocked {
       height: auto;
       min-height: 0;
@@ -100,13 +120,6 @@ $calendar-cart-history-icon-min: 1.25rem;
 
   &.root-calendar.rootCalendarCartHistory {
     @include calendar-cart-history-status-icons;
-  }
-
-  &.rootCalendarHistory {
-    .icon,
-    .item svg {
-      border: 1px solid green;
-    }
   }
 
   &.root-calendar.rootCalendarDimmed {
@@ -163,6 +176,11 @@ $calendar-cart-history-icon-min: 1.25rem;
     .iconSend,
     .item svg.iconSend {
       @include icon-send-box(1rem);
+    }
+
+    .iconCart,
+    .item svg.iconCart {
+      @include icon-cart-box(1rem);
     }
 
     .iconBlocked {
@@ -233,6 +251,11 @@ $calendar-cart-history-icon-min: 1.25rem;
       @include icon-send-box(1.1rem);
     }
 
+    .iconCart,
+    .item svg.iconCart {
+      @include icon-cart-box(1.1rem);
+    }
+
     .iconBlocked,
     .item svg.iconBlocked {
       width: 1.1rem;
@@ -241,10 +264,18 @@ $calendar-cart-history-icon-min: 1.25rem;
     }
   }
 
-  .root.root-historyList.rootCalendarCartHistory .item:has(.count),
   .root.root-calendar.rootCalendarCartHistory .item:has(.count) {
     height: calc(100% - 0.4rem);
     min-height: 0;
+    max-height: none;
+    align-self: center;
+    padding-block: 0;
+  }
+
+  /** У списка История процент от строки не считается: родитель без явной высоты. */
+  .root.root-historyList.rootCalendarCartHistory .item:has(.count) {
+    height: calc(0.78rem * 1.5 + 0.95rem - 0.4rem);
+    min-height: calc(0.78rem * 1.5 + 0.95rem - 0.4rem);
     max-height: none;
     align-self: center;
     padding-block: 0;
@@ -530,6 +561,11 @@ $calendar-cart-history-icon-min: 1.25rem;
       @include icon-send-box(1rem);
     }
 
+    .iconCart,
+    .item svg.iconCart {
+      @include icon-cart-box(1rem);
+    }
+
     .iconBlocked,
     .item svg.iconBlocked {
       height: auto;
@@ -581,6 +617,11 @@ $calendar-cart-history-icon-min: 1.25rem;
     .iconSend,
     .item svg.iconSend {
       @include icon-send-box(1.125rem);
+    }
+
+    .iconCart,
+    .item svg.iconCart {
+      @include icon-cart-box(1.125rem);
     }
 
     .iconBlocked,

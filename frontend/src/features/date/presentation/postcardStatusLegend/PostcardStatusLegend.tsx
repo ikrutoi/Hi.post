@@ -27,7 +27,7 @@ import {
   IconPostcardSend,
   IconPostcardReady,
   IconPostcardDelivered,
-  IconPostcardNotDelivered,
+  IconPostcardError,
 } from '@shared/ui/icons'
 import styles from './PostcardStatusLegend.module.scss'
 import { useCalendarFacade } from '../../calendar/application/facades/useCalendarFacade'
@@ -318,7 +318,6 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
           !calendarCartStripLegendOnly &&
           styles.rootCalendarDimmed,
         calendarCartHistoryFooter && styles.rootCalendarCartHistory,
-        calendarHistoryStripLegend && styles.rootCalendarHistory,
         calendarFooterAlwaysEnabled && styles.rootCalendarFooterAlwaysEnabled,
         spot === 'historyList' && isHistoryEmpty && styles.rootEmpty,
       )}
@@ -339,7 +338,10 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
           >
             <span className={clsx(styles.dot, styles.dotCart)} />
             <span className={styles.iconStack}>
-              <IconCart className={styles.icon} />
+              <IconCart
+                className={clsx(styles.icon, styles.iconCart)}
+                style={{ scale: 1 }}
+              />
               {statusCount('cart')}
             </span>
           </button>
@@ -453,7 +455,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
             >
               <span className={clsx(styles.dot, styles.dotError)} />
               <span className={styles.iconStack}>
-                <IconPostcardNotDelivered className={styles.icon} />
+                <IconPostcardError className={styles.icon} />
                 {statusCount('error')}
               </span>
             </button>
