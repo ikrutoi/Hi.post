@@ -5,6 +5,16 @@
 /** Calendar cart/history footer: shorter side of the glyph. */
 $calendar-cart-history-icon-min: 1.25rem;
 
+@mixin icon-send-box($slot) {
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  height: $slot;
+  min-height: $slot;
+  max-height: none;
+  aspect-ratio: 1590 / 1284;
+}
+
 @mixin calendar-cart-history-status-icons {
   .icon,
   .item svg {
@@ -15,13 +25,9 @@ $calendar-cart-history-icon-min: 1.25rem;
     min-height: $calendar-cart-history-icon-min;
   }
 
-  .iconSend {
-    height: $calendar-cart-history-icon-min;
-    min-height: $calendar-cart-history-icon-min;
-    width: auto;
-    min-width: 0;
-    max-width: none;
-    aspect-ratio: 1590 / 1284;
+  .iconSend,
+  .item svg.iconSend {
+    @include icon-send-box($calendar-cart-history-icon-min);
   }
 
   .iconBlocked,
@@ -81,9 +87,9 @@ $calendar-cart-history-icon-min: 1.25rem;
       min-height: 1rem;
     }
 
-    .iconSend {
-      width: 1.25rem;
-      min-width: 1.25rem;
+    .iconSend,
+    .item svg.iconSend {
+      @include icon-send-box(1rem);
     }
 
     .iconBlocked {
@@ -94,6 +100,13 @@ $calendar-cart-history-icon-min: 1.25rem;
 
   &.root-calendar.rootCalendarCartHistory {
     @include calendar-cart-history-status-icons;
+  }
+
+  &.rootCalendarHistory {
+    .icon,
+    .item svg {
+      border: 1px solid green;
+    }
   }
 
   &.root-calendar.rootCalendarDimmed {
@@ -147,8 +160,9 @@ $calendar-cart-history-icon-min: 1.25rem;
       height: 1rem;
     }
 
-    .iconSend {
-      width: 1.25rem;
+    .iconSend,
+    .item svg.iconSend {
+      @include icon-send-box(1rem);
     }
 
     .iconBlocked {
@@ -214,10 +228,9 @@ $calendar-cart-history-icon-min: 1.25rem;
       min-height: 0;
     }
 
-    .iconSend {
-      width: auto;
-      height: 1.1rem;
-      min-height: 0;
+    .iconSend,
+    .item svg.iconSend {
+      @include icon-send-box(1.1rem);
     }
 
     .iconBlocked,
@@ -512,10 +525,9 @@ $calendar-cart-history-icon-min: 1.25rem;
       min-height: 1rem;
     }
 
-    .iconSend {
-      width: 1.2rem;
-      min-width: 1.2rem;
-      height: 1rem;
+    .iconSend,
+    .item svg.iconSend {
+      @include icon-send-box(1rem);
     }
 
     .iconBlocked,
@@ -566,10 +578,9 @@ $calendar-cart-history-icon-min: 1.25rem;
       min-height: 1.125rem;
     }
 
-    .iconSend {
-      width: 1.35rem;
-      min-width: 1.35rem;
-      height: 1.125rem;
+    .iconSend,
+    .item svg.iconSend {
+      @include icon-send-box(1.125rem);
     }
 
     .iconBlocked,

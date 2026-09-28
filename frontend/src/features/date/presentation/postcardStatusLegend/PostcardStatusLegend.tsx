@@ -318,6 +318,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
           !calendarCartStripLegendOnly &&
           styles.rootCalendarDimmed,
         calendarCartHistoryFooter && styles.rootCalendarCartHistory,
+        calendarHistoryStripLegend && styles.rootCalendarHistory,
         calendarFooterAlwaysEnabled && styles.rootCalendarFooterAlwaysEnabled,
         spot === 'historyList' && isHistoryEmpty && styles.rootEmpty,
       )}
