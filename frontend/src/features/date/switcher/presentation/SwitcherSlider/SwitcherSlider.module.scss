@@ -151,8 +151,8 @@ $switcher-cart-label-active-w: #{$switcher-cart-active-cqw}cqw;
 
 .cartSegment {
   position: absolute;
-  top: 2px;
-  bottom: 2px;
+  top: 0;
+  bottom: 0;
   z-index: 0;
   display: flex;
   align-items: center;
@@ -170,8 +170,6 @@ $switcher-cart-label-active-w: #{$switcher-cart-active-cqw}cqw;
   overflow: hidden;
   transition:
     width $switcher-cart-move-duration $switcher-cart-move-ease,
-    top $switcher-cart-move-duration $switcher-cart-move-ease,
-    bottom $switcher-cart-move-duration $switcher-cart-move-ease,
     clip-path $switcher-cart-move-duration $switcher-cart-move-ease,
     background-color $switcher-cart-move-duration $switcher-cart-move-ease;
   touch-action: manipulation;
@@ -180,8 +178,6 @@ $switcher-cart-label-active-w: #{$switcher-cart-active-cqw}cqw;
 
   &[aria-pressed='true'] {
     z-index: 1;
-    top: 0;
-    bottom: 0;
     width: $switcher-cart-active-w;
     background-color: $color-preview-indicator-cart;
   }

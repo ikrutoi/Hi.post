@@ -1184,7 +1184,11 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                     highlightPlanPieIds={gutterHighlightPlanPieIds}
                     onSelectPlanPie={handleSelectPlanPie}
                     chrome={
-                      activePieSide === 'right' ? 'archive' : 'factory'
+                      activePieSide === 'right' ||
+                      isCartOwnedNotebookStrip(notebookStripSection) ||
+                      notebookStripSection === 'history'
+                        ? 'archive'
+                        : 'factory'
                     }
                   />
                   <div className={styles.mobilePieStage}>

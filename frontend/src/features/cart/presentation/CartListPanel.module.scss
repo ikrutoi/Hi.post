@@ -213,8 +213,8 @@ $cart-list-panel-inline-end-inset: calc(
 
 .cartHeaderSegmentButton {
   position: absolute;
-  top: 2px;
-  bottom: 2px;
+  top: 0;
+  bottom: 0;
   z-index: 0;
   display: flex;
   flex-shrink: 0;
@@ -236,15 +236,11 @@ $cart-list-panel-inline-end-inset: calc(
   transform: none;
   transition:
     width $cart-list-header-move-duration $cart-list-header-move-ease,
-    top $cart-list-header-move-duration $cart-list-header-move-ease,
-    bottom $cart-list-header-move-duration $cart-list-header-move-ease,
     clip-path $cart-list-header-move-duration $cart-list-header-move-ease;
   touch-action: manipulation;
 
   &[aria-pressed='true'] {
     z-index: 1;
-    top: 0;
-    bottom: 0;
     width: $cart-list-header-segment-active-w;
   }
 
