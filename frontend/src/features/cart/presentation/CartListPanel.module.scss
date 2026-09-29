@@ -278,6 +278,7 @@ $cart-list-panel-inline-end-inset: calc(
   min-width: calc(1rem * #{math.div(1440, 1280)});
   height: calc(1rem * #{math.div(1360, 1280)});
   min-height: calc(1rem * #{math.div(1360, 1280)});
+  color: $color-font-enabled-light;
 }
 
 .cartHeaderSegmentIconBlocked {
@@ -288,6 +289,7 @@ $cart-list-panel-inline-end-inset: calc(
   height: auto;
   min-height: auto;
   aspect-ratio: 1280 / 1440;
+  color: $color-font-enabled-light;
 }
 
 .cart {
