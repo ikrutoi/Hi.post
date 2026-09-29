@@ -5,8 +5,11 @@ import { registerThunk, loginThunk } from '@features/auth/store/auth.thunks'
 import { logout, setAuth, updateUserPassportColors, updateUserPassportEmblemForm } from '@/features/auth/infrastructure/state/auth.slice'
 import {
   clearAuthSession,
+  readAuthSession,
   saveAuthSession,
 } from '@features/auth/infrastructure/sessionStorage'
+import { postcardsAdapter } from '@db/adapters/storeAdapters/postcardsAdapter'
+import { discardPendingV2Sync } from '@features/sync/infrastructure/postcardV2PendingSync'
 import {
   postcardLocalDataChanged,
   rehydratePostcardsFromIdb,
@@ -100,14 +103,18 @@ authListenerMiddleware.startListening({
 
 authListenerMiddleware.startListening({
   actionCreator: logout,
-  effect: async () => {
-    if (isHttpAuthMode() && readAuthSession()?.token) {
+  effect: async (_action, listenerApi) => {
+    const token = readAuthSession()?.token ?? null
+    discardPendingV2Sync()
+    clearAuthSession()
+    await postcardsAdapter.clear()
+    listenerApi.dispatch(rehydratePostcardsFromIdb())
+    if (isHttpAuthMode() && token) {
       try {
-        await logoutUserApi()
+        await logoutUserApi(token)
       } catch {
-        // Local session is cleared even if the server request fails.
+        // Local session is already cleared.
       }
     }
-    clearAuthSession()
   },
 })

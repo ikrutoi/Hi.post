@@ -29,11 +29,7 @@ $switcher-cart-left-inactive-end: math.div(
 /** Видимая доля свитчера у неактивной (100% − 65% = 35cqw). */
 $switcher-cart-visible-inactive-cqw: (1 - $switcher-cart-active-share) * 100;
 $switcher-cart-active-cqw: $switcher-cart-active-share * 100;
-/**
- * Активный / неактивный размер подписи сегмента.
- */
 $switcher-cart-font-active: 0.95rem;
-$switcher-cart-font-inactive: 0.78rem;
 /**
  * Фон неактивной. Между `$color-disabled` и `$color-enabled` разница
  * почти незаметна — берём следующий шаг шкалы (`$color-hover`).
@@ -182,10 +178,6 @@ $switcher-cart-label-active-w: #{$switcher-cart-active-cqw}cqw;
     background-color: $color-preview-indicator-cart;
   }
 
-  &:not([aria-pressed='true']) .cartSegmentValue {
-    font-size: $switcher-cart-font-inactive;
-  }
-
   &:focus-visible {
     outline: none;
   }
@@ -220,9 +212,7 @@ $switcher-cart-label-active-w: #{$switcher-cart-active-cqw}cqw;
     box-sizing: border-box;
     max-width: none;
     text-align: center;
-    transition:
-      width $switcher-cart-move-duration $switcher-cart-move-ease,
-      font-size $switcher-cart-move-duration $switcher-cart-move-ease;
+    transition: width $switcher-cart-move-duration $switcher-cart-move-ease;
   }
 
   &:not([aria-pressed='true']) {
@@ -266,9 +256,7 @@ $switcher-cart-label-active-w: #{$switcher-cart-active-cqw}cqw;
     box-sizing: border-box;
     max-width: none;
     text-align: center;
-    transition:
-      width $switcher-cart-move-duration $switcher-cart-move-ease,
-      font-size $switcher-cart-move-duration $switcher-cart-move-ease;
+    transition: width $switcher-cart-move-duration $switcher-cart-move-ease;
   }
 
   &:not([aria-pressed='true']) {

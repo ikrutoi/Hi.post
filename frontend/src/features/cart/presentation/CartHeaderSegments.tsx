@@ -10,6 +10,7 @@ import {
 } from '@cart/infrastructure/state'
 import { endCartCalendarDatePick } from '@date/calendar/infrastructure/state'
 import { releaseCartDatePickListEntryOwnership } from '@date/calendar/application/logic/cartDatePickListEntryOwnership'
+import { IconCart, IconPostcardBlocked } from '@shared/ui/icons'
 import styles from './CartListPanel.module.scss'
 
 export const CartHeaderSegments: React.FC<{
@@ -55,11 +56,13 @@ export const CartHeaderSegments: React.FC<{
         aria-pressed={listSegment === 'cart'}
         onClick={handleSelectCartSegment}
       >
-        {cartSegmentCounts.cart > 0 ? (
-          <span className={styles.cartHeaderSegmentCount} aria-hidden>
-            {cartSegmentCounts.cart}
-          </span>
-        ) : null}
+        <span className={styles.cartHeaderSegmentCount} aria-hidden>
+          {cartSegmentCounts.cart > 0 ? (
+            cartSegmentCounts.cart
+          ) : (
+            <IconCart className={styles.cartHeaderSegmentIcon} style={{ scale: 1 }} />
+          )}
+        </span>
       </button>
       <button
         type="button"
@@ -72,11 +75,13 @@ export const CartHeaderSegments: React.FC<{
         aria-pressed={listSegment === 'cartBlocked'}
         onClick={() => dispatch(setCartListStatusSegment('cartBlocked'))}
       >
-        {cartSegmentCounts.cartBlocked > 0 ? (
-          <span className={styles.cartHeaderSegmentCount} aria-hidden>
-            {cartSegmentCounts.cartBlocked}
-          </span>
-        ) : null}
+        <span className={styles.cartHeaderSegmentCount} aria-hidden>
+          {cartSegmentCounts.cartBlocked > 0 ? (
+            cartSegmentCounts.cartBlocked
+          ) : (
+            <IconPostcardBlocked className={styles.cartHeaderSegmentIconBlocked} />
+          )}
+        </span>
       </button>
     </div>
   )

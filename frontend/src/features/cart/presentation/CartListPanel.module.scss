@@ -50,7 +50,6 @@ $cart-list-header-label-inactive-w: calc(
 );
 $cart-list-header-label-active-w: #{$cart-list-header-active-cqw}cqw;
 $cart-list-header-font-active: 1rem;
-$cart-list-header-font-inactive: 0.78rem;
 $cart-list-header-move-duration: 0.28s;
 $cart-list-header-move-ease: cubic-bezier(0.33, 1, 0.68, 1);
 /** Как правый padding списка: `0.25rem + scroll-gutter` из `list-panel-scroll-padding`. */
@@ -270,9 +269,25 @@ $cart-list-panel-inline-end-inset: calc(
   white-space: nowrap;
   max-width: none;
   text-align: center;
-  transition:
-    width $cart-list-header-move-duration $cart-list-header-move-ease,
-    font-size $cart-list-header-move-duration $cart-list-header-move-ease;
+  transition: width $cart-list-header-move-duration $cart-list-header-move-ease;
+}
+
+.cartHeaderSegmentIcon {
+  flex-shrink: 0;
+  width: calc(1rem * #{math.div(1440, 1280)});
+  min-width: calc(1rem * #{math.div(1440, 1280)});
+  height: calc(1rem * #{math.div(1360, 1280)});
+  min-height: calc(1rem * #{math.div(1360, 1280)});
+}
+
+.cartHeaderSegmentIconBlocked {
+  flex-shrink: 0;
+  width: 1rem;
+  min-width: 1rem;
+  max-width: 1rem;
+  height: auto;
+  min-height: auto;
+  aspect-ratio: 1280 / 1440;
 }
 
 .cart {
@@ -322,7 +337,6 @@ $cart-list-panel-inline-end-inset: calc(
 
     .cartHeaderSegmentCount {
       width: $cart-list-header-label-inactive-w;
-      font-size: $cart-list-header-font-inactive;
     }
 
     &::before {
@@ -390,7 +404,6 @@ $cart-list-panel-inline-end-inset: calc(
 
     .cartHeaderSegmentCount {
       width: $cart-list-header-label-inactive-w;
-      font-size: $cart-list-header-font-inactive;
     }
 
     &::before {

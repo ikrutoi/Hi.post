@@ -79,6 +79,7 @@ for (const tombstone of readDeleteTombstones()) {
 const V2_SYNC_DEBOUNCE_MS = 3000
 let flushTimer: ReturnType<typeof setTimeout> | null = null
 let pageHideFlushBound = false
+let flushEpoch = 0
 
 function schedulePendingV2Flush(): void {
   if (flushTimer != null) clearTimeout(flushTimer)
@@ -120,11 +121,23 @@ export function isPostcardPendingUpsert(id: string): boolean {
   return pendingPostcards.get(id)?.type === 'upsert'
 }
 
+export function discardPendingV2Sync(): void {
+  flushEpoch += 1
+  if (flushTimer != null) {
+    clearTimeout(flushTimer)
+    flushTimer = null
+  }
+  pendingPostcards.clear()
+  pendingLibrary.clear()
+  writeDeleteTombstones([])
+}
+
 export function enqueuePostcardDelete(
   id: string,
   localId?: number | null,
 ): void {
   if (!id) return
+  if (isHttpAuthMode() && !readAuthSession()?.token) return
   const prev = pendingPostcards.get(id)
   const nextLocalId =
     typeof localId === 'number'
@@ -195,12 +208,15 @@ export async function flushPendingV2Sync(): Promise<void> {
   if (!hasPendingV2Sync()) return
   if (isHttpAuthMode() && !readAuthSession()?.token) return
 
+  const epoch = flushEpoch
   const postcardBatch = [...pendingPostcards.entries()]
   const libraryBatch = [...pendingLibrary.entries()]
   pendingPostcards.clear()
   pendingLibrary.clear()
 
   for (const [id, op] of postcardBatch) {
+    if (epoch !== flushEpoch) return
+    if (isHttpAuthMode() && !readAuthSession()?.token) return
     try {
       if (op.type === 'delete') await deleteV2Postcard(id)
       else await upsertV2Postcard(op.postcard)

@@ -73,13 +73,41 @@ class AuthSessionTest extends TestCase
             ->postJson('/api/logout')
             ->assertOk();
 
-        $this->assertDatabaseCount('personal_access_tokens', 0);
+        $this->assertDatabaseCount('personal_access_tokens', 1);
 
         $this->app['auth']->forgetGuards();
 
         $this->withToken($token)
             ->getJson('/api/me')
             ->assertUnauthorized();
+    }
+
+    public function test_logout_revokes_only_the_current_device_token(): void
+    {
+        $user = User::factory()->create([
+            'is_active' => true,
+            'role' => 'user',
+        ]);
+        $phone = $user->createToken('phone')->plainTextToken;
+        $desktop = $user->createToken('desktop')->plainTextToken;
+
+        $this->withToken($phone)
+            ->postJson('/api/logout')
+            ->assertOk();
+
+        $this->assertDatabaseCount('personal_access_tokens', 1);
+
+        $this->app['auth']->forgetGuards();
+
+        $this->withToken($phone)
+            ->getJson('/api/me')
+            ->assertUnauthorized();
+
+        $this->app['auth']->forgetGuards();
+
+        $this->withToken($desktop)
+            ->getJson('/api/me')
+            ->assertOk();
     }
 
     public function test_inactive_user_cannot_read_me(): void

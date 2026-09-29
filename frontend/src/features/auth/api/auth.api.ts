@@ -23,4 +23,7 @@ export const updateMeApi = (payload: {
   passportEmblemForm?: User['passportEmblemForm']
 }) => httpClient.patch<User>('/api/me', payload)
 
-export const logoutUserApi = () => httpClient.post('/api/logout')
+export const logoutUserApi = (token: string) =>
+  httpClient.post('/api/logout', null, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
