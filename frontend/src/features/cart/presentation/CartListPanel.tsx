@@ -433,10 +433,15 @@ export const CartListPanel: React.FC<Props> = ({
           ) : (
             <div className={styles.listEmpty} aria-hidden>
               {entriesProp == null && listSegment === 'cartBlocked' ? (
-                <IconPostcardBlocked className={styles.listEmptyIcon} />
+                <IconPostcardBlocked
+                  className={clsx(styles.listEmptyIcon, styles.listEmptyIconBlocked)}
+                />
               ) : (
                 <span className={styles.listEmptyIconCartWrap}>
-                  <IconCart className={styles.listEmptyIcon} />
+                  <IconCart
+                    className={clsx(styles.listEmptyIcon, styles.listEmptyIconCart)}
+                    style={{ scale: 1 }}
+                  />
                 </span>
               )}
             </div>

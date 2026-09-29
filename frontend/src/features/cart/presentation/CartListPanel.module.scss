@@ -493,14 +493,28 @@ $cart-list-panel-inline-end-inset: calc(
   padding: 0.5rem;
 }
 
+$list-empty-icon-slot: 55%;
+$list-empty-icon-slot-min: 2.7rem;
+
 .listEmptyIcon {
-  width: 55%;
-  height: 55%;
-  min-width: 2.7rem;
-  min-height: 2.7rem;
   flex-shrink: 0;
   pointer-events: none;
   color: $color-app-inner;
+  height: auto;
+  min-height: auto;
+}
+
+.listEmptyIconCart {
+  width: calc(#{$list-empty-icon-slot} * #{math.div(1440, 1280)});
+  min-width: calc(#{$list-empty-icon-slot-min} * #{math.div(1440, 1280)});
+  aspect-ratio: 1440 / 1360;
+}
+
+.listEmptyIconBlocked {
+  width: $list-empty-icon-slot;
+  min-width: $list-empty-icon-slot-min;
+  max-width: $list-empty-icon-slot;
+  aspect-ratio: 1280 / 1440;
 }
 
 .listEmptyIconCartWrap {
@@ -508,6 +522,23 @@ $cart-list-panel-inline-end-inset: calc(
 }
 
 @include mobile-list-empty-icon-card-section;
+
+:global([data-shell-layout='mobile']) {
+  .listEmptyIcon.listEmptyIconCart {
+    width: calc(var(--card-work-zone-side, 100%) * 0.4 * #{math.div(1440, 1280)});
+    min-width: 0;
+    min-height: 0;
+    aspect-ratio: 1440 / 1360;
+  }
+
+  .listEmptyIcon.listEmptyIconBlocked {
+    width: calc(var(--card-work-zone-side, 100%) * 0.4);
+    min-width: 0;
+    max-width: calc(var(--card-work-zone-side, 100%) * 0.4);
+    min-height: 0;
+    aspect-ratio: 1280 / 1440;
+  }
+}
 @include list-panel-empty-vertical-center;
 
 .footer {
