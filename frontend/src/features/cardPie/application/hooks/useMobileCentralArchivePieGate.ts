@@ -71,12 +71,8 @@ function preloadDecodedImage(url: string): Promise<void> {
 
 /**
  * Гейт отрисовки центрального archive CardPie при переключении открыток.
- *
- * 1) Fade out текущего pie
- * 2) Короткий белый blank (без IconCardPie)
- * 3) Монтаж нового pie и fade in
- *
- * Reveal ждёт decode cardphoto и aroma — иначе сектор аромы «догоняет» после показа.
+ * Следующая открытка сменяет текущую сразу, без белого кадра между ними.
+ * Уход в пустой архив гасит pie и возвращает placeholder.
  */
 export function useMobileCentralArchivePieGate(
   localId: number | null,
@@ -185,34 +181,23 @@ export function useMobileCentralArchivePieGate(
     }
   }, [localId, needsPhoto, displayUrl, needsAroma, aromaUrl])
 
-  /** Смена цели: начинаем fade out (или сразу outDone, если нечего гасить). */
+  /** Уход с открытки: fade out. Смена цели не снимает текущий pie в белый кадр. */
   useEffect(() => {
-    if (localId == null) {
-      setContentOpaque(false)
-      const hadMounted = mountedRef.current != null
-      if (!hadMounted) {
-        setMounted(null)
-        setFadeOutDone(true)
-        return
-      }
-      setFadeOutDone(false)
-      const timerId = window.setTimeout(() => {
-        setMounted(null)
-        setFadeOutDone(true)
-      }, fadeMs)
-      return () => {
-        window.clearTimeout(timerId)
-      }
-    }
-
-    setContentOpaque(false)
-    const current = mountedRef.current
-    if (current == null || current.id === String(localId)) {
+    if (localId != null) {
       setFadeOutDone(true)
       return
     }
+
+    setContentOpaque(false)
+    if (mountedRef.current == null) {
+      setMounted(null)
+      setFadeOutDone(true)
+      return
+    }
+
     setFadeOutDone(false)
     const timerId = window.setTimeout(() => {
+      setMounted(null)
       setFadeOutDone(true)
     }, fadeMs)
     return () => {
@@ -231,36 +216,19 @@ export function useMobileCentralArchivePieGate(
       (localId != null && bundle != null && paintWaitTimedOut),
   )
 
-  /** После fade out: blank, затем mount + fade in. */
+  /** Когда цель готова — сразу её pie, без белого кадра между fade out и fade in. */
   useEffect(() => {
     if (localId == null || source == null) return
-    if (!fadeOutDone) return
+    if (!fadeOutDone || !isPaintReady) return
 
     const current = mountedRef.current
-    if (current != null && current.id !== idStr) {
-      setMounted(null)
-      return
-    }
-
-    if (!isPaintReady) return
-
     if (current?.id === idStr) {
       if (!contentOpaque) setContentOpaque(true)
       return
     }
 
     setMounted({ id: idStr, source })
-    setContentOpaque(false)
-    let raf2 = 0
-    const raf1 = window.requestAnimationFrame(() => {
-      raf2 = window.requestAnimationFrame(() => {
-        setContentOpaque(true)
-      })
-    })
-    return () => {
-      window.cancelAnimationFrame(raf1)
-      window.cancelAnimationFrame(raf2)
-    }
+    setContentOpaque(true)
   }, [localId, source, idStr, fadeOutDone, isPaintReady, contentOpaque])
 
   if (localId == null && mounted == null) {

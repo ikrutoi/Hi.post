@@ -608,6 +608,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     mobileCentralArchivePieGate.mountedLocalId != null &&
     mobileCentralArchivePieGate.mountedSource != null &&
     mobileCentralArchivePieGate.contentOpaque
+  const archivePieWaiting =
+    mobileCentralPieDisplay === 'archive' && !centralArchivePieVisible
   const centralPieEarsGutterMode =
     mobileCentralPieDisplay === 'cardphotoTemplate' ||
     mobileCentralPieDisplay === 'cardtextTemplate' ||
@@ -618,6 +620,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const centralPieEarsMode =
     mobileCentralPieDisplay === 'assembly' ||
     mobileCentralPieDisplay === 'emptyArchive' ||
+    archivePieWaiting ||
     centralArchivePieVisible
       ? centralPieEarsGutterMode
       : null
@@ -1202,14 +1205,19 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                       centralPieEarsMode === 'history' &&
                         styles.mobilePieWrapEarsHistory,
                     )}
-                    data-mobile-central-pie-mode={mobileCentralPieDisplay}
+                    data-mobile-central-pie-mode={
+                      archivePieWaiting ? 'emptyArchive' : mobileCentralPieDisplay
+                    }
                     data-central-pie-ears={centralPieEarsMode ?? undefined}
                     data-central-pie-ears-gutter={
                       centralPieEarsGutterMode ?? undefined
                     }
                   >
                       {mobileCentralPieDisplay === 'archive' &&
-                      mobileCentralArchivePreview != null ? (
+                      mobileCentralArchivePreview != null &&
+                      mobileCentralArchivePieGate.contentOpaque &&
+                      mobileCentralArchivePieGate.mountedLocalId != null &&
+                      mobileCentralArchivePieGate.mountedSource != null ? (
                         <div
                           className={clsx(
                             styles.mobileArchivePieReveal,
@@ -1220,50 +1228,40 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                             transitionDuration: `${mobileCentralArchivePieGate.fadeMs}ms`,
                           }}
                         >
-                          {mobileCentralArchivePieGate.mountedLocalId !=
-                            null &&
-                          mobileCentralArchivePieGate.mountedSource !=
-                            null ? (
-                            <CardPie
-                              key={
-                                mobileCentralArchivePieGate.revealToken ??
-                                String(
-                                  mobileCentralArchivePieGate.mountedLocalId,
-                                )
-                              }
-                              fillContainer
-                              station="right"
-                              isProcessed={false}
-                              status={
-                                mobileCentralMountedArchivePostcardStatus
-                              }
-                              id={String(
+                          <CardPie
+                            key={
+                              mobileCentralArchivePieGate.revealToken ??
+                              String(
                                 mobileCentralArchivePieGate.mountedLocalId,
-                              )}
-                              rightListSource={
-                                mobileCentralArchivePieGate.mountedSource
-                              }
-                              onListArchiveSectorClick={
-                                handleRightListArchivePieSectorClick
-                              }
-                              onRightPieCenterClick={onArchivePieCenterClick}
-                              rightPieCenterAffordance={
-                                rightPieCenterAffordance
-                              }
-                              rightPieCenterArchiveCycleHint={
-                                showMobileArchiveCenterCycleHint
-                              }
-                              rightPieCenterArchiveCycleHintViewMode={
-                                mobileArchiveCenterCycleHintViewMode
-                              }
-                              cardphotoThumb
-                            />
-                          ) : (
-                            <div
-                              className={styles.mobileArchivePieRevealBlank}
-                              aria-hidden
-                            />
-                          )}
+                              )
+                            }
+                            fillContainer
+                            station="right"
+                            isProcessed={false}
+                            status={
+                              mobileCentralMountedArchivePostcardStatus
+                            }
+                            id={String(
+                              mobileCentralArchivePieGate.mountedLocalId,
+                            )}
+                            rightListSource={
+                              mobileCentralArchivePieGate.mountedSource
+                            }
+                            onListArchiveSectorClick={
+                              handleRightListArchivePieSectorClick
+                            }
+                            onRightPieCenterClick={onArchivePieCenterClick}
+                            rightPieCenterAffordance={
+                              rightPieCenterAffordance
+                            }
+                            rightPieCenterArchiveCycleHint={
+                              showMobileArchiveCenterCycleHint
+                            }
+                            rightPieCenterArchiveCycleHintViewMode={
+                              mobileArchiveCenterCycleHintViewMode
+                            }
+                            cardphotoThumb
+                          />
                         </div>
                       ) : mobileCentralPieDisplay === 'cardphotoTemplate' ? (
                         mobileCardphotoListTemplatePreview != null ? (
@@ -1325,7 +1323,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                         />
                       ) : mobileCentralPieDisplay === 'aromaPreview' ? (
                         <AromaCardPiePreview preview={aromaCardPiePreview} />
-                      ) : mobileCentralPieDisplay === 'emptyArchive' ? (
+                      ) : mobileCentralPieDisplay === 'emptyArchive' ||
+                        mobileCentralPieDisplay === 'archive' ? (
                         <div
                           className={styles.mobileListArchiveEmptyPlaceholder}
                           aria-hidden
