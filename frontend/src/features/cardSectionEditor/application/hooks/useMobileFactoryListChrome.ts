@@ -218,13 +218,16 @@ export function useMobileFactoryListChrome() {
     rightPieEnvelopePeekNoToolbar
 
   /**
-   * Скрыть список корзины/истории: peek секции редактора или выбор новой даты (cartBlocked → dateEdit).
-   * Session flag survives transient mode clears so the blocked list does not flash.
+   * Скрыть список корзины/истории при peek архивной открытки или выборе даты.
+   * Сборка фабрики не прячет список, который только что открыли кнопкой корзины/истории.
    */
   const mobileDateListChromePeek =
-    mobileSectionSimplifiedPeek ||
+    mobileArchiveSectionPeek ||
     cartCalendarDatePickMode ||
-    cartDatePickSessionActive
+    cartDatePickSessionActive ||
+    (assemblySectionSimplifiedPeek &&
+      !cartListPanelOpen &&
+      !historyListPanelOpen)
 
   /**
    * If Redux opened the address book on envelope, mount it. Do not gate on

@@ -59,6 +59,14 @@ async function forgetLocal(id: string): Promise<void> {
   }
 }
 
+async function putSyncing(
+  record: PostcardHydrated & { id: IDBValidKey },
+): Promise<void> {
+  const normalized = normalizePostcardRecord(record)
+  await base.put(normalized)
+  enqueuePostcardUpsert(normalized)
+}
+
 async function purgePendingDeletes(): Promise<void> {
   const rows = await base.getAll()
   for (const row of rows) {
@@ -85,9 +93,16 @@ export const postcardsAdapter = {
     return r ? normalizePostcardRecord(r) : null
   },
   put: async (record: PostcardHydrated & { id: IDBValidKey }): Promise<void> => {
-    const normalized = normalizePostcardRecord(record)
-    await base.put(normalized)
-    enqueuePostcardUpsert(normalized)
+    await putSyncing(record)
+  },
+  addRecordWithId: async (
+    id: IDBValidKey,
+    recordPayload: Omit<PostcardHydrated, 'id'>,
+  ): Promise<void> => {
+    await putSyncing({
+      ...(recordPayload as PostcardHydrated),
+      id: String(id),
+    })
   },
   deleteById: async (id: IDBValidKey): Promise<void> => {
     await base.deleteById(id)

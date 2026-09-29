@@ -12,7 +12,7 @@ import {
 } from './v2LibraryRemote'
 
 type PostcardOp =
-  | { type: 'upsert'; postcard: PostcardHydrated }
+  | { type: 'upsert'; postcard: PostcardHydrated | null }
   | { type: 'delete'; localId: number | null }
 
 type LibraryOp =
@@ -20,6 +20,8 @@ type LibraryOp =
   | { type: 'delete'; kind: V2LibraryKind }
 
 const DELETE_TOMBSTONE_KEY = 'hi.post.v2.postcardDeleteIds'
+const UPSERT_QUEUE_KEY = 'hi.post.v2.postcardUpsertIds'
+const SYNCED_IDS_KEY = 'hi.post.v2.postcardSyncedIds'
 
 const pendingPostcards = new Map<string, PostcardOp>()
 const pendingLibrary = new Map<string, LibraryOp>()
@@ -69,11 +71,85 @@ function persistDeleteTombstones(): void {
   writeDeleteTombstones(ids)
 }
 
+function readPendingUpsertIds(): string[] {
+  if (typeof localStorage === 'undefined') return []
+  try {
+    const raw = localStorage.getItem(UPSERT_QUEUE_KEY)
+    const parsed: unknown = raw ? JSON.parse(raw) : []
+    if (!Array.isArray(parsed)) return []
+    return parsed.filter((id): id is string => typeof id === 'string' && id !== '')
+  } catch {
+    return []
+  }
+}
+
+function readSyncedPostcardIds(): Set<string> {
+  if (typeof localStorage === 'undefined') return new Set()
+  try {
+    const raw = localStorage.getItem(SYNCED_IDS_KEY)
+    const parsed: unknown = raw ? JSON.parse(raw) : []
+    if (!Array.isArray(parsed)) return new Set()
+    return new Set(
+      parsed.filter((id): id is string => typeof id === 'string' && id !== ''),
+    )
+  } catch {
+    return new Set()
+  }
+}
+
+function writeSyncedPostcardIds(ids: Set<string>): void {
+  if (typeof localStorage === 'undefined') return
+  if (ids.size === 0) {
+    localStorage.removeItem(SYNCED_IDS_KEY)
+    return
+  }
+  localStorage.setItem(SYNCED_IDS_KEY, JSON.stringify([...ids]))
+}
+
+const syncedPostcardIds = readSyncedPostcardIds()
+
+/** Server has returned this id at least once. A later absence means it was deleted. */
+export function isPostcardSynced(id: string): boolean {
+  return syncedPostcardIds.has(id)
+}
+
+export function rememberSyncedPostcardIds(ids: Iterable<string>): void {
+  let changed = false
+  for (const id of ids) {
+    if (!id || syncedPostcardIds.has(id)) continue
+    syncedPostcardIds.add(id)
+    changed = true
+  }
+  if (changed) writeSyncedPostcardIds(syncedPostcardIds)
+}
+
+export function forgetSyncedPostcardId(id: string): void {
+  if (!syncedPostcardIds.delete(id)) return
+  writeSyncedPostcardIds(syncedPostcardIds)
+}
+
+function persistPendingUpsertIds(): void {
+  if (typeof localStorage === 'undefined') return
+  const ids = [...pendingPostcards.entries()].flatMap(([id, op]) =>
+    op.type === 'upsert' ? [id] : [],
+  )
+  if (ids.length === 0) {
+    localStorage.removeItem(UPSERT_QUEUE_KEY)
+    return
+  }
+  localStorage.setItem(UPSERT_QUEUE_KEY, JSON.stringify(ids))
+}
+
 for (const tombstone of readDeleteTombstones()) {
   pendingPostcards.set(tombstone.id, {
     type: 'delete',
     localId: tombstone.localId,
   })
+}
+
+for (const id of readPendingUpsertIds()) {
+  if (pendingPostcards.has(id)) continue
+  pendingPostcards.set(id, { type: 'upsert', postcard: null })
 }
 
 const V2_SYNC_DEBOUNCE_MS = 3000
@@ -114,6 +190,7 @@ export function enqueuePostcardUpsert(postcard: PostcardHydrated): void {
   if (!postcard.id) return
   if (isPostcardPendingDelete(postcard)) return
   pendingPostcards.set(postcard.id, { type: 'upsert', postcard })
+  persistPendingUpsertIds()
   schedulePendingV2Flush()
 }
 
@@ -130,6 +207,7 @@ export function discardPendingV2Sync(): void {
   pendingPostcards.clear()
   pendingLibrary.clear()
   writeDeleteTombstones([])
+  persistPendingUpsertIds()
 }
 
 export function enqueuePostcardDelete(
@@ -147,6 +225,7 @@ export function enqueuePostcardDelete(
         : null
   pendingPostcards.set(id, { type: 'delete', localId: nextLocalId })
   persistDeleteTombstones()
+  persistPendingUpsertIds()
   schedulePendingV2Flush()
 }
 
@@ -217,15 +296,23 @@ export async function flushPendingV2Sync(): Promise<void> {
   for (const [id, op] of postcardBatch) {
     if (epoch !== flushEpoch) return
     if (isHttpAuthMode() && !readAuthSession()?.token) return
+    if (op.type === 'upsert' && op.postcard == null) {
+      if (!pendingPostcards.has(id)) pendingPostcards.set(id, op)
+      continue
+    }
+    const postcard = op.type === 'upsert' ? op.postcard : null
     try {
-      if (op.type === 'delete') await deleteV2Postcard(id)
-      else await upsertV2Postcard(op.postcard)
+      if (op.type === 'delete') {
+        await deleteV2Postcard(id)
+        forgetSyncedPostcardId(id)
+      } else if (postcard) await upsertV2Postcard(postcard)
     } catch (error) {
       if (op.type === 'delete' && isNotFound(error)) continue
       if (!pendingPostcards.has(id)) pendingPostcards.set(id, op)
     }
   }
   persistDeleteTombstones()
+  persistPendingUpsertIds()
 
   for (const [key, op] of libraryBatch) {
     try {

@@ -8,6 +8,8 @@ import {
   flushPendingV2Sync,
   isPostcardPendingDelete,
   isPostcardPendingUpsert,
+  isPostcardSynced,
+  rememberSyncedPostcardIds,
 } from '../../infrastructure/postcardV2PendingSync'
 import { fetchV2Postcards } from '../../infrastructure/v2PostcardRemote'
 
@@ -23,10 +25,17 @@ export async function pullV2PostcardsIntoIdb(): Promise<number> {
   const local = (await postcardsAdapter.getAll()).filter(
     (row) => !isPostcardPendingDelete(row),
   )
+  rememberSyncedPostcardIds(
+    remote.flatMap((row) => (row.id ? [row.id] : [])),
+  )
   const retainLocalOnlyIds = new Set(
-    local.flatMap((row) =>
-      row.id && isPostcardPendingUpsert(row.id) ? [row.id] : [],
-    ),
+    local.flatMap((row) => {
+      if (!row.id) return []
+      if (isPostcardPendingUpsert(row.id) || !isPostcardSynced(row.id)) {
+        return [row.id]
+      }
+      return []
+    }),
   )
   const { nextLocal, push } = mergePostcardsLastWriteWins(
     local,

@@ -51,10 +51,15 @@ export function useMobileVisualViewport(
       const { height, offsetTop, keyboardInset, keyboardOpen } =
         readVisualViewportInsets()
 
-      shell.style.setProperty('--mobile-vv-height', `${height}px`)
+      const layoutHeight = window.innerHeight
+      const heightUsable =
+        height >= 1 && (keyboardOpen || height >= layoutHeight * 0.5)
+      if (heightUsable) {
+        shell.style.setProperty('--mobile-vv-height', `${height}px`)
+      }
       shell.style.setProperty(
         '--mobile-vv-offset-top',
-        `${pinTop ? 0 : offsetTop}px`,
+        `${pinTop || !keyboardOpen ? 0 : offsetTop}px`,
       )
       shell.style.setProperty('--mobile-keyboard-inset', `${keyboardInset}px`)
       shell.dataset.keyboardOpen = keyboardOpen ? 'true' : 'false'

@@ -575,22 +575,22 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     | 'aromaPreview'
     | 'emptyArchive'
     | 'assembly' => {
-    /** Same as left factory edit: selected aroma cell fills the central CardPie. */
-    if (aromaCardPiePreview.active) {
-      return 'aromaPreview'
-    }
     if (mobileCentralArchivePreview != null) return 'archive'
-    if (mobileCardphotoListChromeActive) return 'cardphotoTemplate'
-    if (mobileCardtextListChromeActive) return 'cardtextTemplate'
-    if (addressCardPiePreview.showSurface) {
-      return 'addressTemplate'
-    }
     if (
       mobileListArchiveSlotActive ||
       isCartOwnedNotebookStrip(notebookStripSection) ||
       notebookStripSection === 'history'
     ) {
       return 'emptyArchive'
+    }
+    /** Same as left factory edit: selected aroma cell fills the central CardPie. */
+    if (aromaCardPiePreview.active) {
+      return 'aromaPreview'
+    }
+    if (mobileCardphotoListChromeActive) return 'cardphotoTemplate'
+    if (mobileCardtextListChromeActive) return 'cardtextTemplate'
+    if (addressCardPiePreview.showSurface) {
+      return 'addressTemplate'
     }
     return 'assembly'
   }, [

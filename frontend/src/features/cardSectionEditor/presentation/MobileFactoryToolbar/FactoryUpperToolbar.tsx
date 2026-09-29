@@ -63,7 +63,9 @@ export const FactoryUpperToolbar: React.FC<{
   const showPeekEmptyToolbarShell =
     mobileSectionSimplifiedPeek &&
     !envelopeAddressCreateMode &&
-    !showAddressListFactoryUpperToolbar
+    !showAddressListFactoryUpperToolbar &&
+    !showCartListFactoryUpperToolbar &&
+    !showHistoryListFactoryUpperToolbar
 
   const suppressCalendarUpperRow =
     includeDateCalendarNav &&
