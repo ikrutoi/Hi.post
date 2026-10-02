@@ -166,6 +166,7 @@ $list-panel-footer-stack-height: $user-panel-footer-band;
 /** Same diameter as `.toolbarRightSidebar` userLogin (home chrome + desktop sidebar). */
 $user-panel-header-mark-size: iconButton.$toolbar-logo-size-section-editor;
 $user-panel-header-mark-to-name-gap: 0.75rem;
+$user-panel-header-mark-to-name-gap-mobile: 1rem;
 /** Same outer margin as Close, plus Close glyph inset inside its hit box. */
 $user-panel-header-close-margin: 0.3rem;
 $user-panel-header-close-glyph-pad: math.div(
@@ -238,7 +239,7 @@ $user-panel-header-lead-edge-mobile: iconButton.$toolbar-mobile-toolbar-key-marg
     .headerUserNameWrap {
       padding-inline-start: calc(
         #{$user-panel-header-mark-size} + #{$user-panel-header-lead-edge-mobile} +
-          #{$user-panel-header-mark-to-name-gap}
+          #{$user-panel-header-mark-to-name-gap-mobile}
       );
     }
   }
@@ -268,7 +269,7 @@ $user-panel-header-lead-edge-mobile: iconButton.$toolbar-mobile-toolbar-key-marg
   margin-inline-start: $user-panel-header-lead-edge-mobile;
 }
 
-:global([data-shell-layout='mobile']) .panel .headerUserNameWrap {
+:global([data-shell-layout='mobile']) .panel:not(.panelSignedIn) .headerUserNameWrap {
   padding-inline-start: calc(
     #{iconButton.$toolbar-hit-size-card-pie-list-header} +
       #{$user-panel-header-lead-edge-mobile} + 0.35rem
@@ -326,16 +327,14 @@ $user-panel-header-lead-edge-mobile: iconButton.$toolbar-mobile-toolbar-key-marg
 
 .hubGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(2, auto);
+  grid-template-columns: repeat(4, 1fr);
   gap: 0.5rem;
   width: 100%;
   align-items: start;
   justify-items: stretch;
 }
 
-.hubTile,
-.hubTileEmpty {
+.hubTile {
   position: relative;
   box-sizing: border-box;
   width: 100%;
@@ -345,10 +344,7 @@ $user-panel-header-lead-edge-mobile: iconButton.$toolbar-mobile-toolbar-key-marg
   overflow: hidden;
   border-radius: 0.5rem;
   border: 1px solid $color-app-strip;
-  background-color: #fff;
-}
-
-.hubTile {
+  background-color: $color-app-inner;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -371,8 +367,11 @@ $user-panel-header-lead-edge-mobile: iconButton.$toolbar-mobile-toolbar-key-marg
   }
 }
 
-.hubTileEmpty {
-  pointer-events: none;
+.hubTileIcon {
+  display: block;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
 }
 
 .hubTileLabel {
