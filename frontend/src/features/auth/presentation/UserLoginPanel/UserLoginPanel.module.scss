@@ -369,16 +369,9 @@ $user-panel-header-lead-edge-mobile: iconButton.$toolbar-mobile-toolbar-key-marg
 
 .hubTileIcon {
   display: block;
-  width: 2rem;
-  height: 2rem;
+  width: 1.8rem;
+  height: 1.8rem;
   flex-shrink: 0;
-}
-
-.hubTileLabel {
-  font-size: 0.72rem;
-  font-weight: 600;
-  line-height: 1.2;
-  text-align: center;
 }
 
 .guestHint {

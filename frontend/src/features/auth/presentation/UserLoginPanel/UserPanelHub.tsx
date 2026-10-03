@@ -1,5 +1,5 @@
 import React from 'react'
-import { IconInfo, IconSettings } from '@shared/ui/icons'
+import { IconInfo, IconSettings, IconUserLogin } from '@shared/ui/icons'
 import styles from './UserLoginPanel.module.scss'
 
 export type UserPanelHubSection = 'registration' | 'info' | 'settings'
@@ -33,12 +33,12 @@ export const UserPanelHub: React.FC<UserPanelHubProps> = ({
         aria-label={tile.label}
         onClick={() => onOpenSection(tile.id)}
       >
-        {tile.id === 'info' ? (
+        {tile.id === 'registration' ? (
+          <IconUserLogin className={styles.hubTileIcon} aria-hidden />
+        ) : tile.id === 'info' ? (
           <IconInfo className={styles.hubTileIcon} aria-hidden />
-        ) : tile.id === 'settings' ? (
-          <IconSettings className={styles.hubTileIcon} aria-hidden />
         ) : (
-          <span className={styles.hubTileLabel}>{tile.label}</span>
+          <IconSettings className={styles.hubTileIcon} aria-hidden />
         )}
       </button>
     ))}
