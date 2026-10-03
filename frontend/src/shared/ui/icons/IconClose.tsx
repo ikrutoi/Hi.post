@@ -9,7 +9,7 @@ export const IconClose = (props: React.SVGProps<SVGSVGElement>) => (
     fillRule="evenodd"
     clipRule="evenodd"
     stroke="currentColor"
-    strokeWidth={106.666}
+    strokeWidth={122.498}
     strokeLinecap="round"
     strokeLinejoin="round"
     imageRendering="optimizeQuality"
@@ -17,6 +17,6 @@ export const IconClose = (props: React.SVGProps<SVGSVGElement>) => (
     textRendering="geometricPrecision"
     {...props}
   >
-    <path d="M990 290 290 990M990 990 290 290" />
+    <path d="m1015 265-750 750M1015 1015 265 265" />
   </svg>
 )
