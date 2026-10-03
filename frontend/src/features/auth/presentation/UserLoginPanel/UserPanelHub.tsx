@@ -1,5 +1,5 @@
 import React from 'react'
-import { IconInfo } from '@shared/ui/icons'
+import { IconInfo, IconSettings } from '@shared/ui/icons'
 import styles from './UserLoginPanel.module.scss'
 
 export type UserPanelHubSection = 'registration' | 'info' | 'settings'
@@ -35,6 +35,8 @@ export const UserPanelHub: React.FC<UserPanelHubProps> = ({
       >
         {tile.id === 'info' ? (
           <IconInfo className={styles.hubTileIcon} aria-hidden />
+        ) : tile.id === 'settings' ? (
+          <IconSettings className={styles.hubTileIcon} aria-hidden />
         ) : (
           <span className={styles.hubTileLabel}>{tile.label}</span>
         )}
