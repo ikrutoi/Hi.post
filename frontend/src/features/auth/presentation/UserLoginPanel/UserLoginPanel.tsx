@@ -4,6 +4,9 @@ import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import {
+  IconInfo,
+  IconSettings,
+  IconUserLogin,
   resolveGuestUserRegisteredElementColors,
   resolveUserRegisteredElementColors,
 } from '@shared/ui/icons'
@@ -89,6 +92,14 @@ export const UserLoginPanel: React.FC = () => {
         ? displayName
         : null
       : cellTitle
+  const headerCellIcon =
+    panelView === 'registration' ? (
+      <IconUserLogin className={styles.headerCellIcon} aria-hidden />
+    ) : panelView === 'info' ? (
+      <IconInfo className={styles.headerCellIcon} aria-hidden />
+    ) : panelView === 'settings' ? (
+      <IconSettings className={styles.headerCellIcon} aria-hidden />
+    ) : null
   const showLogoutFooter = isAuthenticated && panelView === 'registration'
   const isHub = panelView === 'hub'
   const hideLeadIcon = !isAuthenticated || !isHub
@@ -135,14 +146,19 @@ export const UserLoginPanel: React.FC = () => {
           ) : undefined
         }
         headerTopCenter={
-          headerTitle ? (
+          headerTitle || headerCellIcon ? (
             <div
               className={clsx(
                 styles.headerUserNameWrap,
                 !isHub && styles.headerUserNameWrapCell,
               )}
+              aria-label={!isHub ? (cellTitle ?? undefined) : undefined}
             >
-              <span className={styles.headerUserName}>{headerTitle}</span>
+              {isHub ? (
+                <span className={styles.headerUserName}>{headerTitle}</span>
+              ) : (
+                headerCellIcon
+              )}
             </div>
           ) : null
         }
