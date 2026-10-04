@@ -32,6 +32,7 @@ import {
   UserPanelHub,
   type UserPanelHubSection,
 } from './UserPanelHub'
+import { UserPanelInfo } from './UserPanelInfo'
 import { CloudBackupStatus } from '@features/sync/presentation/CloudBackupStatus'
 import styles from './UserLoginPanel.module.scss'
 
@@ -191,7 +192,7 @@ export const UserLoginPanel: React.FC = () => {
               />
             )
           ) : panelView === 'info' ? (
-            <p className={styles.guestHint}>Hint images will appear here.</p>
+            <UserPanelInfo />
           ) : (
             <p className={styles.guestHint}>Settings will appear here.</p>
           )}

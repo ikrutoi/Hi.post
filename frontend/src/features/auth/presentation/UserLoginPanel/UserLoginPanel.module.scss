@@ -382,6 +382,33 @@ $user-panel-header-lead-edge-mobile: iconButton.$toolbar-mobile-toolbar-key-marg
   flex-shrink: 0;
 }
 
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  width: 100%;
+  align-items: start;
+  justify-items: stretch;
+}
+
+.infoCell {
+  box-sizing: border-box;
+  width: 100%;
+  aspect-ratio: 1;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 0;
+  border: 2px solid $color-font-enabled;
+  background-color: $color-app-inner;
+}
+
+.infoCellImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .guestHint {
   margin: 0;
   font-size: 0.8125rem;
