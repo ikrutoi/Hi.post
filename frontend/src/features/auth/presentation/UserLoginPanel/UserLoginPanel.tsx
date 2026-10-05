@@ -174,6 +174,7 @@ export const UserLoginPanel: React.FC = () => {
           className={clsx(
             styles.content,
             panelView === 'hub' && styles.contentHub,
+            panelView === 'info' && styles.contentInfo,
           )}
           aria-label={headerTitle ?? 'Account'}
         >

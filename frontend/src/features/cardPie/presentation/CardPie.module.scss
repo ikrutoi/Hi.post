@@ -304,8 +304,12 @@ $pie-center-cart-blocked-inner-stop: (
     fill: currentColor;
   }
 
-  svg.pieCenterLogoMark :global([class*='fil']) {
+  svg.pieCenterLogoMark :global([class*='fil0']) {
     fill: currentColor;
+  }
+
+  svg.pieCenterLogoMark :global([class*='fil1']) {
+    fill: #fff;
   }
 
   /** Выше специфичности, чем `svg` выше — иначе иконка всегда 100% круга. */

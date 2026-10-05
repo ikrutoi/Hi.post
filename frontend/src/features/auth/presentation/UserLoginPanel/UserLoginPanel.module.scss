@@ -333,6 +333,10 @@ $user-panel-header-lead-edge-mobile: iconButton.$toolbar-mobile-toolbar-key-marg
   @include list-panel-scroll-padding;
 }
 
+.contentInfo {
+  justify-content: safe center;
+}
+
 .hubGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
