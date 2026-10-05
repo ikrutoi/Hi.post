@@ -47,6 +47,11 @@ import {
 } from '@cardphoto/infrastructure/state'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { prepareForRedux, prepareConfigForRedux, hydrateMeta } from './cardphotoHelpers'
+import type { PostcardHydrated } from '@entities/postcard'
+import {
+  commitArchiveCartCardphoto,
+  readArchiveCartApplyPostcard,
+} from './archiveCartApplyTarget'
 import {
   selectCardphotoAssetToolbar,
   selectCardphotoState,
@@ -352,9 +357,17 @@ function* onSelectInLineTemplateSaga(
 
     yield put(setCardphotoViewEditMode(false))
     yield put(clearCardphotoViewReturnSnapshot())
-    yield put(setProcessedImage(prepareForRedux(hydrated)))
+    const serializable = prepareForRedux(hydrated)
+    yield put(setProcessedImage(serializable))
 
     yield call(rebuildConfigFromMeta, hydrated, false)
+
+    const archivePostcard: PostcardHydrated | null = yield call(
+      readArchiveCartApplyPostcard,
+    )
+    if (archivePostcard != null) {
+      yield call(commitArchiveCartCardphoto, archivePostcard, serializable)
+    }
 
     if (cardphotoState?.userOriginalData) {
       yield put(clearSessionPendingProcessedId())

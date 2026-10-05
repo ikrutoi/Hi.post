@@ -21,3 +21,6 @@ export const selectScrollIndex = (state: RootState) =>
   state.cardPanel.scrollIndex
 export const selectValueScroll = (state: RootState) =>
   state.cardPanel.valueScroll
+
+export const selectArchiveEditRetainsStrip = (state: RootState) =>
+  state.cardPanel.archiveEditRetainsStrip

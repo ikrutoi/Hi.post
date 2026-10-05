@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import { useAppSelector } from '@app/hooks'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import {
@@ -48,6 +48,37 @@ export function useArchiveEditPeekGate(section: CardPanelSection): boolean {
   const sandboxLocalId = useAppSelector(selectArchiveEnvelopeSandboxLocalId)
   const selectedAroma = useAppSelector(selectSelectedAroma)
   const selectedDates = useAppSelector(selectAppliedDates)
+  /**
+   * postcardEdit кардфото: peek только до первой гидратации.
+   * Выбор другого шаблона меняет asset и не должен снова закрывать редактор.
+   */
+  const cardphotoEditReleasedRowRef = useRef<number | null>(null)
+  if (!cardPieEditEngaged || listRowLocalId == null) {
+    cardphotoEditReleasedRowRef.current = null
+  } else if (section === 'cardphoto') {
+    if (
+      cardphotoEditReleasedRowRef.current != null &&
+      cardphotoEditReleasedRowRef.current !== listRowLocalId
+    ) {
+      cardphotoEditReleasedRowRef.current = null
+    }
+    if (cardphotoEditReleasedRowRef.current == null) {
+      const sourcePostcard =
+        cartItems.find((p) => p.localId === listRowLocalId) ?? null
+      const sourceMeta =
+        sourcePostcard?.card.cardphoto?.appliedData ??
+        sourcePostcard?.card.cardphoto?.assetData ??
+        null
+      const hydrated = isMirrorCardphotoHydratedInEditor(
+        sourcePostcard,
+        cardphotoAssetData,
+      )
+      const noSourcePhoto = sourceMeta?.id == null
+      if (hydrated || (noSourcePhoto && cardphotoAssetData?.id != null)) {
+        cardphotoEditReleasedRowRef.current = listRowLocalId
+      }
+    }
+  }
 
   return useMemo(() => {
     if (!cardPieEditEngaged || activePieSide !== 'right') return false
@@ -67,6 +98,7 @@ export function useArchiveEditPeekGate(section: CardPanelSection): boolean {
     }
 
     if (section === 'cardphoto') {
+      if (cardphotoEditReleasedRowRef.current === listRowLocalId) return false
       return !isMirrorCardphotoHydratedInEditor(
         sourcePostcard,
         cardphotoAssetData,

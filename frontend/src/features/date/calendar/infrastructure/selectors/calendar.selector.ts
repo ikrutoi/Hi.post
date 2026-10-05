@@ -28,6 +28,19 @@ export const computeNotebookStripTabFromState = (
 ): DateStripSection => {
   const currentTab = state.calendar.notebookStripTab
 
+  /**
+   * postcardEdit в корзине/истории: список уже закрыт, полоса не схлопывается
+   * в сборку — даже если предыдущий sync уже успел записать `date`.
+   */
+  const retainedStrip = state.cardPanel.archiveEditRetainsStrip
+  if (
+    retainedStrip === 'cart' ||
+    retainedStrip === 'cartdate' ||
+    retainedStrip === 'history'
+  ) {
+    return retainedStrip
+  }
+
   /** Mobile: закладки хедера задают strip явно; списки корзины/истории strip не трогают. */
   if (selectIsMobileLayout(state)) {
     return currentTab

@@ -64,6 +64,11 @@ export interface CardPanelState {
   valueScroll: number
   /** App: cardPieEdit / section-edit из archive peek. */
   archiveFactoryEditActive: boolean
+  /**
+   * postcardEdit в корзине/истории: какую полосу держать,
+   * пока список уже закрыт и sync иначе схлопнет её в сборку.
+   */
+  archiveEditRetainsStrip: 'cart' | 'cartdate' | 'history' | null
   /** Запрос вернуться в упрощённый peek после apply секции. */
   archivePeekEnterSection: CardPanelSection | null
   archivePeekEnterTick: number

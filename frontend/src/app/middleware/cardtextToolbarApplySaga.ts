@@ -23,13 +23,15 @@ import {
 import { templateService } from '@entities/templates/domain/services/templateService'
 import { suggestCardtextTemplateTitle } from '@cardtext/application/helpers/suggestCardtextTemplateTitle'
 import { requestArchiveSectionPeek } from '@cardPanel/infrastructure/state'
-import { selectCartItems, selectCartListSelectedLocalId } from '@cart/infrastructure/selectors'
-import { selectHistoryListSelectedLocalId } from '@date/calendar/infrastructure/selectors'
 import { updateItem } from '@cart/infrastructure/state'
 import { postcardsAdapter } from '@db/adapters/storeAdapters'
 import type { PostcardHydrated } from '@entities/postcard'
 import type { CardtextContent } from '@cardtext/domain/editor/editor.types'
 import { postcardLocalDataChanged } from '@features/sync/store/postcardSync.actions'
+import {
+  readArchiveCartApplyPostcard,
+  restoreFactorySectionBackup,
+} from './archiveCartApplyTarget'
 
 /**
  * Apply: положить текущий текст на открытку (`appliedData`) и выставить статусы.
@@ -49,40 +51,34 @@ export function* applyCardtextFromToolbar(
     appliedContent: CardtextContent | null,
   ): SagaIterator {
     if (appliedContent != null) {
-      const cartSelected: number | null = yield select(
-        selectCartListSelectedLocalId,
+      const archivePostcard: PostcardHydrated | null = yield call(
+        readArchiveCartApplyPostcard,
       )
-      const historySelected: number | null = yield select(
-        selectHistoryListSelectedLocalId,
-      )
-      const localId = cartSelected ?? historySelected
-      if (localId != null) {
-        const items: PostcardHydrated[] = yield select(selectCartItems)
-        const postcard = items.find((p) => p.localId === localId)
-        if (postcard != null) {
-          const nextPostcard: PostcardHydrated = {
-            ...postcard,
-            updatedAt: Date.now(),
-            card: {
-              ...postcard.card,
-              cardtext: {
-                ...postcard.card.cardtext,
-                appliedData: appliedContent,
-                assetData: appliedContent,
-              },
+      if (archivePostcard != null) {
+        const nextPostcard: PostcardHydrated = {
+          ...archivePostcard,
+          updatedAt: Date.now(),
+          card: {
+            ...archivePostcard.card,
+            cardtext: {
+              ...archivePostcard.card.cardtext,
+              appliedData: appliedContent,
+              assetData: appliedContent,
             },
-          }
-          try {
-            yield call(postcardsAdapter.put, nextPostcard)
-          } catch (e) {
-            console.error('applyCardtextFromToolbar: persist failed', e)
-          }
-          yield put(updateItem(nextPostcard))
-          yield put(postcardLocalDataChanged())
+          },
         }
+        try {
+          yield call(postcardsAdapter.put, nextPostcard)
+        } catch (e) {
+          console.error('applyCardtextFromToolbar: persist failed', e)
+        }
+        yield put(updateItem(nextPostcard))
+        yield put(postcardLocalDataChanged())
+        yield call(restoreFactorySectionBackup, 'cardtext')
+      } else {
+        yield put(setCardtextAppliedData(appliedContent))
+        yield put(restoreCardtextSession(appliedContent))
       }
-      yield put(setCardtextAppliedData(appliedContent))
-      yield put(restoreCardtextSession(appliedContent))
     } else {
       const { assetData, appliedData } = yield select(
         (s: RootState) => s.cardtext,

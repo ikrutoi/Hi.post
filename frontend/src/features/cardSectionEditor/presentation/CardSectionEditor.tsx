@@ -5,6 +5,7 @@ import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/fa
 import { useSizeFacade } from '@layout/application/facades'
 import { useCardtextFacade } from '@cardtext/application/facades'
 import { CardphotoListMobileSlot } from '@cardphoto/presentation/CardphotoListMobileSlot'
+import { selectArchiveEditRetainsStrip } from '@cardPanel/infrastructure/selectors/cardPanel.selector'
 import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
 import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import { selectIsHistoryListPanelOpen } from '@date/calendar/infrastructure/selectors'
@@ -34,6 +35,7 @@ export const CardSectionEditor: React.FC = () => {
   const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
   const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
+  const archiveEditRetainsStrip = useAppSelector(selectArchiveEditRetainsStrip)
   const { currentView: cardtextCurrentView } = useCardtextFacade()
   const {
     showMobileTemplateList,
@@ -162,7 +164,10 @@ export const CardSectionEditor: React.FC = () => {
       templateList={mobileTemplateList}
       toolbar={<MobileFactoryToolbarShell />}
       reserveToolbarBand={false}
-      archiveSectionPeek={mobileArchiveSectionPeek}
+      archiveSectionPeek={
+        mobileArchiveSectionPeek ||
+        (archiveEditRetainsStrip && activeSection === 'cardphoto')
+      }
     >
       {activeSection === 'cardtext' && (
         <div className={styles.cardtextToolbarTop}>

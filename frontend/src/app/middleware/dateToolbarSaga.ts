@@ -139,6 +139,17 @@ function* handleDateToolbarAction(
       /** Черновик оставляем — подсветка выбранного дня; Apply снова недоступен, пока день ≠ дате открытки. */
       return
     }
+    const retainedStrip: 'cart' | 'cartdate' | 'history' | null = yield select(
+      (s: { cardPanel: { archiveEditRetainsStrip: 'cart' | 'cartdate' | 'history' | null } }) =>
+        s.cardPanel.archiveEditRetainsStrip,
+    )
+    if (
+      retainedStrip === 'cart' ||
+      retainedStrip === 'cartdate' ||
+      retainedStrip === 'history'
+    ) {
+      return
+    }
     const canApply: boolean = yield select(selectCanApplyDispatchDates)
     if (!canApply) return
     yield put(applyDispatchDates())

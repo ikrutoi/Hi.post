@@ -84,12 +84,14 @@ import { persistGlobalSession } from './sessionSaga'
 import { setAsset } from '@/entities/assetRegistry/infrastructure/state'
 import { ImageAsset } from '@/entities/assetRegistry/domain/types'
 import { selectAssetById } from '@/entities/assetRegistry/infrastructure/selectors/assetRegistrySelectors'
-import { selectCartItems, selectCartListSelectedLocalId } from '@cart/infrastructure/selectors'
-import { selectHistoryListSelectedLocalId } from '@date/calendar/infrastructure/selectors'
-import { updateItem } from '@cart/infrastructure/state'
 import { postcardLocalDataChanged } from '@features/sync/store/postcardSync.actions'
 import { stampCardphotoListStatus } from '@cardphoto/application/helpers/stampCardphotoListStatus'
 import { requestArchiveSectionPeek } from '@cardPanel/infrastructure/state'
+import {
+  commitArchiveCartCardphoto,
+  readArchiveCartApplyPostcard,
+  restoreFactorySectionBackup,
+} from './archiveCartApplyTarget'
 import type { PostcardHydrated } from '@entities/postcard'
 
 export function* selectCardphotoCropToolbarState(): SagaIterator<
@@ -814,46 +816,21 @@ export function* handleApplyAction() {
           source: metaForApply.source,
         }
 
-        const wrapper: ImageRecord = {
-          id: 'current_apply_image',
-          image: appliedMeta,
-        }
-
-        yield call([storeAdapters.applyImage, 'put'], wrapper)
         const serializable = prepareForRedux(appliedMeta)
-        yield put(applyFinal(serializable))
+        const archivePostcard: PostcardHydrated | null = yield call(
+          readArchiveCartApplyPostcard,
+        )
 
-        const cartSelected: number | null = yield select(
-          selectCartListSelectedLocalId,
-        )
-        const historySelected: number | null = yield select(
-          selectHistoryListSelectedLocalId,
-        )
-        const localId = cartSelected ?? historySelected
-        if (localId != null) {
-          const items: PostcardHydrated[] = yield select(selectCartItems)
-          const postcard = items.find((p) => p.localId === localId)
-          if (postcard != null) {
-            const nextPostcard: PostcardHydrated = {
-              ...postcard,
-              updatedAt: Date.now(),
-              card: {
-                ...postcard.card,
-                cardphoto: {
-                  ...postcard.card.cardphoto,
-                  appliedData: serializable,
-                  assetData: serializable,
-                },
-              },
-            }
-            try {
-              yield call([storeAdapters.postcards, 'put'], nextPostcard)
-            } catch (e) {
-              console.error('handleApplyAction: persist postcard failed', e)
-            }
-            yield put(updateItem(nextPostcard))
-            yield put(postcardLocalDataChanged())
+        if (archivePostcard != null) {
+          yield call(commitArchiveCartCardphoto, archivePostcard, serializable)
+          yield call(restoreFactorySectionBackup, 'cardphoto')
+        } else {
+          const wrapper: ImageRecord = {
+            id: 'current_apply_image',
+            image: appliedMeta,
           }
+          yield call([storeAdapters.applyImage, 'put'], wrapper)
+          yield put(applyFinal(serializable))
         }
 
         yield put(setCardphotoListPanelOpen(false))

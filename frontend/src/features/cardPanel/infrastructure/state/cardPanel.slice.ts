@@ -16,6 +16,7 @@ const initialState: CardPanelState = {
   scrollIndex: 0,
   valueScroll: 0,
   archiveFactoryEditActive: false,
+  archiveEditRetainsStrip: null,
   archivePeekEnterSection: null,
   archivePeekEnterTick: 0,
 }
@@ -48,6 +49,12 @@ export const cardPanelSlice = createSlice({
     setArchiveFactoryEditActive(state, action: PayloadAction<boolean>) {
       state.archiveFactoryEditActive = action.payload
     },
+    setArchiveEditRetainsStrip(
+      state,
+      action: PayloadAction<'cart' | 'cartdate' | 'history' | null>,
+    ) {
+      state.archiveEditRetainsStrip = action.payload
+    },
     requestArchiveSectionPeek(
       state,
       action: PayloadAction<CardPanelSection>,
@@ -74,6 +81,7 @@ export const {
   setScrollIndex,
   setValueScroll,
   setArchiveFactoryEditActive,
+  setArchiveEditRetainsStrip,
   requestArchiveSectionPeek,
   resetToSections,
 } = cardPanelSlice.actions

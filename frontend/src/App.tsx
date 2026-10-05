@@ -124,6 +124,7 @@ import {
   applyAllMirrorSectionsCopyRequested,
   revertAllMirrorSectionsCopyRequested,
   setArchiveFactoryEditActive,
+  setArchiveEditRetainsStrip,
   setAssemblyBranchFreeze,
   clearAssemblyBranchFreeze,
   clearAllMirrorSectionBackups,
@@ -270,6 +271,7 @@ const App = () => {
       dispatch(revertAllMirrorSectionsCopyRequested())
       dispatch(clearAssemblyBranchFreeze())
       dispatch(setArchiveFactoryEditActive(false))
+      dispatch(setArchiveEditRetainsStrip(null))
       if (cartDatePickOwnedByCardPieEditRef.current) {
         cartDatePickOwnedByCardPieEditRef.current = false
         dispatch(setCartCalendarDatePickMode(false))
@@ -353,6 +355,9 @@ const App = () => {
   )
   const archivePeekEnterSection = useAppSelector(
     (s) => s.cardPanel.archivePeekEnterSection,
+  )
+  const archiveEditRetainsStrip = useAppSelector(
+    (s) => s.cardPanel.archiveEditRetainsStrip,
   )
 
   /** Правый CardPie после выхода из copy через sectionEditorMenu (закладка cart/history снята). */
@@ -752,6 +757,12 @@ const App = () => {
         (rightListArchiveSource === 'cart' ||
           rightArchivePiePostcardStatus === 'cart' ||
           rightArchivePiePostcardStatus === 'cartBlocked')
+      const keepArchiveStripForCardphoto =
+        !fullFactoryFromRightPie &&
+        section === 'cardphoto' &&
+        (rightListArchiveSource === 'cart' ||
+          rightArchivePiePostcardStatus === 'cart' ||
+          rightArchivePiePostcardStatus === 'cartBlocked')
       if (fullFactoryFromRightPie) {
         setRightPieCardphotoPeekNoToolbar(false)
         setRightPieCardtextPeekNoToolbar(false)
@@ -805,7 +816,7 @@ const App = () => {
       }
       /** Mobile peek: закладки хедера не переключаем (корзина/история остаются). */
       const mobileArchivePeek = isMobileLayout && !fullFactoryFromRightPie
-      if (!mobileArchivePeek) {
+      if (!mobileArchivePeek && !keepArchiveStripForCardphoto) {
         if (section === 'date') {
           if (rightListArchiveSource === 'history') {
             dispatch(setNotebookStripTab('history'))
@@ -1771,6 +1782,7 @@ const App = () => {
     releaseCartDatePickListEntryOwnership()
     cartDatePickOwnedByListEntryRef.current = false
     dispatch(endCartCalendarDatePick())
+    dispatch(setArchiveEditRetainsStrip(null))
     dispatch(setActiveSection(targetSection))
     postcardEditSectionRef.current = null
     setCardPieEditHydrateScope('all')
@@ -1831,6 +1843,7 @@ const App = () => {
         dispatch(clearAllMirrorSectionBackups())
       }
       flushSync(() => {
+        dispatch(setArchiveEditRetainsStrip('cartdate'))
         captureArchiveCenterReturnMode()
         dispatch(setCartListPanelOpen(false))
         dispatch(setHistoryListPanelOpen(false))
@@ -1884,7 +1897,17 @@ const App = () => {
      * Same flush as date-pick: close lists + clear peek together so history-list
      * upper chrome (calendar icon under postcardEdit) cannot catch a ghost click.
      */
+    const stripTab = selectNotebookStripTab(state)
+    const retainedStrip =
+      stripTab === 'cart' ||
+      stripTab === 'cartdate' ||
+      stripTab === 'history'
+        ? stripTab
+        : fromCartArchive
+          ? 'cart'
+          : null
     flushSync(() => {
+      dispatch(setArchiveEditRetainsStrip(retainedStrip))
       captureArchiveCenterReturnMode()
       dispatch(setCartListPanelOpen(false))
       dispatch(setHistoryListPanelOpen(false))
@@ -2318,7 +2341,11 @@ const App = () => {
                   <div
                     className={styles.mainCardFactoryStack}
                     data-desktop-archive-section-peek={
-                      archiveSectionPeek ? 'true' : undefined
+                      archiveSectionPeek ||
+                      (archiveEditRetainsStrip &&
+                        activeSection === 'cardphoto')
+                        ? 'true'
+                        : undefined
                     }
                     data-desktop-factory-surface={
                       archiveSectionPeek
