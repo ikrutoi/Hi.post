@@ -333,8 +333,9 @@ $user-panel-header-lead-edge-mobile: iconButton.$toolbar-mobile-toolbar-key-marg
   @include list-panel-scroll-padding;
 }
 
+/** Верхний зазор как у сетки шаблонов cardphoto (`list-panel-scroll-padding`). */
 .contentInfo {
-  justify-content: safe center;
+  padding-top: 0.5rem;
 }
 
 .hubGrid {
