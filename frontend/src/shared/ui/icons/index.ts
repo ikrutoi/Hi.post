@@ -15,7 +15,6 @@ export * from './IconCardphotoAdd'
 export * from './IconCardphotoReturn'
 export * from './IconListCardphotoV2'
 export * from './IconCardtextTemplates'
-export * from './IconAddressTemplates'
 export * from './IconAddressList'
 
 export * from './IconCart'

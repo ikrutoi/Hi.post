@@ -17,6 +17,6 @@ export const IconClose = (props: React.SVGProps<SVGSVGElement>) => (
     textRendering="geometricPrecision"
     {...props}
   >
-    <path d="m1015 265-750 750M1015 1015 265 265" />
+    <path d="M990 290 290 990M990 990 290 290" />
   </svg>
 )

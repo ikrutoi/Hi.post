@@ -15,10 +15,7 @@ export const IconListClose = (props: React.SVGProps<SVGSVGElement>) => (
     textRendering="geometricPrecision"
     {...props}
   >
-    <path
-      strokeWidth={107.498}
-      d="M314 161v-3c0-55 45-101 101-101h707c55 0 101 46 101 101v707c0 56-46 101-101 101h-2"
-    />
-    <path strokeWidth={122.498} d="M821 459 71 1209M821 1209 71 459" />
+    <path strokeWidth={107.498} d="M415 57h707c55 0 101 46 101 101v707" />
+    <path strokeWidth={122.498} d="M796 484 96 1184M796 1184 96 484" />
   </svg>
 )

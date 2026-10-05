@@ -29,6 +29,6 @@ export const IconAddressList = (props: React.SVGProps<SVGSVGElement>) => (
       strokeWidth={2.25001}
     />
 
-    <path d="M315 163v-2c0-56 45-101 101-101h703c56 0 101 45 101 101v703c0 56-45 101-101 101h-1" />
+    <path d="M416 60h703c56 0 101 45 101 101v703" />
   </svg>
 )

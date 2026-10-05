@@ -93,7 +93,6 @@ import {
   IconSectionMenuDate,
   IconCardtextTemplates,
   IconCardtextAdd,
-  IconAddressTemplates,
   IconAddressList,
   IconCardPlus,
   IconDelete,
@@ -344,7 +343,7 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
     case 'cardUser':
       return <IconAddressList />
     case 'addressList':
-      return <IconAddressTemplates />
+      return <IconAddressList />
     case 'textList':
       return <IconCardtextTemplates />
     case 'cardtextAdd':
