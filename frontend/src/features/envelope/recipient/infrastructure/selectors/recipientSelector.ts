@@ -103,7 +103,7 @@ export const selectRecipientCompletedFields = createSelector(
   [selectRecipientState],
   (recipient): (keyof AddressFields)[] =>
     (Object.keys(recipient.viewDraft) as (keyof AddressFields)[]).filter(
-      (key) => recipient.viewDraft[key].trim() !== '',
+      (key) => (recipient.viewDraft[key] ?? '').trim() !== '',
     ),
 )
 

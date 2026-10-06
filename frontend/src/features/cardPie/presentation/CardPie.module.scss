@@ -19,19 +19,32 @@ $pie-center-press-scale: 1.25;
 /** Жёлтое кольцо вокруг красной заливки (`cartBlocked`), доля от диаметра круга.
  * Inner red diameter = (1 − 2×ratio) × outer → 0.15 ⇒ 70% (мини-паи). */
 $pie-center-cart-blocked-ring-ratio: 0.15;
-/** Центральная кнопка: красный круг = 75% ширины жёлтого. */
+/** Центральная кнопка: красный круг = 65% ширины жёлтого.
+ * Отдельный круг, не hard-stop градиента: стык цветов в radial-gradient рвёт край. */
 @mixin pie-center-button-cart-blocked {
+  position: relative;
   box-sizing: border-box;
   border-width: 0;
   border-color: transparent;
   background-color: $color-preview-indicator-cart;
-  background-image: radial-gradient(
-    circle closest-side,
-    $color-preview-indicator-error 0%,
-    $color-preview-indicator-error 75%,
-    $color-preview-indicator-cart 75%,
-    $color-preview-indicator-cart 100%
-  );
+  background-image: none;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 17.5%;
+    top: 17.5%;
+    width: 65%;
+    height: 65%;
+    border-radius: 50%;
+    background-color: $color-preview-indicator-error;
+    z-index: 0;
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
 }
 $pie-center-cart-blocked-ring: $pie-center-indicator-size *
   $pie-center-cart-blocked-ring-ratio;

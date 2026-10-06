@@ -175,7 +175,9 @@ import {
   updateArchiveRecipientField,
   clearArchiveSenderFormData,
   clearArchiveRecipientFormData,
+  requestArchiveSectionPeek,
 } from '@cardPanel/infrastructure/state'
+import { readArchiveCartApplyPostcard } from '@app/middleware/archiveCartApplyTarget'
 import { persistArchiveEnvelopeSandbox } from '@app/middleware/archiveEnvelopeSandboxPersist'
 import { selectCartItems, selectCartListSelectedLocalId } from '@cart/infrastructure/selectors'
 import { selectHistoryListSelectedLocalId } from '@date/calendar/infrastructure/selectors'
@@ -1962,6 +1964,22 @@ function* handleEnvelopeToolbarAction(
     } finally {
       yield put(clearAddressListPreviewSnapshot())
       yield call(closeAddressListIfOpen)
+      const archivePostcard: PostcardHydrated | null = yield call(
+        readArchiveCartApplyPostcard,
+      )
+      const stripTab: 'cart' | 'cartdate' | 'history' | 'date' | string =
+        yield select(
+          (s: { calendar: { notebookStripTab: string } }) =>
+            s.calendar.notebookStripTab,
+        )
+      const archiveMode =
+        archivePostcard != null ||
+        stripTab === 'cart' ||
+        stripTab === 'cartdate' ||
+        stripTab === 'history'
+      if (archiveMode) {
+        yield put(requestArchiveSectionPeek('envelope'))
+      }
     }
     return
   }

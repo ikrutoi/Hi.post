@@ -82,7 +82,7 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
     (isArchiveSectionPeekActive && activeSection === 'cardphoto')
   const dateTint =
     assemblyDateSimplifiedPeek || rightPieDatePeekNoToolbar
-  /** History/list-row envelope peek (cart uses EnvelopeInnerToolbar). */
+  /** Cart/history envelope peek: postcardEdit, как у остальных секций. */
   const envelopeTint =
     rightPieEnvelopePeekNoToolbar || assemblyRecipientSimplifiedPeek
 

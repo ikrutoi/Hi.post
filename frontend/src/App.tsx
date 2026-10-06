@@ -244,6 +244,10 @@ const App = () => {
   const archiveCartCenterReturnModeRef = useRef<'list' | 'calendar' | null>(
     null,
   )
+  /** Уже обработанный `archivePeekEnterTick`, чтобы не открывать список повторно. */
+  const handledArchivePeekEnterTickRef = useRef(0)
+  /** Корзина или история, пока полоса на время правки секции не схлопнулась в date. */
+  const archiveListKindRef = useRef<'cart' | 'history' | null>(null)
   const [colorToolbar, setColorToolbar] = useState<boolean | null>(null)
   const [activePieSide, setActivePieSide] = useState<'left' | 'right'>('left')
   /** After turning off cardPieCopy: switch to left pie and keep `cardPieEdit` enabled until clicked again. */
@@ -649,6 +653,21 @@ const App = () => {
   const listRowInner = rightListArchiveBundle?.currentData?.data ?? null
 
   const syncPeekChromeForOpenedSection = useCallback((section: CardSection) => {
+    const stripNow = selectNotebookStripTab(store.getState())
+    const retainedNow = store.getState().cardPanel.archiveEditRetainsStrip
+    const listKind =
+      stripNow === 'history' ||
+      retainedNow === 'history' ||
+      rightListArchiveSource === 'history'
+        ? 'history'
+        : stripNow === 'cart' ||
+            stripNow === 'cartdate' ||
+            retainedNow === 'cart' ||
+            retainedNow === 'cartdate' ||
+            rightListArchiveSource === 'cart'
+          ? 'cart'
+          : null
+    if (listKind) archiveListKindRef.current = listKind
     if (rightListArchiveSource === 'cart') {
       const mode = resolveCartArchiveViewMode({
         cartListPanelOpen: selectCartListPanelOpen(store.getState()),
@@ -1491,18 +1510,46 @@ const App = () => {
   }, [cardPieEditEngaged, dispatch])
 
   /**
-   * После Apply секции — упрощённый peek, только если сейчас archive factory-edit.
-   * useLayoutEffect + ref: до paint и без повторного срабатывания при входе в edit
-   * на старом tick.
+   * После Apply кардфото / кардтекста / конверта в корзине или истории:
+   * закрытый список шаблонов, справа снова список открыток того же режима.
+   * Tick обрабатывается один раз. Для кардфото и кардтекста edit уже снят в Toolbar.
    */
   useLayoutEffect(() => {
     if (archivePeekEnterTick === 0) return
     if (archivePeekEnterSection == null) return
-    if (!cardPieEditEngagedRef.current) return
+    if (handledArchivePeekEnterTickRef.current === archivePeekEnterTick) return
+    handledArchivePeekEnterTickRef.current = archivePeekEnterTick
+    /**
+     * Toolbar для cardphoto/cardtext снимает edit до этого эффекта, ref уже false.
+     * Конверт снимает edit здесь. Повторный end при false ref сборку не трогает.
+     */
     endCardPieEditEngaged()
     setCardPieEditHydrateScope('all')
     setSuppressCardPieEditActiveAfterCopy(true)
     syncPeekChromeForOpenedSection(archivePeekEnterSection)
+    /**
+     * Список шаблонов закрыт. Сегмент корзины (активные / заблокированные)
+     * не трогаем — его держит slice.
+     */
+    if (
+      archivePeekEnterSection === 'cardphoto' ||
+      archivePeekEnterSection === 'cardtext' ||
+      archivePeekEnterSection === 'envelope'
+    ) {
+      const strip = archiveEditRetainsStrip ?? notebookStripTab
+      const kind =
+        strip === 'history'
+          ? 'history'
+          : strip === 'cart' || strip === 'cartdate'
+            ? 'cart'
+            : rightListArchiveSource === 'history'
+              ? 'history'
+              : rightListArchiveSource === 'cart'
+                ? 'cart'
+                : archiveListKindRef.current
+      if (kind === 'history') dispatch(setHistoryListPanelOpen(true))
+      else if (kind === 'cart') dispatch(setCartListPanelOpen(true))
+    }
     /**
      * After Apply exits factory-edit: reload cart envelope into sandbox
      * (session stays assembly-only).
@@ -1520,14 +1567,59 @@ const App = () => {
       })
     }
   }, [
+    archiveEditRetainsStrip,
     archivePeekEnterTick,
     archivePeekEnterSection,
     dispatch,
     endCardPieEditEngaged,
+    notebookStripTab,
     rightArchivePiePostcardStatus,
     rightListArchiveLocalId,
     rightListArchiveSource,
     syncPeekChromeForOpenedSection,
+  ])
+
+  /**
+   * Корзина/история, секция без редактирования (в тулбаре postcardEdit):
+   * справа всегда список этого режима. Сегмент активные/заблокированные не меняется.
+   */
+  useEffect(() => {
+    if (cardPieEditEngaged) return
+    if (activePieSide !== 'right') return
+    const sectionPeek =
+      rightPieCardphotoPeekNoToolbar ||
+      rightPieCardtextPeekNoToolbar ||
+      rightPieEnvelopePeekNoToolbar ||
+      rightPieAromaPeekNoToolbar ||
+      rightPieDatePeekNoToolbar
+    if (!sectionPeek) return
+
+    const strip = archiveEditRetainsStrip ?? notebookStripTab
+    const kind =
+      strip === 'history'
+        ? 'history'
+        : strip === 'cart' || strip === 'cartdate'
+          ? 'cart'
+          : archiveListKindRef.current
+
+    if (kind === 'history') {
+      if (!historyListPanelOpen) dispatch(setHistoryListPanelOpen(true))
+    } else if (kind === 'cart') {
+      if (!listPanelOpen) dispatch(setCartListPanelOpen(true))
+    }
+  }, [
+    activePieSide,
+    archiveEditRetainsStrip,
+    cardPieEditEngaged,
+    dispatch,
+    historyListPanelOpen,
+    listPanelOpen,
+    notebookStripTab,
+    rightPieAromaPeekNoToolbar,
+    rightPieCardphotoPeekNoToolbar,
+    rightPieCardtextPeekNoToolbar,
+    rightPieDatePeekNoToolbar,
+    rightPieEnvelopePeekNoToolbar,
   ])
 
   /** Открытие списка корзины/истории выходит из section/cardPie edit. */

@@ -173,8 +173,9 @@ export function* processEnvelopeVisuals() {
 
   const recipientComplete: boolean = yield select(selectIsRecipientComplete)
 
-  const checkHasData = (data: Record<string, string>) =>
-    Object.values(data).some((v) => v.trim() !== '')
+  const checkHasData = (data: Record<string, string | null> | null | undefined) =>
+    data != null &&
+    Object.values(data).some((v) => (v ?? '').trim() !== '')
 
   const recipientList: Awaited<
     ReturnType<typeof recipientTemplatesAdapter.getAll>

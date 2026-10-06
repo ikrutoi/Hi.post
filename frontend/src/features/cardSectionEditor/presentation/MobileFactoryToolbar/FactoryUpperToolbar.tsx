@@ -82,11 +82,11 @@ export const FactoryUpperToolbar: React.FC<{
   let content: React.ReactNode
   if (showPeekEmptyToolbarShell) {
     content =
-      cartEnvelopeInnerPeekToolbar || assemblyRecipientSimplifiedPeek ? (
-      <EnvelopeInnerToolbar />
-    ) : (
-      <ArchivePeekUpperToolbar />
-    )
+      assemblyRecipientSimplifiedPeek && !cartEnvelopeInnerPeekToolbar ? (
+        <EnvelopeInnerToolbar />
+      ) : (
+        <ArchivePeekUpperToolbar />
+      )
   } else if (isMobileLayout && showCardphotoListFactoryUpperToolbar) {
     content = <CardphotoListMobileFactoryUpperToolbar />
   } else if (isMobileLayout && showCardtextListFactoryUpperToolbar) {
