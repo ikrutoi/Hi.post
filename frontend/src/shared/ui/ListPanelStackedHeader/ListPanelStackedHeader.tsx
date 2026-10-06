@@ -38,6 +38,7 @@ export type ListPanelStackedHeaderProps = {
   /** Клик по ведущей иконке (например мобильный список → календарь). */
   onLeadIconClick?: () => void
   leadIconAriaLabel?: string
+  leadIconDisabled?: boolean
   /** Скрыть ведущую иконку (мобильные списки cart/history). */
   hideLeadIcon?: boolean
   /** Скрыть кнопку закрытия (мобильные списки cart/history). */
@@ -69,6 +70,7 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
   cardPieListHeaderIcons = false,
   onLeadIconClick,
   leadIconAriaLabel,
+  leadIconDisabled = false,
   hideLeadIcon = false,
   hideClose = false,
   secondLeadIconOverride,
@@ -93,8 +95,12 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
   const leadIconContent = leadIconOverride ?? getToolbarIcon({ key: leadIconKey })
   const leadIconClassName = clsx(
     styles.headerLead,
-    onLeadIconClick != null && styles.headerLeadClickable,
+    onLeadIconClick != null &&
+      !leadIconDisabled &&
+      styles.headerLeadClickable,
+    leadIconDisabled && styles.headerLeadDisabled,
   )
+  const leadIconState = leadIconDisabled ? 'disabled' : 'enabled'
   const secondLeadIconClassNameResolved = clsx(
     styles.headerSecondLead,
     onSecondLeadIconClick != null &&
@@ -147,8 +153,9 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
                     <button
                       type="button"
                       className={leadIconClassName}
-                      data-icon-state="enabled"
+                      data-icon-state={leadIconState}
                       data-lead-icon={leadIconOverride ? undefined : leadIconKey}
+                      disabled={leadIconDisabled}
                       onClick={onLeadIconClick}
                       aria-label={leadIconAriaLabel ?? 'Open calendar'}
                     >
@@ -158,7 +165,7 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
                     <div
                       className={leadIconClassName}
                       aria-hidden
-                      data-icon-state="enabled"
+                      data-icon-state={leadIconState}
                       data-lead-icon={leadIconOverride ? undefined : leadIconKey}
                     >
                       {leadIconContent}

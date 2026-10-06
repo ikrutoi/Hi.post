@@ -129,6 +129,19 @@
   @include iconButton.toolbar-icon-count-badge;
 }
 
+.headerLeadDisabled,
+.headerLead[data-icon-state='disabled'] {
+  color: $color-font-disabled;
+  cursor: default;
+
+  svg,
+  svg path {
+    color: $color-font-disabled;
+    fill: $color-font-disabled;
+    stroke: $color-font-disabled;
+  }
+}
+
 .headerSecondLeadDisabled,
 .headerSecondLead[data-icon-state='disabled'] {
   color: $color-font-disabled;

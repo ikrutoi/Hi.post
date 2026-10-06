@@ -2770,11 +2770,14 @@ function DesktopFactoryTopRow({
             hideClose
             headerFade="plan"
             leadIconAriaLabel="Change plan mini size"
+            leadIconDisabled={archiveChromeActive}
             onLeadIconClick={() => dispatch(cyclePlanMiniListDensity())}
             secondLeadIconAriaLabel="Next plan pie"
             onSecondLeadIconClick={handleCentralPieCenterClick}
-            secondLeadIconDisabled={!canCyclePlanPies && !archiveChromeActive}
-            secondLeadBadge={canCyclePlanPies ? planMiniPieCount : null}
+            secondLeadIconDisabled={archiveChromeActive || !canCyclePlanPies}
+            secondLeadBadge={
+              !archiveChromeActive && canCyclePlanPies ? planMiniPieCount : null
+            }
           />
           <MobileCardPieGutterMinis
             layout="desktop"

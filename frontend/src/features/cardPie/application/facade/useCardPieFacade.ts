@@ -36,6 +36,7 @@ function resolveArchiveEditSections(
   cardPieEditEngaged: boolean,
   hydrateScope: 'all' | 'section',
   activeSection: string | null,
+  postcardStatus: PostcardStatus | undefined,
   sessionComplete: {
     cardphoto: boolean
     cardtext: boolean
@@ -43,6 +44,30 @@ function resolveArchiveEditSections(
   },
 ): CardPieSectionFlags {
   if (!cardPieEditEngaged) return archiveSections
+
+  /**
+   * Корзина / заблокированные: сектор правки пустой, пока не нажат Apply.
+   */
+  if (
+    hydrateScope === 'section' &&
+    (postcardStatus === 'cart' || postcardStatus === 'cartBlocked')
+  ) {
+    if (activeSection === 'cardphoto') {
+      return { ...archiveSections, cardphoto: false }
+    }
+    if (activeSection === 'cardtext') {
+      return { ...archiveSections, cardtext: false }
+    }
+    if (activeSection === 'envelope') {
+      return { ...archiveSections, envelope: false }
+    }
+    if (activeSection === 'aroma') {
+      return { ...archiveSections, aroma: false }
+    }
+    if (activeSection === 'date') {
+      return { ...archiveSections, date: false }
+    }
+  }
 
   if (hydrateScope === 'section') {
     if (activeSection === 'cardphoto') {
@@ -62,7 +87,7 @@ function resolveArchiveEditSections(
 
 export const useCardPieFacade = (
   isProcessed: boolean,
-  _status: PostcardStatus | undefined,
+  status: PostcardStatus | undefined,
   id?: string,
   /** `cart` | `history` when the right pie is driven by a list row; ignored for editor pie. */
   listArchiveSource: CardPieRightListSource | null = null,
@@ -155,6 +180,7 @@ export const useCardPieFacade = (
         cardPieEditEngaged,
         cardPieEditHydrateScope,
         activeSection,
+        status,
         {
           cardphoto: cardphotoIsComplete,
           cardtext: cardtextIsComplete,
