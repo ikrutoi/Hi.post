@@ -466,14 +466,14 @@
   background-color: $color-app-inner;
 }
 
-/** Plan mini list header — CardPieNext glyph (1600×1280) slightly above archive header icon scale. */
+/** Plan mini list header — postcardNext (1600×1600), тот же масштаб, что в футере календаря. */
 .planMiniHeaderCardPieNextBtn {
-  $card-pie-next-icon-scale: 1.12;
+  $card-pie-next-icon-scale: 1.12 * 1600 / 1280;
 
   @include iconButton.toolbar-icon-button-height-only-at-desktop-scale(
     iconButton.$toolbar-hit-size-standard * $card-pie-next-icon-scale,
     iconButton.$toolbar-icon-size-standard * $card-pie-next-icon-scale,
-    iconButton.$toolbar-aroma-icon-aspect,
+    1,
     true
   );
 
@@ -498,7 +498,7 @@
   width: auto;
   max-width: none;
   color: $color-font-enabled-light;
-  aspect-ratio: iconButton.$toolbar-aroma-icon-aspect;
+  aspect-ratio: 1;
 
   path {
     stroke: currentColor;

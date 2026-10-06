@@ -153,7 +153,7 @@ import {
   releaseCartDatePickListEntryOwnership,
 } from '@date/calendar/application/logic/cartDatePickListEntryOwnership'
 import { calendarDayHasCards } from '@date/cell/domain/calendarDayContent'
-import { IconCardPie, IconCardPieNext, IconPanelDensity2 } from '@shared/ui/icons'
+import { IconCardPie, IconPanelDensity2, IconPostcardNext } from '@shared/ui/icons'
 import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { applyRightListArchiveToolbarVisuals } from '@toolbar/application/syncRightListArchiveToolbarVisuals'
@@ -2762,10 +2762,10 @@ function DesktopFactoryTopRow({
               <IconPanelDensity2 activeSize={planMiniListDensity} />
             }
             secondLeadIconOverride={
-              <IconCardPieNext className={styles.planMiniHeaderCardPieNextIcon} />
+              <IconPostcardNext className={styles.planMiniHeaderCardPieNextIcon} />
             }
             secondLeadIconClassName={styles.planMiniHeaderCardPieNextBtn}
-            secondLeadIconKey="cardPieNext"
+            secondLeadIconKey="postcardNext"
             cardPieListHeaderIcons
             hideClose
             headerFade="plan"

@@ -3,10 +3,7 @@ import clsx from 'clsx'
 import { MONTH_NAMES } from '@entities/date/constants'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { selectCartItems, selectCartListPanelOpen } from '@cart/infrastructure/selectors'
-import {
-  setCartListPanelOpen,
-  setCartListStatusSegment,
-} from '@cart/infrastructure/state'
+import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state/sectionEditorMenuSlice'
 import {
   closeDayPanel,
@@ -220,7 +217,6 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
        */
       dispatch(setCartListPanelOpen(true))
       dispatch(setCartCalendarDatePickMode(false))
-      dispatch(setCartListStatusSegment('cart'))
       dispatch(
         updateToolbarIcon({
           section: 'rightSidebar',

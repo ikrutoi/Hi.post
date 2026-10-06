@@ -247,7 +247,6 @@ export function buildCartArchiveToggleCommands(input: {
     }
     return [
       setLastCartArchiveView('list'),
-      setCartListStatusSegment('cart'),
       ...buildDesktopCartArchiveActivateCommands(),
     ]
   }
@@ -276,7 +275,6 @@ export function buildCartArchiveToggleCommands(input: {
   if (next === 'list') {
     return [
       remember,
-      setCartListStatusSegment('cart'),
       ...buildMobileCartSlotOpenCommands(),
     ]
   }

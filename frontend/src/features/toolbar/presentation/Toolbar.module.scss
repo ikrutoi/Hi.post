@@ -136,11 +136,19 @@
 
     &[data-icon-key='apply'].toolbarKeySelected,
     &[data-icon-key='apply'].toolbarKeyActive {
-      color: $color-indicator-hight;
+      color: $color-font-enabled-light;
+      cursor: pointer;
 
       svg [data-apply-part='frame'],
       svg [data-apply-part='check'] {
-        stroke: $color-indicator-hight;
+        stroke: $color-font-enabled-light;
+      }
+
+      @include iconButton.toolbar-key-hover-fine-pointer {
+        &:hover {
+          background-color: white;
+          cursor: pointer;
+        }
       }
     }
 
@@ -232,9 +240,7 @@
     background-color: $color-section-dark-completed;
   }
 
-  /* apply: enabled — стандартный цвет; selected/active — зелёные галочка и контур */
-  $toolbar-apply-green: $color-indicator-hight;
-
+  /* apply: enabled / selected / active — стандартный цвет иконки тулбара */
   [data-icon-key='apply'].toolbarKeyEnabled,
   .toolbarKeyApplyEnabled {
     color: $color-font-enabled-light;
@@ -262,10 +268,10 @@
   [data-icon-key='apply'].toolbarKeyActive,
   .toolbarKeyApplySelected,
   .toolbarKeyApplyActive {
-    color: $toolbar-apply-green;
+    color: $color-font-enabled-light;
     background-color: #fff;
     box-shadow: none;
-    cursor: default;
+    cursor: pointer;
     transition: color 0.15s ease;
 
     svg {
@@ -279,8 +285,9 @@
     }
 
     &:hover {
-      color: $toolbar-apply-green;
+      color: $color-font-enabled;
       background-color: #fff;
+      cursor: pointer;
     }
   }
 
@@ -2715,10 +2722,15 @@
   min-width: iconButton.$toolbar-logo-size-mobile-chrome;
 }
 
-/* apply: enabled-light после снятия active/selected; зелёный только при selected/active. */
+/* apply: тот же enabled-light, что у остальных иконок; hover затемняет. */
 .toolbar .toolbarGroup .toolbarKey[data-icon-key='apply'].toolbarKeyEnabled,
-.toolbar .toolbarGroup .toolbarKey.toolbarKeyApply.toolbarKeyEnabled {
+.toolbar .toolbarGroup .toolbarKey.toolbarKeyApply.toolbarKeyEnabled,
+.toolbar .toolbarGroup .toolbarKey[data-icon-key='apply'].toolbarKeySelected,
+.toolbar .toolbarGroup .toolbarKey[data-icon-key='apply'].toolbarKeyActive,
+.toolbar .toolbarGroup .toolbarKey.toolbarKeyApply.toolbarKeySelected,
+.toolbar .toolbarGroup .toolbarKey.toolbarKeyApply.toolbarKeyActive {
   color: $color-font-enabled-light;
+  cursor: pointer;
 
   svg [data-apply-part='frame'],
   svg [data-apply-part='check'] {
@@ -2727,31 +2739,11 @@
 
   &:hover {
     color: $color-font-enabled;
+    cursor: pointer;
 
     svg [data-apply-part='frame'],
     svg [data-apply-part='check'] {
       stroke: $color-font-enabled;
-    }
-  }
-}
-
-.toolbar .toolbarGroup .toolbarKey[data-icon-key='apply'].toolbarKeySelected,
-.toolbar .toolbarGroup .toolbarKey[data-icon-key='apply'].toolbarKeyActive,
-.toolbar .toolbarGroup .toolbarKey.toolbarKeyApply.toolbarKeySelected,
-.toolbar .toolbarGroup .toolbarKey.toolbarKeyApply.toolbarKeyActive {
-  color: $color-indicator-hight;
-
-  svg [data-apply-part='frame'],
-  svg [data-apply-part='check'] {
-    stroke: $color-indicator-hight;
-  }
-
-  &:hover {
-    color: $color-indicator-hight;
-
-    svg [data-apply-part='frame'],
-    svg [data-apply-part='check'] {
-      stroke: $color-indicator-hight;
     }
   }
 }

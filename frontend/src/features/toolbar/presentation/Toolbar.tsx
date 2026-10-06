@@ -94,7 +94,7 @@ import { CardphotoPrintQualitySlot } from './CardphotoPrintQualitySlot'
 import { UserLoginToolbarIcon } from './UserLoginToolbarIcon'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { useEnvelopeMobileAddressFocus } from '@envelope/presentation/EnvelopeMobileAddressFocusContext'
-import { getApplyToolbarIconColor, getCardPieEditToolbarIconColor } from './applyToolbarIconColor'
+import { getCardPieEditToolbarIconColor } from './applyToolbarIconColor'
 import styles from './Toolbar.module.scss'
 
 export const Toolbar = ({
@@ -609,15 +609,11 @@ export const Toolbar = ({
       buttonStatus = 'enabled'
     }
 
-    const applyIconColor =
-      effectiveIconKey === 'apply'
-        ? getApplyToolbarIconColor(buttonStatus)
-        : undefined
     const cardPieEditIconColor =
       section === 'postcardPieCart' && effectiveIconKey === 'editLight'
         ? getCardPieEditToolbarIconColor(buttonStatus)
         : undefined
-    const forcedIconColor = applyIconColor ?? cardPieEditIconColor
+    const forcedIconColor = cardPieEditIconColor
 
     const visualStatus =
       (section === 'cardtext' ||
@@ -851,7 +847,7 @@ export const Toolbar = ({
             <UserLoginToolbarIcon guest />
           )
         ) : effectiveIconKey === 'apply' ? (
-          <IconApplyBold style={{ color: applyIconColor }} />
+          <IconApplyBold />
         ) : (
           <>
             {showCardphotoAddSpinner && (
