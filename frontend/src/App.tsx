@@ -1204,8 +1204,8 @@ const App = () => {
 
   /**
    * Cart / History list or calendar: center cycles forward.
-   * Section peek (and section-edit / cart date-pick): return icon for the
-   * view the pie was opened from (list → cart/history, calendar → calendar).
+   * Section peek, section-edit, cart date-pick: calendar icon.
+   * The click still returns to the list or calendar that was open before.
    */
   const rightPieSectionPeekOpen =
     rightPieCardphotoPeekNoToolbar ||
@@ -1228,25 +1228,12 @@ const App = () => {
     notebookStripTab,
     activeSection,
   })
-  const archiveSourceReturnMode =
-    archiveCartCenterReturnModeRef.current ??
-    (rightListArchiveSource === 'history'
-      ? historyArchiveViewMode === 'calendar'
-        ? 'calendar'
-        : 'list'
-      : cartArchiveViewMode === 'calendar'
-        ? 'calendar'
-        : 'list')
   const rightPieCenterAffordance =
     (rightListArchiveSource === 'cart' ||
       rightListArchiveSource === 'history') &&
     rightPieOnCenterClick != null
       ? rightPieShowArchiveSourceReturn
-        ? archiveSourceReturnMode === 'calendar'
-          ? ('calendar' as const)
-          : rightListArchiveSource === 'history'
-            ? ('history' as const)
-            : ('cart' as const)
+        ? ('calendar' as const)
         : ('cycleForward' as const)
       : null
 
@@ -1531,7 +1518,24 @@ const App = () => {
      * Список шаблонов закрыт. Сегмент корзины (активные / заблокированные)
      * не трогаем — его держит slice.
      */
-    if (
+    if (archivePeekEnterSection === 'date') {
+      /**
+       * Apply даты снимает `cartdate`. Полоса и список — тот режим,
+       * что был до правки (корзина или история).
+       */
+      const kind =
+        archiveListKindRef.current ??
+        (rightListArchiveSource === 'history' ? 'history' : 'cart')
+      if (kind === 'history') {
+        dispatch(setArchiveEditRetainsStrip('history'))
+        dispatch(setNotebookStripTab('history'))
+        dispatch(setHistoryListPanelOpen(true))
+      } else {
+        dispatch(setArchiveEditRetainsStrip('cart'))
+        dispatch(setNotebookStripTab('cart'))
+        dispatch(setCartListPanelOpen(true))
+      }
+    } else if (
       archivePeekEnterSection === 'cardphoto' ||
       archivePeekEnterSection === 'cardtext' ||
       archivePeekEnterSection === 'envelope'
@@ -1622,17 +1626,30 @@ const App = () => {
     rightPieEnvelopePeekNoToolbar,
   ])
 
-  /** Открытие списка корзины/истории выходит из section/cardPie edit. */
+  /** Открытие списка корзины/истории выходит из section/cardPie edit.
+   * Секция даты в корзине/истории список не закрывает и из правки не выходит. */
   useEffect(() => {
     if (!cardPieEditEngaged) return
     if (!listPanelOpen && !historyListPanelOpen) return
+    if (
+      cardPieEditHydrateScope === 'section' &&
+      postcardEditSectionRef.current === 'date'
+    ) {
+      return
+    }
     endCardPieEditEngaged()
     setCardPieEditHydrateScope('all')
     setSuppressCardPieEditActiveAfterCopy(true)
     if (cartDatePickOwnedByCardPieEditRef.current) {
       cartDatePickOwnedByCardPieEditRef.current = false
     }
-  }, [cardPieEditEngaged, listPanelOpen, historyListPanelOpen, endCardPieEditEngaged])
+  }, [
+    cardPieEditEngaged,
+    cardPieEditHydrateScope,
+    listPanelOpen,
+    historyListPanelOpen,
+    endCardPieEditEngaged,
+  ])
 
   /** Гидратация session из выбранной открытки при cardPieEdit / смене строки. */
   useEffect(() => {
@@ -1937,8 +1954,6 @@ const App = () => {
       flushSync(() => {
         dispatch(setArchiveEditRetainsStrip('cartdate'))
         captureArchiveCenterReturnMode()
-        dispatch(setCartListPanelOpen(false))
-        dispatch(setHistoryListPanelOpen(false))
         releaseCartDatePickListEntryOwnership()
         cartDatePickOwnedByListEntryRef.current = false
         /**
@@ -2001,8 +2016,14 @@ const App = () => {
     flushSync(() => {
       dispatch(setArchiveEditRetainsStrip(retainedStrip))
       captureArchiveCenterReturnMode()
-      dispatch(setCartListPanelOpen(false))
-      dispatch(setHistoryListPanelOpen(false))
+      /**
+       * Секция даты в корзине/истории оставляет справа тот же список.
+       * На мобильном слот один: список закрываем, календарь остаётся в центре.
+       */
+      if (isMobileLayout || targetSection !== 'date') {
+        dispatch(setCartListPanelOpen(false))
+        dispatch(setHistoryListPanelOpen(false))
+      }
       releaseCartDatePickListEntryOwnership()
       cartDatePickOwnedByListEntryRef.current = false
       dispatch(endCartCalendarDatePick())
@@ -2220,8 +2241,6 @@ const App = () => {
         endCardPieEditEngaged()
         dispatch(clearDate())
         dispatch(beginCartCalendarDatePick({ localId: lid }))
-        /** Close list so blocked segment cannot remount over the calendar. */
-        dispatch(setCartListPanelOpen(false))
         dispatch(setNotebookStripTab('cartdate'))
         dispatch(setActiveSection('date'))
         dispatch(setCartListStatusSegment('cartBlocked'))

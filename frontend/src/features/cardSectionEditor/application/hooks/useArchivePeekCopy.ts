@@ -62,7 +62,10 @@ export function useArchivePeekCopy() {
     sourceLocalId != null && section != null && !dateCopyBlocked
 
   const canInteract = isSectionCopied || canApplyCopy
-  const showCopy = isArchiveSectionPeekActive && section != null
+  const showCopy =
+    isArchiveSectionPeekActive &&
+    section != null &&
+    (section !== 'date' || isSectionCopied || !dateCopyBlocked)
 
   const groupsOverride = useMemo((): ToolbarConfig => {
     return [

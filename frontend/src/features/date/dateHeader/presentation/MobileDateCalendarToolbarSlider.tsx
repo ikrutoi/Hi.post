@@ -73,7 +73,8 @@ export const DesktopDateCalendarToolbarSlider: React.FC = () => {
       historyListPanelOpen ||
       activeSection === 'history' ||
       notebookStripTab === 'cart' ||
-      notebookStripTab === 'history')
+      notebookStripTab === 'history' ||
+      notebookStripTab === 'cartdate')
 
   const show =
     !isMobileLayout &&

@@ -181,7 +181,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
    */
   const showArchiveListDatePeek =
     rightPieDatePeekNoToolbar &&
-    (section === 'cart' || section === 'history')
+    (section === 'cart' || section === 'history' || section === 'cartdate')
 
   const showMobileSliderToolbar =
     isMobileLayout &&

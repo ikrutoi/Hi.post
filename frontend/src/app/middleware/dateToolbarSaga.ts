@@ -13,6 +13,7 @@ import {
   cycleHistoryListPanelDensity,
   setHistoryListPanelDensity,
   setPostcardStatuses,
+  endCartCalendarDatePick,
 } from '@date/calendar/infrastructure/state'
 import {
   // selectIsHistoryListPanelOpen,
@@ -31,6 +32,8 @@ import {
   selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
 import { cartCalendarDatePickApplied } from '@date/calendar/application/orchestration/notebookOrchestration.events'
+import { releaseCartDatePickListEntryOwnership } from '@date/calendar/application/logic/cartDatePickListEntryOwnership'
+import { requestArchiveSectionPeek } from '@cardPanel/infrastructure/state'
 import { PostcardStatuses } from '@/entities/postcard/domain/types'
 import { storeAdapters } from '@db/adapters/storeAdapters'
 import {
@@ -136,7 +139,13 @@ function* handleDateToolbarAction(
           date: draft,
         }),
       )
-      /** Черновик оставляем — подсветка выбранного дня; Apply снова недоступен, пока день ≠ дате открытки. */
+      /**
+       * Дата записана на открытку. Выходим из правки календаря:
+       * верхний тулбар — postcardEdit и copy (если дата разрешена).
+       */
+      releaseCartDatePickListEntryOwnership()
+      yield put(endCartCalendarDatePick())
+      yield put(requestArchiveSectionPeek('date'))
       return
     }
     const retainedStrip: 'cart' | 'cartdate' | 'history' | null = yield select(
