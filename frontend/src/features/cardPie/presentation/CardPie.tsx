@@ -144,18 +144,7 @@ export const CardPie: React.FC<CardPieProps> = ({
     notebookStripTab === 'cart' ||
     notebookStripTab === 'cartdate' ||
     notebookStripTab === 'history'
-  /**
-   * Левые паи — сборка. Правка кардфото корзины/истории гасит сектор
-   * только у центрального пая.
-   */
-  const keepFactoryCardphoto =
-    station === 'left' &&
-    cardPieEditEngaged &&
-    archiveStrip &&
-    Boolean(factoryCardphotoHold?.previewUrl)
-  const cardphotoSections = keepFactoryCardphoto
-    ? { ...sections, cardphoto: true }
-    : sections
+  const factoryPhotoPinRef = React.useRef<string | null>(null)
   const handleSectorClick =
     station === 'right' && onListArchiveSectorClick != null
       ? onListArchiveSectorClick
@@ -171,6 +160,33 @@ export const CardPie: React.FC<CardPieProps> = ({
   const { setHovered, hoveredSection } = useCardEditorFacade()
 
   const cardData = pieInner ?? data?.data
+  /**
+   * Адрес, который уже нарисован на левом пае. Пока корзина правит
+   * кардфото, не подменяем его и не даём сектору на кадр стать пустым.
+   */
+  const leftPreviewUrl =
+    station === 'left' ? (cardData?.cardphoto?.previewUrl ?? null) : null
+  if (station === 'left' && !cardPieEditEngaged) {
+    factoryPhotoPinRef.current = leftPreviewUrl
+  }
+  const factoryPhotoPin =
+    cardPieEditEngaged && archiveStrip
+      ? (factoryPhotoPinRef.current ??
+        factoryCardphotoHold?.previewUrl ??
+        leftPreviewUrl)
+      : leftPreviewUrl
+  /**
+   * Левые паи — сборка. Правка кардфото корзины/истории гасит сектор
+   * только у центрального пая.
+   */
+  const keepFactoryCardphoto =
+    station === 'left' &&
+    cardPieEditEngaged &&
+    archiveStrip &&
+    Boolean(factoryPhotoPin)
+  const cardphotoSections = keepFactoryCardphoto
+    ? { ...sections, cardphoto: true }
+    : sections
   const archiveCardphoto =
     listArchiveSource != null ? cardData?.cardphoto : undefined
   const archiveFullCandidate = (() => {
@@ -230,7 +246,7 @@ export const CardPie: React.FC<CardPieProps> = ({
       : null
   const photoUrl = cardphotoSections.cardphoto
     ? keepFactoryCardphoto
-      ? factoryCardphotoHold!.previewUrl
+      ? factoryPhotoPin
       : listArchiveSource != null
       ? (resolvedArchivePhotoUrl ??
         (cardphotoThumb ? archiveThumbUrl : null) ??

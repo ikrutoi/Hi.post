@@ -1373,7 +1373,7 @@ const App = () => {
 
   /**
    * Desktop Close упрощённого просмотра: секция закрывается,
-   * в центре календарь того же режима корзины или истории.
+   * в центре календарь того же режима, справа список корзины или истории.
    */
   const requestCloseArchiveSectionPeek = useCallback(() => {
     const source =
@@ -1405,6 +1405,11 @@ const App = () => {
     dispatch(setNotebookStripTab(source))
     dispatch(setActiveSection('date'))
     dispatch(bumpNotebookDateTabPeekClearTick())
+    dispatch(
+      source === 'history'
+        ? setHistoryListPanelOpen(true)
+        : setCartListPanelOpen(true),
+    )
   }, [
     dispatch,
     endCardPieEditEngaged,

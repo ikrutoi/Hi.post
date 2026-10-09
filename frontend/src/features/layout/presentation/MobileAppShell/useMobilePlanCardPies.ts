@@ -161,6 +161,10 @@ export function useMobilePlanCardPies() {
     notebookStripTab === 'cartdate' ||
     notebookStripTab === 'history'
   const liveCardphoto = activeEditorData?.data?.cardphoto
+  const factoryPhotoPinRef = useRef<string | null>(null)
+  if (!cardPieEditEngaged) {
+    factoryPhotoPinRef.current = liveCardphoto?.previewUrl ?? null
+  }
 
   useEffect(() => {
     if (cardPieEditEngaged) return
@@ -177,27 +181,6 @@ export function useMobilePlanCardPies() {
         thumbUrl: liveCardphoto?.thumbUrl ?? null,
       }),
     )
-    if (!url.startsWith('blob:')) return
-    let cancelled = false
-    void (async () => {
-      try {
-        const blob = await (await fetch(url)).blob()
-        if (cancelled) return
-        const cloned = URL.createObjectURL(blob)
-        protectAssemblyBlobUrl(cloned)
-        dispatch(
-          setFactoryCardphotoHold({
-            previewUrl: cloned,
-            thumbUrl: cloned,
-          }),
-        )
-      } catch {
-        /* исходный адрес уже защищён */
-      }
-    })()
-    return () => {
-      cancelled = true
-    }
   }, [
     cardPieEditEngaged,
     dispatch,
@@ -219,17 +202,23 @@ export function useMobilePlanCardPies() {
         : null) ??
       cardPieInnerFromEditorActiveData(activeEditorData) ??
       emptyCardPieInnerData()
+    /**
+     * Правка корзины пишет в общую сессию. Мини-пай оставляет адрес,
+     * который уже был на экране, и не меняет href — иначе кадр белый.
+     */
+    const pinnedFactoryPhoto = factoryPhotoPinRef.current
     if (
       archiveStrip &&
       cardPieEditEngaged &&
-      factoryCardphotoHold?.previewUrl
+      pinnedFactoryPhoto &&
+      baseInner.cardphoto.previewUrl !== pinnedFactoryPhoto
     ) {
       baseInner = {
         ...baseInner,
         cardphoto: {
-          previewUrl: factoryCardphotoHold.previewUrl,
-          thumbUrl: factoryCardphotoHold.thumbUrl,
-          factoryDisplayUrl: factoryCardphotoHold.previewUrl,
+          previewUrl: pinnedFactoryPhoto,
+          thumbUrl: factoryCardphotoHold?.thumbUrl ?? baseInner.cardphoto.thumbUrl,
+          factoryDisplayUrl: pinnedFactoryPhoto,
           isComplete: true,
           id: baseInner.cardphoto.id || 'factory',
         },

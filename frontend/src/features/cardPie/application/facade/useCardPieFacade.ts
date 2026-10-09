@@ -46,6 +46,14 @@ function resolveArchiveEditSections(
   if (!cardPieEditEngaged) return archiveSections
 
   /**
+   * Кардфото гаснет в том же кадре, что и вход в правку.
+   * Иначе applyFinal успевает сменить href и сектор вспыхивает белым.
+   */
+  if (hydrateScope === 'section' && activeSection === 'cardphoto') {
+    return { ...archiveSections, cardphoto: false }
+  }
+
+  /**
    * Корзина / заблокированные: сектор правки пустой, пока не нажат Apply.
    */
   if (
