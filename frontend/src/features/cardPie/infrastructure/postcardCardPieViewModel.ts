@@ -134,7 +134,10 @@ function cardphotoUrlsFromCard(card: Card): {
     (url) => url != null && !url.startsWith('blob:'),
   )
   const previewUrl = durable || main || full || thumb || cardTn || null
-  const factoryDisplayUrl = previewUrl
+  /** Полный кадр, в том числе blob:. Не подменять его http-миниатюрой. */
+  const fullFrame =
+    [full, main].find((url) => url != null && url !== thumb) || full || main
+  const factoryDisplayUrl = fullFrame || previewUrl
   const durableThumb = [thumb, cardTn].find(
     (url) => url != null && !url.startsWith('blob:'),
   )

@@ -2989,7 +2989,6 @@ function DesktopFactoryTopRow({
                 rightPieCenterArchiveCycleHintViewMode={
                   archiveCenterCycleHintViewMode
                 }
-                cardphotoThumb
               />
             ) : showEmptyArchive ? (
               <div className={styles.desktopCentralPieEmpty} aria-hidden>
@@ -3008,7 +3007,6 @@ function DesktopFactoryTopRow({
                 onLeftPieCenterClick={handleCentralPieCenterClick}
                 leftPieCenterPlanCycle={canCyclePlanPies}
                 leftPieCenterClickable={canCyclePlanPies}
-                cardphotoThumb
               />
             )}
           </div>

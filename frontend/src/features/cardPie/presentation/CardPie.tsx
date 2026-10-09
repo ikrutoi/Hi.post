@@ -195,10 +195,15 @@ export const CardPie: React.FC<CardPieProps> = ({
       'factoryDisplayUrl' in archiveCardphoto
         ? archiveCardphoto.factoryDisplayUrl
         : null
+    const thumb =
+      typeof archiveCardphoto.thumbUrl === 'string'
+        ? archiveCardphoto.thumbUrl.trim()
+        : ''
     for (const url of [factoryUrl, archiveCardphoto.previewUrl]) {
       if (typeof url !== 'string') continue
       const trimmed = url.trim()
-      if (!trimmed || trimmed.startsWith('blob:')) continue
+      if (!trimmed) continue
+      if (thumb && trimmed === thumb) continue
       return trimmed
     }
     return archiveCardphoto.previewUrl ?? null
@@ -213,7 +218,7 @@ export const CardPie: React.FC<CardPieProps> = ({
   const { displayUrl: resolvedArchivePhotoUrl } = useListCardPreviewUrl(
     archiveCardphoto?.id,
     archivePhotoCandidate,
-    cardphotoThumb ? { preferThumb: true } : undefined,
+    cardphotoThumb ? { preferThumb: true } : { preferFull: true },
   )
   const isReady =
     pieSections != null ? isPostcardPieAllComplete(pieSections) : facadeReady

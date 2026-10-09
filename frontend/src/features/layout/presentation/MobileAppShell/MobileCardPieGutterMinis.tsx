@@ -172,6 +172,7 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
                 sectorsInteractive={false}
                 pieInner={inner}
                 pieSections={sections}
+                cardphotoThumb
               />
             </button>
           ))}

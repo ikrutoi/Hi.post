@@ -18,6 +18,8 @@ export type ListCardPreviewUrlOptions = {
   previewIsProcessed?: boolean
   /** Сначала thumb. Кэш полного кадра остаётся запасным. */
   preferThumb?: boolean
+  /** Полный кадр, не миниатюра. */
+  preferFull?: boolean
 }
 
 export type ListCardPreviewUrlResult = {
@@ -74,6 +76,7 @@ export function useListCardPreviewUrl(
     registryUrl: asset?.url ?? null,
     allowBlobPreview,
     preferThumb: options?.preferThumb,
+    preferFull: options?.preferFull,
   })
 
   const onPreviewImgError = useCallback(() => {

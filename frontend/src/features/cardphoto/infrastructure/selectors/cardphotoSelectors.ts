@@ -15,26 +15,32 @@ import type {
 } from '../../domain/types'
 import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
 
-/** http/data сначала, затем живой blob реестра. Сохранённый thumbnail blob часто уже мёртвый. */
+/** Полный кадр: http/data, затем живой blob. Миниатюра только если полного кадра нет. */
 function liveCardphotoPreviewUrl(
   applyImage: ImageMeta | null,
   asset: { url?: string | null; thumbUrl?: string | null } | null | undefined,
 ): string | null {
-  const meta = [applyImage?.url, applyImage?.full?.url, applyImage?.thumbnail?.url]
-  const registry = [asset?.thumbUrl, asset?.url]
-  for (const url of [...meta, ...registry]) {
-    if (typeof url !== 'string') continue
-    const trimmed = url.trim()
-    if (!trimmed || trimmed.startsWith('blob:')) continue
-    return trimmed
+  const fullMeta = [applyImage?.url, applyImage?.full?.url]
+  const fullRegistry = [asset?.url]
+  const thumb = [applyImage?.thumbnail?.url, asset?.thumbUrl]
+  const pick = (urls: Array<string | null | undefined>, allowBlob: boolean) => {
+    for (const url of urls) {
+      if (typeof url !== 'string') continue
+      const trimmed = url.trim()
+      if (!trimmed) continue
+      if (!allowBlob && trimmed.startsWith('blob:')) continue
+      return trimmed
+    }
+    return null
   }
-  for (const url of registry) {
-    if (typeof url === 'string' && url.trim() !== '') return url.trim()
-  }
-  for (const url of meta) {
-    if (typeof url === 'string' && url.trim() !== '') return url.trim()
-  }
-  return null
+  return (
+    pick(fullMeta, false) ||
+    pick(fullRegistry, false) ||
+    pick(fullMeta, true) ||
+    pick(fullRegistry, true) ||
+    pick(thumb, false) ||
+    pick(thumb, true)
+  )
 }
 
 /** Превью для мелкого сектора пая: thumbnail, не полный кадр. */

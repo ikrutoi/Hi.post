@@ -44,6 +44,8 @@ export type ListPreviewDisplayOptions = {
   allowBlobPreview?: boolean
   /** Сектор пая: сначала registry/candidate thumb, полный кадр только как запас. */
   preferThumb?: boolean
+  /** Центральный пай: полный кадр, миниатюра только если полного нет. */
+  preferFull?: boolean
 }
 
 /** URL для `<img>`: кэш саги (в т.ч. свежий blob:) → registry → http(s)/data. */
@@ -64,6 +66,15 @@ export function resolveListPreviewDisplayUrl(
       cached ||
       registryThumb ||
       registryFull
+    )
+  }
+
+  if (input.preferFull) {
+    return (
+      pickPreviewUrl(input.registryUrl, true) ||
+      pickPreviewUrl(input.previewUrl, true) ||
+      cached ||
+      pickPreviewUrl(input.registryThumbUrl, true)
     )
   }
 
