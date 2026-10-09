@@ -140,6 +140,12 @@
     fill: $color-font-disabled;
     stroke: $color-font-disabled;
   }
+
+  /** Плотность мини-пая: серой только активная (коричневая) половина. */
+  svg path:global([class*='segmentInactive']) {
+    fill: var(--history-density-inactive-fill);
+    stroke: var(--history-density-inactive-stroke);
+  }
 }
 
 .headerSecondLeadDisabled,

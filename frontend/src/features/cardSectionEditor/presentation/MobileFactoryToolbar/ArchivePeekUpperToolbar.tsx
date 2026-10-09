@@ -21,7 +21,6 @@ import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { openEditorSectionTemplateList } from '../../application/helpers'
-import { useArchivePeekCopy } from '../../application/hooks/useArchivePeekCopy'
 import { useCloseArchiveSectionPeek } from '../../application/hooks/useCloseArchiveSectionPeek'
 import { useMobileFactoryListChrome } from '../../application/hooks/useMobileFactoryListChrome'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
@@ -37,7 +36,7 @@ const ARCHIVE_PEEK_UPPER_EDIT_TOOLBAR: ToolbarConfig = [
 
 /**
  * Верхний ряд factory toolbar в упрощённом режиме:
- * postcardEdit слева; archive peek — Copy справа.
+ * postcardEdit слева. Copy архива — в нижнем ряду слева.
  * (archive peek и сборная после Apply: cardtext / cardphoto / aroma / date / envelope).
  */
 export const ArchivePeekUpperToolbar: React.FC = () => {
@@ -68,8 +67,6 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
     rightPieDatePeekNoToolbar,
     rightPieEnvelopePeekNoToolbar,
   } = useRightListArchiveMini()
-  const { showCopy, groupsOverride: copyGroupsOverride, handleCopyAction } =
-    useArchivePeekCopy()
 
   const aromaTint =
     assemblyAromaSimplifiedPeek ||
@@ -176,15 +173,7 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
         </div>
       ) : null}
       <div className={styles.upperSpacer} aria-hidden />
-      {showCopy ? (
-        <div className={styles.sideRight}>
-          <Toolbar
-            section={peekToolbarSection}
-            groupsOverride={copyGroupsOverride}
-            onActionClick={handleCopyAction}
-          />
-        </div>
-      ) : showAddressNext ? (
+      {showAddressNext ? (
         <div className={styles.sideRight}>
           <AddressNextCycleButton count={recipientsCount} />
         </div>

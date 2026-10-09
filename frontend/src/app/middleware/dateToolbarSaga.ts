@@ -141,7 +141,7 @@ function* handleDateToolbarAction(
       )
       /**
        * Дата записана на открытку. Выходим из правки календаря:
-       * верхний тулбар — postcardEdit и copy (если дата разрешена).
+       * сверху postcardEdit, Copy слева в нижнем ряду (если дата разрешена).
        */
       releaseCartDatePickListEntryOwnership()
       yield put(endCartCalendarDatePick())

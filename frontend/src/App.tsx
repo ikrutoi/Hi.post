@@ -43,6 +43,7 @@ import { clearViewAroma } from '@aroma/infrastructure/state'
 import { CardSectionEditor } from '@features/cardSectionEditor/presentation/CardSectionEditor'
 import { openEditorSectionTemplateList, skipNextDesktopEditorTemplateListOpen } from '@features/cardSectionEditor/application/helpers'
 import { FactoryUpperToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
+import { ArchivePeekLowerToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar/ArchivePeekLowerToolbar'
 import { DesktopDateCalendarToolbarSlider } from '@date/dateHeader/presentation/MobileDateCalendarToolbarSlider'
 import { DesktopEnvelopeAddressViewToolbar } from '@envelope/presentation/DesktopEnvelopeAddressViewToolbar'
 import { DesktopCardphotoCreateToolbar } from '@cardphoto/presentation/DesktopCardphotoCreateToolbar'
@@ -2529,6 +2530,7 @@ const App = () => {
                           aria-hidden
                         />
                         <div className={styles.mainCardSectionToolbarRow}>
+                          <ArchivePeekLowerToolbar />
                           <DesktopEnvelopeAddressViewToolbar />
                           <DesktopCardphotoCreateToolbar />
                           <DesktopCardphotoViewToolbar />
@@ -2817,29 +2819,30 @@ function DesktopFactoryTopRow({
               styles.appMainContentLeftListPlaceholderArchive,
           )}
         >
-          <ListPanelStackedHeader
-            leadIconKey="panelDensity2"
-            leadIconOverride={
-              <IconPanelDensity2 activeSize={planMiniListDensity} />
-            }
-            secondLeadIconOverride={
-              <IconPostcardNext className={styles.planMiniHeaderCardPieNextIcon} />
-            }
-            secondLeadIconClassName={styles.planMiniHeaderCardPieNextBtn}
-            secondLeadIconKey="postcardNext"
-            cardPieListHeaderIcons
-            hideClose
-            headerFade="plan"
-            leadIconAriaLabel="Change plan mini size"
-            leadIconDisabled={archiveChromeActive}
-            onLeadIconClick={() => dispatch(cyclePlanMiniListDensity())}
-            secondLeadIconAriaLabel="Next plan pie"
-            onSecondLeadIconClick={handleCentralPieCenterClick}
-            secondLeadIconDisabled={archiveChromeActive || !canCyclePlanPies}
-            secondLeadBadge={
-              !archiveChromeActive && canCyclePlanPies ? planMiniPieCount : null
-            }
-          />
+          {archiveChromeActive ? null : (
+            <ListPanelStackedHeader
+              leadIconKey="panelDensity2"
+              leadIconOverride={
+                <IconPanelDensity2 activeSize={planMiniListDensity} />
+              }
+              secondLeadIconOverride={
+                <IconPostcardNext className={styles.planMiniHeaderCardPieNextIcon} />
+              }
+              secondLeadIconClassName={styles.planMiniHeaderCardPieNextBtn}
+              secondLeadIconKey="postcardNext"
+              cardPieListHeaderIcons
+              hideClose
+              headerFade="plan"
+              leadIconAriaLabel="Change plan mini size"
+              onLeadIconClick={() => dispatch(cyclePlanMiniListDensity())}
+              secondLeadIconAriaLabel="Next plan pie"
+              onSecondLeadIconClick={handleCentralPieCenterClick}
+              secondLeadIconDisabled={!canCyclePlanPies}
+              secondLeadBadge={
+                canCyclePlanPies ? planMiniPieCount : null
+              }
+            />
+          )}
           <MobileCardPieGutterMinis
             layout="desktop"
             planPies={planPies}

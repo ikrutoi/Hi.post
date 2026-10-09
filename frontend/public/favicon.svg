@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Creator: CorelDRAW X8 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="1024px" height="1024px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
-viewBox="0 0 10240 10240"
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="512px" height="512px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+viewBox="0 0 5120 5120"
  xmlns:xlink="http://www.w3.org/1999/xlink">
  <defs>
   <style type="text/css">
    <![CDATA[
-    .fil1 {fill:white}
     .fil0 {fill:#008AED}
+    .fil1 {fill:white}
    ]]>
   </style>
  </defs>
  <g id="Слой_x0020_1">
   <metadata id="CorelCorpID_0Corel-Layer"/>
-  <g id="_2309657701184">
-   <rect class="fil0" x="30" y="20" width="10200" height="10200"/>
-   <path class="fil1" d="M4009 5120l-1154 0c-33,0 -61,19 -74,49l-2100 5071 -671 0 0 -1583 1419 -3427c11,-25 8,-52 -7,-75 -15,-22 -39,-35 -66,-35l-1346 0 0 -1226 1920 0c32,0 61,-18 73,-49l1593 -3845 1326 0 -1567 3784c-10,26 -8,52 7,75 16,23 39,35 67,35l1154 0c33,0 61,-18 73,-49l1593 -3845 1327 0 -4242 10240 -1326 0 2075 -5010c10,-25 8,-52 -8,-75 -15,-22 -39,-35 -66,-35zm3453 777c-352,0 -605,-111 -757,-334 -152,-223 -177,-510 -75,-862 132,-458 389,-836 769,-1135 380,-299 787,-449 1221,-449 363,0 622,109 776,326 154,217 179,507 73,871 -129,445 -390,821 -784,1126 -393,305 -801,457 -1223,457z"/>
+  <g id="_2555918918368">
+   <rect class="fil0" x="5" y="5" width="5110" height="5110"/>
+   <path class="fil1" d="M1989 2560l-576 0c-17,0 -31,9 -37,25l-1049 2532 -335 0 0 -791 709 -1711c5,-13 4,-26 -4,-37 -7,-12 -19,-18 -33,-18l-672 0 0 -612 959 0c16,0 30,-9 36,-25l796 -1920 662 0 -782 1890c-6,13 -4,26 3,37 8,12 20,18 33,18l577 0c16,0 30,-9 36,-25l796 -1920 662 0 -2118 5114 -662 0 1036 -2502c5,-13 4,-26 -4,-37 -7,-12 -19,-18 -33,-18zm1724 388c-175,0 -301,-56 -377,-167 -77,-111 -89,-255 -38,-430 66,-229 194,-418 384,-567 190,-149 393,-224 610,-224 181,0 310,54 387,162 77,109 89,254 37,435 -65,223 -195,410 -392,563 -196,152 -400,228 -611,228z"/>
+   <path class="fil1" d="M3864 3427c12,-40 0,-59 -37,-59l-561 0c-17,0 -33,5 -48,17 -15,12 -26,26 -34,42l-700 1690 680 0 700 -1690z"/>
   </g>
  </g>
 </svg>

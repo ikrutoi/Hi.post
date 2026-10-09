@@ -77,7 +77,7 @@ export const MobileFactoryToolbarShell: React.FC = () => {
     !showMobileCartListFactoryChrome &&
     !showMobileHistoryListFactoryChrome
 
-  /** Archive (cart/history) section peek: empty lower band (Copy is upper-right). */
+  /** Archive (cart/history) section peek: lower band, Copy on the left. */
   const showArchivePeekLowerToolbar =
     isMobileLayout && mobileArchiveSectionPeek
 
