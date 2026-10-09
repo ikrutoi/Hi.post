@@ -42,10 +42,17 @@ import { useDispatchPlanListEntries } from '@date/application/hooks/useDispatchP
 import {
   selectCardPieListSortDirection,
   selectNotebookDateTabPeekClearTick,
+  selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
 import { selectEnvelopeSessionRecord } from '@envelope/infrastructure/selectors'
 import { selectRecipientsList } from '@envelope/infrastructure/selectors'
-import { selectAssemblyBranchFreeze } from '@cardPanel/infrastructure/selectors/assemblyBranchFreezeSelectors'
+import { selectAssemblyBranchFreeze, selectFactoryCardphotoHold } from '@cardPanel/infrastructure/selectors/assemblyBranchFreezeSelectors'
+import {
+  clearFactoryCardphotoHold,
+  setFactoryCardphotoHold,
+} from '@cardPanel/infrastructure/state'
+import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
+import { protectAssemblyBlobUrl } from '@app/middleware/blobUrlRevokeGuards'
 
 export type MobilePlanCardPie = {
   id: string
@@ -142,6 +149,61 @@ export function useMobilePlanCardPies() {
   >(null)
   const prevAppliedDatesKeyRef = useRef('')
   const prevAppliedRecipientsKeyRef = useRef('')
+  /**
+   * Последнее фото сборки. Правка центрального пая корзины снимает apply
+   * в общей сессии — мини-паи продолжают держать этот снимок.
+   */
+  const { cardPieEditEngaged } = useRightListArchiveMini()
+  const factoryCardphotoHold = useAppSelector(selectFactoryCardphotoHold)
+  const notebookStripTab = useAppSelector(selectNotebookStripTab)
+  const archiveStrip =
+    notebookStripTab === 'cart' ||
+    notebookStripTab === 'cartdate' ||
+    notebookStripTab === 'history'
+  const liveCardphoto = activeEditorData?.data?.cardphoto
+
+  useEffect(() => {
+    if (cardPieEditEngaged) return
+    const url = liveCardphoto?.previewUrl
+    if (!url) {
+      dispatch(clearFactoryCardphotoHold())
+      return
+    }
+    protectAssemblyBlobUrl(url)
+    protectAssemblyBlobUrl(liveCardphoto?.thumbUrl)
+    dispatch(
+      setFactoryCardphotoHold({
+        previewUrl: url,
+        thumbUrl: liveCardphoto?.thumbUrl ?? null,
+      }),
+    )
+    if (!url.startsWith('blob:')) return
+    let cancelled = false
+    void (async () => {
+      try {
+        const blob = await (await fetch(url)).blob()
+        if (cancelled) return
+        const cloned = URL.createObjectURL(blob)
+        protectAssemblyBlobUrl(cloned)
+        dispatch(
+          setFactoryCardphotoHold({
+            previewUrl: cloned,
+            thumbUrl: cloned,
+          }),
+        )
+      } catch {
+        /* исходный адрес уже защищён */
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [
+    cardPieEditEngaged,
+    dispatch,
+    liveCardphoto?.previewUrl,
+    liveCardphoto?.thumbUrl,
+  ])
 
   const assemblyBase = useMemo(() => {
     const useFreeze = assemblyFreeze != null
@@ -151,17 +213,40 @@ export function useMobilePlanCardPies() {
      * factory (often empty), so mini pies hid cardtext until reload.
      * Archive peek/edit still uses freeze.editorData.
      */
-    const baseInner =
+    let baseInner =
       (useFreeze
         ? cardPieInnerFromEditorActiveData(assemblyFreeze.editorData)
         : null) ??
       cardPieInnerFromEditorActiveData(activeEditorData) ??
       emptyCardPieInnerData()
+    if (
+      archiveStrip &&
+      cardPieEditEngaged &&
+      factoryCardphotoHold?.previewUrl
+    ) {
+      baseInner = {
+        ...baseInner,
+        cardphoto: {
+          previewUrl: factoryCardphotoHold.previewUrl,
+          thumbUrl: factoryCardphotoHold.thumbUrl,
+          factoryDisplayUrl: factoryCardphotoHold.previewUrl,
+          isComplete: true,
+          id: baseInner.cardphoto.id || 'factory',
+        },
+      }
+    }
     const envelopeComplete = useFreeze
       ? Boolean(assemblyFreeze.sections.envelope)
       : Boolean(envelopeRecord?.isComplete)
     return { baseInner, envelopeComplete, useFreeze }
-  }, [activeEditorData, assemblyFreeze, envelopeRecord?.isComplete])
+  }, [
+    activeEditorData,
+    assemblyFreeze,
+    archiveStrip,
+    cardPieEditEngaged,
+    envelopeRecord?.isComplete,
+    factoryCardphotoHold,
+  ])
 
   /**
    * All gutter minis selected (overview): full session dates → counter in date sector.

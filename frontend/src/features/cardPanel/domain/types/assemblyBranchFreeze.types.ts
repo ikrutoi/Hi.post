@@ -24,7 +24,14 @@ export type AssemblyBranchFreeze = {
   }
 }
 
+/** Фото сборки, пока корзина правит общую сессию. */
+export type FactoryCardphotoHold = {
+  previewUrl: string
+  thumbUrl: string | null
+}
+
 export type AssemblyBranchFreezeState = {
   freeze: AssemblyBranchFreeze | null
+  factoryCardphotoHold: FactoryCardphotoHold | null
 }
 

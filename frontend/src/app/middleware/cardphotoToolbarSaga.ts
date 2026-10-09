@@ -1099,6 +1099,7 @@ export function* onSelectCropFromHistorySaga(action: PayloadAction<string>) {
         cartItems: rootAfter.cart.items,
         assetRegistryImages: rootAfter.assetRegistry.images,
         calendarPreviewCache: rootAfter.card.calendarPreviewCache,
+        assemblyFreeze: rootAfter.assemblyBranchFreeze.freeze,
       })
       if (oldUrl?.startsWith('blob:') && !stillReferenced.has(oldUrl)) {
         URL.revokeObjectURL(oldUrl)

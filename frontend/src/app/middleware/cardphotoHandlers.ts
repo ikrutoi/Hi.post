@@ -489,6 +489,7 @@ export function* handleCropConfirm(): SagaIterator {
       cartItems: rootAfter.cart.items,
       assetRegistryImages: rootAfter.assetRegistry.images,
       calendarPreviewCache: rootAfter.card.calendarPreviewCache,
+      assemblyFreeze: rootAfter.assemblyBranchFreeze.freeze,
     })
     if (
       oldProcessedUrl?.startsWith('blob:') &&

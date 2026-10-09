@@ -25,6 +25,10 @@ import {
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import { CardSection } from '@shared/config/constants'
 import { CardPieProps } from '../domain/types'
+import { useAppSelector } from '@app/hooks'
+import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
+import { selectFactoryCardphotoHold } from '@cardPanel/infrastructure/selectors/assemblyBranchFreezeSelectors'
+import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { useCardPieFacade } from '../application/facade'
 import { isPostcardPieAllComplete } from '../infrastructure/postcardCardPieViewModel'
 import { cardtextValueForReadOnlyPreview } from '@cardtext/domain/editor/editor.types'
@@ -133,6 +137,25 @@ export const CardPie: React.FC<CardPieProps> = ({
     listArchiveSource,
   )
   const sections = pieSections ?? facadeSections
+  const { cardPieEditEngaged } = useRightListArchiveMini()
+  const factoryCardphotoHold = useAppSelector(selectFactoryCardphotoHold)
+  const notebookStripTab = useAppSelector(selectNotebookStripTab)
+  const archiveStrip =
+    notebookStripTab === 'cart' ||
+    notebookStripTab === 'cartdate' ||
+    notebookStripTab === 'history'
+  /**
+   * Левые паи — сборка. Правка кардфото корзины/истории гасит сектор
+   * только у центрального пая.
+   */
+  const keepFactoryCardphoto =
+    station === 'left' &&
+    cardPieEditEngaged &&
+    archiveStrip &&
+    Boolean(factoryCardphotoHold?.previewUrl)
+  const cardphotoSections = keepFactoryCardphoto
+    ? { ...sections, cardphoto: true }
+    : sections
   const handleSectorClick =
     station === 'right' && onListArchiveSectorClick != null
       ? onListArchiveSectorClick
@@ -205,8 +228,10 @@ export const CardPie: React.FC<CardPieProps> = ({
     cardData.cardphoto.thumbUrl.trim() !== ''
       ? cardData.cardphoto.thumbUrl.trim()
       : null
-  const photoUrl = sections.cardphoto
-    ? listArchiveSource != null
+  const photoUrl = cardphotoSections.cardphoto
+    ? keepFactoryCardphoto
+      ? factoryCardphotoHold!.previewUrl
+      : listArchiveSource != null
       ? (resolvedArchivePhotoUrl ??
         (cardphotoThumb ? archiveThumbUrl : null) ??
         cardData?.cardphoto?.previewUrl ??
@@ -372,7 +397,7 @@ export const CardPie: React.FC<CardPieProps> = ({
           textRendering="geometricPrecision"
         >
           <defs>
-            {sections.cardphoto && photoUrl && (
+            {cardphotoSections.cardphoto && photoUrl && (
               <pattern
                 id={photoFillId}
                 patternUnits="objectBoundingBox"
@@ -815,13 +840,13 @@ export const CardPie: React.FC<CardPieProps> = ({
               data-section="cardphoto"
               className={clsx(
                 styles.sector,
-                !sections.cardphoto && styles.sectorEmpty,
+                !cardphotoSections.cardphoto && styles.sectorEmpty,
                 sectorsInteractive &&
                   hoveredSection === 'cardphoto' &&
                   styles.hovered,
               )}
               fill={
-                sections.cardphoto && photoUrl
+                cardphotoSections.cardphoto && photoUrl
                   ? `url(#${photoFillId})`
                   : `url(#${photoEmptyFillId})`
               }

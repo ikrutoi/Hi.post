@@ -2,6 +2,19 @@ import type { Card } from '@entities/card/domain/types'
 import type { PostcardHydrated } from '@entities/postcard'
 import type { ImageAsset } from '@entities/assetRegistry/domain/types'
 import type { CardphotoState, ImageMeta } from '@cardphoto/domain/types'
+import type { AssemblyBranchFreeze } from '@cardPanel/domain/types/assemblyBranchFreeze.types'
+
+/**
+ * Blob-адреса снимка сборки. Их нельзя отзывать, пока мини-паи
+ * показывают фабрику, а общая сессия уже занята корзиной.
+ */
+const protectedAssemblyBlobUrls = new Set<string>()
+
+export function protectAssemblyBlobUrl(url: string | null | undefined): void {
+  if (typeof url === 'string' && url.startsWith('blob:')) {
+    protectedAssemblyBlobUrls.add(url)
+  }
+}
 
 function addImageMetaBlobs(
   meta: ImageMeta | null | undefined,
@@ -48,6 +61,21 @@ function addCalendarPreviewCacheBlobs(
   }
 }
 
+function addAssemblyFreezeBlobs(
+  freeze: AssemblyBranchFreeze | null | undefined,
+  sink: Set<string>,
+): void {
+  if (freeze == null) return
+  const add = (u: string | null | undefined) => {
+    if (u && u.startsWith('blob:')) sink.add(u)
+  }
+  const preview = freeze.editorData?.data?.cardphoto
+  add(preview?.previewUrl)
+  add(preview?.thumbUrl)
+  addImageMetaBlobs(freeze.cardphoto?.appliedData, sink)
+  addImageMetaBlobs(freeze.cardphoto?.assetData, sink)
+}
+
 function addCartPostcardBlobs(
   items: readonly PostcardHydrated[] | undefined,
   sink: Set<string>,
@@ -65,6 +93,8 @@ export type BlobUrlRevokeGuardSnapshot = {
   cartItems?: readonly PostcardHydrated[]
   assetRegistryImages?: Record<string, ImageAsset>
   calendarPreviewCache?: Record<string, string>
+  /** Снимок сборки, пока корзина/история пишет в общую сессию. */
+  assemblyFreeze?: AssemblyBranchFreeze | null
 }
 
 /**
@@ -86,5 +116,7 @@ export function collectReferencedBlobUrls(snap: BlobUrlRevokeGuardSnapshot): Set
   addCartPostcardBlobs(snap.cartItems, s)
   addRegistryBlobs(snap.assetRegistryImages, s)
   addCalendarPreviewCacheBlobs(snap.calendarPreviewCache, s)
+  addAssemblyFreezeBlobs(snap.assemblyFreeze, s)
+  for (const url of protectedAssemblyBlobUrls) s.add(url)
   return s
 }

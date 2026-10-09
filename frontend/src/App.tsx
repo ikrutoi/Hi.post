@@ -108,8 +108,10 @@ import { selectActiveCardFullData } from '@features/cardPie/infrastructure/selec
 import {
   selectCardphotoAppliedData,
   selectCardphotoAssetData,
+  selectCardphotoPreview,
 } from '@cardphoto/infrastructure/selectors'
 import { prepareForRedux } from '@app/middleware/cardphotoHelpers'
+import { protectAssemblyBlobUrl } from '@app/middleware/blobUrlRevokeGuards'
 import {
   buildCardPieInnerDataFromPostcard,
   buildPieSectionFlagsFromPostcard,
@@ -133,6 +135,7 @@ import {
   setArchiveEditRetainsStrip,
   setAssemblyBranchFreeze,
   clearAssemblyBranchFreeze,
+  setFactoryCardphotoHold,
   clearAllMirrorSectionBackups,
   clearArchiveEnvelopeSandbox,
 } from '@cardPanel/infrastructure/state'
@@ -321,6 +324,23 @@ const App = () => {
   const captureAssemblyBranchFreeze = useCallback(
     (reason: 'archiveEdit' | 'archivePeek' = 'archiveEdit') => {
       const state = store.getState()
+      const livePreview = selectCardphotoPreview(state)
+      const frozenPreview =
+        selectAssemblyBranchFreeze(state)?.editorData?.data?.cardphoto
+      const previewUrl =
+        livePreview.previewUrl ?? frozenPreview?.previewUrl ?? null
+      const thumbUrl =
+        livePreview.thumbUrl ?? frozenPreview?.thumbUrl ?? null
+      if (previewUrl) {
+        protectAssemblyBlobUrl(previewUrl)
+        protectAssemblyBlobUrl(thumbUrl)
+        dispatch(
+          setFactoryCardphotoHold({
+            previewUrl,
+            thumbUrl,
+          }),
+        )
+      }
       if (selectAssemblyBranchFreeze(state) != null) return
       const applied = selectCardphotoAppliedData(state)
       const asset = selectCardphotoAssetData(state)

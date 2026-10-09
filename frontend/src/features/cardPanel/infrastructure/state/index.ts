@@ -10,6 +10,8 @@ export {
 export {
   setAssemblyBranchFreeze,
   clearAssemblyBranchFreeze,
+  setFactoryCardphotoHold,
+  clearFactoryCardphotoHold,
 } from './assemblyBranchFreeze.slice'
 export {
   loadArchiveEnvelopeSandbox,

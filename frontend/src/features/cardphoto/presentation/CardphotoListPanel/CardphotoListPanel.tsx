@@ -80,6 +80,7 @@ function revokeUnreferencedListObjectUrls(urls: string[]) {
     cartItems: state.cart.items,
     assetRegistryImages: state.assetRegistry.images,
     calendarPreviewCache: state.card.calendarPreviewCache,
+    assemblyFreeze: state.assemblyBranchFreeze.freeze,
   })
   for (const url of urls) {
     if (!url.startsWith('blob:')) continue
