@@ -87,11 +87,17 @@ import { selectAssetById } from '@/entities/assetRegistry/infrastructure/selecto
 import { postcardLocalDataChanged } from '@features/sync/store/postcardSync.actions'
 import { stampCardphotoListStatus } from '@cardphoto/application/helpers/stampCardphotoListStatus'
 import { requestArchiveSectionPeek } from '@cardPanel/infrastructure/state'
+import { selectAssemblyBranchFreeze } from '@cardPanel/infrastructure/selectors/assemblyBranchFreezeSelectors'
+import { selectMirrorSectionBackup } from '@cardPanel/infrastructure/selectors/mirrorSectionBackupSelectors'
+import {
+  clearMirrorSectionBackup,
+  setMirrorSectionBackup,
+} from '@cardPanel/infrastructure/state/mirrorSectionBackup.slice'
 import {
   commitArchiveCartCardphoto,
   readArchiveCartApplyPostcard,
-  restoreFactorySectionBackup,
 } from './archiveCartApplyTarget'
+import { restoreMirrorSectionBackup } from './mirrorSectionBackup.helpers'
 import type { PostcardHydrated } from '@entities/postcard'
 
 export function* selectCardphotoCropToolbarState(): SagaIterator<
@@ -729,7 +735,7 @@ export function* handleApplyAction() {
   const appliedId = state.appliedData?.id ?? null
   const isCurrentApplied = !!assetId && !!appliedId && assetId === appliedId
 
-  /** Уже на открытке — не toggle-off; выходим в упрощённый peek (как cardtext). */
+  /** Уже на открытке — не toggle-off; в корзине/истории выходим в их peek. */
   if (isCurrentApplied) {
     yield put(setCardphotoListPanelOpen(false))
     yield put(
@@ -739,8 +745,43 @@ export function* handleApplyAction() {
         value: 'enabled',
       }),
     )
-    yield put(requestArchiveSectionPeek('cardphoto'))
+    const alreadyArchive: PostcardHydrated | null = yield call(
+      readArchiveCartApplyPostcard,
+    )
+    if (alreadyArchive != null) {
+      yield put(requestArchiveSectionPeek('cardphoto'))
+    }
     return
+  }
+
+  /**
+   * Снять цель и кадр сборки до yield в IndexedDB.
+   * Toolbar сразу снимает правку и может вернуть чужой mirror-backup.
+   */
+  const archivePostcard: PostcardHydrated | null = yield call(
+    readArchiveCartApplyPostcard,
+  )
+  const factoryCardphoto: {
+    appliedData: ImageMeta | null
+    assetData: ImageMeta | null
+  } | null = yield select((s: RootState) => {
+    const freeze = selectAssemblyBranchFreeze(s)
+    if (freeze?.cardphoto) return freeze.cardphoto
+    const backup = selectMirrorSectionBackup(s, 'cardphoto')
+    if (backup?.section !== 'cardphoto') return null
+    return {
+      appliedData: backup.appliedData,
+      assetData: backup.assetData,
+    }
+  })
+  if (archivePostcard != null && factoryCardphoto != null) {
+    yield put(
+      setMirrorSectionBackup({
+        section: 'cardphoto',
+        appliedData: factoryCardphoto.appliedData,
+        assetData: factoryCardphoto.assetData,
+      }),
+    )
   }
 
   const currentImageMeta = state.assetData
@@ -817,13 +858,17 @@ export function* handleApplyAction() {
         }
 
         const serializable = prepareForRedux(appliedMeta)
-        const archivePostcard: PostcardHydrated | null = yield call(
-          readArchiveCartApplyPostcard,
-        )
 
         if (archivePostcard != null) {
           yield call(commitArchiveCartCardphoto, archivePostcard, serializable)
-          yield call(restoreFactorySectionBackup, 'cardphoto')
+          if (factoryCardphoto != null) {
+            yield call(restoreMirrorSectionBackup, {
+              section: 'cardphoto',
+              appliedData: factoryCardphoto.appliedData,
+              assetData: factoryCardphoto.assetData,
+            })
+          }
+          yield put(clearMirrorSectionBackup('cardphoto'))
         } else {
           const wrapper: ImageRecord = {
             id: 'current_apply_image',
@@ -841,7 +886,9 @@ export function* handleApplyAction() {
             value: 'enabled',
           }),
         )
-        yield put(requestArchiveSectionPeek('cardphoto'))
+        if (archivePostcard != null) {
+          yield put(requestArchiveSectionPeek('cardphoto'))
+        }
 
         if (currentImageMeta.status === 'processed') {
           yield put(clearSessionPendingProcessedId())

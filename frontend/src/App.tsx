@@ -106,6 +106,11 @@ import { CardphotoRightSlot } from '@cardphoto/presentation/CardphotoRightSlot'
 import { selectListArchiveCardPieBundle } from '@features/cardPie/infrastructure/selectors/cardPieSelectors'
 import { selectActiveCardFullData } from '@features/cardPie/infrastructure/selectors/cardPieSelectors'
 import {
+  selectCardphotoAppliedData,
+  selectCardphotoAssetData,
+} from '@cardphoto/infrastructure/selectors'
+import { prepareForRedux } from '@app/middleware/cardphotoHelpers'
+import {
   buildCardPieInnerDataFromPostcard,
   buildPieSectionFlagsFromPostcard,
 } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
@@ -317,11 +322,18 @@ const App = () => {
     (reason: 'archiveEdit' | 'archivePeek' = 'archiveEdit') => {
       const state = store.getState()
       if (selectAssemblyBranchFreeze(state) != null) return
+      const applied = selectCardphotoAppliedData(state)
+      const asset = selectCardphotoAssetData(state)
       dispatch(
         setAssemblyBranchFreeze({
           editorData: selectActiveCardFullData(state),
           sections: selectPieProgress(state).sections,
           reason,
+          cardphoto: {
+            appliedData:
+              applied != null ? prepareForRedux(applied) : null,
+            assetData: asset != null ? prepareForRedux(asset) : null,
+          },
         }),
       )
     },
@@ -1320,6 +1332,66 @@ const App = () => {
     }
   }, [activePieSide, exitRightPreviewForLeftMode, releaseAssemblySessionLease])
 
+  /** Close в верхнем тулбаре корзины/истории: сборка, без архивного peek. */
+  const requestExitArchiveMode = useCallback(() => {
+    handleBeforeLeftPieInteraction()
+    releaseCartDatePickListEntryOwnership()
+    dispatch(endCartCalendarDatePick())
+    revealFactoryFromCartOrHistory(dispatch, {
+      cartListPanelOpen: listPanelOpen,
+      historyListPanelOpen,
+      notebookStripTab,
+    })
+    dispatch(clearViewAroma())
+  }, [
+    dispatch,
+    handleBeforeLeftPieInteraction,
+    historyListPanelOpen,
+    listPanelOpen,
+    notebookStripTab,
+  ])
+
+  /**
+   * Desktop Close упрощённого просмотра: секция закрывается,
+   * в центре календарь того же режима корзины или истории.
+   */
+  const requestCloseArchiveSectionPeek = useCallback(() => {
+    const source =
+      rightListArchiveSource === 'history' || notebookStripTab === 'history'
+        ? 'history'
+        : 'cart'
+    flushSync(() => {
+      setRightPieCardphotoPeekNoToolbar(false)
+      setRightPieCardtextPeekNoToolbar(false)
+      setRightPieEnvelopePeekNoToolbar(false)
+      setRightPieAromaPeekNoToolbar(false)
+      setRightPieDatePeekNoToolbar(false)
+      if (cardPieEditEngagedRef.current) {
+        endCardPieEditEngaged()
+        setCardPieEditHydrateScope('all')
+        setSuppressCardPieEditActiveAfterCopy(true)
+      }
+    })
+    releaseCartDatePickListEntryOwnership()
+    cartDatePickOwnedByListEntryRef.current = false
+    cartDatePickOwnedByCardPieEditRef.current = false
+    dispatch(endCartCalendarDatePick())
+    dispatch(clearArchiveEnvelopeSandbox())
+    for (const command of source === 'history'
+      ? buildHistoryCalendarCommandsDesktop()
+      : buildCartCalendarCommands()) {
+      dispatch(command)
+    }
+    dispatch(setNotebookStripTab(source))
+    dispatch(setActiveSection('date'))
+    dispatch(bumpNotebookDateTabPeekClearTick())
+  }, [
+    dispatch,
+    endCardPieEditEngaged,
+    notebookStripTab,
+    rightListArchiveSource,
+  ])
+
   const handleLeftPieCenterClick = useCallback(() => {
     if (activePieSide === 'right') {
       setSuppressCardPieEditActiveAfterCopy(true)
@@ -2133,6 +2205,8 @@ const App = () => {
       cardPieEditHydrateScope,
       requestCardPieEdit: enterCardPieEditFactoryMode,
       requestSectionEditFromPeek: enterSectionEditFromPeek,
+      requestExitArchiveMode,
+      requestCloseArchiveSectionPeek,
       exitArchiveEditToSectionPeek,
       centerStripListMirrorEnabled: stripMirrorsRightListPostcard,
       mirrorInner: stripMirrorsRightListPostcard
@@ -2167,6 +2241,8 @@ const App = () => {
     cardPieEditHydrateScope,
     enterCardPieEditFactoryMode,
     enterSectionEditFromPeek,
+    requestExitArchiveMode,
+    requestCloseArchiveSectionPeek,
     exitArchiveEditToSectionPeek,
     showTopCardStripFullSpan,
     isMobileLayout,
@@ -2530,7 +2606,9 @@ const App = () => {
                           aria-hidden
                         />
                         <div className={styles.mainCardSectionToolbarRow}>
-                          <ArchivePeekLowerToolbar />
+                          {archiveSectionPeek && activePieSide !== 'left' ? (
+                            <ArchivePeekLowerToolbar />
+                          ) : null}
                           <DesktopEnvelopeAddressViewToolbar />
                           <DesktopCardphotoCreateToolbar />
                           <DesktopCardphotoViewToolbar />

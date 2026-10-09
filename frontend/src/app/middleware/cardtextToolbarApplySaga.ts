@@ -50,10 +50,10 @@ export function* applyCardtextFromToolbar(
   const enterSimplifiedAfterApply = function* (
     appliedContent: CardtextContent | null,
   ): SagaIterator {
+    const archivePostcard: PostcardHydrated | null = yield call(
+      readArchiveCartApplyPostcard,
+    )
     if (appliedContent != null) {
-      const archivePostcard: PostcardHydrated | null = yield call(
-        readArchiveCartApplyPostcard,
-      )
       if (archivePostcard != null) {
         const nextPostcard: PostcardHydrated = {
           ...archivePostcard,
@@ -94,7 +94,9 @@ export function* applyCardtextFromToolbar(
     yield put(setCardtextApplyPeekChrome(true))
     yield put(setCardtextListPanelOpen(false))
     yield put(setCardtextEditReturnTo(null))
-    yield put(requestArchiveSectionPeek('cardtext'))
+    if (archivePostcard != null) {
+      yield put(requestArchiveSectionPeek('cardtext'))
+    }
   }
 
   if (assetMatchesApplied) {

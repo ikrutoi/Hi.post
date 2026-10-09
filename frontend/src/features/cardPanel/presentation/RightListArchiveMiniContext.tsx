@@ -40,6 +40,10 @@ export type RightListArchiveMiniContextValue = {
   requestCardPieEdit: (() => void) | null
   /** Edit только текущей peek-секции (postcardEdit в верхнем тулбаре). */
   requestSectionEditFromPeek: (() => void) | null
+  /** Close в верхнем тулбаре корзины/истории: выйти в сборку. */
+  requestExitArchiveMode: (() => void) | null
+  /** Desktop: Close упрощённого просмотра секции — календарь корзины/истории. */
+  requestCloseArchiveSectionPeek: (() => void) | null
   /**
    * Apply в archive-edit → упрощённый peek этой секции (без тулбара редактора).
    */
@@ -80,6 +84,8 @@ const defaultValue: RightListArchiveMiniContextValue = {
   cardPieEditHydrateScope: 'all',
   requestCardPieEdit: null,
   requestSectionEditFromPeek: null,
+  requestExitArchiveMode: null,
+  requestCloseArchiveSectionPeek: null,
   exitArchiveEditToSectionPeek: null,
   centerStripListMirrorEnabled: false,
   mirrorInner: null,

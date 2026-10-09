@@ -58,7 +58,8 @@ export const MobileFactoryToolbarShell: React.FC = () => {
     showMobileHistoryListFactoryChrome,
     showMobileCartListFactoryChrome,
   } = useMobileFactoryListChrome()
-  const { rightPieEnvelopePeekNoToolbar } = useRightListArchiveMini()
+  const { activePieSide, rightPieEnvelopePeekNoToolbar } =
+    useRightListArchiveMini()
 
   const envelopeAddressCreateMode =
     activeSection === 'envelope' &&
@@ -77,9 +78,9 @@ export const MobileFactoryToolbarShell: React.FC = () => {
     !showMobileCartListFactoryChrome &&
     !showMobileHistoryListFactoryChrome
 
-  /** Archive (cart/history) section peek: lower band, Copy on the left. */
+  /** Корзина/история: Copy слева. Сборка (левый пай) этот ряд не монтирует. */
   const showArchivePeekLowerToolbar =
-    isMobileLayout && mobileArchiveSectionPeek
+    isMobileLayout && mobileArchiveSectionPeek && activePieSide !== 'left'
 
   const showUpperContent =
     !hideUpperToolbar &&

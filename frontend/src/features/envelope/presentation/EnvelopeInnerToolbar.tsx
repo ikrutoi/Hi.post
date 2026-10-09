@@ -14,7 +14,6 @@ import {
 } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
-import { useArchivePeekCopy } from '@features/cardSectionEditor/application/hooks/useArchivePeekCopy'
 import { openEditorSectionTemplateList } from '@features/cardSectionEditor/application/helpers'
 import { ENVELOPE_MOBILE_ADDRESS_VIEW_UPPER_CLOSE_TOOLBAR } from '@toolbar/domain/types/addressView.types'
 import type { IconKey } from '@shared/config/constants'
@@ -71,8 +70,6 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   const sessionViewIds = useAppSelector(selectCurrentRecipientsViewIds)
   const showAddressNext =
     assemblyRecipientSimplifiedPeek && recipientsCount > 1
-  const { showCopy, groupsOverride: copyGroupsOverride, handleCopyAction } =
-    useArchivePeekCopy()
   const pendingAddressAddFocusRef = useRef<'recipient' | null>(null)
 
   useEffect(() => {
@@ -260,13 +257,7 @@ export const EnvelopeInnerToolbar: React.FC = () => {
       ) : (
         <div className={styles.envelopeToolbarSlotRecipients}>
           {recipientsToolbar}
-          {showCopy ? (
-            <Toolbar
-              section="recipients"
-              groupsOverride={copyGroupsOverride}
-              onActionClick={handleCopyAction}
-            />
-          ) : showAddressNext ? (
+          {showAddressNext ? (
             <AddressNextCycleButton count={recipientsCount} />
           ) : null}
           <Toolbar

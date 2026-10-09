@@ -19,6 +19,8 @@ import { HistoryListMobileFactoryUpperToolbar } from '@date/presentation/History
 import { CartListMobileFactoryUpperToolbar } from '@cart/presentation/CartListMobileFactoryToolbar'
 import { EnvelopeInnerToolbar } from '@envelope/presentation/EnvelopeInnerToolbar'
 import { ArchivePeekUpperToolbar } from './ArchivePeekUpperToolbar'
+import { FactoryPeekUpperToolbar } from './FactoryPeekUpperToolbar'
+import { useCloseArchiveSectionPeek } from '../../application/hooks/useCloseArchiveSectionPeek'
 import { MobileDateCalendarToolbarNav } from '@date/dateHeader/presentation/MobileDateCalendarToolbarNav'
 import styles from './FactoryUpperToolbar.module.scss'
 
@@ -53,7 +55,12 @@ export const FactoryUpperToolbar: React.FC<{
     showCartListFactoryUpperToolbar,
     showHistoryListFactoryUpperToolbar,
   } = useMobileFactoryListChrome()
-  const { rightPieEnvelopePeekNoToolbar } = useRightListArchiveMini()
+  const { activePieSide, rightPieEnvelopePeekNoToolbar } =
+    useRightListArchiveMini()
+  const { isArchiveSectionPeekActive } = useCloseArchiveSectionPeek()
+  /** Левый пай — сборка. Copy и Close только у правого пай корзины/истории. */
+  const archiveToolbar =
+    isArchiveSectionPeekActive && activePieSide !== 'left'
 
   const envelopeAddressCreateMode =
     activeSection === 'envelope' &&
@@ -81,12 +88,13 @@ export const FactoryUpperToolbar: React.FC<{
 
   let content: React.ReactNode
   if (showPeekEmptyToolbarShell) {
-    content =
-      assemblyRecipientSimplifiedPeek && !cartEnvelopeInnerPeekToolbar ? (
-        <EnvelopeInnerToolbar />
-      ) : (
-        <ArchivePeekUpperToolbar />
-      )
+    content = archiveToolbar ? (
+      <ArchivePeekUpperToolbar />
+    ) : assemblyRecipientSimplifiedPeek && !cartEnvelopeInnerPeekToolbar ? (
+      <EnvelopeInnerToolbar />
+    ) : (
+      <FactoryPeekUpperToolbar />
+    )
   } else if (isMobileLayout && showCardphotoListFactoryUpperToolbar) {
     content = <CardphotoListMobileFactoryUpperToolbar />
   } else if (isMobileLayout && showCardtextListFactoryUpperToolbar) {

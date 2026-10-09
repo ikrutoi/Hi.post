@@ -98,6 +98,12 @@ export function useMobileFactoryListChrome() {
     rightPieEnvelopePeekNoToolbar ||
     rightPieAromaPeekNoToolbar ||
     rightPieDatePeekNoToolbar
+  /**
+   * Флаги peek корзины не должны гасить упрощённый вид сборки,
+   * пока открыт левый пай.
+   */
+  const archivePeekBlocksAssembly =
+    mobileArchiveSectionPeek && activePieSide !== 'left'
 
   /**
    * Right cart envelope: peek chrome keeps cart strip/list context, but
@@ -123,7 +129,7 @@ export function useMobileFactoryListChrome() {
     activeSection === 'cardtext' &&
     activePieSide === 'left' &&
     !cardPieEditEngaged &&
-    !mobileArchiveSectionPeek &&
+    !archivePeekBlocksAssembly &&
     cardtextIsComplete &&
     (cardtextInteractionMode === 'postcardTemplateView' ||
       cardtextInteractionMode === 'processedSlot')
@@ -140,7 +146,7 @@ export function useMobileFactoryListChrome() {
     activeSection === 'cardphoto' &&
     activePieSide === 'left' &&
     !cardPieEditEngaged &&
-    !mobileArchiveSectionPeek &&
+    !archivePeekBlocksAssembly &&
     cardphotoIsComplete &&
     cardphotoAssetMatchesApplied
 
@@ -151,7 +157,7 @@ export function useMobileFactoryListChrome() {
     (activeSection === 'envelope' &&
       activePieSide === 'left' &&
       !cardPieEditEngaged &&
-      !mobileArchiveSectionPeek &&
+      !archivePeekBlocksAssembly &&
       recipientView !== 'recipientCreate' &&
       recipientAppliedIds.length > 0) ||
     (archiveCartEnvelopeSimplifiedPeek &&
@@ -174,7 +180,7 @@ export function useMobileFactoryListChrome() {
     activeSection === 'aroma' &&
     activePieSide === 'left' &&
     !cardPieEditEngaged &&
-    !mobileArchiveSectionPeek &&
+    !archivePeekBlocksAssembly &&
     aromaIsComplete &&
     selectedAroma != null
 
@@ -185,7 +191,7 @@ export function useMobileFactoryListChrome() {
     activeSection === 'date' &&
     activePieSide === 'left' &&
     !cardPieEditEngaged &&
-    !mobileArchiveSectionPeek &&
+    !archivePeekBlocksAssembly &&
     isDateComplete &&
     !archiveCalendarOpen
 

@@ -45,13 +45,24 @@ export function* readArchiveCartApplyPostcard(): SagaIterator<PostcardHydrated |
   const historySelected: number | null = yield select(
     selectHistoryListSelectedLocalId,
   )
-  const localId = cartSelected ?? historySelected
+  const localId =
+    retainedStrip === 'history'
+      ? (historySelected ?? cartSelected)
+      : (cartSelected ?? historySelected)
   if (localId == null) return null
 
   const items: PostcardHydrated[] = yield select(selectCartItems)
   const postcard = items.find((item) => item.localId === localId) ?? null
   if (postcard == null) return null
-  if (postcard.status !== 'cart' && postcard.status !== 'cartBlocked') {
+  /**
+   * История: открытка уже не cart, но правка всё равно её, не сборки.
+   * Корзина — только cart / cartBlocked.
+   */
+  if (
+    retainedStrip !== 'history' &&
+    postcard.status !== 'cart' &&
+    postcard.status !== 'cartBlocked'
+  ) {
     return null
   }
   return postcard

@@ -1,3 +1,4 @@
+import type { ImageMeta } from '@cardphoto/domain/types'
 import type { CardPieSectionFlags } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import type { selectActiveCardFullData } from '@features/cardPie/infrastructure/selectors/cardPieSelectors'
 
@@ -13,6 +14,14 @@ export type AssemblyBranchFreeze = {
   editorData: ReturnType<typeof selectActiveCardFullData>
   sections: CardPieSectionFlags
   reason?: AssemblyBranchFreezeReason
+  /**
+   * Кардфото сборки до гидратации архива.
+   * Mirror-backup к Apply может уже быть другим кадром.
+   */
+  cardphoto: {
+    appliedData: ImageMeta | null
+    assetData: ImageMeta | null
+  }
 }
 
 export type AssemblyBranchFreezeState = {
