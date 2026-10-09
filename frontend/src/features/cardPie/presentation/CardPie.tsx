@@ -249,23 +249,48 @@ export const CardPie: React.FC<CardPieProps> = ({
     cardData.cardphoto.thumbUrl.trim() !== ''
       ? cardData.cardphoto.thumbUrl.trim()
       : null
-  const photoUrl = cardphotoSections.cardphoto
-    ? keepFactoryCardphoto
-      ? factoryPhotoPin
-      : listArchiveSource != null
-      ? (cardphotoThumb
-          ? (resolvedArchivePhotoUrl ??
-            archiveThumbUrl ??
-            cardData?.cardphoto?.previewUrl ??
-            null)
-          : (archiveFullCandidate ??
-            resolvedArchivePhotoUrl ??
-            cardData?.cardphoto?.previewUrl ??
-            null))
+  const durablePieUrl = (url: string | null | undefined): string | null => {
+    const trimmed = url?.trim() ?? ''
+    if (!trimmed || trimmed.startsWith('blob:')) return null
+    return trimmed
+  }
+  /**
+   * Список после reload рисует миниатюру из registry/кэша, даже если в JSON
+   * открытки не осталось живого url. Центральный пай берёт тот же адрес.
+   */
+  const archivePiePhotoUrl =
+    listArchiveSource == null
+      ? null
       : cardphotoThumb
-        ? (factoryThumbUrl ?? cardData?.cardphoto?.previewUrl ?? null)
-        : (cardData?.cardphoto?.previewUrl ?? null)
-    : null
+        ? (resolvedArchivePhotoUrl ??
+          durablePieUrl(archiveThumbUrl) ??
+          durablePieUrl(cardData?.cardphoto?.previewUrl))
+        : (resolvedArchivePhotoUrl ??
+          durablePieUrl(archiveFullCandidate) ??
+          durablePieUrl(cardData?.cardphoto?.previewUrl))
+  /** Правка кардфото гасит сектор центрального пая, даже если url уже есть. */
+  const archiveCardphotoHeldEmpty =
+    listArchiveSource != null &&
+    cardPieEditEngaged &&
+    !sections.cardphoto
+  const showCardphoto = keepFactoryCardphoto
+    ? true
+    : archiveCardphotoHeldEmpty
+      ? false
+      : listArchiveSource != null
+        ? Boolean(archivePiePhotoUrl)
+        : cardphotoSections.cardphoto
+  const photoUrl = keepFactoryCardphoto
+    ? factoryPhotoPin
+    : archiveCardphotoHeldEmpty
+      ? null
+      : listArchiveSource != null
+        ? archivePiePhotoUrl
+        : showCardphoto
+          ? cardphotoThumb
+            ? (factoryThumbUrl ?? cardData?.cardphoto?.previewUrl ?? null)
+            : (cardData?.cardphoto?.previewUrl ?? null)
+          : null
   const aromaIndex = cardData?.aroma?.index
   const aromaImageUrl =
     sections.aroma && aromaIndex != null
@@ -423,7 +448,7 @@ export const CardPie: React.FC<CardPieProps> = ({
           textRendering="geometricPrecision"
         >
           <defs>
-            {cardphotoSections.cardphoto && photoUrl && (
+            {showCardphoto && photoUrl && (
               <pattern
                 id={photoFillId}
                 patternUnits="objectBoundingBox"
@@ -866,13 +891,13 @@ export const CardPie: React.FC<CardPieProps> = ({
               data-section="cardphoto"
               className={clsx(
                 styles.sector,
-                !cardphotoSections.cardphoto && styles.sectorEmpty,
+                !showCardphoto && styles.sectorEmpty,
                 sectorsInteractive &&
                   hoveredSection === 'cardphoto' &&
                   styles.hovered,
               )}
               fill={
-                cardphotoSections.cardphoto && photoUrl
+                showCardphoto && photoUrl
                   ? `url(#${photoFillId})`
                   : `url(#${photoEmptyFillId})`
               }

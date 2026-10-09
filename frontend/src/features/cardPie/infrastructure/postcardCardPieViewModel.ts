@@ -1,3 +1,4 @@
+import { cardListPreviewUrlFromCard } from '@entities/card/domain/helpers/cardReference.helpers'
 import type { Card } from '@entities/card/domain/types'
 import type { PostcardHydrated } from '@entities/postcard'
 import { POSTCARD_DISPATCH_DATE_FALLBACK } from '@entities/postcard'
@@ -143,10 +144,8 @@ function cardphotoUrlsFromCard(card: Card): {
       (url) => url != null && url !== thumb && url !== cardTn,
     ) || main || full
   const factoryDisplayUrl = fullFrame || previewUrl
-  const durableThumb = [thumb, cardTn].find(
-    (url) => url != null && !url.startsWith('blob:'),
-  )
-  const thumbUrl = durableThumb || thumb || cardTn || null
+  const listThumb = cardListPreviewUrlFromCard(card)
+  const thumbUrl = listThumb || thumb || cardTn || null
   const isComplete = Boolean(previewUrl)
   return {
     previewUrl,

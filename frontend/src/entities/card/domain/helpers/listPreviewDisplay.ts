@@ -58,13 +58,15 @@ export function resolveListPreviewDisplayUrl(
   if (input.preferThumb) {
     const registryThumb = pickPreviewUrl(input.registryThumbUrl, true)
     const registryFull = pickPreviewUrl(input.registryUrl, true)
-    const distinctRegistryThumb =
-      registryThumb && registryThumb !== registryFull ? registryThumb : null
+    /**
+     * После reload список уже показывает registry/кэш.
+     * Сохранённый url открытки (часто mёртвый blob: или другой файл) не должен
+     * перекрывать эту миниатюру.
+     */
     return (
-      pickPreviewUrl(input.previewUrl, allowPersistedBlob) ||
-      distinctRegistryThumb ||
-      cached ||
       registryThumb ||
+      cached ||
+      pickPreviewUrl(input.previewUrl, allowPersistedBlob) ||
       registryFull
     )
   }
