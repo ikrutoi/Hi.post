@@ -133,6 +133,7 @@ import {
 import { selectAssemblyBranchFreeze } from '@cardPanel/infrastructure/selectors/assemblyBranchFreezeSelectors'
 import { dispatchLoadArchiveEnvelopeSandbox } from '@cardPanel/application/helpers/archiveEnvelopeSandboxLoad'
 import {
+  bumpNotebookDateTabPeekClearTick,
   closeDayPanel,
   openDayPanel,
   beginCartCalendarDatePick,
@@ -882,26 +883,45 @@ const App = () => {
       cardPieEditHydrateScope === 'section' &&
       rightListArchiveSource === 'history'
 
-    setRightPieCardphotoPeekNoToolbar(false)
-    setRightPieCardtextPeekNoToolbar(false)
-    setRightPieEnvelopePeekNoToolbar(false)
-    setRightPieAromaPeekNoToolbar(false)
-    setRightPieDatePeekNoToolbar(false)
-    if (wasSectionPeek || wasSectionEditReturn) {
-      if (wasSectionEditReturn) {
-        endCardPieEditEngaged()
-        setCardPieEditHydrateScope('all')
-        setSuppressCardPieEditActiveAfterCopy(true)
-      }
+    const leaveArchiveSectionForCalendar =
+      wasSectionPeek || wasSectionEditReturn
+    if (leaveArchiveSectionForCalendar) {
+      /**
+       * Сначала снять peek/edit, потом открыть календарь.
+       * Иначе смена секции при ещё включённом postcardEdit
+       * снова ставит упрощённый просмотр даты вместо сетки месяца.
+       */
+      flushSync(() => {
+        setRightPieCardphotoPeekNoToolbar(false)
+        setRightPieCardtextPeekNoToolbar(false)
+        setRightPieEnvelopePeekNoToolbar(false)
+        setRightPieAromaPeekNoToolbar(false)
+        setRightPieDatePeekNoToolbar(false)
+        if (wasSectionEditReturn || cardPieEditEngagedRef.current) {
+          endCardPieEditEngaged()
+          setCardPieEditHydrateScope('all')
+          setSuppressCardPieEditActiveAfterCopy(true)
+        }
+      })
       dispatch(clearArchiveEnvelopeSandbox())
       for (const command of isMobileLayout
         ? buildNotebookHistoryTabCommandsMobile()
         : buildHistoryCalendarCommandsDesktop()) {
         dispatch(command)
       }
+      if (!isMobileLayout) {
+        dispatch(setNotebookStripTab('history'))
+        dispatch(setActiveSection('date'))
+      }
+      dispatch(bumpNotebookDateTabPeekClearTick())
       archiveCartCenterReturnModeRef.current = null
       return
     }
+    setRightPieCardphotoPeekNoToolbar(false)
+    setRightPieCardtextPeekNoToolbar(false)
+    setRightPieEnvelopePeekNoToolbar(false)
+    setRightPieAromaPeekNoToolbar(false)
+    setRightPieDatePeekNoToolbar(false)
 
     dispatch(setNotebookStripTab('history'))
     /** `date` + strip «История» — календарь; `history` открывает список через saga. */
@@ -1020,29 +1040,45 @@ const App = () => {
     const wasDatePickReturn =
       cartCalendarDatePickMode && rightListArchiveSource === 'cart'
 
-    setRightPieCardphotoPeekNoToolbar(false)
-    setRightPieCardtextPeekNoToolbar(false)
-    setRightPieEnvelopePeekNoToolbar(false)
-    setRightPieAromaPeekNoToolbar(false)
-    setRightPieDatePeekNoToolbar(false)
+    const leaveArchiveSectionForCalendar =
+      wasSectionPeek || wasSectionEditReturn || wasDatePickReturn
     releaseCartDatePickListEntryOwnership()
     cartDatePickOwnedByListEntryRef.current = false
-    dispatch(endCartCalendarDatePick())
-    if (wasSectionPeek || wasSectionEditReturn || wasDatePickReturn) {
-      if (wasSectionEditReturn) {
-        endCardPieEditEngaged()
-        setCardPieEditHydrateScope('all')
-        setSuppressCardPieEditActiveAfterCopy(true)
-      }
+    cartDatePickOwnedByCardPieEditRef.current = false
+    if (leaveArchiveSectionForCalendar) {
+      flushSync(() => {
+        setRightPieCardphotoPeekNoToolbar(false)
+        setRightPieCardtextPeekNoToolbar(false)
+        setRightPieEnvelopePeekNoToolbar(false)
+        setRightPieAromaPeekNoToolbar(false)
+        setRightPieDatePeekNoToolbar(false)
+        if (wasSectionEditReturn || cardPieEditEngagedRef.current) {
+          endCardPieEditEngaged()
+          setCardPieEditHydrateScope('all')
+          setSuppressCardPieEditActiveAfterCopy(true)
+        }
+      })
+      dispatch(endCartCalendarDatePick())
       dispatch(clearArchiveEnvelopeSandbox())
       for (const command of isMobileLayout
         ? buildNotebookCartTabCommandsMobile()
         : buildCartCalendarCommands()) {
         dispatch(command)
       }
+      if (!isMobileLayout) {
+        dispatch(setNotebookStripTab('cart'))
+        dispatch(setActiveSection('date'))
+      }
+      dispatch(bumpNotebookDateTabPeekClearTick())
       archiveCartCenterReturnModeRef.current = null
       return
     }
+    setRightPieCardphotoPeekNoToolbar(false)
+    setRightPieCardtextPeekNoToolbar(false)
+    setRightPieEnvelopePeekNoToolbar(false)
+    setRightPieAromaPeekNoToolbar(false)
+    setRightPieDatePeekNoToolbar(false)
+    dispatch(endCartCalendarDatePick())
     dispatch(setNotebookStripTab('cart'))
     dispatch(setActiveSection('date'))
 
@@ -1690,7 +1726,13 @@ const App = () => {
       setCardPieEditHydrateScope('all')
       setSuppressCardPieEditActiveAfterCopy(true)
       dispatch(endCartCalendarDatePick())
-      syncPeekChromeForOpenedSection(activeSection as CardSection)
+      /**
+       * Переход на календарь корзины/истории не должен снова
+       * включать упрощённый просмотр секции даты.
+       */
+      if (activeSection !== 'date' && activeSection !== 'history') {
+        syncPeekChromeForOpenedSection(activeSection as CardSection)
+      }
       return
     }
     /**

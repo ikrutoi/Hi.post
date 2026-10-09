@@ -1,8 +1,13 @@
 import React, { useMemo } from 'react'
 import clsx from 'clsx'
 import { Slate, Editable, withReact } from 'slate-react'
-import { createEditor, Descendant } from 'slate'
-import { STEP_TO_PX, clampCardtextFontSizeStep } from '../../domain/types'
+import { createEditor } from 'slate'
+import {
+  STEP_TO_PX,
+  clampCardtextFontSizeStep,
+  cardtextValueForReadOnlyPreview,
+  createInitialCardtextContent,
+} from '../../domain/types'
 import type { CardtextValue, CardtextStyle } from '../../domain/types'
 import { renderLeaf } from '../renderLeaf'
 import { renderElement } from '../renderElement'
@@ -32,11 +37,19 @@ export const CardtextView: React.FC<Props> = ({
   titleStripEditing,
   sectionFrame = false,
 }) => {
+  const initialValue = useMemo(() => {
+    const base = createInitialCardtextContent()
+    return cardtextValueForReadOnlyPreview({
+      ...base,
+      value: Array.isArray(value) ? value : base.value,
+      style: style ?? base.style,
+    })
+  }, [value, style])
   const slateKey =
     contentKey ??
-    (value?.length
-      ? String(value.length) + (value[0]?.children?.[0]?.text ?? '')
-      : 'empty')
+    initialValue
+      .map((block) => block.children.map((child) => child.text).join(''))
+      .join('\n')
   const editor = useMemo(() => withReact(createEditor()), [slateKey])
 
   const fontSizeStep = clampCardtextFontSizeStep(style?.fontSizeStep ?? 3)
@@ -44,11 +57,6 @@ export const CardtextView: React.FC<Props> = ({
   const lineHeight = Math.round(currentPxSize * 1.5)
   const colorKey = style?.color ?? 'deepBlack'
   const colorClass = styles[COLOR_CLASS_MAP[colorKey] ?? 'colorDeepBlack']
-  const initialValue = (
-    value?.length
-      ? value
-      : [{ type: 'paragraph', align: 'left', children: [{ text: '' }] }]
-  ) as Descendant[]
   return (
     <div
       className={clsx(

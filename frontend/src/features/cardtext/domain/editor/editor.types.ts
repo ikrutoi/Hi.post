@@ -142,6 +142,7 @@ export function cardtextValueForReadOnlyPreview(ct: CardtextContent): CardtextVa
   const defaultAlign = (ct.style?.align ?? 'left') as TextAlign
   const fromBlocks: CardtextValue = []
   for (const block of rawBlocks) {
+    if (block == null || typeof block !== 'object') continue
     const text = slateSubtreePlainText(block)
     if (text.trim().length === 0) continue
     const type =

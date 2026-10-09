@@ -1,4 +1,4 @@
-import { all, fork, put, select, takeEvery } from 'redux-saga/effects'
+import { all, call, fork, put, select, takeEvery } from 'redux-saga/effects'
 import type { SagaIterator } from 'redux-saga'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
