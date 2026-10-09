@@ -253,10 +253,15 @@ export const CardPie: React.FC<CardPieProps> = ({
     ? keepFactoryCardphoto
       ? factoryPhotoPin
       : listArchiveSource != null
-      ? (resolvedArchivePhotoUrl ??
-        (cardphotoThumb ? archiveThumbUrl : null) ??
-        cardData?.cardphoto?.previewUrl ??
-        null)
+      ? (cardphotoThumb
+          ? (resolvedArchivePhotoUrl ??
+            archiveThumbUrl ??
+            cardData?.cardphoto?.previewUrl ??
+            null)
+          : (archiveFullCandidate ??
+            resolvedArchivePhotoUrl ??
+            cardData?.cardphoto?.previewUrl ??
+            null))
       : cardphotoThumb
         ? (factoryThumbUrl ?? cardData?.cardphoto?.previewUrl ?? null)
         : (cardData?.cardphoto?.previewUrl ?? null)

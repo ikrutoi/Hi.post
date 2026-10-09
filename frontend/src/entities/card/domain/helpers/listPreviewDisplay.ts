@@ -70,11 +70,17 @@ export function resolveListPreviewDisplayUrl(
   }
 
   if (input.preferFull) {
+    const fullCandidate = pickPreviewUrl(input.previewUrl, true)
+    const registryFull = pickPreviewUrl(input.registryUrl, true)
+    const registryThumb = pickPreviewUrl(input.registryThumbUrl, true)
+    const registryIsThumb =
+      registryFull != null && registryThumb != null && registryFull === registryThumb
     return (
-      pickPreviewUrl(input.registryUrl, true) ||
-      pickPreviewUrl(input.previewUrl, true) ||
+      fullCandidate ||
+      (registryIsThumb ? null : registryFull) ||
       cached ||
-      pickPreviewUrl(input.registryThumbUrl, true)
+      registryFull ||
+      registryThumb
     )
   }
 

@@ -37,6 +37,7 @@ const CardphotoInnerPreviewOnly: React.FC<{
   const { displayUrl, onPreviewImgError } = useListCardPreviewUrl(
     inner?.cardphoto?.id,
     fallbackUrl,
+    { preferFull: true },
   )
   const url = displayUrl
   const hasPhoto = url != null && url !== ''

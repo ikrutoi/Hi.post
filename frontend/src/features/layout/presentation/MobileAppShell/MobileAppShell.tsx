@@ -1260,6 +1260,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                             rightPieCenterArchiveCycleHintViewMode={
                               mobileArchiveCenterCycleHintViewMode
                             }
+                            cardphotoThumb
                           />
                         </div>
                       ) : mobileCentralPieDisplay === 'cardphotoTemplate' ? (
@@ -1341,6 +1342,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                           leftPieCenterPlanCycle={canCyclePlanPies}
                           leftPieCenterPlanCycleHint={showMobileCenterPlanCycleHint}
                           leftPieCenterClickable={canCyclePlanPies}
+                          cardphotoThumb
                         />
                       ) : null}
                   </div>
