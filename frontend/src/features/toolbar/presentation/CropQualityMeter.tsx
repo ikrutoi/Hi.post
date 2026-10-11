@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React from 'react'
 import clsx from 'clsx'
-import { useAppSelector } from '@app/hooks'
-import { selectCropQualityProgress } from '@cardphoto/infrastructure/selectors'
 import { getQualityColor } from '@cardphoto/application/helpers'
+import { useCropQualityFill } from './useCropQualityFillColor'
 import styles from './CropQualityMeter.module.scss'
 
 type Props = {
@@ -10,10 +9,6 @@ type Props = {
   disabled?: boolean
   /** Parent sets width (e.g. central CardPie); meter track fills it. */
   fillWidth?: boolean
-}
-
-function clampProgress(progress: number): number {
-  return Math.max(0, Math.min(100, progress))
 }
 
 /**
@@ -24,32 +19,9 @@ export const CropQualityMeter: React.FC<Props> = ({
   disabled = false,
   fillWidth = false,
 }) => {
-  const reduxProgress = useAppSelector(selectCropQualityProgress)
-  const [liveProgress, setLiveProgress] = useState<number | null>(null)
-
-  useEffect(() => {
-    if (disabled) return
-    const handler = (e: Event) => {
-      const ce = e as CustomEvent<{ progress: number }>
-      if (typeof ce.detail?.progress === 'number') {
-        setLiveProgress(ce.detail.progress)
-      }
-    }
-    window.addEventListener('crop-quality-change', handler)
-    return () => window.removeEventListener('crop-quality-change', handler)
-  }, [disabled])
-
-  useEffect(() => {
-    setLiveProgress(null)
-  }, [reduxProgress])
-
-  const progress = clampProgress(liveProgress ?? reduxProgress)
+  const { progress, color: fillColor } = useCropQualityFill(disabled)
   const fillPercent = disabled ? 0 : progress
   const showMinQualityDot = !disabled && progress === 0
-  const fillColor = useMemo(
-    () => (disabled ? undefined : getQualityColor(progress)),
-    [disabled, progress],
-  )
 
   const ariaLabel = disabled
     ? 'Качество печати: включите кроп для оценки'

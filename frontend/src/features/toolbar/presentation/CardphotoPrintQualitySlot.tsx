@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import { IconPrinter } from '@shared/ui/icons'
 import { CropQualityMeter } from './CropQualityMeter'
+import { useCropQualityFill } from './useCropQualityFillColor'
 import styles from './CardphotoPrintQualitySlot.module.scss'
 
 type Props = {
@@ -12,14 +13,19 @@ type Props = {
 export const CardphotoPrintQualitySlot: React.FC<Props> = ({
   disabled = false,
   fillWidth = false,
-}) => (
-  <div className={clsx(styles.root, fillWidth && styles.rootFill)}>
-    <CropQualityMeter disabled={disabled} fillWidth={fillWidth} />
-    <span
-      className={clsx(styles.printer, disabled && styles.printerDisabled)}
-      aria-hidden
-    >
-      <IconPrinter />
-    </span>
-  </div>
-)
+}) => {
+  const { color } = useCropQualityFill(disabled)
+
+  return (
+    <div className={clsx(styles.root, fillWidth && styles.rootFill)}>
+      <CropQualityMeter disabled={disabled} fillWidth={fillWidth} />
+      <span
+        className={clsx(styles.printer, disabled && styles.printerDisabled)}
+        style={color ? { color } : undefined}
+        aria-hidden
+      >
+        <IconPrinter />
+      </span>
+    </div>
+  )
+}

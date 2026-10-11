@@ -24,6 +24,7 @@ $print-quality-printer-icon-width: 1.2rem;
   width: auto;
   flex-shrink: 0;
   color: $color-font-enabled-light;
+  transition: color 0.15s ease;
 
   > svg {
     width: $print-quality-printer-icon-width;
