@@ -27,7 +27,6 @@ import { useDateSwitcherController } from '@date/switcher/application/hooks/useD
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import toolbarStyles from '@toolbar/presentation/Toolbar.module.scss'
 import type { ToolbarConfig } from '@toolbar/domain/types'
-import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { useFlashEffect } from '@shared/hooks'
 import { getCurrentDate } from '@shared/utils/date'
 import { getToolbarIcon } from '@shared/utils/icons'
@@ -49,7 +48,6 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
   const { lastViewedCalendarDate } = useCalendarFacade()
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const isMobileLayout = useAppSelector(selectIsMobileLayout)
-  const { requestExitArchiveMode } = useRightListArchiveMini()
   const canApplyAssemblyDates = useAppSelector(selectCanApplyDispatchDates)
   const canApplyCartdatePick = useAppSelector(selectCanApplyCartdatePick)
   const canApplyDispatchDates =
@@ -170,12 +168,6 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
   const showModeListIcon =
     isMobileLayout &&
     (notebookStripTab === 'cart' || notebookStripTab === 'history')
-  /**
-   * Close только на applied-календаре корзины/истории.
-   * В правке даты (`cartdate`) справа только возврат к текущему месяцу.
-   */
-  const showArchiveClose =
-    notebookStripTab === 'cart' || notebookStripTab === 'history'
   const modeIcon = showModeListIcon ? (
       <button
         ref={modeListButtonRef}
@@ -254,16 +246,6 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
         >
           {getToolbarIcon({ key: 'calendarReturn' })}
         </button>
-        {showArchiveClose ? (
-          <button
-            type="button"
-            className={styles.modeIcon}
-            aria-label="Close"
-            onClick={() => requestExitArchiveMode?.()}
-          >
-            {getToolbarIcon({ key: 'close' })}
-          </button>
-        ) : null}
       </div>
     </div>
   )

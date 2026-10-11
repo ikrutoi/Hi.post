@@ -2609,29 +2609,33 @@ const App = () => {
                         (activeSection === 'cardphoto' ||
                           activeSection === 'cardtext' ||
                           activeSection === 'aroma' ||
-                          activeSection === 'envelope' ||
-                          activeSection === 'date'))
+                          activeSection === 'envelope')) ||
+                      ((archiveEditRetainsStrip === 'cartdate' ||
+                        notebookStripTab === 'cartdate') &&
+                        activeSection === 'date')
                         ? 'true'
                         : undefined
                     }
                     data-desktop-factory-surface={
-                      archiveSectionPeek ||
-                      (archiveEditRetainsStrip && activeSection === 'date')
+                      archiveSectionPeek
                         ? activeSection === 'date'
                           ? 'date'
                           : (activeSection ?? 'neutral')
-                        : activeSection === 'history' ||
-                            (activeSection === 'date' &&
-                              notebookStripTab === 'history') ||
-                            (historyListPanelOpen &&
-                              !notebookStripDateOverHistory)
-                          ? 'date-history'
-                          : activeSection === 'date'
-                            ? notebookStripTab === 'cart' ||
-                              notebookStripTab === 'cartdate'
-                              ? 'date-cart'
-                              : 'date'
-                            : (activeSection ?? 'neutral')
+                        : (archiveEditRetainsStrip === 'cartdate' ||
+                              notebookStripTab === 'cartdate') &&
+                            activeSection === 'date'
+                          ? 'date'
+                          : activeSection === 'history' ||
+                              (activeSection === 'date' &&
+                                notebookStripTab === 'history') ||
+                              (historyListPanelOpen &&
+                                !notebookStripDateOverHistory)
+                            ? 'date-history'
+                            : activeSection === 'date'
+                              ? notebookStripTab === 'cart'
+                                ? 'date-cart'
+                                : 'date'
+                              : (activeSection ?? 'neutral')
                     }
                   >
                     {!isMobileLayout ? (
