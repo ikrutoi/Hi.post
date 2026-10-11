@@ -6,7 +6,8 @@ import type { IconKey } from '@shared/config/constants'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import { setCardtextApplyPeekChrome, setCardtextAppliedData } from '@cardtext/infrastructure/state'
 import { clearApply } from '@cardphoto/infrastructure/state'
-import { clearApplied as clearAromaApplied } from '@aroma/infrastructure/state'
+import { clearApplied as clearAromaApplied, setViewAroma } from '@aroma/infrastructure/state'
+import { selectSelectedAroma } from '@aroma/infrastructure/selectors'
 import { clearAppliedDates } from '@date/infrastructure/state'
 import { AddressNextCycleButton } from './AddressNextCycleButton'
 import { DateNextCycleButton } from './DateNextCycleButton'
@@ -54,6 +55,7 @@ export const FactoryPeekUpperToolbar: React.FC = () => {
   const sessionViewIds = useAppSelector(selectCurrentRecipientsViewIds)
   const recipientsCount = useRecipientsChromeCount()
   const appliedDispatchDates = useAppSelector(selectMergedDispatchDates)
+  const appliedAroma = useAppSelector(selectSelectedAroma)
   const showAddressNext =
     assemblyRecipientSimplifiedPeek && recipientsCount > 1
   const showDateNext =
@@ -70,6 +72,7 @@ export const FactoryPeekUpperToolbar: React.FC = () => {
         dispatch(clearApply())
         openEditorSectionTemplateList(dispatch, 'cardphoto', isMobileLayout)
       } else if (assemblyAromaSimplifiedPeek) {
+        if (appliedAroma) dispatch(setViewAroma(appliedAroma))
         dispatch(clearAromaApplied())
       } else if (assemblyDateSimplifiedPeek) {
         dispatch(clearAppliedDates())
@@ -90,6 +93,7 @@ export const FactoryPeekUpperToolbar: React.FC = () => {
       return false
     },
     [
+      appliedAroma,
       assemblyAromaSimplifiedPeek,
       assemblyCardphotoSimplifiedPeek,
       assemblyCardtextSimplifiedPeek,
