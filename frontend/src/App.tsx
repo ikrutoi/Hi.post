@@ -1668,6 +1668,16 @@ const App = () => {
       } else {
         dispatch(setArchiveEditRetainsStrip('cart'))
         dispatch(setNotebookStripTab('cart'))
+        dispatch(setCartListStatusSegment('cart'))
+        if (
+          rightListArchiveLocalId != null &&
+          selectCartItems(store.getState()).some(
+            (p) =>
+              p.localId === rightListArchiveLocalId && p.status === 'cart',
+          )
+        ) {
+          dispatch(setCartListSelectedLocalId(rightListArchiveLocalId))
+        }
         dispatch(setCartListPanelOpen(true))
       }
     } else if (

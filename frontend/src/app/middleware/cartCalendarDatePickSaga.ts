@@ -1,6 +1,7 @@
 import type { SagaIterator } from 'redux-saga'
 import { call, put, select, takeEvery } from 'redux-saga/effects'
 import {
+  setCartListSelectedLocalId,
   setCartListStatusSegment,
   updateItem,
 } from '@cart/infrastructure/state'
@@ -43,10 +44,16 @@ function* handleCartCalendarDatePickApplied(
   }
 
   /**
-   * Режим pick не выключаем: при cardPieEdit / dateEdit пользователь может сразу
-   * выбрать другую дату (ошибка первого клика). Сброс — при выходе из edit.
+   * Актуальная дата → сегмент «Корзина» и выбор этой строки.
+   * Режим pick не выключаем: при cardPieEdit / dateEdit можно сразу
+   * выбрать другую дату. Сброс — при выходе из edit.
    */
-  yield put(setCartListStatusSegment('cart'))
+  const itemsAfter: PostcardHydrated[] = yield select(selectCartItems)
+  const updated = itemsAfter.find((p) => p.localId === localId)
+  if (updated?.status === 'cart') {
+    yield put(setCartListStatusSegment('cart'))
+    yield put(setCartListSelectedLocalId(localId))
+  }
 }
 
 export function* watchCartCalendarDatePick(): SagaIterator {
