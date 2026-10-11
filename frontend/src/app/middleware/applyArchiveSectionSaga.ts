@@ -46,7 +46,11 @@ import { restoreRecipient } from '@envelope/recipient/infrastructure/state'
 import { selectIsEnvelopeReady } from '@envelope/infrastructure/selectors'
 import { syncEnvelopeFormsFromAppliedRequested } from '@envelope/infrastructure/state'
 import { processEnvelopeVisuals } from './envelopeProcessSaga'
-import { setAroma, clearApplied as clearAromaApplied } from '@aroma/infrastructure/state'
+import {
+  setAroma,
+  setViewAroma,
+  clearApplied as clearAromaApplied,
+} from '@aroma/infrastructure/state'
 import {
   clearDate,
   setMultiDateMode,
@@ -160,13 +164,17 @@ function* applyArchiveSectionFromPostcard(
       break
     }
     case 'aroma': {
-      yield put(setAroma(card.aroma))
       /**
-       * postcardEdit: снять session-apply после гидратации — как cardphoto.
-       * Плитки + preview→Apply, как на левой сборке.
+       * postcardEdit: не пишем session-apply (сектор CardPie пустой до Apply),
+       * но плитку открытки сразу выделяем — Apply enabled.
        */
       if (options?.clearAromaApplied) {
         yield put(clearAromaApplied())
+        if (card.aroma != null) {
+          yield put(setViewAroma(card.aroma))
+        }
+      } else {
+        yield put(setAroma(card.aroma))
       }
       break
     }
