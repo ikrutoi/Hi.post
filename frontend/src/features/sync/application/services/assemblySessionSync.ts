@@ -13,6 +13,20 @@ const SESSION_ID = 'current_session'
 let suppressAssemblyCloudPush = 0
 /** Session was saved while a pull was writing it back. Push that edit after. */
 let assemblyEditedDuringSuppress = false
+/** Redux has an assembly edit that is not in IndexedDB yet. */
+let assemblyReduxDirty = false
+let assemblyDirtyEpoch = 0
+
+export function markAssemblyReduxDirty(): number {
+  assemblyReduxDirty = true
+  assemblyDirtyEpoch += 1
+  return assemblyDirtyEpoch
+}
+
+export function clearAssemblyReduxDirty(epoch: number): void {
+  if (epoch !== assemblyDirtyEpoch) return
+  assemblyReduxDirty = false
+}
 
 export function beginAssemblyCloudPushSuppression(): void {
   suppressAssemblyCloudPush += 1
@@ -69,7 +83,9 @@ function sessionFromRemote(item: V2LibraryItem): SessionData | null {
  */
 export async function pullAssemblySessionIntoIdb(): Promise<boolean> {
   try {
+    if (assemblyReduxDirty) return false
     const remote = (await fetchV2Library('assembly')).find((row) => row.id === ASSEMBLY_ID)
+    if (assemblyReduxDirty) return false
     if (remote == null) return false
     const next = sessionFromRemote(remote)
     if (next == null) return false
@@ -79,8 +95,13 @@ export async function pullAssemblySessionIntoIdb(): Promise<boolean> {
      * Only a newer save from another device replaces this browser.
      * An older server copy must not snap an open editor back to applied.
      */
-    if (localTs >= next.timestamp) {
-      if (localTs > next.timestamp && local != null && !hasPendingLibraryUpsert('assembly', ASSEMBLY_ID)) {
+    if (assemblyReduxDirty || localTs >= next.timestamp) {
+      if (
+        !assemblyReduxDirty &&
+        localTs > next.timestamp &&
+        local != null &&
+        !hasPendingLibraryUpsert('assembly', ASSEMBLY_ID)
+      ) {
         pushAssemblySession(local)
       }
       return false

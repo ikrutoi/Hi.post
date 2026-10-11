@@ -6,8 +6,10 @@ import { pullV2PostcardsIntoIdb } from '@features/sync/application/services/pull
 import { isHttpAuthMode } from '@shared/config/authMode'
 import {
   beginAssemblyCloudPushSuppression,
+  clearAssemblyReduxDirty,
   endAssemblyCloudPushSuppression,
   isAssemblyCloudPushSuppressed,
+  markAssemblyReduxDirty,
   noteAssemblyEditedDuringSuppression,
   pullAssemblySessionIntoIdb,
   pushAssemblySession,
@@ -75,7 +77,11 @@ import { processEnvelopeVisuals } from './envelopeProcessSaga'
 import { restoreEditorSession } from '@entities/sectionEditorMenu/infrastructure/state'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { selectAromaState } from '@aroma/infrastructure/selectors'
-import { setAroma, clear as clearAroma } from '@aroma/infrastructure/state'
+import {
+  setAroma,
+  clear as clearAroma,
+  clearApplied as clearAromaApplied,
+} from '@aroma/infrastructure/state'
 import { selectDateState } from '@date/infrastructure/selectors'
 import {
   setDate,
@@ -86,6 +92,7 @@ import {
   setFirstDayOfWeek,
   hydrateDateFromSession,
   excludeDispatchBranch,
+  clearAppliedDates,
 } from '@date/infrastructure/state'
 import {
   syncCardphotoStatus,
@@ -188,7 +195,7 @@ import {
 import { refreshRightSidebarBadgesFromPostcards } from './postcardCreateSaga'
 import { openDesktopEditorSectionTemplateListSaga } from '@features/cardSectionEditor/application/helpers/openEditorSectionTemplateList'
 
-export function* persistGlobalSession() {
+export function* persistGlobalSession(dirtyEpoch?: number) {
   const cardphoto: CardphotoSessionRecord | null = yield select(
     selectCardphotoSessionRecord,
   )
@@ -279,6 +286,7 @@ export function* persistGlobalSession() {
   }
 
   yield call([storeAdapters.session, 'put'], sessionData)
+  if (dirtyEpoch != null) clearAssemblyReduxDirty(dirtyEpoch)
   pushAssemblySession(sessionData)
   yield call(flushPendingV2Sync)
 }
@@ -311,6 +319,8 @@ const SESSION_WATCH_ACTIONS = [
   setProcessedImage.type,
   setAroma.type,
   clearAroma.type,
+  clearAromaApplied.type,
+  clearAppliedDates.type,
   setDate.type,
   pickDispatchDate.type,
   clearDate.type,
@@ -1124,8 +1134,9 @@ function* rehydrateAssemblySessionSaga() {
 
 export function* watchSessionChanges() {
   yield takeLatest(SESSION_WATCH_ACTIONS, function* () {
+    const dirtyEpoch = markAssemblyReduxDirty()
     yield delay(900)
-    yield call(persistGlobalSession)
+    yield call(persistGlobalSession, dirtyEpoch)
   })
   yield takeLatest(rehydrateAssemblySession.type, rehydrateAssemblySessionSaga)
 }
