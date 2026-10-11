@@ -10,10 +10,7 @@ import {
 } from '@features/auth/infrastructure/sessionStorage'
 import { postcardsAdapter } from '@db/adapters/storeAdapters/postcardsAdapter'
 import { discardPendingV2Sync } from '@features/sync/infrastructure/postcardV2PendingSync'
-import {
-  postcardLocalDataChanged,
-  rehydratePostcardsFromIdb,
-} from '@features/sync/store/postcardSync.actions'
+import { rehydratePostcardsFromIdb } from '@features/sync/store/postcardSync.actions'
 import { pullV2PostcardsIntoIdb } from '@features/sync/application/services/pullV2PostcardsIntoIdb'
 import { pullV2LibraryIntoIdb } from '@features/sync/application/services/pullV2LibraryIntoIdb'
 import {
@@ -38,7 +35,6 @@ async function pullV2AfterAuth(
     await pullV2LibraryIntoIdb()
     await flushLocalIdbToV2AfterPull()
     listenerApi.dispatch(rehydratePostcardsFromIdb())
-    listenerApi.dispatch(postcardLocalDataChanged())
   } catch {
     // IndexedDB keeps whatever was already local.
   }

@@ -1,6 +1,5 @@
 import { call, put, takeLatest } from 'redux-saga/effects'
 import type { SagaIterator } from 'redux-saga'
-import { postcardsAdapter } from '@db/adapters/storeAdapters/postcardsAdapter'
 import type { PostcardHydrated } from '@entities/postcard'
 import {
   cardImageMetaLookupIdsFromCard,
@@ -10,12 +9,11 @@ import type { ImageAsset } from '@entities/assetRegistry/domain/types'
 import { setAssets } from '@entities/assetRegistry/infrastructure/state'
 import { setItems } from '@features/cart/infrastructure/state/cartSlice'
 import {
-  postcardCardphotoNeedsPersist,
-  refreshPostcardsCardphotoUrls,
+  persistHydratePhotoRefreshIfIdbUnchanged,
+  readPostcardsForReduxHydrate,
 } from '@app/middleware/postcardCardphotoHydrate'
 import { refreshRightSidebarBadgesFromPostcards } from '@app/middleware/postcardCreateSaga'
 import { rehydratePostcardsFromIdb } from '@features/sync/store'
-import { isPostcardPendingDelete } from '@features/sync/infrastructure/postcardV2PendingSync'
 import { syncCardphotoEditorListStatusFromIdbSaga } from '@cardphoto/application/helpers/syncCardphotoEditorListStatusFromIdb'
 
 function cartPostcardPreviewAssets(postcards: PostcardHydrated[]): ImageAsset[] {
@@ -46,26 +44,20 @@ function cartPostcardPreviewAssets(postcards: PostcardHydrated[]): ImageAsset[] 
 }
 
 function* rehydratePostcardsFromIdbSaga(): SagaIterator {
-  yield call([postcardsAdapter, 'purgePendingDeletes'])
-  const loaded: PostcardHydrated[] = yield call(postcardsAdapter.getAll)
-  const rawPostcards = loaded.filter((row) => !isPostcardPendingDelete(row))
-  const postcards: PostcardHydrated[] = yield call(
-    refreshPostcardsCardphotoUrls,
-    rawPostcards,
+  const first: {
+    raw: PostcardHydrated[]
+    display: PostcardHydrated[]
+  } = yield call(readPostcardsForReduxHydrate)
+  yield call(
+    persistHydratePhotoRefreshIfIdbUnchanged,
+    first.raw,
+    first.display,
   )
-
-  for (let i = 0; i < postcards.length; i++) {
-    const next = postcards[i]
-    const prev = rawPostcards[i]
-    if (
-      prev &&
-      next &&
-      prev.id === next.id &&
-      postcardCardphotoNeedsPersist(prev, next)
-    ) {
-      yield call(postcardsAdapter.putLocal, next)
-    }
-  }
+  const latest: {
+    raw: PostcardHydrated[]
+    display: PostcardHydrated[]
+  } = yield call(readPostcardsForReduxHydrate)
+  const postcards = latest.display
 
   yield put(setItems(postcards))
 

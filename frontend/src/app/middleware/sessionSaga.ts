@@ -1,7 +1,9 @@
 import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects'
 import { nanoid } from 'nanoid'
-import { postcardsAdapter, storeAdapters } from '@db/adapters/storeAdapters'
-import { isPostcardPendingDelete } from '@features/sync/infrastructure/postcardV2PendingSync'
+import { storeAdapters } from '@db/adapters/storeAdapters'
+import { readAuthSession } from '@features/auth/infrastructure/sessionStorage'
+import { pullV2PostcardsIntoIdb } from '@features/sync/application/services/pullV2PostcardsIntoIdb'
+import { isHttpAuthMode } from '@shared/config/authMode'
 import { selectCardphotoSessionRecord } from '@cardphoto/infrastructure/selectors'
 import {
   commitWorkingConfig,
@@ -124,8 +126,8 @@ import {
   selectCartListStatusSegment,
 } from '@cart/infrastructure/selectors'
 import {
-  refreshPostcardsCardphotoUrls,
-  postcardCardphotoNeedsPersist,
+  persistHydratePhotoRefreshIfIdbUnchanged,
+  readPostcardsForReduxHydrate,
 } from './postcardCardphotoHydrate'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
 import type { SessionData } from '@entities/db/domain/types'
@@ -634,28 +636,30 @@ function cartPostcardPreviewAssets(
 
 export function* hydrateAppSession() {
   try {
-    yield call([postcardsAdapter, 'purgePendingDeletes'])
-    const loaded: PostcardHydrated[] = yield call(postcardsAdapter.getAll)
-    const rawPostcards = loaded.filter((row) => !isPostcardPendingDelete(row))
-    const refreshed: PostcardHydrated[] = yield call(
-      refreshPostcardsCardphotoUrls,
-      rawPostcards,
-    )
-    const postcards = refreshed.map(applyPostcardSeal)
-    for (let i = 0; i < postcards.length; i++) {
-      const next = postcards[i]
-      const prev = rawPostcards[i]
-      const sealChanged =
-        JSON.stringify(prev?.seal ?? null) !== JSON.stringify(next?.seal ?? null)
-      if (
-        prev &&
-        next &&
-        prev.id === next.id &&
-        (postcardCardphotoNeedsPersist(prev, next) || sealChanged)
-      ) {
-        yield call(postcardsAdapter.putLocal, next)
+    if (isHttpAuthMode() && readAuthSession()?.token) {
+      try {
+        yield call(pullV2PostcardsIntoIdb)
+      } catch (e) {
+        console.error('hydrateAppSession: postcard pull failed', e)
       }
     }
+    const first: {
+      raw: PostcardHydrated[]
+      display: PostcardHydrated[]
+    } = yield call(readPostcardsForReduxHydrate)
+    const sealedFirst = first.display.map(applyPostcardSeal)
+    yield call(
+      persistHydratePhotoRefreshIfIdbUnchanged,
+      first.raw,
+      sealedFirst,
+      (prev, next) =>
+        JSON.stringify(prev.seal ?? null) !== JSON.stringify(next.seal ?? null),
+    )
+    const latest: {
+      raw: PostcardHydrated[]
+      display: PostcardHydrated[]
+    } = yield call(readPostcardsForReduxHydrate)
+    const postcards = latest.display.map(applyPostcardSeal)
     yield put(setItems(postcards))
 
     const cartAssets = cartPostcardPreviewAssets(postcards)

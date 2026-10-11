@@ -10,6 +10,7 @@ import { cartCalendarDatePickApplied } from '@date/calendar/application/orchestr
 import { postcardsAdapter } from '@db/adapters/storeAdapters'
 import type { PostcardHydrated } from '@entities/postcard'
 import { refreshRightSidebarBadgesFromPostcards } from './postcardCreateSaga'
+import { flushPendingV2Sync } from '@features/sync/infrastructure/postcardV2PendingSync'
 import { postcardLocalDataChanged } from '@features/sync/store/postcardSync.actions'
 
 function* handleCartCalendarDatePickApplied(
@@ -30,14 +31,19 @@ function* handleCartCalendarDatePickApplied(
       card: { ...target.card, date: { ...date } },
     }
 
+    /**
+     * Сразу в Redux: упрощённый CardPie после Apply читает `postcard.date`.
+     * Запись в IDB и облако идёт следом и не должна мигать старой датой.
+     */
+    yield put(updateItem(next))
+
     try {
       yield call(postcardsAdapter.put, next)
+      yield call(flushPendingV2Sync)
     } catch (e) {
       console.error('cartCalendarDatePickApplied: persist failed', e)
     }
 
-    /** `updateItem` нормализует `cart`/`cartBlocked` по дате (см. `cartSlice`). */
-    yield put(updateItem(next))
     /** Бэйдж иконки `cart` правого сайдбара пересчитывается из IDB. */
     yield call(refreshRightSidebarBadgesFromPostcards)
     yield put(postcardLocalDataChanged())

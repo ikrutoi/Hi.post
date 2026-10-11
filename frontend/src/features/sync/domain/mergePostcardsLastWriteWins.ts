@@ -14,11 +14,17 @@ function updatedAt(row: PostcardHydrated): number {
 /** Last-write-wins by `updatedAt`. Equal timestamps keep remote.
  * A local row missing on the server was deleted elsewhere, unless its id is
  * still waiting to be uploaded (`retainLocalOnlyIds`).
+ *
+ * `localDirtyIds`: ids with an in-memory upsert body (this client edited them).
+ * When set, a stale IndexedDB row cannot beat a newer remote date just because
+ * something locally bumped `updatedAt` (photo URL refresh, file-id patch).
+ * Omit it to treat every local row as dirty (unit tests / cutover).
  */
 export function mergePostcardsLastWriteWins(
   localRows: PostcardHydrated[],
   remoteRows: PostcardHydrated[],
   retainLocalOnlyIds: ReadonlySet<string> = new Set(),
+  localDirtyIds?: ReadonlySet<string>,
 ): PostcardLwwMerge {
   const localById = new Map(localRows.map((row) => [row.id, row]))
   const remoteById = new Map(remoteRows.map((row) => [row.id, row]))
@@ -44,7 +50,9 @@ export function mergePostcardsLastWriteWins(
     }
 
     if (local && remote) {
-      if (updatedAt(local) > updatedAt(remote)) {
+      const localIsDirty =
+        localDirtyIds == null || (Boolean(local.id) && localDirtyIds.has(local.id))
+      if (localIsDirty && updatedAt(local) > updatedAt(remote)) {
         nextLocal.push(local)
         push.push(local)
       } else {

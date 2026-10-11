@@ -33,12 +33,11 @@ export function applyPostcardSeal(postcard: PostcardHydrated): PostcardHydrated 
   if (!postcardKeepsSeal(postcard.status)) {
     if (postcard.seal == null) return postcard
     const { seal: _removed, ...rest } = postcard
-    return { ...rest, updatedAt: Date.now() }
+    return rest
   }
   if (postcard.seal != null) return postcard
   return {
     ...postcard,
     seal: createPostcardSeal(),
-    updatedAt: Date.now(),
   }
 }

@@ -54,6 +54,23 @@ describe('mergePostcardsLastWriteWins', () => {
     expect(push).toEqual([])
   })
 
+  it('keeps remote when local updatedAt is newer but the row is not dirty', () => {
+    const local = stub({ id: 'a', updatedAt: 50, date: { year: 2026, month: 1, day: 1 } })
+    const remote = stub({
+      id: 'a',
+      updatedAt: 20,
+      date: { year: 2026, month: 4, day: 12 },
+    })
+    const { nextLocal, push } = mergePostcardsLastWriteWins(
+      [local],
+      [remote],
+      new Set(),
+      new Set(),
+    )
+    expect(nextLocal[0]?.date).toEqual({ year: 2026, month: 4, day: 12 })
+    expect(push).toEqual([])
+  })
+
   it('keeps remote when updatedAt is equal', () => {
     const local = stub({ id: 'a', updatedAt: 10, status: 'cart' })
     const remote = stub({ id: 'a', updatedAt: 10, status: 'ready' })

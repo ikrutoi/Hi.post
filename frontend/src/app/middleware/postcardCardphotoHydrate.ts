@@ -3,6 +3,8 @@ import { postcardRefsFromCard, type PostcardHydrated } from '@entities/postcard'
 import type { ImageMeta } from '@cardphoto/domain/types'
 import { cardImageMetaLookupIdsFromCard } from '@entities/card/domain/helpers'
 import { loadCardphotoImageMetaFromIdb } from '@cardphoto/application/helpers/loadCardphotoImageMetaFromIdb'
+import { postcardsAdapter } from '@db/adapters/storeAdapters/postcardsAdapter'
+import { isPostcardPendingDelete } from '@features/sync/infrastructure/postcardV2PendingSync'
 import { hydrateSessionImageMeta, prepareForRedux } from './cardphotoHelpers'
 
 const isDeadBlobUrl = (u: string | null | undefined): boolean =>
@@ -76,6 +78,52 @@ async function refreshOnePostcard(p: PostcardHydrated): Promise<PostcardHydrated
     ...p,
     postcard: postcardRefsFromCard(nextCard),
     card: nextCard,
+  }
+}
+
+export async function readPostcardsForReduxHydrate(): Promise<{
+  raw: PostcardHydrated[]
+  display: PostcardHydrated[]
+}> {
+  await postcardsAdapter.purgePendingDeletes()
+  const raw = (await postcardsAdapter.getAll()).filter(
+    (row) => !isPostcardPendingDelete(row),
+  )
+  const display = await refreshPostcardsCardphotoUrls(raw)
+  return { raw, display }
+}
+
+/**
+ * Persist refreshed blob URLs only when IndexedDB has not already been
+ * replaced by a newer v2 pull (otherwise a stale hydrate snapshot overwrites
+ * the date that arrived from another device).
+ */
+export async function persistHydratePhotoRefreshIfIdbUnchanged(
+  raw: PostcardHydrated[],
+  display: PostcardHydrated[],
+  extraChanged?: (prev: PostcardHydrated, next: PostcardHydrated) => boolean,
+): Promise<void> {
+  for (let i = 0; i < display.length; i++) {
+    const next = display[i]
+    const prev = raw[i]
+    if (!prev || !next || prev.id !== next.id) continue
+    const extra = extraChanged?.(prev, next) ?? false
+    if (!postcardCardphotoNeedsPersist(prev, next) && !extra) continue
+    if (next.id) {
+      const current = await postcardsAdapter.getById(next.id)
+      // A pull may have replaced this row while photo URLs were refreshing.
+      // Writing the snapshot back would restore the previous device's date.
+      if (
+        current &&
+        ((current.updatedAt ?? 0) !== (prev.updatedAt ?? 0) ||
+          current.date?.year !== prev.date?.year ||
+          current.date?.month !== prev.date?.month ||
+          current.date?.day !== prev.date?.day)
+      ) {
+        continue
+      }
+    }
+    await postcardsAdapter.putLocal(next)
   }
 }
 

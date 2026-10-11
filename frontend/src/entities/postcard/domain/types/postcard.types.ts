@@ -166,6 +166,17 @@ export interface PostcardsDaySummary {
   count: number
 }
 
+function coerceMillis(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isFinite(value) && value >= 0) {
+    return value
+  }
+  if (typeof value === 'string' && /^\d+$/.test(value.trim())) {
+    const n = Number(value)
+    return Number.isFinite(n) ? n : null
+  }
+  return null
+}
+
 function coercePostcardBodyId(
   row: Postcard & Record<string, unknown>,
   cardBase: Card,
@@ -241,13 +252,13 @@ export function normalizePostcardRecord(raw: unknown): PostcardHydrated {
 
   const now = Date.now()
   const createdAt =
-    typeof row.createdAt === 'number'
-      ? row.createdAt
-      : (legacyMeta?.createdAt ?? now)
+    coerceMillis(row.createdAt) ??
+    coerceMillis(legacyMeta?.createdAt) ??
+    now
   const updatedAt =
-    typeof row.updatedAt === 'number'
-      ? row.updatedAt
-      : (legacyMeta?.updatedAt ?? createdAt)
+    coerceMillis(row.updatedAt) ??
+    coerceMillis(legacyMeta?.updatedAt) ??
+    createdAt
 
   const price = String(row.price ?? legacyMeta?.price ?? '')
 
@@ -281,7 +292,7 @@ export function normalizePostcardRecord(raw: unknown): PostcardHydrated {
     createdAt,
     updatedAt,
     postcard,
-    card,
+    card: { ...card, date },
     ...(seal ? { seal } : {}),
   }
   return next

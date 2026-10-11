@@ -57,7 +57,6 @@ async function collectLocalImageIds(): Promise<string[]> {
 
 async function patchPostcardsWithRemoteFileIds(): Promise<void> {
   const postcards = await postcardsAdapter.getAll()
-  const now = Date.now()
 
   for (const postcard of postcards) {
     const applied = asImageMeta(postcard.card?.cardphoto?.appliedData)
@@ -71,7 +70,6 @@ async function patchPostcardsWithRemoteFileIds(): Promise<void> {
 
     const next: PostcardHydrated = {
       ...postcard,
-      updatedAt: Math.max(postcard.updatedAt ?? 0, now),
       card: {
         ...postcard.card,
         cardphoto: {

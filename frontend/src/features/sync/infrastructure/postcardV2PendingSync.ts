@@ -198,6 +198,21 @@ export function isPostcardPendingUpsert(id: string): boolean {
   return pendingPostcards.get(id)?.type === 'upsert'
 }
 
+export function pendingPostcardUpsertIdsWithBody(): Set<string> {
+  const ids = new Set<string>()
+  for (const [id, op] of pendingPostcards) {
+    if (op.type === 'upsert' && op.postcard != null) ids.add(id)
+  }
+  return ids
+}
+
+export function discardPendingPostcardUpsert(id: string): void {
+  const op = pendingPostcards.get(id)
+  if (op?.type !== 'upsert') return
+  pendingPostcards.delete(id)
+  persistPendingUpsertIds()
+}
+
 export function discardPendingV2Sync(): void {
   flushEpoch += 1
   if (flushTimer != null) {
