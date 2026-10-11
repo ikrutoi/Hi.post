@@ -23,6 +23,7 @@ import {
   selectCartListStatusSegment,
   selectHasBlockedCartPostcards,
 } from '@cart/infrastructure/selectors'
+import { setArchiveEditRetainsStrip } from '@cardPanel/infrastructure/state'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import {
@@ -33,6 +34,7 @@ import {
 } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 import { isCartOwnedNotebookStrip, resolveCentralPieEarsMode } from '@date/calendar/application/logic/calendarStripSection'
 import {
+  endCartCalendarDatePick,
   setCardPieListPanelOpen,
   setHistoryListPanelOpen,
   setNotebookStripDateOverCart,
@@ -890,6 +892,12 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         activePieSide === 'right'
       ) {
         onBeforeLeftPieInteraction()
+        /**
+         * Пока `archiveEditRetainsStrip` держит cart/history, sync полосы
+         * сразу возвращает её назад и клик по мини-паю ничего не меняет.
+         */
+        dispatch(setArchiveEditRetainsStrip(null))
+        dispatch(endCartCalendarDatePick())
 
         if (selectIsCardPieListPanelOpen(state)) {
           dispatch(setCardPieListPanelOpen(false))
@@ -917,13 +925,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         }
       }
 
-      const fromCartOrHistory =
-        exitingListArchiveSlot || exitingHeaderCartHistoryStrip
-      if (fromCartOrHistory && factoryPostcardCount > 1) {
-        selectPlanPie(null)
-        return
-      }
-
       selectPlanPie(id)
 
       if (pie.dispatchDate != null) {
@@ -937,7 +938,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     },
     [
       dispatch,
-      factoryPostcardCount,
       planPies,
       selectPlanPie,
       activePieSide,

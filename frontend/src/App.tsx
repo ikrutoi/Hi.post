@@ -1346,12 +1346,21 @@ const App = () => {
     setRightPieEnvelopePeekNoToolbar(false)
     setRightPieAromaPeekNoToolbar(false)
     setRightPieDatePeekNoToolbar(false)
+    if (cardPieEditEngagedRef.current) {
+      endCardPieEditEngaged()
+    } else if (activePieSide === 'right') {
+      releaseAssemblySessionLease()
+    }
     if (activePieSide === 'right') {
       setSuppressCardPieEditActiveAfterCopy(true)
-      releaseAssemblySessionLease()
       setActivePieSide('left')
     }
-  }, [activePieSide, exitRightPreviewForLeftMode, releaseAssemblySessionLease])
+  }, [
+    activePieSide,
+    endCardPieEditEngaged,
+    exitRightPreviewForLeftMode,
+    releaseAssemblySessionLease,
+  ])
 
   /** Close в верхнем тулбаре корзины/истории: сборка, без архивного peek. */
   const requestExitArchiveMode = useCallback(() => {
