@@ -11,13 +11,27 @@ const ASSEMBLY_ID = 'current'
 const SESSION_ID = 'current_session'
 
 let suppressAssemblyCloudPush = 0
+/** Session was saved while a pull was writing it back. Push that edit after. */
+let assemblyEditedDuringSuppress = false
 
 export function beginAssemblyCloudPushSuppression(): void {
   suppressAssemblyCloudPush += 1
 }
 
-export function endAssemblyCloudPushSuppression(): void {
+export function isAssemblyCloudPushSuppressed(): boolean {
+  return suppressAssemblyCloudPush > 0
+}
+
+export function noteAssemblyEditedDuringSuppression(): void {
+  if (suppressAssemblyCloudPush > 0) assemblyEditedDuringSuppress = true
+}
+
+/** Returns true when this device edited assembly during the suppress window. */
+export function endAssemblyCloudPushSuppression(): boolean {
   suppressAssemblyCloudPush = Math.max(0, suppressAssemblyCloudPush - 1)
+  if (suppressAssemblyCloudPush > 0 || !assemblyEditedDuringSuppress) return false
+  assemblyEditedDuringSuppress = false
+  return true
 }
 
 function jsonReplacer(key: string, value: unknown): unknown {
@@ -60,15 +74,17 @@ export async function pullAssemblySessionIntoIdb(): Promise<boolean> {
     const next = sessionFromRemote(remote)
     if (next == null) return false
     const local = await storeAdapters.session.getById(SESSION_ID)
-    const localDirty = hasPendingLibraryUpsert('assembly', ASSEMBLY_ID)
-    if (
-      localDirty &&
-      local != null &&
-      local.timestamp > next.timestamp
-    ) {
+    const localTs = local?.timestamp ?? 0
+    /**
+     * Only a newer save from another device replaces this browser.
+     * An older server copy must not snap an open editor back to applied.
+     */
+    if (localTs >= next.timestamp) {
+      if (localTs > next.timestamp && local != null && !hasPendingLibraryUpsert('assembly', ASSEMBLY_ID)) {
+        pushAssemblySession(local)
+      }
       return false
     }
-    if ((local?.timestamp ?? 0) === next.timestamp) return false
     await storeAdapters.session.put(next)
     return true
   } catch {

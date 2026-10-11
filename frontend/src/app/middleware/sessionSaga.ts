@@ -7,6 +7,8 @@ import { isHttpAuthMode } from '@shared/config/authMode'
 import {
   beginAssemblyCloudPushSuppression,
   endAssemblyCloudPushSuppression,
+  isAssemblyCloudPushSuppressed,
+  noteAssemblyEditedDuringSuppression,
   pullAssemblySessionIntoIdb,
   pushAssemblySession,
 } from '@features/sync/application/services/assemblySessionSync'
@@ -265,6 +267,15 @@ export function* persistGlobalSession() {
     cartListCheckedLocalIds,
     cartListStatusSegment,
     timestamp: Date.now(),
+  }
+
+  if (isAssemblyCloudPushSuppressed()) {
+    noteAssemblyEditedDuringSuppression()
+    const existing: SessionData | null = yield call(
+      [storeAdapters.session, 'getById'],
+      'current_session',
+    )
+    if (existing?.timestamp) sessionData.timestamp = existing.timestamp
   }
 
   yield call([storeAdapters.session, 'put'], sessionData)
@@ -1095,7 +1106,19 @@ function* rehydrateAssemblySessionSaga() {
     yield call(hydrateAppSession, { preserveNavigation: true })
   } finally {
     yield delay(1200)
-    endAssemblyCloudPushSuppression()
+    const pushLocalEdit = endAssemblyCloudPushSuppression()
+    if (pushLocalEdit) {
+      const session: SessionData | null = yield call(
+        [storeAdapters.session, 'getById'],
+        'current_session',
+      )
+      if (session) {
+        const next: SessionData = { ...session, timestamp: Date.now() }
+        yield call([storeAdapters.session, 'put'], next)
+        pushAssemblySession(next)
+        yield call(flushPendingV2Sync)
+      }
+    }
   }
 }
 
