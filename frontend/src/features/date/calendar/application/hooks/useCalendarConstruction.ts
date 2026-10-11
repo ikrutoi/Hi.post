@@ -71,13 +71,16 @@ export const useCalendarConstruction = ({
       cartListSelectedLocalId != null) ||
     (isHistoryCalendarStrip(activeSection, computedNotebookStripTab) &&
       historyListSelectedLocalId != null)
-  /** Рамка даты archive CardPie — правый режим или полоса корзины/истории с выбранной открыткой. */
+  /**
+   * Левая полоска дня — только applied-календарь корзины/истории.
+   * В правке даты (`cartdate`) выбранный день без list-accent.
+   */
   const rightArchiveCardPieHighlightDate =
-    activePieSide === 'right' || hasArchiveStripSelection
-      ? notebookStripTab === 'cartdate' && cartDatePickDraftDate != null
-        ? cartDatePickDraftDate
-        : rightArchiveCardPieHighlightFromList
-      : null
+    notebookStripTab === 'cartdate'
+      ? null
+      : activePieSide === 'right' || hasArchiveStripSelection
+        ? rightArchiveCardPieHighlightFromList
+        : null
   const cardsMap = useAppSelector(selectCardsByDateMap)
   const draftDispatchDates = useAppSelector(selectDraftDispatchDates)
   /** `cartdate`: подсветка черновика до Apply; иначе assembly draft. */

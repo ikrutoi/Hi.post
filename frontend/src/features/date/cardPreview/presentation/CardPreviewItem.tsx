@@ -122,7 +122,8 @@ export const CardPreviewItem: React.FC<
             />
           ))}
         </div>
-      ) : isHistory && !isProcessed ? (
+      ) : calendarStatusIndicators != null ? null : isHistory &&
+        !isProcessed ? (
         <span
           className={clsx(styles.previewIndicator, styles[status])}
           aria-hidden

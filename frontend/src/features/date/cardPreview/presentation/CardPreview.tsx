@@ -301,13 +301,23 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
     !primaryItemForDisplay &&
     !showEmptySessionPlaceholder
 
-  const calendarStatusIndicators = isHistory
-    ? historyCalendarDayStatusIndicators(data)
-    : isCartCalendar
-      ? cartCalendarDayStatusIndicators(cartForPreview)
-      : preferArchiveCartPreviewOnDateStrip && selectedCartThumbnailOnDay != null
-        ? cartCalendarDayStatusIndicators([selectedCartThumbnailOnDay])
-        : []
+  /**
+   * Правка даты корзины/истории: без статус-точек на превью.
+   * Пустой массив обязателен — `undefined` включает fallback в CardPreviewItem.
+   */
+  const hidePostcardStatusIndicators =
+    isCartdateStrip ||
+    (cardPieEditEngaged && (isHistory || isCartCalendar))
+  const calendarStatusIndicators = hidePostcardStatusIndicators
+    ? []
+    : isHistory
+      ? historyCalendarDayStatusIndicators(data)
+      : isCartCalendar
+        ? cartCalendarDayStatusIndicators(cartForPreview)
+        : preferArchiveCartPreviewOnDateStrip &&
+            selectedCartThumbnailOnDay != null
+          ? cartCalendarDayStatusIndicators([selectedCartThumbnailOnDay])
+          : []
 
   const activeCalendarIndicatorStatus =
     isActiveCardPiePostcard &&
@@ -367,11 +377,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
             isCartDateDisabledPreview={isCartCalendar && isDisabledDate}
             isAdjacentMonthEdge={isAdjacentMonthEdge}
             isActiveCardPiePostcard={isActiveCardPiePostcard}
-            calendarStatusIndicators={
-              calendarStatusIndicators.length > 0
-                ? calendarStatusIndicators
-                : undefined
-            }
+            calendarStatusIndicators={calendarStatusIndicators}
             activeCalendarIndicatorStatus={activeCalendarIndicatorStatus ?? undefined}
             onArchivePostcardClick={
               isMobileLayout && isHistoryLike && primaryItemForDisplay != null

@@ -196,7 +196,11 @@ export const buildMonthCells = ({
         cartDatePickWaveStrong={cartDatePickWaveStrong}
         cartDatePickWaveFading={cartDatePickWaveFading}
         dateStripEnabledDayBorder={dateStripEnabledDayBorder}
-        suppressDispatchSelectionStyle={cartCalendarStrip || dateCalendarStrip}
+        suppressDispatchSelectionStyle={
+          cartCalendarStrip ||
+          dateCalendarStrip ||
+          notebookStripTab === 'cartdate'
+        }
         rightArchiveCardPieDay={isRightArchiveCardPieDay}
       >
         {dayData && (

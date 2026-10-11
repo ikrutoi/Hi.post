@@ -27,7 +27,6 @@ import { useDateSwitcherController } from '@date/switcher/application/hooks/useD
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import toolbarStyles from '@toolbar/presentation/Toolbar.module.scss'
 import type { ToolbarConfig } from '@toolbar/domain/types'
-import { isCartOwnedNotebookStrip } from '@date/calendar/application/logic/calendarStripSection'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { useFlashEffect } from '@shared/hooks'
 import { getCurrentDate } from '@shared/utils/date'
@@ -171,9 +170,12 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
   const showModeListIcon =
     isMobileLayout &&
     (notebookStripTab === 'cart' || notebookStripTab === 'history')
+  /**
+   * Close только на applied-календаре корзины/истории.
+   * В правке даты (`cartdate`) справа только возврат к текущему месяцу.
+   */
   const showArchiveClose =
-    isCartOwnedNotebookStrip(notebookStripTab) ||
-    notebookStripTab === 'history'
+    notebookStripTab === 'cart' || notebookStripTab === 'history'
   const modeIcon = showModeListIcon ? (
       <button
         ref={modeListButtonRef}
