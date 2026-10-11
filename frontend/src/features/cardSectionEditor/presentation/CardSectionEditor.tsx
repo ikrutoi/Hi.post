@@ -166,7 +166,11 @@ export const CardSectionEditor: React.FC = () => {
       reserveToolbarBand={false}
       archiveSectionPeek={
         mobileArchiveSectionPeek ||
-        (archiveEditRetainsStrip && activeSection === 'cardphoto')
+        (archiveEditRetainsStrip &&
+          (activeSection === 'cardphoto' ||
+            activeSection === 'cardtext' ||
+            activeSection === 'aroma' ||
+            activeSection === 'envelope'))
       }
     >
       {activeSection === 'cardtext' && (

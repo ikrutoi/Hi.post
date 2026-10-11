@@ -2598,7 +2598,10 @@ const App = () => {
                     data-desktop-archive-section-peek={
                       archiveSectionPeek ||
                       (archiveEditRetainsStrip &&
-                        activeSection === 'cardphoto')
+                        (activeSection === 'cardphoto' ||
+                          activeSection === 'cardtext' ||
+                          activeSection === 'aroma' ||
+                          activeSection === 'envelope'))
                         ? 'true'
                         : undefined
                     }
