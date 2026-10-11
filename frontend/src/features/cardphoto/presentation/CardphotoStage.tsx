@@ -64,27 +64,17 @@ export const CardphotoStage = () => {
   )
   const stageRef = useRef<HTMLDivElement>(null)
 
-  /** Remount on identity / layout / source change — not listStatus (inLine↔outLine). */
-  const containerKey = `${activeImage?.id}_${sizeCard.orientation}_${activeImage?.source}`
-
-  /** После любого commit конфига — реальные px стейджа (RO не срабатывает, если размер DOM не изменился). */
-  useLayoutEffect(() => {
-    const el = stageRef.current
-    if (!el || !assetConfig) return
-    const next = measureStagePx(el)
-    setStagePx(next)
-    dispatch(setCardphotoImageStageRect(next))
-  }, [dispatch, assetConfig])
-
+  /**
+   * Мерим всегда смонтированный стейдж (и пустой тоже). Иначе первый шаблон
+   * садится в sizeCard, потом RO срабатывает на cropContainer — картинка,
+   * белый кадр, повторный fit.
+   */
   useLayoutEffect(() => {
     const el = stageRef.current
     if (!el) return
 
     const publish = () => {
       const next = measureStagePx(el)
-      // Не затираем rect при кратковременном нулевом размере: при `clearCurrentConfig`
-      // в saga `showCropUi` на один кадр false → пустой стейдж → иначе в Redux уходит
-      // null и fit идёт по глобальному sizeCard (картинка крупнее стейджа + зазор у бордера).
       if (next.width < 2 || next.height < 2) {
         return
       }
@@ -98,9 +88,8 @@ export const CardphotoStage = () => {
 
     return () => {
       ro.disconnect()
-      // Не сбрасываем rect: Strict Mode двойной mount обнулял бы rect → saga видела null → sizeCard.
     }
-  }, [dispatch])
+  }, [dispatch, assetConfig])
 
   const [tempCrop, setTempCrop] = useCropState(
     cropToolbarState,
@@ -118,7 +107,14 @@ export const CardphotoStage = () => {
   const alt = activeImage?.id
   const imageLayer = assetConfig?.image ?? null
 
-  const shouldShowImage = !!src && !!activeImage && !srcFailed
+  const configMatchesStage =
+    !!assetConfig &&
+    !!stagePx &&
+    Math.abs(assetConfig.card.width - stagePx.width) < 2 &&
+    Math.abs(assetConfig.card.height - stagePx.height) < 2
+
+  const shouldShowImage =
+    !!src && !!activeImage && !srcFailed && configMatchesStage
 
   useEffect(() => {
     setSrcFailed(false)
@@ -187,11 +183,9 @@ export const CardphotoStage = () => {
   const showStagePlaceholder = !!activeImage && !shouldShowImage
 
   return (
-    <div className={styles.cardphotoStage}>
+    <div ref={stageRef} className={styles.cardphotoStage}>
       {showCropUi ? (
         <div
-          key={containerKey}
-          ref={stageRef}
           className={styles.cropContainer}
           style={cropContainerStyle}
         >
@@ -199,7 +193,6 @@ export const CardphotoStage = () => {
             {shouldShowImage && imageLayer && src && (
               <>
                 <img
-                  key={src}
                   src={src}
                   alt={alt}
                   onLoad={() => {

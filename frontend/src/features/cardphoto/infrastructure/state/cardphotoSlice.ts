@@ -105,13 +105,14 @@ export const cardphotoSlice = createSlice({
         },
       }
 
+      const keptStageRect = state.state?.imageStageRect ?? null
       if (state.state) {
         state.state = {
           assetData: null,
           appliedData: null,
           userOriginalData: null,
           assetConfig: normalizedConfig,
-          imageStageRect: null,
+          imageStageRect: keptStageRect,
         }
       } else {
         state.state = {
@@ -119,7 +120,7 @@ export const cardphotoSlice = createSlice({
           appliedData: null,
           userOriginalData: null,
           assetConfig: normalizedConfig,
-          imageStageRect: null,
+          imageStageRect: keptStageRect,
         }
       }
       if (appliedData !== undefined) {
@@ -292,7 +293,6 @@ export const cardphotoSlice = createSlice({
         } = action.payload
         const applied = appliedData
 
-        state.state.imageStageRect = null
         state.state.appliedData = applied
         state.state.userOriginalData = userOriginalData
         state.isComplete = !!applied

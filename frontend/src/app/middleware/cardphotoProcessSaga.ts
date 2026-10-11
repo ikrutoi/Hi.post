@@ -359,6 +359,13 @@ function* onSelectInLineTemplateSaga(
     yield put(clearCardphotoViewReturnSnapshot())
     const serializable = prepareForRedux(hydrated)
     yield put(setProcessedImage(serializable))
+    yield put(
+      setAsset({
+        id: serializable.id,
+        url: serializable.url,
+        thumbUrl: serializable.thumbnail?.url || serializable.url,
+      }),
+    )
 
     yield call(rebuildConfigFromMeta, hydrated, false)
 
