@@ -50,6 +50,9 @@ export const CardSectionEditor: React.FC = () => {
     if (showMobileAddressListFactoryChrome) {
       return 'envelope'
     }
+    if (archiveEditRetainsStrip && activeSection === 'date') {
+      return 'date'
+    }
     if (cartListPanelOpen && !mobileDateListChromePeek) {
       return 'date-cart'
     }
@@ -83,6 +86,7 @@ export const CardSectionEditor: React.FC = () => {
     }
   }, [
     activeSection,
+    archiveEditRetainsStrip,
     notebookStripTab,
     mobileArchiveSectionPeek,
     mobileDateListChromePeek,
@@ -170,7 +174,8 @@ export const CardSectionEditor: React.FC = () => {
           (activeSection === 'cardphoto' ||
             activeSection === 'cardtext' ||
             activeSection === 'aroma' ||
-            activeSection === 'envelope'))
+            activeSection === 'envelope' ||
+            activeSection === 'date'))
       }
     >
       {activeSection === 'cardtext' && (

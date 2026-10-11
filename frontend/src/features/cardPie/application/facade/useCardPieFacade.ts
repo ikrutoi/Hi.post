@@ -52,6 +52,9 @@ function resolveArchiveEditSections(
   if (hydrateScope === 'section' && activeSection === 'cardphoto') {
     return { ...archiveSections, cardphoto: false }
   }
+  if (hydrateScope === 'section' && activeSection === 'date') {
+    return { ...archiveSections, date: false }
+  }
 
   /**
    * Корзина / заблокированные: сектор правки пустой, пока не нажат Apply.

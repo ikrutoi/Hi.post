@@ -32,6 +32,7 @@ import {
   selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
 import { cartCalendarDatePickApplied } from '@date/calendar/application/orchestration/notebookOrchestration.events'
+import { selectCartItems } from '@cart/infrastructure/selectors'
 import { releaseCartDatePickListEntryOwnership } from '@date/calendar/application/logic/cartDatePickListEntryOwnership'
 import { requestArchiveSectionPeek } from '@cardPanel/infrastructure/state'
 import { PostcardStatuses } from '@/entities/postcard/domain/types'
@@ -132,11 +133,18 @@ function* handleDateToolbarAction(
       const draft: ReturnType<typeof selectCartDatePickDraftDate> = yield select(
         selectCartDatePickDraftDate,
       )
-      if (localId == null || draft == null) return
+      const cartItems: ReturnType<typeof selectCartItems> =
+        yield select(selectCartItems)
+      const postcardDate =
+        localId == null
+          ? null
+          : (cartItems.find((p) => p.localId === localId)?.date ?? null)
+      const applyDate = draft ?? postcardDate
+      if (localId == null || applyDate == null) return
       yield put(
         cartCalendarDatePickApplied({
           localId,
-          date: draft,
+          date: applyDate,
         }),
       )
       /**

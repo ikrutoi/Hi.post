@@ -112,13 +112,9 @@ export const selectCartDatePickDraftDate = (
 export const selectCartDatePickSessionActive = (state: RootState): boolean =>
   state.calendar.cartDatePickSessionActive
 
-function sameDispatchDate(a: DispatchDate, b: DispatchDate): boolean {
-  return a.year === b.year && a.month === b.month && a.day === b.day
-}
-
 /**
- * `cartdate`: Apply доступен, когда черновик дня отличается от даты открытки.
- * Без Apply черновик не пишется в открытку / CardPie.
+ * `cartdate`: Apply доступен, пока в календаре есть выбранный день
+ * (черновик или дата открытки).
  */
 export const selectCanApplyCartdatePick = createSelector(
   [
@@ -129,12 +125,12 @@ export const selectCanApplyCartdatePick = createSelector(
     selectCartItems,
   ],
   (tab, mode, localId, draft, items): boolean => {
-    if (tab !== 'cartdate' || !mode || localId == null || draft == null) {
+    if (tab !== 'cartdate' || !mode || localId == null) {
       return false
     }
     const postcard = items.find((p) => p.localId === localId)
     if (postcard == null) return false
-    return !sameDispatchDate(postcard.date, draft)
+    return (draft ?? postcard.date) != null
   },
 )
 

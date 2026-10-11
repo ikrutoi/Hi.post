@@ -308,8 +308,8 @@ export const CardPie: React.FC<CardPieProps> = ({
   const hasSenderAppliedData =
     (cardData as { hasSenderAppliedData?: boolean } | undefined)
       ?.hasSenderAppliedData ?? false
-  const date = cardData?.date ?? null
-  const mergedFromEditor = cardData?.dates
+  const date = sections.date ? (cardData?.date ?? null) : null
+  const mergedFromEditor = sections.date ? cardData?.dates : undefined
   const dates: DispatchDate[] =
     Array.isArray(mergedFromEditor) && mergedFromEditor.length > 0
       ? mergedFromEditor

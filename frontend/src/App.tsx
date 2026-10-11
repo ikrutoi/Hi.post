@@ -147,6 +147,7 @@ import {
   openDayPanel,
   beginCartCalendarDatePick,
   endCartCalendarDatePick,
+  setCartDatePickDraftDate,
   setCartCalendarDatePickMode,
   setCartCalendarDatePickLocalId,
   setHistoryListPanelOpen,
@@ -1912,6 +1913,12 @@ const App = () => {
       cartDatePickOwnedByCardPieEditRef.current = true
       dispatch(setCartCalendarDatePickMode(true))
       dispatch(setCartCalendarDatePickLocalId(rightListArchiveLocalId))
+      if (enteringPick) {
+        const seedDate = primaryDispatchDateFromPieInner(listRowInner)
+        if (seedDate != null) {
+          dispatch(setCartDatePickDraftDate(seedDate))
+        }
+      }
       /**
        * cartBlocked / просроченный cart: календарь с нуля — сегодня + lead,
        * без черновика дат из сборки.
@@ -1924,7 +1931,6 @@ const App = () => {
             rightArchivePiePostcardStatus,
           ))
       ) {
-        dispatch(clearDate())
         if (notebookStripTab !== 'cartdate') {
           dispatch(setNotebookStripTab('cartdate'))
         }
@@ -2098,15 +2104,17 @@ const App = () => {
         cartDatePickOwnedByListEntryRef.current = false
         /**
          * Режим `cartdate`: chrome как date, контекст корзины.
-         * Ветка `cartBlocked` — календарь с нуля + clearDate;
-         * ветка `cart` — месяц открытки (calendarView выше).
+         * Дату сборки не чистим — левые мини-паи держат freeze/applied.
+         * Календарь подсвечивает cartDatePickDraft, не assembly dates.
          */
-        dispatch(clearDate())
         dispatch(setNotebookStripTab('cartdate'))
         dispatch(setNotebookStripDateOverCart(false))
         if (lid != null) {
           cartDatePickOwnedByCardPieEditRef.current = true
           dispatch(beginCartCalendarDatePick({ localId: lid }))
+          if (sectionViewDate != null) {
+            dispatch(setCartDatePickDraftDate(sectionViewDate))
+          }
           applyRightListArchiveToolbarVisuals(
             dispatch,
             store.getState,
@@ -2601,12 +2609,14 @@ const App = () => {
                         (activeSection === 'cardphoto' ||
                           activeSection === 'cardtext' ||
                           activeSection === 'aroma' ||
-                          activeSection === 'envelope'))
+                          activeSection === 'envelope' ||
+                          activeSection === 'date'))
                         ? 'true'
                         : undefined
                     }
                     data-desktop-factory-surface={
-                      archiveSectionPeek
+                      archiveSectionPeek ||
+                      (archiveEditRetainsStrip && activeSection === 'date')
                         ? activeSection === 'date'
                           ? 'date'
                           : (activeSection ?? 'neutral')
