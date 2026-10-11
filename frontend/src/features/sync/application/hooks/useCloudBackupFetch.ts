@@ -5,7 +5,11 @@ import { isHttpAuthMode } from '@shared/config/authMode'
 import { incrementAddressBookReloadVersion } from '@features/previewStrip/infrastructure/state'
 import { pullV2PostcardsIntoIdb } from '../services/pullV2PostcardsIntoIdb'
 import { pullV2LibraryIntoIdb } from '../services/pullV2LibraryIntoIdb'
-import { rehydratePostcardsFromIdb } from '../../store/postcardSync.actions'
+import { pullAssemblySessionIntoIdb } from '../services/assemblySessionSync'
+import {
+  rehydrateAssemblySession,
+  rehydratePostcardsFromIdb,
+} from '../../store/postcardSync.actions'
 
 /** How often a visible tab asks the server for other-device edits. */
 const PULL_INTERVAL_MS = 5_000
@@ -32,12 +36,20 @@ export const useCloudBackupFetch = () => {
       inFlightRef.current = true
       lastPullAtRef.current = now
       try {
-        await pullV2PostcardsIntoIdb()
-        await pullV2LibraryIntoIdb()
+        try {
+          await pullV2PostcardsIntoIdb()
+        } catch {
+          // Keep the cart already on screen.
+        }
+        try {
+          await pullV2LibraryIntoIdb()
+        } catch {
+          // Templates stay as they were.
+        }
+        const assemblyChanged = await pullAssemblySessionIntoIdb()
         dispatch(rehydratePostcardsFromIdb())
+        if (assemblyChanged) dispatch(rehydrateAssemblySession())
         dispatch(incrementAddressBookReloadVersion())
-      } catch {
-        // IndexedDB / Redux stay as they were.
       } finally {
         inFlightRef.current = false
       }

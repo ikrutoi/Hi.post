@@ -7,3 +7,7 @@ export const rehydratePostcardsFromIdb = createAction(
 export const postcardLocalDataChanged = createAction(
   'postcardSync/postcardLocalDataChanged',
 )
+
+export const rehydrateAssemblySession = createAction(
+  'postcardSync/rehydrateAssemblySession',
+)

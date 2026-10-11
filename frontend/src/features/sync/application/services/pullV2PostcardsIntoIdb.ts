@@ -8,8 +8,8 @@ import {
   enqueuePostcardUpsert,
   flushPendingV2Sync,
   isPostcardPendingDelete,
-  isPostcardPendingUpsert,
   isPostcardSynced,
+  pendingPostcardUpsertIds,
   pendingPostcardUpsertIdsWithBody,
   rememberSyncedPostcardIds,
 } from '../../infrastructure/postcardV2PendingSync'
@@ -43,13 +43,23 @@ async function pullV2PostcardsIntoIdbOnce(): Promise<number> {
   rememberSyncedPostcardIds(
     remote.flatMap((row) => (row.id ? [row.id] : [])),
   )
+  const remoteIds = new Set(remote.flatMap((row) => (row.id ? [row.id] : [])))
+  const localById = new Map(local.flatMap((row) => (row.id ? [[row.id, row] as const] : [])))
+  for (const id of pendingPostcardUpsertIds()) {
+    if (pendingPostcardUpsertIdsWithBody().has(id)) continue
+    const row = localById.get(id)
+    if (row) enqueuePostcardUpsert(row)
+  }
   const localDirtyIds = pendingPostcardUpsertIdsWithBody()
+  /**
+   * A row only this browser has is a new postcard that never reached the
+   * server (or a save that failed while the API was down). A row the server
+   * used to return and no longer does was deleted on another device.
+   */
   const retainLocalOnlyIds = new Set(
     local.flatMap((row) => {
-      if (!row.id) return []
-      if (isPostcardPendingUpsert(row.id) || !isPostcardSynced(row.id)) {
-        return [row.id]
-      }
+      if (!row.id || remoteIds.has(row.id)) return []
+      if (localDirtyIds.has(row.id) || !isPostcardSynced(row.id)) return [row.id]
       return []
     }),
   )

@@ -1,4 +1,4 @@
-export const V2_LIBRARY_KINDS = ['addresses', 'cardtexts', 'cardphotos'] as const
+export const V2_LIBRARY_KINDS = ['addresses', 'cardtexts', 'cardphotos', 'assembly'] as const
 
 export type V2LibraryKind = (typeof V2_LIBRARY_KINDS)[number]
 

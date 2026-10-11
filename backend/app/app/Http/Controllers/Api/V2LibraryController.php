@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
  */
 class V2LibraryController extends Controller
 {
-    public const KINDS = ['addresses', 'cardtexts', 'cardphotos'];
+    public const KINDS = ['addresses', 'cardtexts', 'cardphotos', 'assembly'];
 
     public function index(Request $request, string $kind): JsonResponse
     {

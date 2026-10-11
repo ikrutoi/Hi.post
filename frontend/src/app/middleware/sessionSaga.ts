@@ -4,6 +4,14 @@ import { storeAdapters } from '@db/adapters/storeAdapters'
 import { readAuthSession } from '@features/auth/infrastructure/sessionStorage'
 import { pullV2PostcardsIntoIdb } from '@features/sync/application/services/pullV2PostcardsIntoIdb'
 import { isHttpAuthMode } from '@shared/config/authMode'
+import {
+  beginAssemblyCloudPushSuppression,
+  endAssemblyCloudPushSuppression,
+  pullAssemblySessionIntoIdb,
+  pushAssemblySession,
+} from '@features/sync/application/services/assemblySessionSync'
+import { rehydrateAssemblySession } from '@features/sync/store/postcardSync.actions'
+import { flushPendingV2Sync } from '@features/sync/infrastructure/postcardV2PendingSync'
 import { selectCardphotoSessionRecord } from '@cardphoto/infrastructure/selectors'
 import {
   commitWorkingConfig,
@@ -260,6 +268,8 @@ export function* persistGlobalSession() {
   }
 
   yield call([storeAdapters.session, 'put'], sessionData)
+  pushAssemblySession(sessionData)
+  yield call(flushPendingV2Sync)
 }
 
 const SESSION_WATCH_ACTIONS = [
@@ -634,11 +644,14 @@ function cartPostcardPreviewAssets(
   return assets
 }
 
-export function* hydrateAppSession() {
+export function* hydrateAppSession(options?: {
+  preserveNavigation?: boolean
+}) {
   try {
     if (isHttpAuthMode() && readAuthSession()?.token) {
       try {
         yield call(pullV2PostcardsIntoIdb)
+        yield call(pullAssemblySessionIntoIdb)
       } catch (e) {
         console.error('hydrateAppSession: postcard pull failed', e)
       }
@@ -1038,7 +1051,7 @@ export function* hydrateAppSession() {
       yield put(setSizeCard(session.sizeCard))
     }
 
-    if (session.activeSection) {
+    if (session.activeSection && !options?.preserveNavigation) {
       yield put(restoreEditorSession(session.activeSection))
       yield call(syncSectionMenuVisuals, session.activeSection)
 
@@ -1063,14 +1076,26 @@ export function* hydrateAppSession() {
      * Reload must match section-open: no applied → View + cardphoto toolbar.
      * Hydrate otherwise restores leftover original as create chrome.
      */
-    yield call(openCardphotoFromMiniStripSaga)
-    const sectionAfterHydrate: SectionEditorMenuKey | null = yield select(
-      selectActiveSection,
-    )
-    yield call(
-      openDesktopEditorSectionTemplateListSaga,
-      sectionAfterHydrate,
-    )
+    if (!options?.preserveNavigation) {
+      yield call(openCardphotoFromMiniStripSaga)
+      const sectionAfterHydrate: SectionEditorMenuKey | null = yield select(
+        selectActiveSection,
+      )
+      yield call(
+        openDesktopEditorSectionTemplateListSaga,
+        sectionAfterHydrate,
+      )
+    }
+  }
+}
+
+function* rehydrateAssemblySessionSaga() {
+  beginAssemblyCloudPushSuppression()
+  try {
+    yield call(hydrateAppSession, { preserveNavigation: true })
+  } finally {
+    yield delay(1200)
+    endAssemblyCloudPushSuppression()
   }
 }
 
@@ -1079,4 +1104,5 @@ export function* watchSessionChanges() {
     yield delay(900)
     yield call(persistGlobalSession)
   })
+  yield takeLatest(rehydrateAssemblySession.type, rehydrateAssemblySessionSaga)
 }

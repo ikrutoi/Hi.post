@@ -1,18 +1,11 @@
 import type { ImageMeta } from '@cardphoto/domain/types'
-import { recipientAdapter } from '@db/adapters/storeAdapters/recipientAdapter'
-import { cardtextAdapter } from '@db/adapters/storeAdapters/cardtextAdapter'
 import { postcardsAdapter } from '@db/adapters/storeAdapters/postcardsAdapter'
 import { storeAdapters } from '@db/adapters/storeAdapters/storeAdapters'
-import type { AddressTemplateItem } from '@entities/envelope/domain/types'
 import type { PostcardHydrated } from '@entities/postcard'
 import { readAuthSession } from '@features/auth/infrastructure/sessionStorage'
-import type { CardtextContent } from '@cardtext/domain/types'
 import { pushImageMetaToRemoteFiles } from '@features/files/application/pushImageMetaToRemoteFiles'
 import { isHttpAuthMode } from '@shared/config/authMode'
-import type { V2LibraryItem } from '../../domain/types/v2Library.types'
 import {
-  enqueueLibraryUpsert,
-  enqueuePostcardUpsert,
   flushPendingV2Sync,
   hasPendingV2Sync,
 } from '../../infrastructure/postcardV2PendingSync'
@@ -86,31 +79,6 @@ async function patchPostcardsWithRemoteFileIds(): Promise<void> {
   }
 }
 
-async function enqueueAllLocalRows(): Promise<void> {
-  for (const row of await postcardsAdapter.getAll()) {
-    enqueuePostcardUpsert(row)
-  }
-
-  const addresses = (await recipientAdapter.getAll()) as AddressTemplateItem[]
-  for (const row of addresses) {
-    if (!row.id) continue
-    enqueueLibraryUpsert('addresses', row as unknown as V2LibraryItem)
-  }
-
-  const texts = (await cardtextAdapter.getAll()) as CardtextContent[]
-  for (const row of texts) {
-    if (!row.id) continue
-    enqueueLibraryUpsert('cardtexts', row as unknown as V2LibraryItem)
-  }
-
-  const photos = (await storeAdapters.cardphotoImages.getAll()) as ImageMeta[]
-  for (const row of photos) {
-    if (!row.id) continue
-    if (row.status !== 'inLine' && row.status !== 'outLine') continue
-    enqueueLibraryUpsert('cardphotos', row as unknown as V2LibraryItem)
-  }
-}
-
 /** Upload IDB blobs missing `remoteFileId` and stamp postcards before LWW pull. */
 export async function pushLocalIdbFilesToV2(): Promise<void> {
   if (!isHttpAuthMode() || !readAuthSession()?.token) return
@@ -126,10 +94,7 @@ export async function pushLocalIdbFilesToV2(): Promise<void> {
   await patchPostcardsWithRemoteFileIds()
 }
 
-/**
- * First http login per user: push the whole IndexedDB cache to /v2.
- * Later sessions only flush whatever LWW already queued.
- */
+/** Send edits that were queued locally. Do not upload the whole browser cache over the shared cart. */
 export async function flushLocalIdbToV2AfterPull(): Promise<void> {
   if (!isHttpAuthMode()) return
   const session = readAuthSession()
@@ -139,10 +104,6 @@ export async function flushLocalIdbToV2AfterPull(): Promise<void> {
   const flagKey = cutoverFlagKey(userId)
   const alreadyCutOver =
     typeof localStorage !== 'undefined' && localStorage.getItem(flagKey) === '1'
-
-  if (!alreadyCutOver) {
-    await enqueueAllLocalRows()
-  }
 
   await flushPendingV2Sync()
 

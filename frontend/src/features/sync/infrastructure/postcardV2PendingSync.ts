@@ -198,6 +198,14 @@ export function isPostcardPendingUpsert(id: string): boolean {
   return pendingPostcards.get(id)?.type === 'upsert'
 }
 
+export function pendingPostcardUpsertIds(): Set<string> {
+  const ids = new Set<string>()
+  for (const [id, op] of pendingPostcards) {
+    if (op.type === 'upsert') ids.add(id)
+  }
+  return ids
+}
+
 export function pendingPostcardUpsertIdsWithBody(): Set<string> {
   const ids = new Set<string>()
   for (const [id, op] of pendingPostcards) {
@@ -275,6 +283,10 @@ function isNotFound(error: unknown): boolean {
   )
 }
 
+export function hasPendingLibraryUpsert(kind: V2LibraryKind, id: string): boolean {
+  return pendingLibrary.get(libraryKey(kind, id))?.type === 'upsert'
+}
+
 export function enqueueLibraryUpsert(
   kind: V2LibraryKind,
   item: V2LibraryItem,
@@ -307,6 +319,7 @@ export async function flushPendingV2Sync(): Promise<void> {
   const libraryBatch = [...pendingLibrary.entries()]
   pendingPostcards.clear()
   pendingLibrary.clear()
+  let retryPostcard = false
 
   for (const [id, op] of postcardBatch) {
     if (epoch !== flushEpoch) return
@@ -324,10 +337,12 @@ export async function flushPendingV2Sync(): Promise<void> {
     } catch (error) {
       if (op.type === 'delete' && isNotFound(error)) continue
       if (!pendingPostcards.has(id)) pendingPostcards.set(id, op)
+      retryPostcard = true
     }
   }
   persistDeleteTombstones()
   persistPendingUpsertIds()
+  if (retryPostcard) schedulePendingV2Flush()
 
   for (const [key, op] of libraryBatch) {
     try {
