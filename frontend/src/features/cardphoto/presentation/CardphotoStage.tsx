@@ -193,6 +193,7 @@ export const CardphotoStage = () => {
             {shouldShowImage && imageLayer && src && (
               <>
                 <img
+                  key={src}
                   src={src}
                   alt={alt}
                   onLoad={() => {
@@ -201,7 +202,10 @@ export const CardphotoStage = () => {
                   onError={() => {
                     setSrcFailed(true)
                   }}
-                  className={clsx(styles.cropImage, styles.fadeInVisible)}
+                  className={clsx(
+                    styles.cropImage,
+                    imageReady ? styles.fadeInVisible : styles.fadeIn,
+                  )}
                   style={imageStyle}
                 />
               </>

@@ -214,11 +214,15 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
 
     const state: CardphotoState = yield select(selectCardphotoState)
     const isComplete = !!state.appliedData
-    const config: WorkingConfig = yield call(
-      rebuildConfigFromMeta,
+    /**
+     * Fit without writing Redux. `commitWorkingConfig` ahead of the new
+     * asset paints the View picture in the new image's box.
+     */
+    const config: WorkingConfig | null = yield call(
+      buildWorkingConfigFromMeta,
       imageMeta,
-      true,
     )
+    if (!config) return
 
     const serializableMeta = prepareForRedux(imageMeta)
     const serializableConfig = prepareConfigForRedux(config)
@@ -231,6 +235,11 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
         userOriginalData: serializableMeta,
       }),
     )
+    yield call(
+      persistUserOriginalRotationToIdbSaga,
+      serializableMeta.rotation ?? 0,
+    )
+    yield fork(persistGlobalSession)
   } catch (error) {
     console.error('Error in onUploadImageReadySaga:', error)
   } finally {
