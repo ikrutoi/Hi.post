@@ -213,7 +213,10 @@ export function useMobileFactoryListChrome() {
 
   const showArchivePeekEditToolbar =
     assemblySectionSimplifiedPeek ||
-    (mobileArchiveSectionPeek && archivePeekPostcardIsCart)
+    (mobileArchiveSectionPeek && archivePeekPostcardIsCart) ||
+    (rightPieDatePeekNoToolbar &&
+      (mirrorListArchiveSource === 'cart' ||
+        mirrorListArchiveSource === 'history'))
 
   const mobileSectionSimplifiedPeek =
     mobileArchiveSectionPeek || assemblySectionSimplifiedPeek

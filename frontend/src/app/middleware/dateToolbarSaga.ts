@@ -32,6 +32,10 @@ import {
   selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
 import { cartCalendarDatePickApplied } from '@date/calendar/application/orchestration/notebookOrchestration.events'
+import {
+  setCartListSelectedLocalId,
+  setCartListStatusSegment,
+} from '@cart/infrastructure/state'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { releaseCartDatePickListEntryOwnership } from '@date/calendar/application/logic/cartDatePickListEntryOwnership'
 import { requestArchiveSectionPeek } from '@cardPanel/infrastructure/state'
@@ -147,9 +151,17 @@ function* handleDateToolbarAction(
           date: applyDate,
         }),
       )
+      const itemsAfter: ReturnType<typeof selectCartItems> = yield select(
+        selectCartItems,
+      )
+      const updated = itemsAfter.find((p) => p.localId === localId)
+      if (updated?.status === 'cart' || updated?.status === 'cartBlocked') {
+        yield put(setCartListStatusSegment(updated.status))
+        yield put(setCartListSelectedLocalId(localId))
+      }
       /**
        * Дата записана на открытку. Выходим из правки календаря:
-       * сверху postcardEdit, Copy слева в нижнем ряду (если дата разрешена).
+       * сверху postcardEdit, Close справа, крупная дата вместо сетки.
        */
       releaseCartDatePickListEntryOwnership()
       yield put(endCartCalendarDatePick())
@@ -165,6 +177,9 @@ function* handleDateToolbarAction(
       retainedStrip === 'cartdate' ||
       retainedStrip === 'history'
     ) {
+      releaseCartDatePickListEntryOwnership()
+      yield put(endCartCalendarDatePick())
+      yield put(requestArchiveSectionPeek('date'))
       return
     }
     const canApply: boolean = yield select(selectCanApplyDispatchDates)

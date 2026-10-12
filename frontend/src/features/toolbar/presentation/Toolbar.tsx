@@ -136,7 +136,7 @@ export const Toolbar = ({
   const { onAction } = toolbarActions
   const dispatch = useAppDispatch()
   const store = useStore<RootState>()
-  const { cardPieEditEngaged, exitArchiveEditToSectionPeek } =
+  const { activePieSide, cardPieEditEngaged, exitArchiveEditToSectionPeek } =
     useRightListArchiveMini()
   const mobileAddressFocus = useEnvelopeMobileAddressFocus()
 
@@ -831,6 +831,19 @@ export const Toolbar = ({
                     ? 'aroma'
                     : 'cardtext',
               )
+            }
+            /**
+             * Дата корзины/истории: тот же выход в упрощённый вид
+             * (крупная дата, postcardEdit и Close), не календарь.
+             */
+            if (
+              actionIconKey === 'apply' &&
+              section === 'date' &&
+              activePieSide === 'right' &&
+              cardPieEditEngaged &&
+              exitArchiveEditToSectionPeek != null
+            ) {
+              exitArchiveEditToSectionPeek('date')
             }
           }
           e.currentTarget.blur()

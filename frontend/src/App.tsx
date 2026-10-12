@@ -1524,6 +1524,21 @@ const App = () => {
 
     prevListArchiveListContextRef.current = { localId, source }
 
+    /**
+     * Apply даты меняет сегмент списка и на кадр снимает localId.
+     * Не гасить упрощённый peek: иначе снова открывается календарь.
+     */
+    if (
+      archivePeekEnterSection === 'date' &&
+      archivePeekEnterTick !== 0 &&
+      handledArchivePeekEnterTickRef.current === archivePeekEnterTick &&
+      localId != null &&
+      !prevPostcardRemoved
+    ) {
+      setRightPieDatePeekNoToolbar(true)
+      return
+    }
+
     resetArchiveMirrorCopyToggle()
 
     /**
@@ -1554,6 +1569,8 @@ const App = () => {
       releaseAssemblySessionLease()
     }
   }, [
+    archivePeekEnterSection,
+    archivePeekEnterTick,
     cartItems,
     rightListArchiveLocalId,
     rightListArchiveSource,
@@ -1616,6 +1633,13 @@ const App = () => {
 
   useEffect(() => {
     if (rightListArchiveLocalId != null) return
+    if (
+      archivePeekEnterSection === 'date' &&
+      archivePeekEnterTick !== 0 &&
+      handledArchivePeekEnterTickRef.current === archivePeekEnterTick
+    ) {
+      return
+    }
     setRightPieCardphotoPeekNoToolbar(false)
     setRightPieCardtextPeekNoToolbar(false)
     setRightPieEnvelopePeekNoToolbar(false)
@@ -1630,6 +1654,8 @@ const App = () => {
     setCardPieEditHydrateScope('all')
     setSuppressCardPieEditActiveAfterCopy(true)
   }, [
+    archivePeekEnterSection,
+    archivePeekEnterTick,
     rightListArchiveLocalId,
     dispatch,
     endCardPieEditEngaged,
@@ -1677,15 +1703,24 @@ const App = () => {
       } else {
         dispatch(setArchiveEditRetainsStrip('cart'))
         dispatch(setNotebookStripTab('cart'))
-        dispatch(setCartListStatusSegment('cart'))
-        if (
-          rightListArchiveLocalId != null &&
-          selectCartItems(store.getState()).some(
-            (p) =>
-              p.localId === rightListArchiveLocalId && p.status === 'cart',
-          )
-        ) {
+        const appliedPostcard =
+          rightListArchiveLocalId == null
+            ? undefined
+            : selectCartItems(store.getState()).find(
+                (p) => p.localId === rightListArchiveLocalId,
+              )
+        /**
+         * Дата осталась просроченной: не переключать сегмент на активную
+         * корзину — иначе строка теряется и в центре пустой пай + календарь.
+         */
+        if (appliedPostcard?.status === 'cartBlocked') {
+          dispatch(setCartListStatusSegment('cartBlocked'))
           dispatch(setCartListSelectedLocalId(rightListArchiveLocalId))
+        } else {
+          dispatch(setCartListStatusSegment('cart'))
+          if (appliedPostcard?.status === 'cart') {
+            dispatch(setCartListSelectedLocalId(rightListArchiveLocalId))
+          }
         }
         dispatch(setCartListPanelOpen(true))
       }

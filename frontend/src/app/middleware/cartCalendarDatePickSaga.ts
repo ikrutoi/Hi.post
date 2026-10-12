@@ -50,14 +50,14 @@ function* handleCartCalendarDatePickApplied(
   }
 
   /**
-   * Актуальная дата → сегмент «Корзина» и выбор этой строки.
-   * Режим pick не выключаем: при cardPieEdit / dateEdit можно сразу
-   * выбрать другую дату. Сброс — при выходе из edit.
+   * Актуальная дата → сегмент «Корзина»; просроченная остаётся в
+   * «Заблокированных». Строку не теряем. Режим pick не выключаем здесь:
+   * сброс — при выходе из edit.
    */
   const itemsAfter: PostcardHydrated[] = yield select(selectCartItems)
   const updated = itemsAfter.find((p) => p.localId === localId)
-  if (updated?.status === 'cart') {
-    yield put(setCartListStatusSegment('cart'))
+  if (updated?.status === 'cart' || updated?.status === 'cartBlocked') {
+    yield put(setCartListStatusSegment(updated.status))
     yield put(setCartListSelectedLocalId(localId))
   }
 }

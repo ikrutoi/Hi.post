@@ -176,12 +176,10 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   const { legendStatusCounts: cartLegendStatusCounts, cartUnderlyingPostcardCount } =
     useMemo(() => computeCartLegendStatusCounts(cartItems), [cartItems])
   /**
-   * Cart/history archive: CardPie date sector → date peek (not day grid).
-   * Full calendar — центральная кнопка CardPie.
+   * Cart/history archive: после Apply и по сектору CardPie — упрощённая дата,
+   * не сетка календаря. Календарь снова открывает центральная кнопка CardPie.
    */
-  const showArchiveListDatePeek =
-    rightPieDatePeekNoToolbar &&
-    (section === 'cart' || section === 'history' || section === 'cartdate')
+  const showArchiveListDatePeek = rightPieDatePeekNoToolbar
 
   const showMobileSliderToolbar =
     isMobileLayout &&
