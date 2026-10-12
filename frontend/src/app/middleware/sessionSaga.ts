@@ -44,7 +44,6 @@ import {
   setSenderAppliedData,
 } from '@envelope/infrastructure/state'
 import { selectSizeCard } from '@layout/infrastructure/selectors'
-import { setSizeCard } from '@layout/infrastructure/state'
 import {
   restoreRecipient,
   setRecipientView,
@@ -667,16 +666,10 @@ function cartPostcardPreviewAssets(
 
 export function* hydrateAppSession(options?: {
   preserveNavigation?: boolean
+  /** Caller already pulled. Skip the trailing cloud refresh. */
+  cloudPullDone?: boolean
 }) {
   try {
-    if (isHttpAuthMode() && readAuthSession()?.token) {
-      try {
-        yield call(pullV2PostcardsIntoIdb)
-        yield call(pullAssemblySessionIntoIdb)
-      } catch (e) {
-        console.error('hydrateAppSession: postcard pull failed', e)
-      }
-    }
     const first: {
       raw: PostcardHydrated[]
       display: PostcardHydrated[]
@@ -1064,14 +1057,6 @@ export function* hydrateAppSession(options?: {
       )
     }
 
-    if (
-      session.sizeCard &&
-      session.sizeCard.width > 0 &&
-      session.sizeCard.height > 0
-    ) {
-      yield put(setSizeCard(session.sizeCard))
-    }
-
     if (session.activeSection && !options?.preserveNavigation) {
       yield put(restoreEditorSession(session.activeSection))
       yield call(syncSectionMenuVisuals, session.activeSection)
@@ -1108,12 +1093,33 @@ export function* hydrateAppSession(options?: {
       )
     }
   }
+
+  /**
+   * Paint IndexedDB first. A slow or stuck /v2 pull must not leave the
+   * center section blank and the cart empty until the response arrives.
+   */
+  if (options?.cloudPullDone) return
+  if (!isHttpAuthMode() || !readAuthSession()?.token) return
+  try {
+    yield call(pullV2PostcardsIntoIdb)
+    yield call(pullAssemblySessionIntoIdb)
+  } catch (e) {
+    console.error('hydrateAppSession: postcard pull failed', e)
+    return
+  }
+  yield call(hydrateAppSession, {
+    preserveNavigation: true,
+    cloudPullDone: true,
+  })
 }
 
 function* rehydrateAssemblySessionSaga() {
   beginAssemblyCloudPushSuppression()
   try {
-    yield call(hydrateAppSession, { preserveNavigation: true })
+    yield call(hydrateAppSession, {
+      preserveNavigation: true,
+      cloudPullDone: true,
+    })
   } finally {
     yield delay(1200)
     const pushLocalEdit = endAssemblyCloudPushSuppression()
