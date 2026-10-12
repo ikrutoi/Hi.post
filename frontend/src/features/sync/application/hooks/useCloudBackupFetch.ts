@@ -11,26 +11,48 @@ import {
   rehydratePostcardsFromIdb,
 } from '../../store/postcardSync.actions'
 
-/** How often a visible tab asks the server for other-device edits. */
-const PULL_INTERVAL_MS = 5_000
+/**
+ * Idle poll while the screen stays open. Postcard edits are not a live chat:
+ * another device is picked up on focus, when this tab becomes visible, and
+ * on this slower tick. An open editor skips the pull entirely.
+ */
+const PULL_INTERVAL_MS = 30_000
 /** Ignore a second interval tick that lands during / right after a pull. */
 const MIN_PULL_GAP_MS = 4_000
 
 /**
  * Keep this client in sync with /v2 while the same account is open elsewhere.
- * Login still does a full pull; this loop covers focus, tab-visible, and idle poll.
+ * Login still does a full pull. This loop covers focus, tab-visible, and a
+ * 30s idle poll. An open editor is left alone until it closes.
  */
 export const useCloudBackupFetch = () => {
   const dispatch = useAppDispatch()
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
+  const editing = useAppSelector(
+    (state) => state.cardPanel.archiveFactoryEditActive === true,
+  )
   const inFlightRef = useRef(false)
   const lastPullAtRef = useRef(0)
+  const editingRef = useRef(editing)
+  const wasEditingRef = useRef(editing)
+  const pullRef = useRef<((ignoreGap?: boolean) => Promise<void>) | null>(
+    null,
+  )
+  editingRef.current = editing
+
+  useEffect(() => {
+    if (!isHttpAuthMode() || !isAuthenticated) return
+    if (wasEditingRef.current && !editing) {
+      void pullRef.current?.(true)
+    }
+    wasEditingRef.current = editing
+  }, [editing, isAuthenticated])
 
   useEffect(() => {
     if (!isHttpAuthMode() || !isAuthenticated) return
 
     const pull = async (ignoreGap = false) => {
-      if (inFlightRef.current) return
+      if (editingRef.current || inFlightRef.current) return
       const now = Date.now()
       if (!ignoreGap && now - lastPullAtRef.current < MIN_PULL_GAP_MS) return
       inFlightRef.current = true
@@ -46,7 +68,9 @@ export const useCloudBackupFetch = () => {
         } catch {
           // Templates stay as they were.
         }
+        if (editingRef.current) return
         const assemblyChanged = await pullAssemblySessionIntoIdb()
+        if (editingRef.current) return
         dispatch(rehydratePostcardsFromIdb())
         if (assemblyChanged) dispatch(rehydrateAssemblySession())
         dispatch(incrementAddressBookReloadVersion())
@@ -54,6 +78,7 @@ export const useCloudBackupFetch = () => {
         inFlightRef.current = false
       }
     }
+    pullRef.current = pull
 
     void pull(true)
 
@@ -71,6 +96,7 @@ export const useCloudBackupFetch = () => {
     }, PULL_INTERVAL_MS)
 
     return () => {
+      pullRef.current = null
       document.removeEventListener('visibilitychange', onVisible)
       window.removeEventListener('focus', onFocus)
       window.clearInterval(intervalId)
