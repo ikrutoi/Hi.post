@@ -749,36 +749,19 @@ export const Toolbar = ({
         }
         aria-busy={showCardphotoAddSpinner ? true : undefined}
         onPointerDown={(e) => {
+          /**
+           * File picker must run from click. pointerdown + preventDefault
+           * drops the user gesture on mobile, so the gallery never opens.
+           */
+          if (key === 'cardphotoAdd') return
           /** Touch + open keyboard: act on pointerdown before viewport reflow steals the tap. */
           if (e.pointerType === 'mouse' && e.button !== 0) return
-          if (key === 'cardphotoAdd' && cardphotoAddLoading) {
-            e.preventDefault()
-            return
-          }
           if (groupStatus === 'disabled' || buttonStatus === 'disabled') {
             e.preventDefault()
             return
           }
 
           e.preventDefault()
-          if (key === 'cardphotoAdd') {
-            dispatch(markCardphotoAddLoading())
-            if (
-              section === 'cardphoto' ||
-              section === 'cardphotoCreate' ||
-              section === 'cardphotoProcessed'
-            ) {
-              const shouldOpenGallery = shouldOpenCardphotoFilePickerSync(
-                store.getState(),
-              )
-              if (
-                shouldOpenGallery &&
-                !openCardphotoFilePickerFromUserGesture()
-              ) {
-                dispatch(cancelFileDialog())
-              }
-            }
-          }
           if (
             (key === 'addList' || key === 'removeFromList') &&
             (false || section === 'recipientView')
@@ -847,6 +830,37 @@ export const Toolbar = ({
             }
           }
           e.currentTarget.blur()
+        }}
+        onClick={(e) => {
+          if (key !== 'cardphotoAdd') return
+          if (cardphotoAddLoading) {
+            e.preventDefault()
+            return
+          }
+          if (groupStatus === 'disabled' || buttonStatus === 'disabled') {
+            e.preventDefault()
+            return
+          }
+          if (
+            section === 'cardphoto' ||
+            section === 'cardphotoCreate' ||
+            section === 'cardphotoProcessed'
+          ) {
+            const shouldOpenGallery = shouldOpenCardphotoFilePickerSync(
+              store.getState(),
+            )
+            if (
+              shouldOpenGallery &&
+              !openCardphotoFilePickerFromUserGesture()
+            ) {
+              dispatch(cancelFileDialog())
+            }
+          }
+          dispatch(markCardphotoAddLoading())
+          const stopDefault = onActionClick?.(actionIconKey)
+          if (stopDefault !== false) {
+            onAction(actionIconKey)
+          }
         }}
       >
         {section === 'rightSidebar' && key === 'userLogin' ? (

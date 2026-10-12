@@ -25,12 +25,15 @@
 // }
 
 .imageInput {
-  position: absolute;
-  width: 0;
-  height: 0;
-  bottom: 0;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
   opacity: 0;
-  pointer-events: none;
+  overflow: hidden;
 }
 
 .cropContainer {
