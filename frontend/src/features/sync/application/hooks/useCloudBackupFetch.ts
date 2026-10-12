@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { selectIsAuthenticated } from '@features/auth/infrastructure/selectors/authSelectors'
+import { selectIsCardphotoCreateSession } from '@cardphoto/infrastructure/selectors/cardphotoUiSelectors'
 import { isHttpAuthMode } from '@shared/config/authMode'
 import { incrementAddressBookReloadVersion } from '@features/previewStrip/infrastructure/state'
 import { pullV2PostcardsIntoIdb } from '../services/pullV2PostcardsIntoIdb'
@@ -14,7 +15,8 @@ import {
 /**
  * Idle poll while the screen stays open. Postcard edits are not a live chat:
  * another device is picked up on focus, when this tab becomes visible, and
- * on this slower tick. An open editor skips the pull entirely.
+ * on this slower tick. An open editor skips the pull entirely,
+ * including a cardphoto create session that is not applied yet.
  */
 const PULL_INTERVAL_MS = 30_000
 /** Ignore a second interval tick that lands during / right after a pull. */
@@ -29,7 +31,9 @@ export const useCloudBackupFetch = () => {
   const dispatch = useAppDispatch()
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
   const editing = useAppSelector(
-    (state) => state.cardPanel.archiveFactoryEditActive === true,
+    (state) =>
+      state.cardPanel.archiveFactoryEditActive === true ||
+      selectIsCardphotoCreateSession(state),
   )
   const inFlightRef = useRef(false)
   const lastPullAtRef = useRef(0)
