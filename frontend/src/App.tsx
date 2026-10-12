@@ -172,6 +172,8 @@ import { notebookSessionRestored } from '@date/calendar/application/orchestratio
 import {
   buildCartCalendarCommands,
   buildHistoryCalendarCommandsDesktop,
+  buildMobileCartSlotOpenCommands,
+  buildMobileHistorySlotOpenCommands,
   buildNotebookCartTabCommandsMobile,
   buildNotebookHistoryTabCommandsMobile,
   resolveCartArchiveViewMode,
@@ -1382,12 +1384,15 @@ const App = () => {
   ])
 
   /**
-   * Desktop Close упрощённого просмотра: секция закрывается,
-   * в центре календарь того же режима, справа список корзины или истории.
+   * Close упрощённого просмотра секции: остаёмся в корзине или истории,
+   * не переключаемся в сборку.
    */
   const requestCloseArchiveSectionPeek = useCallback(() => {
+    const retainedStrip = store.getState().cardPanel.archiveEditRetainsStrip
     const source =
-      rightListArchiveSource === 'history' || notebookStripTab === 'history'
+      rightListArchiveSource === 'history' ||
+      notebookStripTab === 'history' ||
+      retainedStrip === 'history'
         ? 'history'
         : 'cart'
     flushSync(() => {
@@ -1407,6 +1412,40 @@ const App = () => {
     cartDatePickOwnedByCardPieEditRef.current = false
     dispatch(endCartCalendarDatePick())
     dispatch(clearArchiveEnvelopeSandbox())
+    dispatch(setArchiveEditRetainsStrip(null))
+    if (isMobileLayout) {
+      const remembered = archiveCartCenterReturnModeRef.current
+      const listOpen =
+        source === 'history'
+          ? selectIsHistoryListPanelOpen(store.getState())
+          : selectCartListPanelOpen(store.getState())
+      const returnMode =
+        remembered === 'list' || remembered === 'calendar'
+          ? remembered
+          : listOpen
+            ? 'list'
+            : 'calendar'
+      const commands =
+        source === 'history'
+          ? returnMode === 'list'
+            ? buildMobileHistorySlotOpenCommands()
+            : buildNotebookHistoryTabCommandsMobile()
+          : returnMode === 'list'
+            ? buildMobileCartSlotOpenCommands()
+            : buildNotebookCartTabCommandsMobile()
+      for (const command of commands) {
+        dispatch(command)
+      }
+      /**
+       * `activeSection === 'history'` само открывает список.
+       * Календарь истории оставляем на `date` + strip history.
+       */
+      if (!(source === 'history' && returnMode === 'calendar')) {
+        dispatch(setActiveSection(source === 'history' ? 'history' : 'date'))
+      }
+      archiveCartCenterReturnModeRef.current = null
+      return
+    }
     for (const command of source === 'history'
       ? buildHistoryCalendarCommandsDesktop()
       : buildCartCalendarCommands()) {
@@ -1423,6 +1462,7 @@ const App = () => {
   }, [
     dispatch,
     endCardPieEditEngaged,
+    isMobileLayout,
     notebookStripTab,
     rightListArchiveSource,
   ])

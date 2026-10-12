@@ -4,7 +4,6 @@ import { useAppSelector } from '@app/hooks'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
-import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { useCloseArchiveSectionPeek } from '../../application/hooks/useCloseArchiveSectionPeek'
 import { useMobileFactoryListChrome } from '../../application/hooks/useMobileFactoryListChrome'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
@@ -31,13 +30,11 @@ const ARCHIVE_PEEK_UPPER_CLOSE_TOOLBAR: ToolbarConfig = [
  * Сборка этот ряд не использует.
  */
 export const ArchivePeekUpperToolbar: React.FC = () => {
-  const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const activeSection = useAppSelector(selectActiveSection)
   const { isArchiveSectionPeekActive } = useCloseArchiveSectionPeek()
   const { showArchivePeekEditToolbar } = useMobileFactoryListChrome()
   const {
     requestSectionEditFromPeek,
-    requestExitArchiveMode,
     requestCloseArchiveSectionPeek,
     rightPieDatePeekNoToolbar,
     rightPieEnvelopePeekNoToolbar,
@@ -87,8 +84,7 @@ export const ArchivePeekUpperToolbar: React.FC = () => {
           groupsOverride={ARCHIVE_PEEK_UPPER_CLOSE_TOOLBAR}
           onActionClick={(key) => {
             if (key !== 'close') return false
-            if (!isMobileLayout) requestCloseArchiveSectionPeek?.()
-            else requestExitArchiveMode?.()
+            requestCloseArchiveSectionPeek?.()
             return false
           }}
         />
