@@ -57,7 +57,8 @@ export const CardphotoStage = () => {
 
   const { sizeCard } = useSizeFacade()
 
-  const [loadedSrc, setLoadedSrc] = useState<string | null>(null)
+  const [paintSrc, setPaintSrc] = useState<string | null>(null)
+  const paintIdRef = useRef<string | null>(null)
   const [srcFailed, setSrcFailed] = useState(false)
   const [stagePx, setStagePx] = useState<{ width: number; height: number } | null>(
     null,
@@ -102,7 +103,8 @@ export const CardphotoStage = () => {
 
   const asset = getAssetById(activeImage?.id ?? null)
   const src = pickCardphotoDisplaySrc(activeImage, asset?.url)
-  const imageReady = !!src && loadedSrc === src && !srcFailed
+  const imageId = activeImage?.id ?? null
+  const imageReady = !!paintSrc && paintSrc === src && !srcFailed
 
   const alt = activeImage?.id
   const imageLayer = assetConfig?.image ?? null
@@ -114,12 +116,40 @@ export const CardphotoStage = () => {
     Math.abs(assetConfig.card.height - stagePx.height) < 2
 
   const shouldShowImage =
-    !!src && !!activeImage && !srcFailed && configMatchesStage
+    !!paintSrc && !!activeImage && !srcFailed && configMatchesStage
 
   useEffect(() => {
+    if (!src || !imageId) {
+      paintIdRef.current = null
+      setPaintSrc(null)
+      setSrcFailed(false)
+      return
+    }
     setSrcFailed(false)
-    setLoadedSrc(null)
-  }, [src])
+    /**
+     * Same View picture, new URL from sync: keep the pixels on screen.
+     * A different picture stays hidden until it has decoded, so the previous
+     * frame is not shown in the new box.
+     */
+    if (paintIdRef.current !== imageId) {
+      paintIdRef.current = null
+      setPaintSrc(null)
+    }
+    let cancelled = false
+    const pre = new Image()
+    pre.onload = () => {
+      if (cancelled) return
+      paintIdRef.current = imageId
+      setPaintSrc(src)
+    }
+    pre.onerror = () => {
+      if (!cancelled) setSrcFailed(true)
+    }
+    pre.src = src
+    return () => {
+      cancelled = true
+    }
+  }, [src, imageId])
 
   useEffect(() => {
     const id = activeImage?.id
@@ -190,25 +220,17 @@ export const CardphotoStage = () => {
           style={cropContainerStyle}
         >
           <div className={styles.imageStack}>
-            {shouldShowImage && imageLayer && src && (
-              <>
-                <img
-                  key={src}
-                  src={src}
-                  alt={alt}
-                  onLoad={() => {
-                    setLoadedSrc(src)
-                  }}
-                  onError={() => {
-                    setSrcFailed(true)
-                  }}
-                  className={clsx(
-                    styles.cropImage,
-                    imageReady ? styles.fadeInVisible : styles.fadeIn,
-                  )}
-                  style={imageStyle}
-                />
-              </>
+            {shouldShowImage && imageLayer && paintSrc && (
+              <img
+                key={imageId ?? paintSrc}
+                src={paintSrc}
+                alt={alt}
+                onError={() => {
+                  setSrcFailed(true)
+                }}
+                className={clsx(styles.cropImage, styles.fadeInVisible)}
+                style={imageStyle}
+              />
             )}
           </div>
           {showStagePlaceholder ? (

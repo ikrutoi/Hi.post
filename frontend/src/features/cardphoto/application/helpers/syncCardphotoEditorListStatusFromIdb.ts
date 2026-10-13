@@ -1,7 +1,6 @@
 import { call, put, select } from 'redux-saga/effects'
 import type { SagaIterator } from 'redux-saga'
 import { storeAdapters } from '@db/adapters/storeAdapters'
-import { prepareForRedux } from '@app/middleware/cardphotoHelpers'
 import {
   bumpCardphotoInlineTemplateList,
   setProcessedImage,
@@ -25,7 +24,10 @@ export function* syncCardphotoEditorListStatusFromIdbSaga(): SagaIterator {
   if (asset.status === record.status) return
 
   yield put(
-    setProcessedImage(prepareForRedux({ ...asset, status: record.status })),
+    setProcessedImage({
+      ...asset,
+      status: record.status,
+    }),
   )
   yield put(bumpCardphotoInlineTemplateList())
 }

@@ -1139,7 +1139,24 @@ function* rehydrateAssemblySessionSaga() {
 }
 
 export function* watchSessionChanges() {
-  yield takeLatest(SESSION_WATCH_ACTIONS, function* () {
+  yield takeLatest(SESSION_WATCH_ACTIONS, function* (action) {
+    /**
+     * Cloud rehydrate writes the same View back into Redux. Persisting that
+     * bumps the server timestamp, the next poll pulls it, and the picture blinks.
+     */
+    if (
+      isAssemblyCloudPushSuppressed() &&
+      (action.type === hydrateEditor.type ||
+        action.type === setProcessedImage.type ||
+        action.type === hydrateDateFromSession.type ||
+        action.type === setAroma.type ||
+        action.type === setDraftData.type ||
+        action.type === setCardtextPresetData.type ||
+        action.type === setCartListCheckedLocalIds.type ||
+        action.type === setCartListStatusSegment.type)
+    ) {
+      return
+    }
     const dirtyEpoch = markAssemblyReduxDirty()
     yield delay(900)
     yield call(persistGlobalSession, dirtyEpoch)
