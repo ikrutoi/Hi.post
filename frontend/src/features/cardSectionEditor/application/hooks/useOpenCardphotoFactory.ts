@@ -7,8 +7,12 @@ import {
   setCardphotoListPanelOpen,
 } from '@cardphoto/infrastructure/state'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
+import { setArchiveEditRetainsStrip } from '@cardPanel/infrastructure/state'
 import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
-import { setCartListPanelOpen } from '@cart/infrastructure/state'
+import {
+  setCartListPanelOpen,
+  setCartListSelectedLocalId,
+} from '@cart/infrastructure/state'
 import { isCartOwnedNotebookStrip } from '@date/calendar/application/logic/calendarStripSection'
 import {
   selectIsCardPieListPanelOpen,
@@ -16,8 +20,11 @@ import {
   selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
 import {
+  closeDayPanel,
+  endCartCalendarDatePick,
   setCardPieListPanelOpen,
   setHistoryListPanelOpen,
+  setHistoryListSelectedLocalId,
   setNotebookStripDateOverCart,
   setNotebookStripDateOverHistory,
   setNotebookStripTab,
@@ -45,6 +52,16 @@ export function useOpenCardphotoFactory() {
       clearRightPieEnvelopePeek()
       clearRightPieAromaPeek()
       clearRightPieDatePeek()
+
+      /**
+       * Пока strip «история» удерживается, sync сразу возвращает её
+       * и кнопка фабрики остаётся выключенной.
+       */
+      dispatch(setArchiveEditRetainsStrip(null))
+      dispatch(setHistoryListSelectedLocalId(null))
+      dispatch(setCartListSelectedLocalId(null))
+      dispatch(closeDayPanel())
+      dispatch(endCartCalendarDatePick())
 
       const state = store.getState()
       if (selectIsCardPieListPanelOpen(state)) {
