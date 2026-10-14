@@ -80,6 +80,11 @@ type CalendarState = {
     view: 'calendar' | 'list'
   } | null
   /**
+   * Следующий клик по истории возвращает снимок, а не делает шаг круга.
+   * Включается при уходе в сборку.
+   */
+  historyReturnPending: boolean
+  /**
    * Закладка «Дата» при открытом CartListPanel: полоса «Дата», пока корзина не открывают заново снаружи.
    * Сбрасывается при `setNotebookStripTab('cart'|'history')` и при `setCartListPanelOpen(true)`.
    */
@@ -115,7 +120,7 @@ type CalendarState = {
   openDayPanel: DayPanelPayload | null
   dateListSortDirection: 'asc' | 'desc'
   cardPieListSortDirection: 'asc' | 'desc'
-  /** Список истории: цикл sort131Up → sort131Down → sortAZDown → sortAZUp. */
+  /** Список истории: дата раньше → дата позже. */
   historyListSortMode: HistoryListSortMode
   /**
    * Плотность сетки списка истории (`panelDensity2`): 1 — 4 ячейки, 2 — 5 ячеек.
@@ -163,6 +168,7 @@ const initialState: CalendarState = {
   cartReturnPending: false,
   lastHistoryArchiveView: 'calendar',
   historyMobileReturn: null,
+  historyReturnPending: false,
   notebookStripDateOverCart: false,
   notebookStripDateOverHistory: false,
   cartCalendarDatePickMode: false,
@@ -380,6 +386,10 @@ const calendarSlice = createSlice({
       state.historyMobileReturn = action.payload
     },
 
+    setHistoryReturnPending(state, action: PayloadAction<boolean>) {
+      state.historyReturnPending = action.payload
+    },
+
     setNotebookStripDateOverCart(state, action: PayloadAction<boolean>) {
       state.notebookStripDateOverCart = action.payload
     },
@@ -535,6 +545,7 @@ export const {
   setCartReturnPending,
   setLastHistoryArchiveView,
   setHistoryMobileReturn,
+  setHistoryReturnPending,
   setNotebookStripDateOverCart,
   setNotebookStripDateOverHistory,
   setCartCalendarDatePickMode,

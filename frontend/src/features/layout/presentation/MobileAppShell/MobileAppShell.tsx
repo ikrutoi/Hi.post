@@ -30,6 +30,7 @@ import {
   buildCartArchiveToggleCommands,
   buildHistoryArchiveToggleCommands,
   buildRememberMobileCartSurfaceCommands,
+  buildRememberMobileHistorySurfaceCommands,
   resolveCartArchiveViewMode,
   resolveHistoryArchiveViewMode,
 } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
@@ -51,6 +52,7 @@ import {
   selectCartMobileReturn,
   selectCartReturnPending,
   selectHistoryMobileReturn,
+  selectHistoryReturnPending,
   selectLastCartArchiveView,
   selectLastHistoryArchiveView,
   selectHistoryOpenDayPanelArchiveLocalId,
@@ -857,6 +859,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       if (pie == null) return
 
       const state = store.getState()
+      for (const command of buildRememberMobileHistorySurfaceCommands(state)) {
+        dispatch(command)
+      }
       for (const command of buildRememberMobileCartSurfaceCommands(state)) {
         dispatch(command)
       }
@@ -1006,6 +1011,12 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       }
 
       const notebookStripTab = selectNotebookStripTab(state)
+      for (const command of buildRememberMobileHistorySurfaceCommands(state)) {
+        dispatch(command)
+      }
+      for (const command of buildRememberMobileCartSurfaceCommands(state)) {
+        dispatch(command)
+      }
       if (selectIsCardPieListPanelOpen(state)) {
         dispatch(setCardPieListPanelOpen(false))
         dispatchCardPieToolbarIconState(dispatch, false)
@@ -1135,6 +1146,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         cartListPanelOpen: selectCartListPanelOpen(state),
         cartListStatusSegment: selectCartListStatusSegment(state),
         historyMobileReturn: selectHistoryMobileReturn(state),
+        historyReturnPending: selectHistoryReturnPending(state),
       })) {
         dispatch(command)
       }

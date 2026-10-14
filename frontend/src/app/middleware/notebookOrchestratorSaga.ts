@@ -7,7 +7,7 @@ import {
   selectCartListStatusSegment,
   selectHasBlockedCartPostcards,
 } from '@cart/infrastructure/selectors'
-import { selectIsHistoryListPanelOpen, selectNotebookStripTab, selectCartMobileReturn, selectCartReturnPending, selectHistoryMobileReturn, selectLastCartArchiveView, selectLastHistoryArchiveView } from '@date/calendar/infrastructure/selectors'
+import { selectIsHistoryListPanelOpen, selectNotebookStripTab, selectCartMobileReturn, selectCartReturnPending, selectHistoryMobileReturn, selectHistoryReturnPending, selectLastCartArchiveView, selectLastHistoryArchiveView } from '@date/calendar/infrastructure/selectors'
 import { closeCardPieListPanelAndSyncIconsSaga } from '@app/middleware/exclusiveListPanelsSaga'
 import {
   notebookSessionRestored,
@@ -109,6 +109,7 @@ function* handleNotebookTabHistoryClicked(): SagaIterator {
       cartListPanelOpen: yield select(selectCartListPanelOpen),
       cartListStatusSegment: yield select(selectCartListStatusSegment),
       historyMobileReturn: yield select(selectHistoryMobileReturn),
+      historyReturnPending: yield select(selectHistoryReturnPending),
     }),
   )
 }

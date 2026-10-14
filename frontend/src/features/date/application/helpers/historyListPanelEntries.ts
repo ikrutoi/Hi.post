@@ -160,6 +160,19 @@ export function sortedHistoryListPanelEntriesFromState(
   )
 }
 
+/** Порядок центральной кнопки «вперёд»: как строки списка истории, сверху вниз. */
+export function historyListCycleLocalIds(state: RootState): number[] {
+  const lids: number[] = []
+  const seen = new Set<number>()
+  for (const entry of sortedHistoryListPanelEntriesFromState(state)) {
+    const localId = entry.postcardLocalId
+    if (localId == null || seen.has(localId)) continue
+    seen.add(localId)
+    lids.push(localId)
+  }
+  return lids
+}
+
 export function resolveFirstHistoryListLocalIdFromState(
   state: RootState,
 ): number | null {

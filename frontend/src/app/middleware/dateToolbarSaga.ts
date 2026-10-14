@@ -1,6 +1,8 @@
 import { all, call, fork, put, select, takeEvery } from 'redux-saga/effects'
 import { SagaIterator } from 'redux-saga'
 import type { PayloadAction } from '@reduxjs/toolkit'
+import type { RootState } from '@app/state'
+import { store } from '@app/state/store'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
@@ -10,10 +12,12 @@ import {
   setCardPieListPanelOpen,
   toggleDateListSortDirection,
   setHistoryListSortMode,
+  setHistoryListSelectedLocalId,
   cycleHistoryListPanelDensity,
   setHistoryListPanelDensity,
   setPostcardStatuses,
   endCartCalendarDatePick,
+  updateLastViewedCalendarDate,
 } from '@date/calendar/infrastructure/state'
 import {
   // selectIsHistoryListPanelOpen,
@@ -50,7 +54,10 @@ import {
   getNextHistoryListSortMode,
   isHistoryListSortIconKey,
 } from '@date/application/helpers/historyListSort'
+import { resolveDefaultHistoryStripPostcard } from '@date/application/helpers/historyListPanelEntries'
+import { calendarViewDateForPostcard } from '@date/application/helpers/stripDefaultSelection'
 import { selectHistoryListSortMode } from '@date/calendar/infrastructure/selectors'
+import { applyRightListArchiveToolbarVisuals } from '@toolbar/application/syncRightListArchiveToolbarVisuals'
 
 const HISTORY_LIST_UI_PREF_ID = 'historyList' as const
 
@@ -101,6 +108,20 @@ function* handleDateListToolbarAction(
       selectHistoryListSortMode,
     )
     yield put(setHistoryListSortMode(getNextHistoryListSortMode(current)))
+    const state: RootState = yield select()
+    const postcard = resolveDefaultHistoryStripPostcard(state)
+    yield put(setHistoryListSelectedLocalId(postcard?.localId ?? null))
+    if (postcard != null) {
+      yield put(
+        updateLastViewedCalendarDate(calendarViewDateForPostcard(postcard)),
+      )
+      yield call(
+        applyRightListArchiveToolbarVisuals,
+        store.dispatch,
+        store.getState,
+        'history',
+      )
+    }
     return
   }
 

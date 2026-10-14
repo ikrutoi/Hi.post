@@ -14,7 +14,10 @@ import {
   setCartListSelectedLocalId,
 } from '@cart/infrastructure/state'
 import { isCartOwnedNotebookStrip } from '@date/calendar/application/logic/calendarStripSection'
-import { buildRememberMobileCartSurfaceCommands } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
+import {
+  buildRememberMobileCartSurfaceCommands,
+  buildRememberMobileHistorySurfaceCommands,
+} from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 import {
   selectIsCardPieListPanelOpen,
   selectIsHistoryListPanelOpen,
@@ -26,7 +29,6 @@ import {
   setCardPieListPanelOpen,
   setHistoryListPanelOpen,
   setHistoryListSelectedLocalId,
-  setHistoryMobileReturn,
   setNotebookStripDateOverCart,
   setNotebookStripDateOverHistory,
   setNotebookStripTab,
@@ -50,16 +52,10 @@ export function useOpenCardphotoFactory() {
       event?.stopPropagation()
 
       const state = store.getState()
-      const historyListOpen = selectIsHistoryListPanelOpen(state)
       const stripBeforeFactory = selectNotebookStripTab(state)
       const retainedStrip = state.cardPanel.archiveEditRetainsStrip
-      const mobile = selectIsMobileLayout(state)
-      if (mobile && (historyListOpen || stripBeforeFactory === 'history' || retainedStrip === 'history')) {
-        dispatch(
-          setHistoryMobileReturn({
-            view: historyListOpen ? 'list' : 'calendar',
-          }),
-        )
+      for (const command of buildRememberMobileHistorySurfaceCommands(state)) {
+        dispatch(command)
       }
       for (const command of buildRememberMobileCartSurfaceCommands(state)) {
         dispatch(command)

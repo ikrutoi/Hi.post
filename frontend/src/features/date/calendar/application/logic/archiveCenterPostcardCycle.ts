@@ -61,6 +61,11 @@ export function resolveArchiveCenterPostcardCycle(input: {
   cardsByDateMap: Record<string, CardCalendarIndex>
   cartItems: readonly PostcardHydrated[]
   currentLocalId: number | null
+  /**
+   * История: порядок как в списке (дата и направление сортировки,
+   * на одну дату — тот же порядок строк).
+   */
+  historyOrderedLocalIds?: readonly number[]
 }): number | null {
   if (input.currentLocalId == null) return null
 
@@ -71,11 +76,12 @@ export function resolveArchiveCenterPostcardCycle(input: {
 
   const stripLocalIds =
     input.archiveSource === 'history'
-      ? orderedHistoryCenterCycleLocalIds(
+      ? (input.historyOrderedLocalIds ??
+        orderedHistoryCenterCycleLocalIds(
           input.cardsByDateMap,
           input.cartItems,
           HISTORY_CENTER_CYCLE_STATUSES,
-        )
+        ))
       : orderedStripPostcardsByDispatchDate(
           input.cartItems,
           stripCycleStatusForPostcard(postcard),

@@ -1,3 +1,4 @@
+@use 'sass:math';
 @use '@styles/config/colors' as *;
 @use '@styles/config/mobileNotebookTabColors' as notebookTab;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
@@ -6,8 +7,10 @@
 $pie-center-indicator-size: 1.75rem;
 /** Видимый круг + hit центрального CardPie (десктоп), доля ширины пайа. */
 $pie-center-size-ratio: 22%;
-/** Мобильный центральный CardPie. */
+/** Мобильный центральный CardPie: видимый круг. */
 $pie-center-size-ratio-mobile: 24%;
+/** Мобильный центральный CardPie: невидимая зона нажатия пальцем. */
+$pie-center-hit-size-ratio-mobile: 28%;
 /** Desktop right pie: глиф статуса внутри круга = иконка тулбара × 1.25. */
 $pie-center-inner-icon-desktop: iconButton.$toolbar-icon-size-standard *
   iconButton.$toolbar-desktop-scale *
@@ -394,8 +397,19 @@ $pie-center-cart-blocked-inner-stop: (
   .hubContainer:not(.hubContainerRight) .pieCenterButton,
   .hubContainerFill.hubContainerRight .pieCenterButton,
   .hubContainerFill.hubContainerRight .pieCenterButtonPointer {
-    width: $pie-center-size-ratio-mobile;
-    height: $pie-center-size-ratio-mobile;
+    width: $pie-center-hit-size-ratio-mobile;
+    height: $pie-center-hit-size-ratio-mobile;
+    background-color: transparent;
+  }
+
+  .hubContainer:not(.hubContainerRight) .pieCenterIcon,
+  .hubContainerFill.hubContainerRight .pieCenterIcon {
+    width: calc(
+      100% * #{math.div($pie-center-size-ratio-mobile, $pie-center-hit-size-ratio-mobile)}
+    );
+    height: calc(
+      100% * #{math.div($pie-center-size-ratio-mobile, $pie-center-hit-size-ratio-mobile)}
+    );
   }
 
   .hubContainerFill.hubContainerRight .pieCenterIndicator.cartBlocked {

@@ -183,6 +183,7 @@ import {
   computeCartLegendStatusCounts,
   computeHistoryLegendStatusCounts,
 } from '@date/application/helpers/legendStatusCounts'
+import { historyListCycleLocalIds } from '@date/application/helpers/historyListPanelEntries'
 import { isArchiveCenterCycleHintEligible } from '@layout/application/hooks'
 import { SECTION_EDITOR_MENU_ICON_KEYS } from '@features/toolbar/domain/types/sectionEditorMenu.types'
 import { primaryDispatchDateFromPieInner } from '@features/cardPie/domain/primaryDispatchDateFromPieInner'
@@ -981,6 +982,7 @@ const App = () => {
         cardsByDateMap: freshCardsByDateMap,
         cartItems: freshCartItems,
         currentLocalId: activeLocalId,
+        historyOrderedLocalIds: historyListCycleLocalIds(freshState),
       })
       if (nextLocalId == null) return false
 

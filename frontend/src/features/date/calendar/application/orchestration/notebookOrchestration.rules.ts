@@ -5,7 +5,10 @@ import {
   selectCartListStatusSegment,
 } from '@cart/infrastructure/selectors'
 import { selectIsMobileLayout } from '@layout/infrastructure/selectors'
-import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
+import {
+  selectIsHistoryListPanelOpen,
+  selectNotebookStripTab,
+} from '@date/calendar/infrastructure/selectors'
 import {
   setCartListPanelOpen,
   setCartListSelectedLocalId,
@@ -22,6 +25,7 @@ import {
   setCartMobileReturn,
   setCartReturnPending,
   setHistoryMobileReturn,
+  setHistoryReturnPending,
   setLastCartArchiveView,
   setLastHistoryArchiveView,
   setNotebookStripDateOverCart,
@@ -241,6 +245,29 @@ export function buildRememberMobileCartSurfaceCommands(
   ]
 }
 
+/**
+ * Мобильный уход из истории в сборку.
+ * Запоминаем календарь или список, который реально открыт, и просим
+ * следующий клик по истории вернуть его без шага круга.
+ */
+export function buildRememberMobileHistorySurfaceCommands(
+  state: RootState,
+): UnknownAction[] {
+  if (!selectIsMobileLayout(state)) return []
+  const listOpen = selectIsHistoryListPanelOpen(state)
+  const strip = selectNotebookStripTab(state)
+  const retained = state.cardPanel.archiveEditRetainsStrip
+  const inHistory =
+    listOpen || strip === 'history' || retained === 'history'
+  if (!inHistory) return []
+  return [
+    setHistoryMobileReturn({
+      view: listOpen ? 'list' : 'calendar',
+    }),
+    setHistoryReturnPending(true),
+  ]
+}
+
 export function nextCartListStatusSegment(
   current: CartListStatusSegment,
 ): CartListStatusSegment {
@@ -394,6 +421,8 @@ export function buildHistoryArchiveToggleCommands(input: {
   historyMobileReturn?: {
     view: 'calendar' | 'list'
   } | null
+  /** Уход в сборку: следующий клик возвращает снимок, даже если список ещё открыт. */
+  historyReturnPending?: boolean
 }): UnknownAction[] {
   const mode = resolveHistoryArchiveViewMode(input)
 
@@ -422,15 +451,23 @@ export function buildHistoryArchiveToggleCommands(input: {
   /**
    * Возврат из корзины, даты или фабрики: календарь или список,
    * как было в момент ухода, без шага круга.
+   * Пока список истории ещё числится открытым, обычный круг принял бы
+   * это за переход на календарь.
    */
-  if (mode === 'inactive' && input.historyMobileReturn != null) {
+  if (
+    input.historyMobileReturn != null &&
+    (mode === 'inactive' || input.historyReturnPending)
+  ) {
     const surface = input.historyMobileReturn
+    const clearPending = setHistoryReturnPending(false)
     const remember = setLastHistoryArchiveView(surface.view)
     const open =
       surface.view === 'list'
         ? buildMobileHistorySlotOpenCommands()
         : buildNotebookHistoryTabCommandsMobile()
-    return rememberCart ? [rememberCart, remember, ...open] : [remember, ...open]
+    return rememberCart
+      ? [rememberCart, clearPending, remember, ...open]
+      : [clearPending, remember, ...open]
   }
 
   const next =

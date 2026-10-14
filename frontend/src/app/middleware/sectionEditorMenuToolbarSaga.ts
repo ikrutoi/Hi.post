@@ -17,6 +17,11 @@ import {
   setNotebookStripDateOverHistory,
   setNotebookStripTab,
 } from '@date/calendar/infrastructure/state'
+import type { RootState } from '@app/state'
+import {
+  buildRememberMobileCartSurfaceCommands,
+  buildRememberMobileHistorySurfaceCommands,
+} from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
 import type { DateStripSection } from '@date/presentation/dateStripSection.types'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
@@ -81,6 +86,15 @@ export function* handleSectionEditorMenuToolbarAction(
     const stripTab = (yield select(
       selectNotebookStripTab,
     )) as DateStripSection
+    if ((SECTION_EDITOR_FACTORY_KEYS as readonly string[]).includes(key)) {
+      const rootState: RootState = yield select((state: RootState) => state)
+      for (const command of [
+        ...buildRememberMobileHistorySurfaceCommands(rootState),
+        ...buildRememberMobileCartSurfaceCommands(rootState),
+      ]) {
+        yield put(command)
+      }
+    }
     if (
       (stripTab === 'cart' || stripTab === 'cartdate') &&
       (SECTION_EDITOR_FACTORY_KEYS as readonly string[]).includes(key)

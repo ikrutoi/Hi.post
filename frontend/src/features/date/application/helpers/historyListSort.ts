@@ -6,17 +6,11 @@ export type HistoryListSortableItem = {
   detailLine?: string
 }
 
-export type HistoryListSortMode =
-  | 'dateDesc'
-  | 'dateAsc'
-  | 'titleAsc'
-  | 'titleDesc'
+export type HistoryListSortMode = 'dateDesc' | 'dateAsc'
 
 export const HISTORY_LIST_SORT_MODE_SEQUENCE: readonly HistoryListSortMode[] = [
   'dateAsc',
   'dateDesc',
-  'titleAsc',
-  'titleDesc',
 ]
 
 export const HISTORY_LIST_SORT_MODE_TO_ICON: Record<
@@ -25,8 +19,6 @@ export const HISTORY_LIST_SORT_MODE_TO_ICON: Record<
 > = {
   dateDesc: 'sort131Up',
   dateAsc: 'sort131Down',
-  titleAsc: 'sortAZDown',
-  titleDesc: 'sortAZUp',
 }
 
 export const HISTORY_LIST_SORT_ICON_KEYS = [
@@ -48,26 +40,6 @@ export function getHistoryListSortIconForMode(
   mode: HistoryListSortMode,
 ): IconKey {
   return HISTORY_LIST_SORT_MODE_TO_ICON[mode]
-}
-
-/** `sort131Up` / `sort131Down` — сортировка по дате; имя в ячейке приглушаем. */
-export function isHistoryListSortByDate(mode: HistoryListSortMode): boolean {
-  return mode === 'dateDesc' || mode === 'dateAsc'
-}
-
-/** `sortAZDown` / `sortAZUp` — сортировка по имени; дату вниз, имя вверх. */
-export function isHistoryListSortByTitle(mode: HistoryListSortMode): boolean {
-  return mode === 'titleAsc' || mode === 'titleDesc'
-}
-
-export type HistoryListSortEmphasis = 'date' | 'title'
-
-export function getHistoryListSortEmphasis(
-  mode: HistoryListSortMode,
-): HistoryListSortEmphasis | undefined {
-  if (isHistoryListSortByDate(mode)) return 'date'
-  if (isHistoryListSortByTitle(mode)) return 'title'
-  return undefined
 }
 
 export function getNextHistoryListSortMode(
@@ -120,64 +92,12 @@ function compareByDateAsc(
   return compareHistoryBySourceDateChronological(a, b)
 }
 
-function hasHistoryListName(item: HistoryListSortableItem): boolean {
-  return Boolean(item.detailLine?.trim())
-}
-
-function compareByNameAsc(
-  a: HistoryListSortableItem,
-  b: HistoryListSortableItem,
-): number {
-  return (a.detailLine ?? '').localeCompare(b.detailLine ?? '', undefined, {
-    sensitivity: 'base',
-  })
-}
-
-function compareByNameDesc(
-  a: HistoryListSortableItem,
-  b: HistoryListSortableItem,
-): number {
-  return compareByNameAsc(b, a)
-}
-
 export function sortHistoryListEntries<T extends HistoryListSortableItem>(
   entries: readonly T[],
   mode: HistoryListSortMode,
 ): T[] {
   if (entries.length <= 1) return [...entries]
-
-  switch (mode) {
-    case 'dateDesc':
-      return [...entries].sort(compareByDateDesc)
-    case 'dateAsc':
-      return [...entries].sort(compareByDateAsc)
-    case 'titleAsc': {
-      const withName = entries.filter(hasHistoryListName)
-      const withoutName = entries.filter((row) => !hasHistoryListName(row))
-      if (withoutName.length === 0) {
-        return [...withName].sort(compareByNameAsc)
-      }
-      if (withName.length === 0) {
-        return [...withoutName].sort(compareByDateDesc)
-      }
-      return [
-        ...[...withName].sort(compareByNameAsc),
-        ...[...withoutName].sort(compareByDateDesc),
-      ]
-    }
-    case 'titleDesc': {
-      const withName = entries.filter(hasHistoryListName)
-      const withoutName = entries.filter((row) => !hasHistoryListName(row))
-      if (withoutName.length === 0) {
-        return [...withName].sort(compareByNameDesc)
-      }
-      if (withName.length === 0) {
-        return [...withoutName].sort(compareByDateAsc)
-      }
-      return [
-        ...[...withName].sort(compareByNameDesc),
-        ...[...withoutName].sort(compareByDateAsc),
-      ]
-    }
-  }
+  return mode === 'dateDesc'
+    ? [...entries].sort(compareByDateDesc)
+    : [...entries].sort(compareByDateAsc)
 }

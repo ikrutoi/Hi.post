@@ -107,6 +107,9 @@ export const selectHistoryMobileReturn = (
 ): { view: 'calendar' | 'list' } | null =>
   state.calendar.historyMobileReturn ?? null
 
+export const selectHistoryReturnPending = (state: RootState): boolean =>
+  state.calendar.historyReturnPending === true
+
 export const selectComputedNotebookStripTab = (
   state: RootState,
 ): DateStripSection => computeNotebookStripTabFromState(state)
@@ -194,7 +197,8 @@ export const selectDateListSortDirection = (state: RootState): 'asc' | 'desc' =>
 
 export const selectHistoryListSortMode = (
   state: RootState,
-) => state.calendar.historyListSortMode ?? 'dateAsc'
+): 'dateAsc' | 'dateDesc' =>
+  state.calendar.historyListSortMode === 'dateDesc' ? 'dateDesc' : 'dateAsc'
 
 export const selectHistoryListPanelDensity = (
   state: RootState,
