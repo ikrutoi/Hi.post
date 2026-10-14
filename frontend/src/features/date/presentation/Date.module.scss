@@ -331,6 +331,15 @@ $calendar-weekday-row-height: calc(0.78rem * 1.5 + 0.95rem);
   }
 }
 
+/** Корзина/история: упрощённая дата не выделяется пальцем. */
+.formPeekLockSelect {
+  :global([data-shell-layout='mobile']) & {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+}
+
 .peekDateStack {
   display: flex;
   flex-direction: column;

@@ -418,7 +418,13 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
         : ''
     const dayLabels = buildDatePreviewLines(peekDates)
     const peekBody = (
-      <div className={clsx(styles.form, styles.formPeek)}>
+      <div
+        className={clsx(
+          styles.form,
+          styles.formPeek,
+          showArchiveListDatePeek && styles.formPeekLockSelect,
+        )}
+      >
         {isMultiDatePeek ? (
           <div className={styles.peekMulti}>
             <DatePeekMultiBackground
