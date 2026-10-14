@@ -30,10 +30,13 @@ import {
   buildCardPieInnerDataFromPostcard,
   buildPieSectionFlagsFromPostcard,
 } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
-import { prepareForRedux } from '@app/middleware/cardphotoHelpers'
+import { prepareForRedux, hydrateSessionImageMeta } from '@app/middleware/cardphotoHelpers'
 import { applyFinal, clearApply, markLoaded } from '@cardphoto/infrastructure/state'
 import { rebuildConfigFromMeta } from '@app/middleware/cardphotoProcessSaga'
 import type { ImageMeta } from '@cardphoto/domain/types'
+import { loadCardphotoImageMetaFromIdb } from '@cardphoto/application/helpers/loadCardphotoImageMetaFromIdb'
+import { cardImageMetaLookupIdsFromCard, cardRuntimePreviewUrlFromCard } from '@entities/card/domain/helpers'
+import { setAsset } from '@/entities/assetRegistry/infrastructure/state'
 import { selectCardphotoIsComplete } from '@cardphoto/infrastructure/selectors'
 import {
   restoreCardtextSession,
@@ -68,6 +71,67 @@ const MIRROR_COPY_SECTION_ORDER: CardPanelSection[] = [
   'date',
 ]
 
+function cardphotoMetaHasDisplayUrl(meta: ImageMeta | null | undefined): boolean {
+  if (meta == null) return false
+  for (const url of [meta.url, meta.full?.url, meta.thumbnail?.url]) {
+    if (typeof url !== 'string') continue
+    const trimmed = url.trim()
+    if (trimmed !== '' && !trimmed.startsWith('blob:')) return true
+  }
+  return false
+}
+
+/**
+ * Картинка открытки корзины/истории часто без живого url в `appliedData`:
+ * байты лежат в `cardphotoImages`, а пай показывает `thumbnailUrl`.
+ */
+function* resolveCopyCardphotoMeta(
+  postcard: PostcardHydrated,
+): SagaIterator<ImageMeta | null> {
+  const persisted =
+    postcard.card.cardphoto?.appliedData ??
+    postcard.card.cardphoto?.assetData ??
+    null
+  let fromIdb: ImageMeta | null = null
+  for (const id of cardImageMetaLookupIdsFromCard(
+    postcard.card,
+    postcard.postcard,
+  )) {
+    const loaded: ImageMeta | null = yield call(
+      loadCardphotoImageMetaFromIdb,
+      id,
+    )
+    if (loaded) {
+      fromIdb = loaded
+      break
+    }
+  }
+  const merged = hydrateSessionImageMeta(persisted, fromIdb)
+  if (merged != null && cardphotoMetaHasDisplayUrl(merged)) return merged
+
+  const preview = cardRuntimePreviewUrlFromCard(postcard.card)
+  if (
+    preview != null &&
+    !preview.startsWith('blob:') &&
+    merged != null
+  ) {
+    return {
+      ...merged,
+      url: preview,
+      full: {
+        ...merged.full,
+        url:
+          typeof merged.full?.url === 'string' &&
+          merged.full.url.trim() !== '' &&
+          !merged.full.url.startsWith('blob:')
+            ? merged.full.url
+            : preview,
+      },
+    }
+  }
+  return merged
+}
+
 function* stashMirrorSectionBackupIfNeeded(section: CardPanelSection): SagaIterator {
   const existing = yield select((state: RootState) =>
     selectMirrorSectionBackup(state, section),
@@ -90,12 +154,29 @@ function* applyArchiveSectionFromPostcard(
 
   switch (section) {
     case 'cardphoto': {
-      const meta = card.cardphoto?.appliedData ?? card.cardphoto?.assetData
-      if (!meta) return
+      const meta: ImageMeta | null = yield call(
+        resolveCopyCardphotoMeta,
+        postcard,
+      )
+      if (!meta || !cardphotoMetaHasDisplayUrl(meta)) return
       const serializable = prepareForRedux(meta) as ImageMeta
       yield put(applyFinal(serializable))
       yield call(rebuildConfigFromMeta, serializable, false)
       yield put(markLoaded())
+      const displayUrl =
+        serializable.url ||
+        serializable.full?.url ||
+        serializable.thumbnail?.url ||
+        ''
+      if (serializable.id && displayUrl) {
+        yield put(
+          setAsset({
+            id: serializable.id,
+            url: displayUrl,
+            thumbUrl: serializable.thumbnail?.url || displayUrl,
+          }),
+        )
+      }
       /**
        * Edit (cardPieEdit / postcardEdit): снять session-apply после гидратации —
        * центральный CardPie в edit смотрит isComplete и сектор пустеет.
