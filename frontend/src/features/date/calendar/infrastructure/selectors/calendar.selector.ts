@@ -99,6 +99,11 @@ export const selectLastHistoryArchiveView = (
   state: RootState,
 ): 'calendar' | 'list' => state.calendar.lastHistoryArchiveView ?? 'calendar'
 
+export const selectHistoryMobileReturn = (
+  state: RootState,
+): { view: 'calendar' | 'list' } | null =>
+  state.calendar.historyMobileReturn ?? null
+
 export const selectComputedNotebookStripTab = (
   state: RootState,
 ): DateStripSection => computeNotebookStripTabFromState(state)

@@ -13,6 +13,7 @@ import {
   setHistoryListSelectedLocalId,
   setHistoryListPanelOpen,
   setCartMobileReturn,
+  setHistoryMobileReturn,
   setLastCartArchiveView,
   setLastHistoryArchiveView,
   setNotebookStripDateOverCart,
@@ -238,6 +239,8 @@ export function buildCartArchiveToggleCommands(input: {
     view: 'calendar' | 'list'
     segment: CartListStatusSegment
   } | null
+  /** История, которую закрывает этот клик по корзине. */
+  historyListPanelOpen?: boolean
 }): UnknownAction[] {
   const mode = resolveCartArchiveViewMode(input)
   const listStatusSegment = input.listStatusSegment ?? 'cart'
@@ -257,6 +260,16 @@ export function buildCartArchiveToggleCommands(input: {
     ]
   }
 
+  const leavingHistory =
+    input.historyListPanelOpen === true || input.notebookStripTab === 'history'
+  const rememberHistory = leavingHistory
+    ? setHistoryMobileReturn({
+        view: input.historyListPanelOpen ? 'list' : 'calendar',
+      })
+    : null
+  const withHistoryMemory = (commands: UnknownAction[]) =>
+    rememberHistory ? [rememberHistory, ...commands] : commands
+
   /**
    * Mobile footer: активный список → заблокированные → календарь → снова активный.
    * Сегмент сбрасывается при уходе в календарь, иначе свитчер остаётся на
@@ -264,16 +277,16 @@ export function buildCartArchiveToggleCommands(input: {
    */
   if (mode === 'list') {
     if (listStatusSegment !== 'cartBlocked' && hasBlockedCartItems) {
-      return [
+      return withHistoryMemory([
         setLastCartArchiveView('list'),
         ...buildDesktopCartListSegmentCycleCommands(listStatusSegment),
-      ]
+      ])
     }
-    return [
+    return withHistoryMemory([
       setLastCartArchiveView('calendar'),
       setCartListStatusSegment('cart'),
       ...buildNotebookCartTabCommandsMobile(),
-    ]
+    ])
   }
 
   /**
@@ -283,17 +296,17 @@ export function buildCartArchiveToggleCommands(input: {
   if (mode === 'inactive' && input.cartMobileReturn != null) {
     const surface = input.cartMobileReturn
     if (surface.view === 'list') {
-      return [
+      return withHistoryMemory([
         setLastCartArchiveView('list'),
         setCartListStatusSegment(surface.segment),
         ...buildMobileCartSlotOpenCommands(),
-      ]
+      ])
     }
-    return [
+    return withHistoryMemory([
       setLastCartArchiveView('calendar'),
       setCartListStatusSegment(surface.segment),
       ...buildNotebookCartTabCommandsMobile(),
-    ]
+    ])
   }
 
   const next =
@@ -302,13 +315,13 @@ export function buildCartArchiveToggleCommands(input: {
       : resolveNextArchiveViewOnClick(mode, input.lastActiveView)
   const remember = setLastCartArchiveView(next)
   if (next === 'list') {
-    return [
+    return withHistoryMemory([
       remember,
       setCartListStatusSegment('cart'),
       ...buildMobileCartSlotOpenCommands(),
-    ]
+    ])
   }
-  return [remember, ...buildNotebookCartTabCommandsMobile()]
+  return withHistoryMemory([remember, ...buildNotebookCartTabCommandsMobile()])
 }
 
 export function buildHistoryArchiveToggleCommands(input: {
@@ -322,6 +335,10 @@ export function buildHistoryArchiveToggleCommands(input: {
   /** Корзина, которую закрывает этот клик по истории. */
   cartListPanelOpen?: boolean
   cartListStatusSegment?: CartListStatusSegment
+  /** Снимок истории перед уходом в корзину, дату или фабрику. */
+  historyMobileReturn?: {
+    view: 'calendar' | 'list'
+  } | null
 }): UnknownAction[] {
   const mode = resolveHistoryArchiveViewMode(input)
 
@@ -346,6 +363,21 @@ export function buildHistoryArchiveToggleCommands(input: {
         segment: input.cartListStatusSegment ?? 'cart',
       })
     : null
+
+  /**
+   * Возврат из корзины, даты или фабрики: календарь или список,
+   * как было в момент ухода, без шага круга.
+   */
+  if (mode === 'inactive' && input.historyMobileReturn != null) {
+    const surface = input.historyMobileReturn
+    const remember = setLastHistoryArchiveView(surface.view)
+    const open =
+      surface.view === 'list'
+        ? buildMobileHistorySlotOpenCommands()
+        : buildNotebookHistoryTabCommandsMobile()
+    return rememberCart ? [rememberCart, remember, ...open] : [remember, ...open]
+  }
+
   const next =
     mode === 'inactive' && input.inactiveOpensView != null
       ? input.inactiveOpensView

@@ -48,6 +48,7 @@ import {
   selectHistoryListSelectedLocalId,
   selectNotebookStripTab,
   selectCartMobileReturn,
+  selectHistoryMobileReturn,
   selectLastCartArchiveView,
   selectLastHistoryArchiveView,
   selectHistoryOpenDayPanelArchiveLocalId,
@@ -1100,6 +1101,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         hasBlockedCartItems: selectHasBlockedCartPostcards(state),
         inactiveOpensView: 'list',
         cartMobileReturn: selectCartMobileReturn(state),
+        historyListPanelOpen: selectIsHistoryListPanelOpen(state),
       })) {
         dispatch(command)
       }
@@ -1125,6 +1127,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         inactiveOpensView: 'list',
         cartListPanelOpen: selectCartListPanelOpen(state),
         cartListStatusSegment: selectCartListStatusSegment(state),
+        historyMobileReturn: selectHistoryMobileReturn(state),
       })) {
         dispatch(command)
       }

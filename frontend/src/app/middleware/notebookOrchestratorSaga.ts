@@ -7,7 +7,7 @@ import {
   selectCartListStatusSegment,
   selectHasBlockedCartPostcards,
 } from '@cart/infrastructure/selectors'
-import { selectIsHistoryListPanelOpen, selectNotebookStripTab, selectCartMobileReturn, selectLastCartArchiveView, selectLastHistoryArchiveView } from '@date/calendar/infrastructure/selectors'
+import { selectIsHistoryListPanelOpen, selectNotebookStripTab, selectCartMobileReturn, selectHistoryMobileReturn, selectLastCartArchiveView, selectLastHistoryArchiveView } from '@date/calendar/infrastructure/selectors'
 import { closeCardPieListPanelAndSyncIconsSaga } from '@app/middleware/exclusiveListPanelsSaga'
 import {
   notebookSessionRestored,
@@ -15,7 +15,7 @@ import {
   notebookTabDateClicked,
   notebookTabHistoryClicked,
 } from '@date/calendar/application/orchestration/notebookOrchestration.events'
-import { bumpNotebookDateTabPeekClearTick } from '@date/calendar/infrastructure/state'
+import { bumpNotebookDateTabPeekClearTick, setHistoryMobileReturn } from '@date/calendar/infrastructure/state'
 import { releaseCartDatePickListEntryOwnership } from '@date/calendar/application/logic/cartDatePickListEntryOwnership'
 import {
   buildCartArchiveToggleCommands,
@@ -35,6 +35,15 @@ function* handleNotebookTabDateClicked(): SagaIterator {
   const isMobileLayout: boolean = yield select(selectIsMobileLayout)
   if (isMobileLayout) {
     yield call(closeCardPieListPanelAndSyncIconsSaga)
+    const historyListPanelOpen: boolean = yield select(selectIsHistoryListPanelOpen)
+    const notebookStripTab = yield select(selectNotebookStripTab)
+    if (historyListPanelOpen || notebookStripTab === 'history') {
+      yield put(
+        setHistoryMobileReturn({
+          view: historyListPanelOpen ? 'list' : 'calendar',
+        }),
+      )
+    }
     yield* dispatchCommands(buildNotebookDateTabCommandsMobile())
   } else {
     yield* dispatchCommands(buildNotebookDateTabCommands())
@@ -72,6 +81,7 @@ function* handleNotebookTabCartClicked(): SagaIterator {
       listStatusSegment,
       hasBlockedCartItems,
       cartMobileReturn: yield select(selectCartMobileReturn),
+      historyListPanelOpen: yield select(selectIsHistoryListPanelOpen),
     }),
   )
 }
@@ -96,6 +106,7 @@ function* handleNotebookTabHistoryClicked(): SagaIterator {
       lastActiveView,
       cartListPanelOpen: yield select(selectCartListPanelOpen),
       cartListStatusSegment: yield select(selectCartListStatusSegment),
+      historyMobileReturn: yield select(selectHistoryMobileReturn),
     }),
   )
 }

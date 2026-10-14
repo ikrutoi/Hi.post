@@ -8,7 +8,10 @@ import {
 } from '@cardphoto/infrastructure/state'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { setArchiveEditRetainsStrip } from '@cardPanel/infrastructure/state'
-import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
+import {
+  selectCartListPanelOpen,
+  selectCartListStatusSegment,
+} from '@cart/infrastructure/selectors'
 import {
   setCartListPanelOpen,
   setCartListSelectedLocalId,
@@ -24,7 +27,9 @@ import {
   endCartCalendarDatePick,
   setCardPieListPanelOpen,
   setHistoryListPanelOpen,
+  setCartMobileReturn,
   setHistoryListSelectedLocalId,
+  setHistoryMobileReturn,
   setNotebookStripDateOverCart,
   setNotebookStripDateOverHistory,
   setNotebookStripTab,
@@ -64,6 +69,30 @@ export function useOpenCardphotoFactory() {
       dispatch(endCartCalendarDatePick())
 
       const state = store.getState()
+      const historyListOpen = selectIsHistoryListPanelOpen(state)
+      const cartListOpen = selectCartListPanelOpen(state)
+      const stripBeforeFactory = selectNotebookStripTab(state)
+      const mobile = selectIsMobileLayout(state)
+      if (mobile && (historyListOpen || stripBeforeFactory === 'history')) {
+        dispatch(
+          setHistoryMobileReturn({
+            view: historyListOpen ? 'list' : 'calendar',
+          }),
+        )
+      }
+      if (
+        mobile &&
+        (cartListOpen ||
+          stripBeforeFactory === 'cart' ||
+          stripBeforeFactory === 'cartdate')
+      ) {
+        dispatch(
+          setCartMobileReturn({
+            view: cartListOpen ? 'list' : 'calendar',
+            segment: selectCartListStatusSegment(state),
+          }),
+        )
+      }
       if (selectIsCardPieListPanelOpen(state)) {
         dispatch(setCardPieListPanelOpen(false))
         dispatchCardPieToolbarIconState(dispatch, false)

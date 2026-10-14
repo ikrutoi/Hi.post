@@ -69,6 +69,12 @@ type CalendarState = {
    */
   lastHistoryArchiveView: 'calendar' | 'list'
   /**
+   * Что было открыто в истории перед уходом: календарь или список.
+   */
+  historyMobileReturn: {
+    view: 'calendar' | 'list'
+  } | null
+  /**
    * Закладка «Дата» при открытом CartListPanel: полоса «Дата», пока корзина не открывают заново снаружи.
    * Сбрасывается при `setNotebookStripTab('cart'|'history')` и при `setCartListPanelOpen(true)`.
    */
@@ -150,6 +156,7 @@ const initialState: CalendarState = {
   lastCartArchiveView: 'calendar',
   cartMobileReturn: null,
   lastHistoryArchiveView: 'calendar',
+  historyMobileReturn: null,
   notebookStripDateOverCart: false,
   notebookStripDateOverHistory: false,
   cartCalendarDatePickMode: false,
@@ -356,6 +363,13 @@ const calendarSlice = createSlice({
       state.lastHistoryArchiveView = action.payload
     },
 
+    setHistoryMobileReturn(
+      state,
+      action: PayloadAction<{ view: 'calendar' | 'list' }>,
+    ) {
+      state.historyMobileReturn = action.payload
+    },
+
     setNotebookStripDateOverCart(state, action: PayloadAction<boolean>) {
       state.notebookStripDateOverCart = action.payload
     },
@@ -509,6 +523,7 @@ export const {
   setLastCartArchiveView,
   setCartMobileReturn,
   setLastHistoryArchiveView,
+  setHistoryMobileReturn,
   setNotebookStripDateOverCart,
   setNotebookStripDateOverHistory,
   setCartCalendarDatePickMode,
