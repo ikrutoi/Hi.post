@@ -10,7 +10,11 @@ import {
   clearViewAroma,
 } from '@aroma/infrastructure/state'
 import { selectViewAroma } from '@aroma/infrastructure/selectors'
-import { setCartItemCardAroma } from '@cart/infrastructure/state'
+import { selectCartItems } from '@cart/infrastructure/selectors'
+import { setCartItemCardAroma, updateItem } from '@cart/infrastructure/state'
+import { postcardsAdapter } from '@db/adapters/storeAdapters'
+import { postcardRefsFromCard, type PostcardHydrated } from '@entities/postcard'
+import { postcardLocalDataChanged } from '@features/sync/store/postcardSync.actions'
 import {
   readArchiveCartApplyPostcard,
   restoreFactorySectionBackup,
@@ -60,8 +64,37 @@ function* handleAromaToolbarAction(
   yield put(setAroma(viewAroma))
 }
 
+/** Apply и клик по плитке меняют аромат открытки. Строка должна попасть в IDB, иначе pull вернёт старую картинку. */
+function* persistCartItemAroma(
+  action: ReturnType<typeof setCartItemCardAroma>,
+): SagaIterator {
+  const { localId, aroma } = action.payload
+  const items: PostcardHydrated[] = yield select(selectCartItems)
+  const postcard = items.find((item) => item.localId === localId)
+  if (postcard?.id == null) return
+
+  const nextCard = {
+    ...postcard.card,
+    aroma: { ...aroma },
+  }
+  const nextPostcard: PostcardHydrated = {
+    ...postcard,
+    updatedAt: Date.now(),
+    postcard: postcardRefsFromCard(nextCard),
+    card: nextCard,
+  }
+  try {
+    yield call([postcardsAdapter, 'put'], nextPostcard)
+  } catch (e) {
+    console.error('persistCartItemAroma: persist failed', e)
+  }
+  yield put(updateItem(nextPostcard))
+  yield put(postcardLocalDataChanged())
+}
+
 function* watchAromaToolbar(): SagaIterator {
   yield takeEvery(toolbarAction.type, handleAromaToolbarAction)
+  yield takeEvery(setCartItemCardAroma.type, persistCartItemAroma)
   yield takeEvery(
     [setViewAroma.type, clearViewAroma.type, setAroma.type, clearAroma.type, clearApplied.type],
     syncAromaToolbarState,
