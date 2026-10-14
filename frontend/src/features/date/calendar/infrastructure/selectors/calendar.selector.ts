@@ -90,6 +90,11 @@ export const selectLastCartArchiveView = (
   state: RootState,
 ): 'calendar' | 'list' => state.calendar.lastCartArchiveView ?? 'calendar'
 
+export const selectCartMobileReturn = (
+  state: RootState,
+): { view: 'calendar' | 'list'; segment: 'cart' | 'cartBlocked' } | null =>
+  state.calendar.cartMobileReturn ?? null
+
 export const selectLastHistoryArchiveView = (
   state: RootState,
 ): 'calendar' | 'list' => state.calendar.lastHistoryArchiveView ?? 'calendar'

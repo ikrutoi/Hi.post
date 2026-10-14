@@ -47,6 +47,7 @@ import {
   selectIsHistoryListPanelOpen,
   selectHistoryListSelectedLocalId,
   selectNotebookStripTab,
+  selectCartMobileReturn,
   selectLastCartArchiveView,
   selectLastHistoryArchiveView,
   selectHistoryOpenDayPanelArchiveLocalId,
@@ -1098,6 +1099,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         listStatusSegment: selectCartListStatusSegment(state),
         hasBlockedCartItems: selectHasBlockedCartPostcards(state),
         inactiveOpensView: 'list',
+        cartMobileReturn: selectCartMobileReturn(state),
       })) {
         dispatch(command)
       }
@@ -1121,6 +1123,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         isMobileLayout: true,
         lastActiveView: selectLastHistoryArchiveView(state),
         inactiveOpensView: 'list',
+        cartListPanelOpen: selectCartListPanelOpen(state),
+        cartListStatusSegment: selectCartListStatusSegment(state),
       })) {
         dispatch(command)
       }

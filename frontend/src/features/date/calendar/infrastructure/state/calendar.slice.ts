@@ -57,6 +57,14 @@ type CalendarState = {
    */
   lastCartArchiveView: 'calendar' | 'list'
   /**
+   * Что было открыто в корзине перед уходом в историю:
+   * календарь, активный список или заблокированные.
+   */
+  cartMobileReturn: {
+    view: 'calendar' | 'list'
+    segment: 'cart' | 'cartBlocked'
+  } | null
+  /**
    * Последний режим истории (календарь / список).
    */
   lastHistoryArchiveView: 'calendar' | 'list'
@@ -140,6 +148,7 @@ const initialState: CalendarState = {
   },
   notebookStripTab: getInitialNotebookStripTab(),
   lastCartArchiveView: 'calendar',
+  cartMobileReturn: null,
   lastHistoryArchiveView: 'calendar',
   notebookStripDateOverCart: false,
   notebookStripDateOverHistory: false,
@@ -330,6 +339,16 @@ const calendarSlice = createSlice({
       state.lastCartArchiveView = action.payload
     },
 
+    setCartMobileReturn(
+      state,
+      action: PayloadAction<{
+        view: 'calendar' | 'list'
+        segment: 'cart' | 'cartBlocked'
+      }>,
+    ) {
+      state.cartMobileReturn = action.payload
+    },
+
     setLastHistoryArchiveView(
       state,
       action: PayloadAction<'calendar' | 'list'>,
@@ -488,6 +507,7 @@ export const {
   setHistoryListSelectedLocalId,
   setNotebookStripTab,
   setLastCartArchiveView,
+  setCartMobileReturn,
   setLastHistoryArchiveView,
   setNotebookStripDateOverCart,
   setNotebookStripDateOverHistory,

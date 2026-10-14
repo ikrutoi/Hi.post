@@ -7,7 +7,7 @@ import {
   selectCartListStatusSegment,
   selectHasBlockedCartPostcards,
 } from '@cart/infrastructure/selectors'
-import { selectIsHistoryListPanelOpen, selectNotebookStripTab, selectLastCartArchiveView, selectLastHistoryArchiveView } from '@date/calendar/infrastructure/selectors'
+import { selectIsHistoryListPanelOpen, selectNotebookStripTab, selectCartMobileReturn, selectLastCartArchiveView, selectLastHistoryArchiveView } from '@date/calendar/infrastructure/selectors'
 import { closeCardPieListPanelAndSyncIconsSaga } from '@app/middleware/exclusiveListPanelsSaga'
 import {
   notebookSessionRestored,
@@ -71,6 +71,7 @@ function* handleNotebookTabCartClicked(): SagaIterator {
       lastActiveView,
       listStatusSegment,
       hasBlockedCartItems,
+      cartMobileReturn: yield select(selectCartMobileReturn),
     }),
   )
 }
@@ -93,6 +94,8 @@ function* handleNotebookTabHistoryClicked(): SagaIterator {
       activeSection,
       isMobileLayout,
       lastActiveView,
+      cartListPanelOpen: yield select(selectCartListPanelOpen),
+      cartListStatusSegment: yield select(selectCartListStatusSegment),
     }),
   )
 }

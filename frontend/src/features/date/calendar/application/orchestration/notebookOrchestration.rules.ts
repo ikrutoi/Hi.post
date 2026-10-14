@@ -12,6 +12,7 @@ import {
   endCartCalendarDatePick,
   setHistoryListSelectedLocalId,
   setHistoryListPanelOpen,
+  setCartMobileReturn,
   setLastCartArchiveView,
   setLastHistoryArchiveView,
   setNotebookStripDateOverCart,
@@ -232,6 +233,11 @@ export function buildCartArchiveToggleCommands(input: {
   hasBlockedCartItems?: boolean
   /** Mobile footer: первое нажатие из inactive открывает список, не календарь. */
   inactiveOpensView?: ArchiveActiveView
+  /** Снимок корзины перед уходом в историю. */
+  cartMobileReturn?: {
+    view: 'calendar' | 'list'
+    segment: CartListStatusSegment
+  } | null
 }): UnknownAction[] {
   const mode = resolveCartArchiveViewMode(input)
   const listStatusSegment = input.listStatusSegment ?? 'cart'
@@ -252,7 +258,9 @@ export function buildCartArchiveToggleCommands(input: {
   }
 
   /**
-   * Mobile footer: список → (заблокированные, если есть) → календарь → список.
+   * Mobile footer: активный список → заблокированные → календарь → снова активный.
+   * Сегмент сбрасывается при уходе в календарь, иначе свитчер остаётся на
+   * заблокированных и следующий круг пропускает активный список.
    */
   if (mode === 'list') {
     if (listStatusSegment !== 'cartBlocked' && hasBlockedCartItems) {
@@ -263,6 +271,27 @@ export function buildCartArchiveToggleCommands(input: {
     }
     return [
       setLastCartArchiveView('calendar'),
+      setCartListStatusSegment('cart'),
+      ...buildNotebookCartTabCommandsMobile(),
+    ]
+  }
+
+  /**
+   * Возврат из истории: календарь, активный список или заблокированные —
+   * как было в момент ухода, без шага круга.
+   */
+  if (mode === 'inactive' && input.cartMobileReturn != null) {
+    const surface = input.cartMobileReturn
+    if (surface.view === 'list') {
+      return [
+        setLastCartArchiveView('list'),
+        setCartListStatusSegment(surface.segment),
+        ...buildMobileCartSlotOpenCommands(),
+      ]
+    }
+    return [
+      setLastCartArchiveView('calendar'),
+      setCartListStatusSegment(surface.segment),
       ...buildNotebookCartTabCommandsMobile(),
     ]
   }
@@ -275,6 +304,7 @@ export function buildCartArchiveToggleCommands(input: {
   if (next === 'list') {
     return [
       remember,
+      setCartListStatusSegment('cart'),
       ...buildMobileCartSlotOpenCommands(),
     ]
   }
@@ -289,6 +319,9 @@ export function buildHistoryArchiveToggleCommands(input: {
   lastActiveView?: ArchiveActiveView
   /** Mobile footer: первое нажатие из inactive открывает список, не календарь. */
   inactiveOpensView?: ArchiveActiveView
+  /** Корзина, которую закрывает этот клик по истории. */
+  cartListPanelOpen?: boolean
+  cartListStatusSegment?: CartListStatusSegment
 }): UnknownAction[] {
   const mode = resolveHistoryArchiveViewMode(input)
 
@@ -303,6 +336,16 @@ export function buildHistoryArchiveToggleCommands(input: {
     ]
   }
 
+  const leavingCart =
+    input.cartListPanelOpen === true ||
+    input.notebookStripTab === 'cart' ||
+    input.notebookStripTab === 'cartdate'
+  const rememberCart = leavingCart
+    ? setCartMobileReturn({
+        view: input.cartListPanelOpen ? 'list' : 'calendar',
+        segment: input.cartListStatusSegment ?? 'cart',
+      })
+    : null
   const next =
     mode === 'inactive' && input.inactiveOpensView != null
       ? input.inactiveOpensView
@@ -312,12 +355,16 @@ export function buildHistoryArchiveToggleCommands(input: {
     const openList = input.isMobileLayout
       ? buildMobileHistorySlotOpenCommands()
       : buildHistoryListCommands()
-    return [remember, ...openList]
+    return rememberCart
+      ? [rememberCart, remember, ...openList]
+      : [remember, ...openList]
   }
   const openCalendar = input.isMobileLayout
     ? buildNotebookHistoryTabCommandsMobile()
     : buildHistoryCalendarCommandsDesktop()
-  return [remember, ...openCalendar]
+  return rememberCart
+    ? [rememberCart, remember, ...openCalendar]
+    : [remember, ...openCalendar]
 }
 
 /** Mobile Cart slot: список корзины; tab cart, чтобы слот оставался включённым. */
