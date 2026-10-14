@@ -29,6 +29,7 @@ import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/
 import {
   buildCartArchiveToggleCommands,
   buildHistoryArchiveToggleCommands,
+  buildRememberMobileCartSurfaceCommands,
   resolveCartArchiveViewMode,
   resolveHistoryArchiveViewMode,
 } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
@@ -48,6 +49,7 @@ import {
   selectHistoryListSelectedLocalId,
   selectNotebookStripTab,
   selectCartMobileReturn,
+  selectCartReturnPending,
   selectHistoryMobileReturn,
   selectLastCartArchiveView,
   selectLastHistoryArchiveView,
@@ -855,6 +857,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       if (pie == null) return
 
       const state = store.getState()
+      for (const command of buildRememberMobileCartSurfaceCommands(state)) {
+        dispatch(command)
+      }
       const notebookStripTab = selectNotebookStripTab(state)
       const exitingListArchiveSlot =
         selectCartListPanelOpen(state) || selectIsHistoryListPanelOpen(state)
@@ -1101,7 +1106,9 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         hasBlockedCartItems: selectHasBlockedCartPostcards(state),
         inactiveOpensView: 'list',
         cartMobileReturn: selectCartMobileReturn(state),
+        cartReturnPending: selectCartReturnPending(state),
         historyListPanelOpen: selectIsHistoryListPanelOpen(state),
+        activeSection: selectActiveSection(state),
       })) {
         dispatch(command)
       }

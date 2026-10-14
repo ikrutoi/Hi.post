@@ -65,6 +65,11 @@ type CalendarState = {
     segment: 'cart' | 'cartBlocked'
   } | null
   /**
+   * Следующий клик по корзине возвращает снимок, а не делает шаг круга.
+   * Включается при уходе в сборку.
+   */
+  cartReturnPending: boolean
+  /**
    * Последний режим истории (календарь / список).
    */
   lastHistoryArchiveView: 'calendar' | 'list'
@@ -155,6 +160,7 @@ const initialState: CalendarState = {
   notebookStripTab: getInitialNotebookStripTab(),
   lastCartArchiveView: 'calendar',
   cartMobileReturn: null,
+  cartReturnPending: false,
   lastHistoryArchiveView: 'calendar',
   historyMobileReturn: null,
   notebookStripDateOverCart: false,
@@ -356,6 +362,10 @@ const calendarSlice = createSlice({
       state.cartMobileReturn = action.payload
     },
 
+    setCartReturnPending(state, action: PayloadAction<boolean>) {
+      state.cartReturnPending = action.payload
+    },
+
     setLastHistoryArchiveView(
       state,
       action: PayloadAction<'calendar' | 'list'>,
@@ -522,6 +532,7 @@ export const {
   setNotebookStripTab,
   setLastCartArchiveView,
   setCartMobileReturn,
+  setCartReturnPending,
   setLastHistoryArchiveView,
   setHistoryMobileReturn,
   setNotebookStripDateOverCart,

@@ -1,4 +1,11 @@
 import type { UnknownAction } from '@reduxjs/toolkit'
+import type { RootState } from '@app/state'
+import {
+  selectCartListPanelOpen,
+  selectCartListStatusSegment,
+} from '@cart/infrastructure/selectors'
+import { selectIsMobileLayout } from '@layout/infrastructure/selectors'
+import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
 import {
   setCartListPanelOpen,
   setCartListSelectedLocalId,
@@ -13,6 +20,7 @@ import {
   setHistoryListSelectedLocalId,
   setHistoryListPanelOpen,
   setCartMobileReturn,
+  setCartReturnPending,
   setHistoryMobileReturn,
   setLastCartArchiveView,
   setLastHistoryArchiveView,
@@ -204,6 +212,35 @@ export const buildHistoryListCommands = (): UnknownAction[] => [
 export const buildNotebookHistoryTabCommands = (): UnknownAction[] =>
   buildHistoryCalendarCommandsDesktop()
 
+/**
+ * Мобильный уход из корзины в сборку.
+ * Сегмент «заблокированные» запоминаем только пока открыт именно этот список.
+ * Календарь не тащит за собой прошлый сегмент — иначе возврат открывает заблокированные.
+ */
+export function buildRememberMobileCartSurfaceCommands(
+  state: RootState,
+): UnknownAction[] {
+  if (!selectIsMobileLayout(state)) return []
+  const listOpen = selectCartListPanelOpen(state)
+  const strip = selectNotebookStripTab(state)
+  const retained = state.cardPanel.archiveEditRetainsStrip
+  const inCart =
+    listOpen ||
+    strip === 'cart' ||
+    strip === 'cartdate' ||
+    retained === 'cart' ||
+    retained === 'cartdate'
+  if (!inCart) return []
+  const segment = selectCartListStatusSegment(state)
+  return [
+    setCartMobileReturn({
+      view: listOpen ? 'list' : 'calendar',
+      segment: listOpen && segment === 'cartBlocked' ? 'cartBlocked' : 'cart',
+    }),
+    setCartReturnPending(true),
+  ]
+}
+
 export function nextCartListStatusSegment(
   current: CartListStatusSegment,
 ): CartListStatusSegment {
@@ -234,13 +271,17 @@ export function buildCartArchiveToggleCommands(input: {
   hasBlockedCartItems?: boolean
   /** Mobile footer: первое нажатие из inactive открывает список, не календарь. */
   inactiveOpensView?: ArchiveActiveView
-  /** Снимок корзины перед уходом в историю. */
+  /** Снимок корзины перед уходом в историю или сборку. */
   cartMobileReturn?: {
     view: 'calendar' | 'list'
     segment: CartListStatusSegment
   } | null
+  /** Уход в сборку: следующий клик возвращает снимок, даже если список ещё открыт. */
+  cartReturnPending?: boolean
   /** История, которую закрывает этот клик по корзине. */
   historyListPanelOpen?: boolean
+  /** Сборка открытки: клик по корзине возвращает снимок, а не делает шаг круга. */
+  activeSection?: CardMenuSection | null
 }): UnknownAction[] {
   const mode = resolveCartArchiveViewMode(input)
   const listStatusSegment = input.listStatusSegment ?? 'cart'
@@ -270,6 +311,40 @@ export function buildCartArchiveToggleCommands(input: {
   const withHistoryMemory = (commands: UnknownAction[]) =>
     rememberHistory ? [rememberHistory, ...commands] : commands
 
+  const factorySection =
+    input.activeSection === 'cardphoto' ||
+    input.activeSection === 'cardtext' ||
+    input.activeSection === 'envelope' ||
+    input.activeSection === 'aroma'
+  /**
+   * Возврат из истории или сборки: календарь, активный список или
+   * заблокированные — как было в момент ухода, без шага круга.
+   * Пока список корзины ещё числится открытым, обычный круг принял бы
+   * это за переход на заблокированные.
+   */
+  if (
+    input.cartMobileReturn != null &&
+    (mode === 'inactive' || factorySection || input.cartReturnPending)
+  ) {
+    const surface = input.cartMobileReturn
+    const clearPending = setCartReturnPending(false)
+    if (surface.view === 'list') {
+      return withHistoryMemory([
+        clearPending,
+        setLastCartArchiveView('list'),
+        setActiveSection('date'),
+        setCartListStatusSegment(surface.segment),
+        ...buildMobileCartSlotOpenCommands(),
+      ])
+    }
+    return withHistoryMemory([
+      clearPending,
+      setLastCartArchiveView('calendar'),
+      setCartListStatusSegment('cart'),
+      ...buildNotebookCartTabCommandsMobile(),
+    ])
+  }
+
   /**
    * Mobile footer: активный список → заблокированные → календарь → снова активный.
    * Сегмент сбрасывается при уходе в календарь, иначе свитчер остаётся на
@@ -285,26 +360,6 @@ export function buildCartArchiveToggleCommands(input: {
     return withHistoryMemory([
       setLastCartArchiveView('calendar'),
       setCartListStatusSegment('cart'),
-      ...buildNotebookCartTabCommandsMobile(),
-    ])
-  }
-
-  /**
-   * Возврат из истории: календарь, активный список или заблокированные —
-   * как было в момент ухода, без шага круга.
-   */
-  if (mode === 'inactive' && input.cartMobileReturn != null) {
-    const surface = input.cartMobileReturn
-    if (surface.view === 'list') {
-      return withHistoryMemory([
-        setLastCartArchiveView('list'),
-        setCartListStatusSegment(surface.segment),
-        ...buildMobileCartSlotOpenCommands(),
-      ])
-    }
-    return withHistoryMemory([
-      setLastCartArchiveView('calendar'),
-      setCartListStatusSegment(surface.segment),
       ...buildNotebookCartTabCommandsMobile(),
     ])
   }

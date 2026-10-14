@@ -95,6 +95,9 @@ export const selectCartMobileReturn = (
 ): { view: 'calendar' | 'list'; segment: 'cart' | 'cartBlocked' } | null =>
   state.calendar.cartMobileReturn ?? null
 
+export const selectCartReturnPending = (state: RootState): boolean =>
+  state.calendar.cartReturnPending === true
+
 export const selectLastHistoryArchiveView = (
   state: RootState,
 ): 'calendar' | 'list' => state.calendar.lastHistoryArchiveView ?? 'calendar'

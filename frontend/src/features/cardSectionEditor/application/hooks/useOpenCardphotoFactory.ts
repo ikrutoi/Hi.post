@@ -8,15 +8,13 @@ import {
 } from '@cardphoto/infrastructure/state'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { setArchiveEditRetainsStrip } from '@cardPanel/infrastructure/state'
-import {
-  selectCartListPanelOpen,
-  selectCartListStatusSegment,
-} from '@cart/infrastructure/selectors'
+import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import {
   setCartListPanelOpen,
   setCartListSelectedLocalId,
 } from '@cart/infrastructure/state'
 import { isCartOwnedNotebookStrip } from '@date/calendar/application/logic/calendarStripSection'
+import { buildRememberMobileCartSurfaceCommands } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 import {
   selectIsCardPieListPanelOpen,
   selectIsHistoryListPanelOpen,
@@ -27,7 +25,6 @@ import {
   endCartCalendarDatePick,
   setCardPieListPanelOpen,
   setHistoryListPanelOpen,
-  setCartMobileReturn,
   setHistoryListSelectedLocalId,
   setHistoryMobileReturn,
   setNotebookStripDateOverCart,
@@ -52,6 +49,22 @@ export function useOpenCardphotoFactory() {
     (event?: MouseEvent) => {
       event?.stopPropagation()
 
+      const state = store.getState()
+      const historyListOpen = selectIsHistoryListPanelOpen(state)
+      const stripBeforeFactory = selectNotebookStripTab(state)
+      const retainedStrip = state.cardPanel.archiveEditRetainsStrip
+      const mobile = selectIsMobileLayout(state)
+      if (mobile && (historyListOpen || stripBeforeFactory === 'history' || retainedStrip === 'history')) {
+        dispatch(
+          setHistoryMobileReturn({
+            view: historyListOpen ? 'list' : 'calendar',
+          }),
+        )
+      }
+      for (const command of buildRememberMobileCartSurfaceCommands(state)) {
+        dispatch(command)
+      }
+
       clearRightPieCardphotoPeek()
       clearRightPieCardtextPeek()
       clearRightPieEnvelopePeek()
@@ -68,32 +81,8 @@ export function useOpenCardphotoFactory() {
       dispatch(closeDayPanel())
       dispatch(endCartCalendarDatePick())
 
-      const state = store.getState()
-      const historyListOpen = selectIsHistoryListPanelOpen(state)
-      const cartListOpen = selectCartListPanelOpen(state)
-      const stripBeforeFactory = selectNotebookStripTab(state)
-      const mobile = selectIsMobileLayout(state)
-      if (mobile && (historyListOpen || stripBeforeFactory === 'history')) {
-        dispatch(
-          setHistoryMobileReturn({
-            view: historyListOpen ? 'list' : 'calendar',
-          }),
-        )
-      }
-      if (
-        mobile &&
-        (cartListOpen ||
-          stripBeforeFactory === 'cart' ||
-          stripBeforeFactory === 'cartdate')
-      ) {
-        dispatch(
-          setCartMobileReturn({
-            view: cartListOpen ? 'list' : 'calendar',
-            segment: selectCartListStatusSegment(state),
-          }),
-        )
-      }
-      if (selectIsCardPieListPanelOpen(state)) {
+      const stateAfterReset = store.getState()
+      if (selectIsCardPieListPanelOpen(stateAfterReset)) {
         dispatch(setCardPieListPanelOpen(false))
         dispatchCardPieToolbarIconState(dispatch, false)
       }
@@ -105,10 +94,14 @@ export function useOpenCardphotoFactory() {
       }
 
       const notebookStripTab = selectNotebookStripTab(state)
-      if (isCartOwnedNotebookStrip(notebookStripTab)) {
+      if (
+        isCartOwnedNotebookStrip(notebookStripTab) ||
+        retainedStrip === 'cart' ||
+        retainedStrip === 'cartdate'
+      ) {
         dispatch(setNotebookStripDateOverCart(true))
         dispatch(setNotebookStripTab('date'))
-      } else if (notebookStripTab === 'history') {
+      } else if (notebookStripTab === 'history' || retainedStrip === 'history') {
         dispatch(setNotebookStripDateOverHistory(true))
         dispatch(setNotebookStripTab('date'))
       }
