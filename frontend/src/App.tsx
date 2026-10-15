@@ -200,36 +200,11 @@ import { resolveCentralPieEarsMode } from '@date/calendar/application/logic/cale
 import {
   resolveHistoryStripDayPostcardSelection,
 } from '@date/calendar/application/logic/historyStripDayPostcardSelection'
-import { MarkStampYearDevProvider, useMarkStampYearDev } from '@envelope/application/MarkStampYearDevContext'
 import { MobileAppShell } from '@layout/presentation/MobileAppShell'
 import styles from './App.module.scss'
 import { store } from '@app/state/store'
 import { getCurrentDate } from '@shared/utils/date'
 import { clearDate } from '@date/infrastructure/state'
-
-function MarkStampYearDevButtons() {
-  const { bump } = useMarkStampYearDev()
-  return (
-    <div className={styles.appRightSidebarDevStamp}>
-      <button
-        type="button"
-        className={styles.appRightSidebarDevStampButton}
-        aria-label="Уменьшить число на марке"
-        onClick={() => bump(-1)}
-      >
-        −
-      </button>
-      <button
-        type="button"
-        className={styles.appRightSidebarDevStampButton}
-        aria-label="Увеличить число на марке"
-        onClick={() => bump(1)}
-      >
-        +
-      </button>
-    </div>
-  )
-}
 
 /** Merges the mini-sections strip with the left or right CardPie under one chrome frame. */
 const CARD_PIE_COPY_ALL_SECTIONS: CardPanelSection[] = [
@@ -2637,8 +2612,7 @@ const App = () => {
   return (
     <div ref={appRef} className={styles.app} onClick={handleAppClick}>
       <CardphotoFilePickerHost />
-      <MarkStampYearDevProvider>
-        <div className={styles.appSubstrate}>
+      <div className={styles.appSubstrate}>
         <div className={styles.appControlStrip}>
           <div className={styles.appSidebar}>
             <SectionEditorSidebar />
@@ -2784,12 +2758,7 @@ const App = () => {
               <UserLoginRightSlot />
             </div>
           </main>
-          <div
-            className={clsx(
-              styles.appRightSidebar,
-              styles.appRightSidebarWithDevStamp,
-            )}
-          >
+          <div className={styles.appRightSidebar}>
             <SectionEditorRightSidebar
               pinActiveTab={
                 activePieSide === 'right' &&
@@ -2799,11 +2768,9 @@ const App = () => {
                   : null
               }
             />
-            <MarkStampYearDevButtons />
           </div>
         </div>
-        </div>
-      </MarkStampYearDevProvider>
+      </div>
     </div>
   )
 }

@@ -115,7 +115,6 @@ import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { CardSection, IconKey } from '@shared/config/constants'
 import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
 import { useOpenCardphotoFactory } from '@features/cardSectionEditor/application/hooks/useOpenCardphotoFactory'
-import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDevContext'
 import {
   IconCardPie,
   IconSectionMenuCardphoto,
@@ -1186,7 +1185,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     >
       <AssemblyPlanPieFocusProvider value={planPieFocusValue}>
       <AssemblyCardPieInnerProvider value={assemblyPie.inner}>
-      <MarkStampYearDevProvider>
         <div className={styles.mobileSubstrate}>
           {showMobileUserLoginChrome ? (
             <div className={styles.mobileUserLoginChrome} aria-label="Account">
@@ -1490,7 +1488,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
             <UserLoginRightSlot />
           </div>
         ) : null}
-      </MarkStampYearDevProvider>
       </AssemblyCardPieInnerProvider>
       </AssemblyPlanPieFocusProvider>
     </div>
