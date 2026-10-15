@@ -14,7 +14,7 @@ class PassportColorGenerator
         '20', '21', '22', '23', '24',
     ];
 
-    public const EMBLEM_FORMS = ['triangles', 'waves'];
+    public const EMBLEM_FORMS = ['triangles'];
 
     public const DEFAULT_EMBLEM_FORM = 'triangles';
 

@@ -1,7 +1,4 @@
-import type {
-  IconUserRegisteredElementColors,
-  UserRegisteredEmblemForm,
-} from '@shared/ui/icons'
+import type { IconUserRegisteredElementColors } from '@shared/ui/icons'
 
 export type User = {
   id: string
@@ -9,8 +6,6 @@ export type User = {
   email: string
   avatarUrl?: string | null
   passportColors?: IconUserRegisteredElementColors | null
-  /** Emblem geometry preference; colors stay in `passportColors`. */
-  passportEmblemForm?: UserRegisteredEmblemForm | null
   passportCode?: string | null
 }
 

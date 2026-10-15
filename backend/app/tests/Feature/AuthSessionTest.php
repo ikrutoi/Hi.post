@@ -63,11 +63,10 @@ class AuthSessionTest extends TestCase
         $this->withToken($token)
             ->patchJson('/api/me', [
                 'name' => 'Ada Lovelace',
-                'passportEmblemForm' => 'waves',
             ])
             ->assertOk()
             ->assertJsonPath('name', 'Ada Lovelace')
-            ->assertJsonPath('passportEmblemForm', 'waves');
+            ->assertJsonPath('passportEmblemForm', 'triangles');
 
         $this->withToken($token)
             ->postJson('/api/logout')

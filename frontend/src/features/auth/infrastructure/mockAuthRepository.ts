@@ -80,7 +80,6 @@ function toAuthResponse(user: MockStoredUser): AuthResponse {
     name: user.name,
     email: user.email,
     passportColors: generateUserRegisteredElementColors(user.id),
-    passportEmblemForm: 'triangles',
     passportCode: generatePassportCode(user.id),
   }
   return {
@@ -141,7 +140,6 @@ export const mockAuthRepository: AuthRepository = {
     return {
       ...session.user,
       passportColors: resolveMockPassportColors(session.user),
-      passportEmblemForm: session.user.passportEmblemForm ?? 'triangles',
       passportCode: resolveMockPassportCode(session.user),
     }
   },

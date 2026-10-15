@@ -118,10 +118,9 @@ export const UserLoginPanel: React.FC = () => {
         <UserLoginToolbarIcon
           userId={user.id}
           passportColors={user.passportColors}
-          passportEmblemForm={user.passportEmblemForm}
         />
       ) : null,
-    [isAuthenticated, user?.id, user?.passportColors, user?.passportEmblemForm],
+    [isAuthenticated, user?.id, user?.passportColors],
   )
 
   return (

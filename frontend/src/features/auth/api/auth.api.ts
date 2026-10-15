@@ -18,10 +18,8 @@ export const loginUserApi = (payload: LoginPayload) =>
 
 export const fetchMeApi = () => httpClient.get<User>('/api/me')
 
-export const updateMeApi = (payload: {
-  name?: string
-  passportEmblemForm?: User['passportEmblemForm']
-}) => httpClient.patch<User>('/api/me', payload)
+export const updateMeApi = (payload: { name?: string }) =>
+  httpClient.patch<User>('/api/me', payload)
 
 export const logoutUserApi = (token: string) =>
   httpClient.post('/api/logout', null, {

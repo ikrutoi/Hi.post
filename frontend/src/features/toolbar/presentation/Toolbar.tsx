@@ -868,7 +868,6 @@ export const Toolbar = ({
             <UserLoginToolbarIcon
               userId={authUser.id}
               passportColors={authUser.passportColors}
-              passportEmblemForm={authUser.passportEmblemForm}
             />
           ) : (
             <UserLoginToolbarIcon guest />
