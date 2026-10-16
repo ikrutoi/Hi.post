@@ -1,8 +1,7 @@
 import React, { useEffect, useMemo, useRef } from 'react'
 import clsx from 'clsx'
 import { Mark } from '@envelope/view/presentation'
-import { getSafeLang } from '@i18n/helpers'
-import { i18n } from '@i18n/i18n'
+import { useLangSnapshot } from '@i18n/langPreference'
 import { EnvelopeAddress } from '../addressForm/presentation'
 import { AddressFormView } from '../addressForm/presentation/AddressFormView'
 import { RecipientView } from '../addressForm/presentation/AddressView'
@@ -49,7 +48,7 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
 
 const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }) => {
   const notebookTabsOuter = useSectionEditorNotebookTabsOuter()
-  const lang = getSafeLang(i18n.language)
+  const { active: lang } = useLangSnapshot()
   const recipientFacade = useRecipientFacade()
   const isMobile = useAppSelector(selectIsMobileLayout)
   const sandboxActive = useAppSelector(selectArchiveEnvelopeSandboxActive)

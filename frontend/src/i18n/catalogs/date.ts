@@ -1,4 +1,5 @@
 import type { DaysOfWeek } from '@entities/date/domain/types'
+import { getActiveLang } from '../langPreference'
 import type { Lang } from '../types'
 
 type DateCatalog = {
@@ -60,23 +61,20 @@ const ru: DateCatalog = {
 
 const dateCatalogs: Partial<Record<Lang, DateCatalog>> = { en, ru }
 
-/** Date section copy. The rest of the app stays on `DEFAULT_LANG`. */
-export const DATE_SECTION_LANG: Lang = 'ru'
-
 function dateCatalog(lang: Lang): DateCatalog {
   return dateCatalogs[lang] ?? en
 }
 
 export function dateWeekdayLabel(
   day: DaysOfWeek,
-  lang: Lang = DATE_SECTION_LANG,
+  lang: Lang = getActiveLang(),
 ): string {
   return dateCatalog(lang).weekdays[day]
 }
 
 export function dateMonthUpperLabel(
   monthIndex: number,
-  lang: Lang = DATE_SECTION_LANG,
+  lang: Lang = getActiveLang(),
 ): string {
   const months = dateCatalog(lang).monthsUpper
   return months[monthIndex] ?? en.monthsUpper[monthIndex] ?? ''

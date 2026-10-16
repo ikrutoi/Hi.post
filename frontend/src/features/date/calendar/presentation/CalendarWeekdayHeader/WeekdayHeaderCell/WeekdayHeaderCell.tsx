@@ -1,6 +1,7 @@
 import React from 'react'
 import clsx from 'clsx'
 import { dateWeekdayLabel } from '@i18n/catalogs/date'
+import { useLangSnapshot } from '@i18n/langPreference'
 import styles from './WeekdayHeaderCell.module.scss'
 import type { DaysOfWeek } from '@entities/date/domain/types'
 import type { FirstDay } from '@entities/date/domain/types'
@@ -29,7 +30,8 @@ export const WeekdayHeaderCell: React.FC<WeekdayHeaderCellProps> = ({
   }
 
   const hasClick = (isFirstDay && handleFirstDay) || onWeekdayClick
-  const label = dateWeekdayLabel(weekday)
+  const { active } = useLangSnapshot()
+  const label = dateWeekdayLabel(weekday, active)
 
   return (
     <div

@@ -35,6 +35,7 @@ import {
   type UserPanelHubSection,
 } from './UserPanelHub'
 import { UserPanelInfo } from './UserPanelInfo'
+import { UserPanelLanguage } from './UserPanelLanguage'
 import { UserPanelSettings } from './UserPanelSettings'
 import { CloudBackupStatus } from '@features/sync/presentation/CloudBackupStatus'
 import styles from './UserLoginPanel.module.scss'
@@ -195,7 +196,8 @@ export const UserLoginPanel: React.FC = () => {
             styles.content,
             panelView === 'hub' && styles.contentHub,
             panelView === 'info' && styles.contentInfo,
-            panelView === 'settings' && styles.contentInfo,
+            (panelView === 'settings' || panelView === 'language') &&
+              styles.contentInfo,
           )}
           aria-label={headerTitle ?? 'Account'}
         >
@@ -217,6 +219,8 @@ export const UserLoginPanel: React.FC = () => {
             <UserPanelInfo />
           ) : panelView === 'settings' ? (
             <UserPanelSettings onOpenLanguage={handleOpenLanguage} />
+          ) : panelView === 'language' ? (
+            <UserPanelLanguage />
           ) : null}
         </div>
       </ScrollArea>

@@ -441,6 +441,72 @@ $user-panel-header-lead-edge-mobile: iconButton.$toolbar-mobile-toolbar-key-marg
   color: $color-font-enabled-light;
 }
 
+.languageList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.languageRow {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  min-height: 2.25rem;
+  margin: 0;
+  padding: 0.35rem 0.65rem;
+  border-radius: 0.5rem;
+  border: 1px solid $color-app-strip;
+  background-color: $color-app-inner;
+  appearance: none;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: start;
+  color: $color-font-enabled-light;
+  -webkit-tap-highlight-color: transparent;
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.languageRowSelected {
+  color: $color-font-enabled;
+  border-color: $color-section-light;
+}
+
+.languageRowIcon {
+  display: block;
+  width: 1.15rem;
+  height: 1.15rem;
+  flex-shrink: 0;
+}
+
+.languageRowResolved {
+  margin-inline-start: auto;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: $color-font-enabled-light;
+}
+
+:global([data-shell-layout='desktop']) .languageRow {
+  cursor: pointer;
+
+  &:hover {
+    color: $color-font-enabled;
+    border-color: $color-section-light;
+
+    .languageRowResolved {
+      color: $color-font-enabled-light;
+    }
+  }
+}
+
 .hubTileIcon {
   display: block;
   width: 1.75rem;

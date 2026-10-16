@@ -1,8 +1,8 @@
-import { getSafeLang } from './helpers'
-import { DEFAULT_LANG } from './config'
+import { getActiveLang } from './langPreference'
+import type { Lang } from './types'
 
 export const i18n = {
-  language: getSafeLang(
-    localStorage.getItem('lang') ?? navigator.language ?? DEFAULT_LANG
-  ),
+  get language(): Lang {
+    return getActiveLang()
+  },
 }
