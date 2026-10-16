@@ -1,6 +1,6 @@
 import React from 'react'
 import clsx from 'clsx'
-import { MONTH_NAMES_UPPER } from '@entities/date/constants'
+import { dateMonthUpperLabel } from '@i18n/catalogs/date'
 import { useSwitcherFacade } from '../../application/facades'
 import styles from './SwitcherSlider.module.scss'
 import type { CalendarViewDate } from '@entities/date/domain/types'
@@ -41,7 +41,7 @@ export const SwitcherSlider: React.FC<SwitcherSliderProps> = ({
           onClick={() => changePosition('month')}
         >
           <span className={styles.cartSegmentValue}>
-            {MONTH_NAMES_UPPER[calendarViewDate.month]}
+            {dateMonthUpperLabel(calendarViewDate.month)}
           </span>
         </button>
         <button
@@ -85,7 +85,7 @@ export const SwitcherSlider: React.FC<SwitcherSliderProps> = ({
         onClick={() => changePosition('month')}
       >
         <span className={styles.segmentValue}>
-          {MONTH_NAMES_UPPER[calendarViewDate.month]}
+          {dateMonthUpperLabel(calendarViewDate.month)}
         </span>
       </button>
       <button

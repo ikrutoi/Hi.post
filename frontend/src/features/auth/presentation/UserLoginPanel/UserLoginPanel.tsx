@@ -5,6 +5,7 @@ import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPa
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import {
   IconInfo,
+  IconLanguage,
   IconSettings,
   IconUserLogin,
   resolveGuestUserRegisteredElementColors,
@@ -22,6 +23,7 @@ import {
   selectAuthUser,
   selectIsAuthenticated,
 } from '@features/auth/infrastructure/selectors/authSelectors'
+import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { UserAvatarPicker } from './UserAvatarPicker'
 import { UserPanelChromePattern } from './UserPanelChromePattern'
 import {
@@ -33,19 +35,25 @@ import {
   type UserPanelHubSection,
 } from './UserPanelHub'
 import { UserPanelInfo } from './UserPanelInfo'
+import { UserPanelSettings } from './UserPanelSettings'
 import { CloudBackupStatus } from '@features/sync/presentation/CloudBackupStatus'
 import styles from './UserLoginPanel.module.scss'
 
-type UserPanelView = 'hub' | UserPanelHubSection
+type UserPanelView = 'hub' | UserPanelHubSection | 'language'
 
 export const UserLoginPanel: React.FC = () => {
   const dispatch = useAppDispatch()
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
+  const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const user = useAppSelector(selectAuthUser)
   const [guestAuthMode, setGuestAuthMode] = useState<GuestAuthMode>('signIn')
   const [panelView, setPanelView] = useState<UserPanelView>('hub')
 
   const handleClose = useCallback(() => {
+    if (panelView === 'language') {
+      setPanelView('settings')
+      return
+    }
     if (panelView !== 'hub') {
       setPanelView('hub')
       dispatch(clearAuthError())
@@ -78,6 +86,10 @@ export const UserLoginPanel: React.FC = () => {
     setPanelView(section)
   }, [])
 
+  const handleOpenLanguage = useCallback(() => {
+    setPanelView('language')
+  }, [])
+
   const displayName = user?.name ?? user?.email ?? 'Signed in'
   const cellTitle =
     panelView === 'registration'
@@ -86,7 +98,9 @@ export const UserLoginPanel: React.FC = () => {
         ? 'Info'
         : panelView === 'settings'
           ? 'Settings'
-          : null
+          : panelView === 'language'
+            ? 'Language'
+            : null
   const headerTitle =
     panelView === 'hub'
       ? isAuthenticated
@@ -100,10 +114,13 @@ export const UserLoginPanel: React.FC = () => {
       <IconInfo className={styles.headerCellIcon} aria-hidden />
     ) : panelView === 'settings' ? (
       <IconSettings className={styles.headerCellIcon} aria-hidden />
+    ) : panelView === 'language' ? (
+      <IconLanguage className={styles.headerCellIcon} aria-hidden />
     ) : null
   const showLogoutFooter = isAuthenticated && panelView === 'registration'
   const isHub = panelView === 'hub'
-  const hideLeadIcon = !isAuthenticated || !isHub
+  const showGuestLeadIcon = !isAuthenticated && isHub && !isMobileLayout
+  const hideLeadIcon = !isHub || (!isAuthenticated && !showGuestLeadIcon)
   const chromePatternColors = useMemo(
     () =>
       isAuthenticated && user?.id != null
@@ -112,16 +129,20 @@ export const UserLoginPanel: React.FC = () => {
     [isAuthenticated, user?.id, user?.passportColors],
   )
   const hasChromePattern = true
-  const leadIconOverride = useMemo(
-    () =>
-      isAuthenticated && user?.id != null ? (
+  const leadIconOverride = useMemo(() => {
+    if (isAuthenticated && user?.id != null) {
+      return (
         <UserLoginToolbarIcon
           userId={user.id}
           passportColors={user.passportColors}
         />
-      ) : null,
-    [isAuthenticated, user?.id, user?.passportColors],
-  )
+      )
+    }
+    if (showGuestLeadIcon) {
+      return <UserLoginToolbarIcon guest />
+    }
+    return null
+  }, [isAuthenticated, showGuestLeadIcon, user?.id, user?.passportColors])
 
   return (
     <div
@@ -174,6 +195,7 @@ export const UserLoginPanel: React.FC = () => {
             styles.content,
             panelView === 'hub' && styles.contentHub,
             panelView === 'info' && styles.contentInfo,
+            panelView === 'settings' && styles.contentInfo,
           )}
           aria-label={headerTitle ?? 'Account'}
         >
@@ -193,9 +215,9 @@ export const UserLoginPanel: React.FC = () => {
             )
           ) : panelView === 'info' ? (
             <UserPanelInfo />
-          ) : (
-            <p className={styles.guestHint}>Settings will appear here.</p>
-          )}
+          ) : panelView === 'settings' ? (
+            <UserPanelSettings onOpenLanguage={handleOpenLanguage} />
+          ) : null}
         </div>
       </ScrollArea>
       {showLogoutFooter ? (
