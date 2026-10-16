@@ -194,10 +194,11 @@ export const UserLoginPanel: React.FC = () => {
         <div
           className={clsx(
             styles.content,
-            panelView === 'hub' && styles.contentHub,
+            (panelView === 'hub' ||
+              panelView === 'settings' ||
+              panelView === 'language') &&
+              styles.contentHub,
             panelView === 'info' && styles.contentInfo,
-            (panelView === 'settings' || panelView === 'language') &&
-              styles.contentInfo,
           )}
           aria-label={headerTitle ?? 'Account'}
         >
