@@ -6,12 +6,7 @@ import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { useMobileScenarioToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import { setCardphotoListPanelOpen } from '@cardphoto/infrastructure/state'
-import {
-  selectIsListPanelOpen,
-  selectCardphotoAssetData,
-  selectCardphotoAssetDisplayPreviewUrl,
-  selectCardphotoTitle,
-} from '@cardphoto/infrastructure/selectors'
+import { selectIsListPanelOpen } from '@cardphoto/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { withDisabledToolbarGroups } from '@toolbar/domain/helpers'
 import { CARDPHOTO_LIST_TOOLBAR } from '@toolbar/domain/types/cardphotoList.types'
@@ -88,7 +83,7 @@ const CARDPHOTO_LIST_FACTORY_UPPER_CLOSE_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-/** Mobile factory / desktop list header — applyMedium слева, заголовок. */
+/** Mobile factory / desktop list header — applyMedium слева, close справа. */
 export const CardphotoListMobileFactoryUpperToolbar: React.FC<{
   placement?: 'factory' | 'listHeader'
 }> = ({ placement = 'factory' }) => {
@@ -99,13 +94,8 @@ export const CardphotoListMobileFactoryUpperToolbar: React.FC<{
   const showApply = placement !== 'listHeader'
   const inlineTemplateCount = useAppSelector(selectCardphotoInlineTemplateCount)
   const listEmpty = inlineTemplateCount === 0
-  const title = useAppSelector(selectCardphotoTitle)
-  const assetId = useAppSelector(selectCardphotoAssetData)?.id
-  const previewUrl = useAppSelector(selectCardphotoAssetDisplayPreviewUrl)
   const applyRaw = useAppSelector((s) => s.toolbar?.cardphoto?.apply)
   const applyState = listEmpty ? 'disabled' : readApplyState(applyRaw)
-  const centralTemplateTitle =
-    assetId && previewUrl ? title.trim() || null : null
 
   const applyToolbar = useMemo((): ToolbarConfig => {
     return [
@@ -169,11 +159,6 @@ export const CardphotoListMobileFactoryUpperToolbar: React.FC<{
           />
         ) : null}
       </div>
-      {centralTemplateTitle ? (
-        <div className={styles.upperTitle} title={centralTemplateTitle}>
-          {centralTemplateTitle}
-        </div>
-      ) : null}
       {showReturn ? (
         <div className={styles.upperToolbar}>
           <Toolbar
