@@ -18,7 +18,6 @@ import {
   selectCardphotoListTemplateGridCols,
 } from '@cardphoto/infrastructure/selectors'
 import { useCardphotoListSort } from '@cardphoto/application/hooks/useCardphotoListSort'
-import { getCardphotoListSortEmphasis } from '@cardphoto/application/helpers/cardphotoListSort'
 import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
@@ -113,7 +112,7 @@ export const CardphotoListPanel: React.FC<Props> = ({
   const thumbGridRef = useRef<HTMLDivElement | null>(null)
   const [cellPx, setCellPx] = useState(56)
 
-  const { sortedRows, sortMode } = useCardphotoListSort(rows)
+  const sortedRows = useCardphotoListSort(rows)
   const { isMobileLayout } = useSizeFacade()
   const useFactoryChrome = factoryChrome && isMobileLayout
 
@@ -198,7 +197,6 @@ export const CardphotoListPanel: React.FC<Props> = ({
   }, [])
 
   const hasRows = sortedRows.length > 0
-  const sortEmphasis = getCardphotoListSortEmphasis(sortMode)
 
   return (
     <div
@@ -256,7 +254,6 @@ export const CardphotoListPanel: React.FC<Props> = ({
                     title={row.title}
                     cellPx={cellPx}
                     onSelect={() => onSelectTemplate(row.id)}
-                    sortEmphasis={sortEmphasis}
                     isSelected={
                       listHighlightId != null && row.id === listHighlightId
                     }

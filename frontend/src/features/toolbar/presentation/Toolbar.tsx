@@ -46,7 +46,10 @@ import {
 import { selectIsLoading as selectCardphotoAddLoading } from '@cardphoto/infrastructure/selectors/cardphotoUiSelectors'
 import { openCardphotoFilePickerFromUserGesture } from '@cardphoto/application/helpers/cardphotoFilePickerBridge'
 import { shouldOpenCardphotoFilePickerSync } from '@cardphoto/application/helpers/shouldOpenCardphotoFilePickerSync'
-import { getCardphotoListSortIconForMode } from '@cardphoto/application/helpers/cardphotoListSort'
+import {
+  getCardphotoListSortIconForMode,
+  isCardphotoListSortIconKey,
+} from '@cardphoto/application/helpers/cardphotoListSort'
 import {
   getHistoryListSortIconForMode,
   isHistoryListSortIconKey,
@@ -424,8 +427,10 @@ export const Toolbar = ({
         ? viewListStarFilled
           ? 'favoriteFilled'
           : 'favorite'
-      : (key === 'sortDown' || key === 'sortUp') &&
-          section === 'cardphotoList'
+      : section === 'cardphotoList' &&
+          (isCardphotoListSortIconKey(key) ||
+            key === 'sortDown' ||
+            key === 'sortUp')
         ? getCardphotoListSortIconForMode(cardphotoListSortMode)
         : section === 'historyList' &&
             (isHistoryListSortIconKey(key) ||

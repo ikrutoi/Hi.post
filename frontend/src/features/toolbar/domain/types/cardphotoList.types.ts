@@ -4,10 +4,8 @@ import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 
 export const CARDPHOTO_LIST_KEYS = [
   'listClose',
-  'sortDown',
-  'sortUp',
-  'sortAZDown',
-  'sortAZUp',
+  'sort131Down',
+  'sort131Up',
   'panelDensity2',
 ] as const satisfies readonly IconKey[]
 
@@ -23,7 +21,7 @@ export const CARDPHOTO_LIST_TOOLBAR: ToolbarConfig = [
     group: 'cardphotoList',
     icons: [
       { key: 'panelDensity2', state: 'enabled' },
-      { key: 'sortDown', state: 'enabled' },
+      { key: 'sort131Up', state: 'enabled' },
     ],
     status: 'enabled',
   },

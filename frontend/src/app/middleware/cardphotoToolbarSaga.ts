@@ -50,7 +50,6 @@ import {
 } from '@cardphoto/infrastructure/state'
 import {
   selectCardphotoListSortMode,
-  selectCardphotoListTitleCoverage,
   selectIsCardphotoViewEditMode,
   selectCardphotoViewReturnSnapshot,
   selectUserOriginalDraftConfig,
@@ -684,14 +683,10 @@ export function* handleCardphotoToolbarAction(
       return
     }
     if (isCardphotoListSortIconKey(key)) {
-      const coverage: ReturnType<typeof selectCardphotoListTitleCoverage> =
-        yield select(selectCardphotoListTitleCoverage)
       const current: ReturnType<typeof selectCardphotoListSortMode> = yield select(
         selectCardphotoListSortMode,
       )
-      yield put(
-        setCardphotoListSortMode(getNextCardphotoListSortMode(coverage, current)),
-      )
+      yield put(setCardphotoListSortMode(getNextCardphotoListSortMode(current)))
       return
     }
     return

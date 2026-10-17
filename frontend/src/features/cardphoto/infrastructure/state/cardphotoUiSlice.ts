@@ -1,9 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { PanelDensity2Size } from '@shared/ui/icons'
-import type {
-  CardphotoListSortMode,
-  CardphotoListTitleCoverage,
-} from '../../application/helpers/cardphotoListSort'
+import type { CardphotoListSortMode } from '../../application/helpers/cardphotoListSort'
 import type { ImageMeta, WorkingConfig } from '../../domain/types'
 
 /** @deprecated 4-col / 5-col only; kept for IDB migration from older prefs. */
@@ -23,7 +20,6 @@ export interface CardphotoUiState {
   inlineTemplateListRevision: number
   listPanelDensity: PanelDensity2Size
   listSortMode: CardphotoListSortMode
-  listTitleCoverage: CardphotoListTitleCoverage
   /** inLine / view preview → crop toolbar (`cardphotoCreate`) */
   isCardphotoViewEditMode: boolean
   viewReturnSnapshot: CardphotoViewReturnSnapshot | null
@@ -46,7 +42,6 @@ const initialUiState: CardphotoUiState = {
   inlineTemplateListRevision: 0,
   listPanelDensity: 1,
   listSortMode: 'dateDesc',
-  listTitleCoverage: 'none',
   isCardphotoViewEditMode: false,
   viewReturnSnapshot: null,
   sessionPendingProcessedId: null,
@@ -105,14 +100,7 @@ export const cardphotoUiSlice = createSlice({
     },
 
     setCardphotoListSortMode(state, action: PayloadAction<CardphotoListSortMode>) {
-      state.listSortMode = action.payload
-    },
-
-    setCardphotoListTitleCoverage(
-      state,
-      action: PayloadAction<CardphotoListTitleCoverage>,
-    ) {
-      state.listTitleCoverage = action.payload
+      state.listSortMode = action.payload === 'dateAsc' ? 'dateAsc' : 'dateDesc'
     },
 
     selectInLineTemplate: (_state, _action: PayloadAction<string>) => {},
@@ -183,7 +171,6 @@ export const {
   toggleCardphotoListPanelDensity,
   setCardphotoListPanelDensity,
   setCardphotoListSortMode,
-  setCardphotoListTitleCoverage,
   selectInLineTemplate,
   setCardphotoViewEditMode,
   setCardphotoViewReturnSnapshot,
