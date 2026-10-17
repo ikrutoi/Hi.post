@@ -7,10 +7,11 @@ import React, {
 import { IconListCardphoto } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { storeAdapters } from '@db/adapters/storeAdapters'
-import { fillImageMetaThumbFromRemote } from '@features/files/application/pushImageMetaToRemoteFiles'
-import { collectReferencedBlobUrls } from '@app/middleware/blobUrlRevokeGuards'
-import { store } from '@app/state/store'
-import type { RootState } from '@app/state'
+import {
+  peekCardphotoListThumbSrc,
+  resolveCardphotoListThumbSrc,
+  retainCardphotoListThumbCache,
+} from '@cardphoto/application/helpers/cardphotoListThumbCache'
 import { useAppSelector } from '@app/hooks'
 import {
   selectCardphotoInlineTemplateListRevision,
@@ -41,51 +42,12 @@ type Row = {
   timestamp: number
 }
 
-function isHttpUrl(u: string | null | undefined): boolean {
-  return typeof u === 'string' && /^https?:\/\//i.test(u.trim())
-}
-
-function buildThumbSrc(meta: ImageMeta): { src: string; revoke: boolean } {
-  if (meta.thumbnail?.blob instanceof Blob) {
-    const src = URL.createObjectURL(meta.thumbnail.blob)
-    return { src, revoke: true }
-  }
-  if (meta.full?.blob instanceof Blob) {
-    const src = URL.createObjectURL(meta.full.blob)
-    return { src, revoke: true }
-  }
-  const url = (
-    meta.thumbnail?.url ||
-    meta.url ||
-    meta.full?.url ||
-    ''
-  ).trim()
-  if (isHttpUrl(url)) return { src: url, revoke: false }
-  return { src: '', revoke: false }
-}
-
-async function resolveListThumbMeta(meta: ImageMeta): Promise<ImageMeta> {
-  const ready = buildThumbSrc(meta)
-  if (ready.src) return meta
-  const filled = await fillImageMetaThumbFromRemote(meta)
-  return filled ?? meta
-}
-
-function revokeUnreferencedListObjectUrls(urls: string[]) {
-  const state = store.getState() as RootState
-  const referenced = collectReferencedBlobUrls({
-    cardphoto: state.cardphoto.state,
-    cards: state.card.cards,
-    cartItems: state.cart.items,
-    assetRegistryImages: state.assetRegistry.images,
-    calendarPreviewCache: state.card.calendarPreviewCache,
-    assemblyFreeze: state.assemblyBranchFreeze.freeze,
-  })
-  for (const url of urls) {
-    if (!url.startsWith('blob:')) continue
-    if (!referenced.has(url)) {
-      URL.revokeObjectURL(url)
-    }
+function rowFrom(meta: ImageMeta, src: string): Row {
+  return {
+    id: meta.id,
+    src,
+    title: meta.title?.trim() || undefined,
+    timestamp: meta.timestamp ?? 0,
   }
 }
 
@@ -106,7 +68,6 @@ export const CardphotoListPanel: React.FC<Props> = ({
   const listHighlightId = useAppSelector(selectCardphotoListHighlightTemplateId)
   const columns = useAppSelector(selectCardphotoListTemplateGridCols)
   const [rows, setRows] = useState<Row[]>([])
-  const objectUrlsRef = useRef<string[]>([])
 
   const listContentRef = useRef<HTMLDivElement | null>(null)
   const thumbGridRef = useRef<HTMLDivElement | null>(null)
@@ -146,55 +107,37 @@ export const CardphotoListPanel: React.FC<Props> = ({
       if (cancelled) return
 
       const inline = all.filter((x) => x.status === 'inLine')
-
       const nextRows: Row[] = []
-      const created: string[] = []
+      const pending: ImageMeta[] = []
 
       for (const meta of inline) {
+        const src = peekCardphotoListThumbSrc(meta.id)
+        if (src) nextRows.push(rowFrom(meta, src))
+        else pending.push(meta)
+      }
+
+      if (!cancelled) setRows(nextRows)
+
+      for (const meta of pending) {
         if (cancelled) return
         try {
-          const live = await resolveListThumbMeta(meta)
-          const { src, revoke } = buildThumbSrc(live)
-          if (!src) continue
-          if (revoke) created.push(src)
-          nextRows.push({
-            id: meta.id,
-            src,
-            title: meta.title?.trim() || live.title?.trim() || undefined,
-            timestamp: meta.timestamp ?? live.timestamp ?? 0,
-          })
-          if (!cancelled) {
-            setRows([...nextRows])
-            objectUrlsRef.current = [...created]
-          }
+          const src = await resolveCardphotoListThumbSrc(meta)
+          if (!src || cancelled) continue
+          nextRows.push(rowFrom(meta, src))
+          setRows([...nextRows])
         } catch (e) {
           console.error('CardphotoListPanel: skip template', meta.id, e)
         }
       }
 
-      if (cancelled) {
-        return
-      }
-
-      const prevRevoke = objectUrlsRef.current.filter(
-        (u) => !created.includes(u),
-      )
-      objectUrlsRef.current = created
-      setRows(nextRows)
-      revokeUnreferencedListObjectUrls(prevRevoke)
+      if (cancelled) return
+      retainCardphotoListThumbCache(new Set(inline.map((meta) => meta.id)))
     })()
 
     return () => {
       cancelled = true
     }
   }, [listRevision])
-
-  useEffect(() => {
-    return () => {
-      revokeUnreferencedListObjectUrls(objectUrlsRef.current)
-      objectUrlsRef.current = []
-    }
-  }, [])
 
   const hasRows = sortedRows.length > 0
 
