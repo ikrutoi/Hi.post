@@ -157,6 +157,7 @@
 
 /** Desktop factory lower row — cardtext View (same icons as mobile). */
 .cardtextViewToolbarRow {
+  position: relative;
   flex: 1 1 auto;
   align-self: stretch;
   width: 100%;
@@ -169,7 +170,7 @@
   padding-inline: 0;
   @include cardtext-toolbar-role-fade;
 
-  > * {
+  > *:not([data-cardtext-template-title]) {
     width: 100%;
     flex: 1 1 auto;
     min-width: 0;

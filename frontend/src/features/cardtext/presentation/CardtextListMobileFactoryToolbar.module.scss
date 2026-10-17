@@ -104,6 +104,22 @@
   }
 }
 
+.upperTitleCentered {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  width: max-content;
+  max-width: calc(100% - 7.5rem);
+  transform: translate(-50%, -50%);
+  justify-content: center;
+  text-align: center;
+
+  .upperTitleInput {
+    text-align: center;
+  }
+}
+
 .upperTitleArmed {
   pointer-events: auto;
 }

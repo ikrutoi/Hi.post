@@ -89,17 +89,10 @@ const CARDTEXT_LIST_FACTORY_UPPER_CLOSE_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-/** Mobile factory / desktop list header — applyMedium слева, заголовок. */
-export const CardtextListMobileFactoryUpperToolbar: React.FC<{
-  placement?: 'factory' | 'listHeader'
-}> = ({ placement = 'factory' }) => {
-  const dispatch = useAppDispatch()
-  const { isMobileLayout } = useSizeFacade()
-  const showReturn =
-    placement === 'listHeader' || (isMobileLayout && placement === 'factory')
-  const showApply = placement !== 'listHeader'
-  const templates = useAppSelector(selectCardtextTemplatesListItems)
-  const listEmpty = (templates?.length ?? 0) === 0
+/** Editable template name. Desktop list puts it in the lower toolbar. */
+export const CardtextListTemplateTitle: React.FC<{ centered?: boolean }> = ({
+  centered = false,
+}) => {
   const {
     inputRef: titleInputRef,
     displayTitle: centralTemplateTitle,
@@ -114,8 +107,6 @@ export const CardtextListMobileFactoryUpperToolbar: React.FC<{
   const titleRef = useRef<HTMLDivElement>(null)
   const titlePointerDownRef = useRef(false)
   const [titleArmed, setTitleArmed] = useState(false)
-  const applyRaw = useAppSelector((s) => s.toolbar?.cardtext?.apply)
-
   useLayoutEffect(() => {
     setTitleArmed(false)
     titlePointerDownRef.current = false
@@ -169,6 +160,94 @@ export const CardtextListMobileFactoryUpperToolbar: React.FC<{
       if (fallbackTimer !== 0) window.clearTimeout(fallbackTimer)
     }
   }, [])
+
+  if (!centralTemplateTitle) return null
+
+  const titleClassName = clsx(
+    styles.upperTitle,
+    centered && styles.upperTitleCentered,
+    isEditingTitle && styles.upperTitleEditing,
+    !isEditingTitle && titleArmed && styles.upperTitleArmed,
+  )
+
+  if (isEditingTitle) {
+    return (
+      <div className={titleClassName} data-cardtext-template-title>
+        <input
+          ref={titleInputRef}
+          type="text"
+          className={styles.upperTitleInput}
+          value={draftTitle}
+          maxLength={CARDTEXT_TEMPLATE_TITLE_MAX_LENGTH}
+          enterKeyHint="done"
+          autoFocus
+          disabled={isSubmittingTitle}
+          aria-label="Template name"
+          title="Edit template name"
+          onChange={(e) => setDraftTitle(e.target.value)}
+          onBlur={() => {
+            void commitEditTitle()
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              e.preventDefault()
+              cancelEditTitle()
+            }
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              void commitEditTitle()
+            }
+          }}
+        />
+      </div>
+    )
+  }
+
+  return (
+    <div
+      ref={titleRef}
+      role="button"
+      tabIndex={titleArmed ? 0 : -1}
+      className={titleClassName}
+      data-cardtext-template-title
+      title="Edit template name"
+      aria-label="Edit template name"
+      onPointerDown={(e) => {
+        if (!titleArmed) return
+        if (e.pointerType === 'mouse' && e.button !== 0) return
+        titlePointerDownRef.current = true
+      }}
+      onClick={() => {
+        if (!titleArmed || !titlePointerDownRef.current) return
+        titlePointerDownRef.current = false
+        startEditTitle()
+      }}
+      onKeyDown={(e) => {
+        if (!titleArmed) return
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          startEditTitle()
+        }
+      }}
+    >
+      {centralTemplateTitle}
+    </div>
+  )
+}
+
+/** Mobile factory / desktop list header — applyMedium слева, заголовок на телефоне. */
+export const CardtextListMobileFactoryUpperToolbar: React.FC<{
+  placement?: 'factory' | 'listHeader'
+}> = ({ placement = 'factory' }) => {
+  const dispatch = useAppDispatch()
+  const { isMobileLayout } = useSizeFacade()
+  const showReturn =
+    placement === 'listHeader' || (isMobileLayout && placement === 'factory')
+  const showApply = placement !== 'listHeader'
+  const showTitle = placement !== 'listHeader'
+  const templates = useAppSelector(selectCardtextTemplatesListItems)
+  const listEmpty = (templates?.length ?? 0) === 0
+  const applyRaw = useAppSelector((s) => s.toolbar?.cardtext?.apply)
   const applyState = listEmpty ? 'disabled' : readApplyState(applyRaw)
 
   const applyToolbar = useMemo((): ToolbarConfig => {
@@ -222,71 +301,7 @@ export const CardtextListMobileFactoryUpperToolbar: React.FC<{
           />
         ) : null}
       </div>
-      {centralTemplateTitle ? (
-        isEditingTitle ? (
-          <div
-            className={clsx(styles.upperTitle, styles.upperTitleEditing)}
-          >
-            <input
-              ref={titleInputRef}
-              type="text"
-              className={styles.upperTitleInput}
-              value={draftTitle}
-              maxLength={CARDTEXT_TEMPLATE_TITLE_MAX_LENGTH}
-              enterKeyHint="done"
-              autoFocus
-              disabled={isSubmittingTitle}
-              aria-label="Template name"
-              title="Edit template name"
-              onChange={(e) => setDraftTitle(e.target.value)}
-              onBlur={() => {
-                void commitEditTitle()
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Escape') {
-                  e.preventDefault()
-                  cancelEditTitle()
-                }
-                if (e.key === 'Enter') {
-                  e.preventDefault()
-                  void commitEditTitle()
-                }
-              }}
-            />
-          </div>
-        ) : (
-          <div
-            ref={titleRef}
-            role="button"
-            tabIndex={titleArmed ? 0 : -1}
-            className={clsx(
-              styles.upperTitle,
-              titleArmed && styles.upperTitleArmed,
-            )}
-            title="Edit template name"
-            aria-label="Edit template name"
-            onPointerDown={(e) => {
-              if (!titleArmed) return
-              if (e.pointerType === 'mouse' && e.button !== 0) return
-              titlePointerDownRef.current = true
-            }}
-            onClick={() => {
-              if (!titleArmed || !titlePointerDownRef.current) return
-              titlePointerDownRef.current = false
-              startEditTitle()
-            }}
-            onKeyDown={(e) => {
-              if (!titleArmed) return
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault()
-                startEditTitle()
-              }
-            }}
-          >
-            {centralTemplateTitle}
-          </div>
-        )
-      ) : null}
+      {showTitle ? <CardtextListTemplateTitle /> : null}
       {showReturn ? (
         <div className={styles.upperToolbar}>
           <Toolbar

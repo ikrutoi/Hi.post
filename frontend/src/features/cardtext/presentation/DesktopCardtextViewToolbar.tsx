@@ -2,6 +2,7 @@ import React from 'react'
 import { useAppSelector } from '@app/hooks'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
+import { selectIsCardtextListPanelOpen } from '@cardtext/infrastructure/selectors'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { useCardtextViewToolbarContent } from './useCardtextViewToolbarContent'
 
@@ -9,11 +10,13 @@ import { useCardtextViewToolbarContent } from './useCardtextViewToolbarContent'
 export const DesktopCardtextViewToolbar: React.FC = () => {
   const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const activeSection = useAppSelector(selectActiveSection)
+  const listOpen = useAppSelector(selectIsCardtextListPanelOpen)
   const { rightPieCardtextPeekNoToolbar } = useRightListArchiveMini()
   const desktopCardtext = !isMobileLayout && activeSection === 'cardtext'
   const archivePeek = desktopCardtext && rightPieCardtextPeekNoToolbar
   const content = useCardtextViewToolbarContent({
     enabled: desktopCardtext && !archivePeek,
+    centerTitle: desktopCardtext && !archivePeek && listOpen,
   })
 
   if (archivePeek || content == null) return null
