@@ -152,6 +152,37 @@ function* handleCardtextViewAddList(): SagaIterator {
   }
 }
 
+/** Clear the quick list: inLine → outLine. Postcard copies keep their records. */
+function* handleClearCardtextTemplateListSaga(): SagaIterator {
+  const templates: CardtextContent[] = yield call([
+    templateService,
+    'getCardtextTemplates',
+  ])
+  const ids = templates
+    .map((item) => (item.id != null ? String(item.id) : ''))
+    .filter((id) => id !== '')
+
+  for (const id of ids) {
+    yield call([templateService, 'updateCardtextTemplate'], id, {
+      status: 'outLine',
+    })
+  }
+
+  const assetStatus: CardtextStatus | undefined = yield select(
+    selectCardtextAssetStatus,
+  )
+  const currentId: string | null = yield select(selectCardtextId)
+  if (
+    assetStatus === 'inLine' &&
+    currentId != null &&
+    ids.includes(String(currentId))
+  ) {
+    yield put(setStatus('outLine'))
+  }
+
+  yield put(loadCardtextTemplatesRequest())
+}
+
 function* handleCardtextViewRemoveFromList(): SagaIterator {
   const plainText: string = yield select(selectCardtextPlainText)
   const templateId: string | null = yield select(selectCardtextId)
@@ -427,6 +458,11 @@ export function* handleCardtextToolbarAction(
 
   if (section === 'cardtextList' && key === 'panelDensity2') {
     yield put(toggleCardtextListPanelDensity())
+    return
+  }
+
+  if (section === 'cardtextList' && key === 'listClose') {
+    yield call(handleClearCardtextTemplateListSaga)
     return
   }
 
