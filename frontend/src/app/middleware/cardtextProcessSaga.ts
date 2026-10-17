@@ -38,6 +38,7 @@ import {
   openCardtextFromMiniStripRequested,
 } from '@cardtext/infrastructure/state'
 import { openCardtextFromMiniStripSaga } from '@cardtext/application/helpers'
+import { selectIsMobileLayout } from '@layout/infrastructure/selectors'
 import { templateService } from '@entities/templates/domain/services/templateService'
 import type { RootState } from '@app/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
@@ -284,12 +285,13 @@ function* syncCardtextListToggleIcon(): SagaIterator {
   )
   const currentOptions =
     current && typeof current === 'object' ? (current.options ?? {}) : {}
+  const listOnMobile: boolean = yield select(selectIsMobileLayout)
   yield put(
     updateToolbarIcon({
       section: 'cardtext',
       key: 'listCardtext',
       value: {
-        state: isOpen ? 'active' : 'enabled',
+        state: isOpen && listOnMobile ? 'active' : 'enabled',
         options: currentOptions,
       },
     }),

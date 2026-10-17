@@ -8,6 +8,20 @@ export const getAddressListToolbarFragment = (addressListCount: number) => ({
   },
 })
 
+/** Brown active only while the list is open on mobile. Desktop stays enabled. */
+export function addressListToolbarIcon(
+  addressListCount: number,
+  highlighted: boolean,
+) {
+  if (!highlighted) return getAddressListToolbarFragment(addressListCount)
+  return {
+    state: 'active' as const,
+    options: {
+      badge: addressListCount > 0 ? addressListCount : null,
+    },
+  }
+}
+
 export interface BuildRecipientToolbarParams {
   isComplete: boolean
   hasData: boolean

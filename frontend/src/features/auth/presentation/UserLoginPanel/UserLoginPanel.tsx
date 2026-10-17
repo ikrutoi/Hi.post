@@ -23,7 +23,6 @@ import {
   selectAuthUser,
   selectIsAuthenticated,
 } from '@features/auth/infrastructure/selectors/authSelectors'
-import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { UserAvatarPicker } from './UserAvatarPicker'
 import { UserPanelChromePattern } from './UserPanelChromePattern'
 import {
@@ -45,7 +44,6 @@ type UserPanelView = 'hub' | UserPanelHubSection | 'language'
 export const UserLoginPanel: React.FC = () => {
   const dispatch = useAppDispatch()
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
-  const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const user = useAppSelector(selectAuthUser)
   const [guestAuthMode, setGuestAuthMode] = useState<GuestAuthMode>('signIn')
   const [panelView, setPanelView] = useState<UserPanelView>('hub')
@@ -120,7 +118,7 @@ export const UserLoginPanel: React.FC = () => {
     ) : null
   const showLogoutFooter = isAuthenticated && panelView === 'registration'
   const isHub = panelView === 'hub'
-  const showGuestLeadIcon = !isAuthenticated && isHub && !isMobileLayout
+  const showGuestLeadIcon = !isAuthenticated && isHub
   const hideLeadIcon = !isHub || (!isAuthenticated && !showGuestLeadIcon)
   const chromePatternColors = useMemo(
     () =>

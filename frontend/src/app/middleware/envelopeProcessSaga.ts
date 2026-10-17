@@ -1,4 +1,5 @@
 import { select, put, takeEvery, call } from 'redux-saga/effects'
+import { selectIsMobileLayout } from '@layout/infrastructure/selectors'
 import {
   updateRecipientField,
   clearRecipient,
@@ -58,6 +59,7 @@ import {
 import { selectRecipientsList } from '@envelope/infrastructure/selectors'
 import {
   buildRecipientToolbarState,
+  addressListToolbarIcon,
   getAddressListToolbarFragment,
   isAddressInList,
   listStatusIsInQuickAddressBook,
@@ -194,15 +196,11 @@ export function* processEnvelopeVisuals() {
 
   const activeAddressList: 'sender' | 'recipients' | null =
     yield select(selectActiveAddressList)
-  const recipientListAddressList =
-    activeAddressList === 'recipients'
-      ? {
-          state: 'active' as const,
-          options: {
-            badge: recipientInListCount > 0 ? recipientInListCount : null,
-          },
-        }
-      : getAddressListToolbarFragment(recipientInListCount)
+  const addressListOnMobile: boolean = yield select(selectIsMobileLayout)
+  const recipientListAddressList = addressListToolbarIcon(
+    recipientInListCount,
+    activeAddressList === 'recipients' && addressListOnMobile,
+  )
 
   const recipientToolbar = buildRecipientToolbarState({
     isComplete: recipientComplete,

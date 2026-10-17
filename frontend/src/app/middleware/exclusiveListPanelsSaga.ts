@@ -25,6 +25,7 @@ import { setCardPieToolbarActiveState } from './cardPieToolbarSync'
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import { setUserLoginPanelOpen } from '@features/auth/infrastructure/state/auth.slice'
+import { selectIsMobileLayout } from '@layout/infrastructure/selectors'
 
 /**
  * Правая колонка: корзина/история уступают место форме пользователя.
@@ -106,6 +107,7 @@ function* syncListPanelToolbarIcons(): SagaIterator {
   yield call(setCardPieToolbarActiveState, cardPieOpen)
 
   const cardphotoOpen: boolean = yield select(selectIsListPanelOpen)
+  const isMobileLayout: boolean = yield select(selectIsMobileLayout)
   const listCardphoto: unknown = yield select(
     (s: RootState) => s.toolbar.cardphoto?.listCardphoto,
   )
@@ -118,7 +120,9 @@ function* syncListPanelToolbarIcons(): SagaIterator {
       section: 'cardphoto',
       key: 'listCardphoto',
       value: {
-        state: cardphotoOpen ? 'active' : 'enabled',
+        /** Desktop keeps the list icon in the normal color while the panel is open. */
+        state:
+          cardphotoOpen && isMobileLayout ? 'active' : 'enabled',
         options: cardphotoOpts,
       },
     }),
@@ -139,7 +143,7 @@ function* syncListPanelToolbarIcons(): SagaIterator {
       section: 'cardtext',
       key: 'listCardtext',
       value: {
-        state: cardtextOpen ? 'active' : 'enabled',
+        state: cardtextOpen && isMobileLayout ? 'active' : 'enabled',
         options: cardtextOpts,
       },
     }),

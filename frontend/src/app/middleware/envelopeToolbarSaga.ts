@@ -137,7 +137,7 @@ import type { UiPreferencesRecord } from '@db/types/storeMap.types'
 import {
   doesDraftMatchAnyTemplate,
   doesDraftMatchInList,
-  getAddressListToolbarFragment,
+  addressListToolbarIcon,
   getMatchingEntryId,
   isAddressDraftComplete,
   isAddressDraftEmpty,
@@ -2230,29 +2230,21 @@ function* syncAddressListIconsFromActive() {
     listStatusIsInQuickAddressBook(e.listStatus),
   ).length
 
-  const senderAddressList =
-    active === 'sender'
-      ? {
-          state: 'active' as const,
-          options: { badge: senderCount > 0 ? senderCount : null },
-        }
-      : getAddressListToolbarFragment(senderCount)
+  const isMobileLayout: boolean = yield select(selectIsMobileLayout)
+  const senderAddressList = addressListToolbarIcon(
+    senderCount,
+    active === 'sender' && isMobileLayout,
+  )
 
-  const recipientsSectionAddressList =
-    active === 'recipients'
-      ? {
-          state: 'active' as const,
-          options: { badge: recipientCount > 0 ? recipientCount : null },
-        }
-      : getAddressListToolbarFragment(recipientCount)
+  const recipientsSectionAddressList = addressListToolbarIcon(
+    recipientCount,
+    active === 'recipients' && isMobileLayout,
+  )
 
-  const addressListRecipientValue =
-    active === 'recipients'
-      ? {
-          state: 'active' as const,
-          options: { badge: recipientCount > 0 ? recipientCount : null },
-        }
-      : getAddressListToolbarFragment(recipientCount)
+  const addressListRecipientValue = addressListToolbarIcon(
+    recipientCount,
+    active === 'recipients' && isMobileLayout,
+  )
 
   yield put(
     updateToolbarIcon({

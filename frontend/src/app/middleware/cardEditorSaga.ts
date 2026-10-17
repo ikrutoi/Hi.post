@@ -35,6 +35,7 @@ import {
   clearSender,
 } from '@envelope/infrastructure/state'
 import { selectIsEnvelopeReady } from '@envelope/infrastructure/selectors'
+import { selectIsMobileLayout } from '@layout/infrastructure/selectors'
 import { selectIsDateComplete } from '@date/infrastructure/selectors'
 import {
   selectSelectedAroma,
@@ -149,12 +150,13 @@ function* syncCardtextToolbar(): SagaIterator {
       : undefined
   const interactionMode: ReturnType<typeof selectCardtextInteractionMode> =
     yield select(selectCardtextInteractionMode)
+  const listOnMobile: boolean = yield select(selectIsMobileLayout)
   const toolbarState = buildCardtextToolbarState(value, {
     assetProcessed: assetMatchesApplied,
     disableApply: interactionMode === 'createEmpty',
   })
   toolbarState.listCardtext = {
-    state: isListOpen ? 'active' : 'enabled',
+    state: isListOpen && listOnMobile ? 'active' : 'enabled',
     options: currentListOptions,
   }
   yield put(updateToolbarSection({ section: 'cardtext', value: toolbarState }))

@@ -705,7 +705,9 @@ export function* handleCardphotoToolbarAction(
       if (!isOpen) {
         yield call(hydrateCardphotoListDensityFromDbSaga)
       }
-      const nextState = isOpen ? 'enabled' : 'active'
+      const isMobileLayout: boolean = yield select(selectIsMobileLayout)
+      const nextState =
+        !isOpen && isMobileLayout ? 'active' : 'enabled'
 
       yield put(
         updateToolbarIcon({

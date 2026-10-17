@@ -16,7 +16,7 @@ import type { EnvelopeSessionRecord } from '../../domain/types'
 import type { RecipientState } from '../../recipient/domain/types'
 import {
   getMatchingEntryId,
-  getAddressListToolbarFragment,
+  addressListToolbarIcon,
   listStatusIsInQuickAddressBook,
   buildSandboxSenderToolbarState,
   buildSandboxRecipientsToolbarState,
@@ -29,6 +29,7 @@ import {
   selectArchiveSandboxSender,
   selectArchiveSandboxRecipient,
 } from '@cardPanel/infrastructure/selectors/archiveEnvelopeSandboxSelectors'
+import { selectIsMobileLayout } from '@layout/infrastructure/selectors'
 
 const EMPTY_RECIPIENT_STATE_LIST: RecipientState[] = []
 
@@ -267,19 +268,15 @@ export const selectSenderToolbarStateWithLiveAddressList = createSelector(
     (s: RootState) => s.toolbar?.sender ?? {},
     (s: RootState) => s.envelopeSelection?.activeAddressList ?? null,
     selectSenderInListEntries,
+    selectIsMobileLayout,
   ],
-  (base, activeAddressList, senderInListEntries) => {
+  (base, activeAddressList, senderInListEntries, isMobileLayout) => {
     const senderInListEntriesCount = senderInListEntries.length
     const listOpen = activeAddressList === 'sender'
-    const addressList = listOpen
-      ? {
-          state: 'active' as const,
-          options: {
-            badge:
-              senderInListEntriesCount > 0 ? senderInListEntriesCount : null,
-          },
-        }
-      : getAddressListToolbarFragment(senderInListEntriesCount)
+    const addressList = addressListToolbarIcon(
+      senderInListEntriesCount,
+      listOpen && isMobileLayout,
+    )
     return { ...base, addressList }
   },
 )
@@ -289,21 +286,15 @@ export const selectRecipientsToolbarStateWithLiveAddressList = createSelector(
     (s: RootState) => s.toolbar?.recipients ?? {},
     (s: RootState) => s.envelopeSelection?.activeAddressList ?? null,
     selectRecipientInListEntries,
+    selectIsMobileLayout,
   ],
-  (base, activeAddressList, recipientInListEntries) => {
+  (base, activeAddressList, recipientInListEntries, isMobileLayout) => {
     const recipientInListEntriesCount = recipientInListEntries.length
     const listOpen = activeAddressList === 'recipients'
-    const addressList = listOpen
-      ? {
-          state: 'active' as const,
-          options: {
-            badge:
-              recipientInListEntriesCount > 0
-                ? recipientInListEntriesCount
-                : null,
-          },
-        }
-      : getAddressListToolbarFragment(recipientInListEntriesCount)
+    const addressList = addressListToolbarIcon(
+      recipientInListEntriesCount,
+      listOpen && isMobileLayout,
+    )
     return { ...base, addressList }
   },
 )
@@ -320,6 +311,7 @@ export const selectActiveSenderToolbarState = createSelector(
     (s: RootState) => s.envelopeSelection?.activeAddressList ?? null,
     selectSenderInListEntries,
     selectSenderEntriesState,
+    selectIsMobileLayout,
   ],
   (
     sandboxActive,
@@ -328,12 +320,13 @@ export const selectActiveSenderToolbarState = createSelector(
     activeAddressList,
     inListEntries,
     entries,
+    isMobileLayout,
   ) => {
     if (!sandboxActive) return sessionToolbar
     return buildSandboxSenderToolbarState({
       sender: sandboxSender,
       addressListCount: inListEntries.length,
-      listOpen: activeAddressList === 'sender',
+      listOpen: activeAddressList === 'sender' && isMobileLayout,
       inListEntries,
       entries,
     })
@@ -348,6 +341,7 @@ export const selectActiveRecipientsToolbarState = createSelector(
     (s: RootState) => s.envelopeSelection?.activeAddressList ?? null,
     selectRecipientInListEntries,
     selectRecipientEntriesState,
+    selectIsMobileLayout,
   ],
   (
     sandboxActive,
@@ -356,12 +350,13 @@ export const selectActiveRecipientsToolbarState = createSelector(
     activeAddressList,
     inListEntries,
     entries,
+    isMobileLayout,
   ) => {
     if (!sandboxActive) return sessionToolbar
     return buildSandboxRecipientsToolbarState({
       recipient: sandboxRecipient,
       addressListCount: inListEntries.length,
-      listOpen: activeAddressList === 'recipients',
+      listOpen: activeAddressList === 'recipients' && isMobileLayout,
       inListEntries,
       entries,
     })
