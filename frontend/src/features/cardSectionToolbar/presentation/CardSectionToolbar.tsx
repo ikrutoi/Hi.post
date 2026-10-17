@@ -50,7 +50,7 @@ export const CardSectionToolbar: React.FC = () => {
   const cardphotoCreateApplyState = readApplyMediumState(cardphotoCreateApplyRaw)
   const isCardphotoCreateCropActive = cardphotoCreateCropState === 'active'
   /**
-   * Create с загруженным фото — upper: applyMedium | quality | close (без cardphoto section).
+   * Create с загруженным фото — upper: applyMedium, cardphotoAdd | quality | close.
    */
   const showCardphotoCreateUpper =
     activeSection === 'cardphoto' &&

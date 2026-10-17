@@ -54,6 +54,12 @@ export function resolveCardphotoPendingProcessedIdSync(
 
 /** Open gallery in pointerdown (user gesture) instead of saga + useEffect. */
 export function shouldOpenCardphotoFilePickerSync(state: RootState): boolean {
+  /**
+   * Already in edit: Add replaces the current original.
+   * Do not reopen the saved file or the pending crop.
+   */
+  if (selectCardphotoAssetToolbar(state) === 'cardphotoCreate') return true
+
   const addVisual = readCardphotoAddToolbarVisual(state)
   const originalReminder = selectCardphotoOriginalUploadReminderActive(state)
 

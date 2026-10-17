@@ -104,6 +104,9 @@ import type {
 import type { LayoutOrientation } from '@layout/domain/types'
 import { setAsset } from '@/entities/assetRegistry/infrastructure/state'
 import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
+import type { RootState } from '@app/state'
+import { collectReferencedBlobUrls } from './blobUrlRevokeGuards'
+import { selectIsCardphotoViewEditMode } from '@cardphoto/infrastructure/selectors/cardphotoUiSelectors'
 
 export function* onDownloadClick(): SagaIterator {
   yield put(
@@ -150,13 +153,21 @@ export function* onDownloadClick(): SagaIterator {
   yield put(openFileDialog())
 }
 
+function collectImageBlobUrls(meta: ImageMeta | null | undefined): string[] {
+  if (!meta) return []
+  return [meta.url, meta.thumbnail?.url, meta.full?.url].filter(
+    (url): url is string => typeof url === 'string' && url.startsWith('blob:'),
+  )
+}
+
 function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
   try {
     const stateBefore: CardphotoState | null = yield select(selectCardphotoState)
     const assetToolbarBefore: ReturnType<typeof selectCardphotoAssetToolbar> =
       yield select(selectCardphotoAssetToolbar)
+    const isViewEdit: boolean = yield select(selectIsCardphotoViewEditMode)
     if (
-      assetToolbarBefore === 'cardphotoView' &&
+      (assetToolbarBefore === 'cardphotoView' || isViewEdit) &&
       stateBefore?.assetData &&
       stateBefore?.assetConfig
     ) {
@@ -197,6 +208,36 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
       }
     }
 
+    const state: CardphotoState = yield select(selectCardphotoState)
+    const isComplete = !!state.appliedData
+    /**
+     * Fit without writing Redux. `commitWorkingConfig` ahead of the new
+     * asset paints the View picture in the new image's box.
+     */
+    const config: WorkingConfig | null = yield call(
+      buildWorkingConfigFromMeta,
+      imageMeta,
+    )
+    if (!config) return
+
+    const previousRecord: ImageRecord | null = yield call(
+      [storeAdapters.userImages, 'getById'],
+      CURRENT_EDITOR_IMAGE_ID,
+    )
+    const replacedBlobUrls = [
+      ...collectImageBlobUrls(previousRecord?.image),
+      ...collectImageBlobUrls(stateBefore?.userOriginalData),
+    ]
+    if (previousRecord || stateBefore?.userOriginalData) {
+      yield call(
+        [storeAdapters.userImages, 'deleteById'],
+        CURRENT_EDITOR_IMAGE_ID,
+      )
+    }
+    if (isViewEdit) {
+      yield put(setCardphotoViewEditMode(false))
+    }
+
     yield put(
       setAsset({
         id: imageMeta.id,
@@ -212,18 +253,6 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
     }
     yield call([storeAdapters.userImages, 'put'], imageRecord)
 
-    const state: CardphotoState = yield select(selectCardphotoState)
-    const isComplete = !!state.appliedData
-    /**
-     * Fit without writing Redux. `commitWorkingConfig` ahead of the new
-     * asset paints the View picture in the new image's box.
-     */
-    const config: WorkingConfig | null = yield call(
-      buildWorkingConfigFromMeta,
-      imageMeta,
-    )
-    if (!config) return
-
     const serializableMeta = prepareForRedux(imageMeta)
     const serializableConfig = prepareConfigForRedux(config)
 
@@ -235,6 +264,20 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
         userOriginalData: serializableMeta,
       }),
     )
+
+    const rootAfter: RootState = yield select((s: RootState) => s)
+    const stillReferenced = collectReferencedBlobUrls({
+      cardphoto: rootAfter.cardphoto.state,
+      cards: rootAfter.card.cards,
+      cartItems: rootAfter.cart.items,
+      assetRegistryImages: rootAfter.assetRegistry.images,
+      calendarPreviewCache: rootAfter.card.calendarPreviewCache,
+      assemblyFreeze: rootAfter.assemblyBranchFreeze.freeze,
+    })
+    for (const url of replacedBlobUrls) {
+      if (!stillReferenced.has(url)) URL.revokeObjectURL(url)
+    }
+
     yield call(
       persistUserOriginalRotationToIdbSaga,
       serializableMeta.rotation ?? 0,

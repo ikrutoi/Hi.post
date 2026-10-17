@@ -570,6 +570,17 @@ export function* handleCardphotoToolbarAction(
       section === 'cardphotoCreate' ||
       section === 'cardphotoProcessed'
     ) {
+      const assetToolbar: ReturnType<typeof selectCardphotoAssetToolbar> =
+        yield select(selectCardphotoAssetToolbar)
+      /**
+       * Edit mode: always open the gallery. The new file replaces the
+       * uncommitted original; View reopen stays on the main toolbar.
+       */
+      if (section === 'cardphotoCreate' || assetToolbar === 'cardphotoCreate') {
+        yield call(onDownloadClick)
+        return
+      }
+
       const isLoading: boolean = yield select(selectCardphotoIsLoading)
       const addVisual: ReturnType<typeof readCardphotoAddToolbarVisual> =
         yield select(readCardphotoAddToolbarVisual)

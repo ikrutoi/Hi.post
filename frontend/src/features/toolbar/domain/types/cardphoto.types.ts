@@ -72,11 +72,14 @@ export const CARDPHOTO_VIEW_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-/** Create upper: applyMedium слева (confirm crop / applyLight path). */
+/** Create upper: applyMedium, затем загрузка нового оригинала. */
 export const CARDPHOTO_CREATE_UPPER_APPLY_TOOLBAR: ToolbarConfig = [
   {
     group: 'crop',
-    icons: [{ key: 'applyMedium', state: 'disabled' }],
+    icons: [
+      { key: 'applyMedium', state: 'disabled' },
+      { key: 'cardphotoAdd', state: 'enabled' },
+    ],
     status: 'enabled',
   },
 ]
