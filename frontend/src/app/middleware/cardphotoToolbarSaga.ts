@@ -428,27 +428,8 @@ function* handleDeleteCardphotoCreateUploadSaga(): SagaIterator {
     yield put(setOriginalUploadReminderActive(false))
     yield put(clearUserOriginalDraftConfig())
 
-    const isMobileLayout: boolean = yield select(selectIsMobileLayout)
-    if (isMobileLayout) {
-      /** Mobile: leave create after removing the uploaded original (restore View if needed). */
-      yield call(handleCloseCardphotoCreateSaga, { skipDraftPersist: true })
-      return
-    }
-
-    /** Desktop: stay in create/edit session — clear slot only. */
-    yield put(setAssetData(null))
-    yield put(clearCurrentConfig())
-
-    const toolbarCreate: CardphotoToolbarState | undefined = yield select(
-      selectToolbarSectionState('cardphotoCreate'),
-    )
-    if (toolbarCreate) {
-      yield call(updateCropToolbarState, 'enabled', toolbarCreate)
-    }
-
-    yield put(markLoaded())
-    yield call(syncToolbarContext)
-    yield call(syncCardphotoAddToolbarState)
+    /** Leave crop and return to View (previous template, or the applied photo). */
+    yield call(handleCloseCardphotoCreateSaga, { skipDraftPersist: true })
   } catch (error) {
     console.error('handleDeleteCardphotoCreateUploadSaga', error)
   }
