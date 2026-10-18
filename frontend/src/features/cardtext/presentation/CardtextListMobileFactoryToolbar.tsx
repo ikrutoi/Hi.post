@@ -23,6 +23,7 @@ import { CARDTEXT_LIST_TOOLBAR } from '@toolbar/domain/types/cardtextList.types'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import toolbarStyles from '@features/toolbar/presentation/Toolbar.module.scss'
 import type { IconKey, IconState } from '@shared/config/constants'
+import { IconApplyMedium, IconEditLight } from '@shared/ui/icons'
 import type { ToolbarConfig } from '@toolbar/domain/types'
 import styles from './CardtextListMobileFactoryToolbar.module.scss'
 
@@ -89,10 +90,11 @@ const CARDTEXT_LIST_FACTORY_UPPER_CLOSE_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-/** Editable template name. Desktop list puts it in the lower toolbar. */
-export const CardtextListTemplateTitle: React.FC<{ centered?: boolean }> = ({
-  centered = false,
-}) => {
+/** Editable template name. Desktop list docks it on the right of the upper toolbar. */
+export const CardtextListTemplateTitle: React.FC<{
+  centered?: boolean
+  dockRight?: boolean
+}> = ({ centered = false, dockRight = false }) => {
   const {
     inputRef: titleInputRef,
     displayTitle: centralTemplateTitle,
@@ -166,6 +168,7 @@ export const CardtextListTemplateTitle: React.FC<{ centered?: boolean }> = ({
   const titleClassName = clsx(
     styles.upperTitle,
     centered && styles.upperTitleCentered,
+    dockRight && styles.upperTitleDockRight,
     isEditingTitle && styles.upperTitleEditing,
     !isEditingTitle && titleArmed && styles.upperTitleArmed,
   )
@@ -173,6 +176,20 @@ export const CardtextListTemplateTitle: React.FC<{ centered?: boolean }> = ({
   if (isEditingTitle) {
     return (
       <div className={titleClassName} data-cardtext-template-title>
+        {dockRight ? (
+          <button
+            type="button"
+            className={styles.upperTitleEditIcon}
+            aria-label="Apply template name"
+            disabled={isSubmittingTitle}
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => {
+              void commitEditTitle()
+            }}
+          >
+            <IconApplyMedium />
+          </button>
+        ) : null}
         <input
           ref={titleInputRef}
           type="text"
@@ -230,7 +247,12 @@ export const CardtextListTemplateTitle: React.FC<{ centered?: boolean }> = ({
         }
       }}
     >
-      {centralTemplateTitle}
+      {dockRight ? (
+        <span className={styles.upperTitleEditIcon} aria-hidden>
+          <IconEditLight />
+        </span>
+      ) : null}
+      <span className={styles.upperTitleLabel}>{centralTemplateTitle}</span>
     </div>
   )
 }

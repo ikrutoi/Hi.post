@@ -9,6 +9,9 @@ import { EnvelopeInnerToolbar } from '@envelope/presentation/EnvelopeInnerToolba
 import { MobileDateCalendarToolbarNav } from '@date/dateHeader/presentation/MobileDateCalendarToolbarNav'
 import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
+import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
+import { selectIsCardtextListPanelOpen } from '@cardtext/infrastructure/selectors'
+import { CardtextListTemplateTitle } from '@cardtext/presentation/CardtextListMobileFactoryToolbar'
 import {
   selectCardphotoAssetData,
   selectCardphotoAssetToolbar,
@@ -35,6 +38,13 @@ export const CardSectionToolbar: React.FC = () => {
   const { activeSection } = useSectionMenuFacade()
   const { sizeMiniCard } = useSizeFacade()
   const isMobileLayout = useAppSelector(selectIsMobileLayout)
+  const cardtextListOpen = useAppSelector(selectIsCardtextListPanelOpen)
+  const { rightPieCardtextPeekNoToolbar } = useRightListArchiveMini()
+  const showCardtextUpperTitle =
+    !isMobileLayout &&
+    activeSection === 'cardtext' &&
+    cardtextListOpen &&
+    !rightPieCardtextPeekNoToolbar
   const cardPieCopyStripExpanded = useAppSelector(selectCardPieCopyStripExpanded)
   const cardphotoAssetToolbar = useAppSelector(selectCardphotoAssetToolbar)
   const cardphotoAssetData = useAppSelector(selectCardphotoAssetData)
@@ -135,10 +145,14 @@ export const CardSectionToolbar: React.FC = () => {
           className={clsx(
             styles.cardSectionToolbarHeader,
             styles.cardSectionToolbarPhotoTextKeys,
+            showCardtextUpperTitle && styles.cardSectionToolbarHeaderWithTitle,
             isMobileLayout && styles.cardSectionToolbarCardtextTint,
           )}
         >
           <Toolbar section="cardtext" />
+          {showCardtextUpperTitle ? (
+            <CardtextListTemplateTitle dockRight />
+          ) : null}
         </div>
       )}
       {showAromaUpperToolbar ? (

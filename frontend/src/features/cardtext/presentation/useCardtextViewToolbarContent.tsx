@@ -18,18 +18,14 @@ import {
 import { useMobileFactoryListChrome } from '@features/cardSectionEditor/application/hooks/useMobileFactoryListChrome'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import { CARDTEXT_VIEW_TOOLBAR } from '@toolbar/domain/types/cardtext.types'
-import { CardtextListTemplateTitle } from './CardtextListMobileFactoryToolbar'
 import styles from './Cardtext.module.scss'
 
 type UseCardtextViewToolbarContentOptions = {
   enabled: boolean
-  /** Desktop: selected template name, centered in this lower row. */
-  centerTitle?: boolean
 }
 
 export function useCardtextViewToolbarContent({
   enabled,
-  centerTitle = false,
 }: UseCardtextViewToolbarContentOptions): React.ReactNode {
   const cardtextState = useAppSelector(selectCardtextState)
   const currentView = useAppSelector(selectCardtextSource)
@@ -102,18 +98,15 @@ export function useCardtextViewToolbarContent({
     showToolbarControls &&
     toolbarSection === 'cardtextView'
 
-  if (!show && !centerTitle) return null
+  if (!show) return null
 
   return (
     <div className={styles.cardtextViewToolbarRow}>
-      {show ? (
-        <Toolbar
-          section="cardtextView"
-          groupsOverride={groupsOverride}
-          stateOverride={stateOverride}
-        />
-      ) : null}
-      {centerTitle ? <CardtextListTemplateTitle centered /> : null}
+      <Toolbar
+        section="cardtextView"
+        groupsOverride={groupsOverride}
+        stateOverride={stateOverride}
+      />
     </div>
   )
 }
