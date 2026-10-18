@@ -191,6 +191,7 @@ export const CardEditor: React.FC<CardEditorProps> = ({
         <div
           className={styles.editorArea}
           ref={editorRef}
+          data-cardtext-editor-area
           onClick={handleClickEditorArea}
           onBlur={() => {
             if (editor.selection) {
