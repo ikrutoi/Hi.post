@@ -403,6 +403,22 @@ function* onSelectInLineTemplateSaga(
     const hydrated = hydrateMeta(record)
     if (!hydrated) return
 
+    /** Crop left on from edit mode keeps Apply disabled on the template View. */
+    const cropSections = [
+      'cardphotoCreate',
+      'cardphoto',
+      'cardphotoProcessed',
+    ] as const
+    for (const section of cropSections) {
+      const toolbarState: CardphotoToolbarState | undefined = yield select(
+        selectToolbarSectionState(section),
+      )
+      if (toolbarState?.crop?.state === 'active') {
+        yield call(updateCropToolbarState, 'enabled', toolbarState)
+        break
+      }
+    }
+
     const cardphotoState: CardphotoState | null = yield select(
       selectCardphotoState,
     )
