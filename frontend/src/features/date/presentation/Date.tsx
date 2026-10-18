@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react'
 import clsx from 'clsx'
-import { MONTH_NAMES } from '@entities/date/constants'
+import { dateMonthUpperLabel } from '@i18n/catalogs/date'
+import { useLangSnapshot } from '@i18n/langPreference'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { selectCartItems, selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
@@ -113,6 +114,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   section,
 }) => {
   const dispatch = useAppDispatch()
+  const { active: activeLang } = useLangSnapshot()
   const notebookTabsOuter = useSectionEditorNotebookTabsOuter()
   const {
     rightPieDatePeekNoToolbar,
@@ -411,11 +413,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
     const isMultiDatePeek = peekDates.length > 1
     const d = peekDispatchDate
     const monthLabel =
-      d != null &&
-      d.month >= 0 &&
-      d.month < MONTH_NAMES.length
-        ? MONTH_NAMES[d.month]
-        : ''
+      d != null ? dateMonthUpperLabel(d.month, activeLang) : ''
     const dayLabels = buildDatePreviewLines(peekDates)
     const peekBody = (
       <div

@@ -2,7 +2,8 @@ import React from 'react'
 import clsx from 'clsx'
 import { AROMA_IMAGES_THUMB } from '@entities/aroma/domain/types'
 import { useListCardPreviewUrl } from '@entities/card/application/hooks/useListCardPreviewUrl'
-import { MONTH_NAMES } from '@entities/date/constants'
+import { dateMonthUpperLabel } from '@i18n/catalogs/date'
+import { useLangSnapshot } from '@i18n/langPreference'
 import {
   IconUsers,
   IconCart,
@@ -95,6 +96,7 @@ export const CardPie: React.FC<CardPieProps> = ({
   cardphotoThumb = false,
 }) => {
   const pieDefsUid = React.useId().replace(/:/g, '')
+  const { active: activeLang } = useLangSnapshot()
   const [centerPressSeq, setCenterPressSeq] = React.useState(0)
   const [centerCompletePulseSeq, setCenterCompletePulseSeq] = React.useState(0)
   const [centerCompletePulsing, setCenterCompletePulsing] = React.useState(false)
@@ -805,7 +807,7 @@ export const CardPie: React.FC<CardPieProps> = ({
                       {date.day}
                     </tspan>
                     <tspan x="2000" dy="700" fontSize="550">
-                      {MONTH_NAMES[date.month]}
+                      {dateMonthUpperLabel(date.month, activeLang)}
                     </tspan>
                   </text>
                 </>
