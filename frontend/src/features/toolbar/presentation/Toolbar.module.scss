@@ -340,7 +340,8 @@
     border: 1px solid #fff;
 
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
-    pointer-events: none;
+    pointer-events: auto;
+    cursor: inherit;
     z-index: 10;
   }
 
