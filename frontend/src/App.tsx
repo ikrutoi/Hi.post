@@ -49,6 +49,7 @@ import { DesktopEnvelopeAddressViewToolbar } from '@envelope/presentation/Deskto
 import { DesktopCardphotoCreateToolbar } from '@cardphoto/presentation/DesktopCardphotoCreateToolbar'
 import { DesktopCardphotoViewToolbar } from '@cardphoto/presentation/DesktopCardphotoViewToolbar'
 import { CardphotoFilePickerHost } from '@cardphoto/presentation/CardphotoFilePickerHost'
+import { DesktopCardtextComposerToolbar } from '@cardtext/presentation/DesktopCardtextComposerToolbar'
 import { DesktopCardtextViewToolbar } from '@cardtext/presentation/DesktopCardtextViewToolbar'
 import {
   CartListPanel,
@@ -2724,6 +2725,7 @@ const App = () => {
                           <DesktopEnvelopeAddressViewToolbar />
                           <DesktopCardphotoCreateToolbar />
                           <DesktopCardphotoViewToolbar />
+                          <DesktopCardtextComposerToolbar />
                           <DesktopCardtextViewToolbar />
                           <DesktopDateCalendarToolbarSlider />
                         </div>
