@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
@@ -36,6 +36,10 @@ import {
 import { UserPanelInfo } from './UserPanelInfo'
 import { UserPanelLanguage } from './UserPanelLanguage'
 import { UserPanelSettings } from './UserPanelSettings'
+import {
+  markInfoIntroSeen,
+  shouldStartUserPanelOnInfo,
+} from '@features/auth/infrastructure/infoIntroStorage'
 import { CloudBackupStatus } from '@features/sync/presentation/CloudBackupStatus'
 import styles from './UserLoginPanel.module.scss'
 
@@ -46,7 +50,17 @@ export const UserLoginPanel: React.FC = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
   const user = useAppSelector(selectAuthUser)
   const [guestAuthMode, setGuestAuthMode] = useState<GuestAuthMode>('signIn')
-  const [panelView, setPanelView] = useState<UserPanelView>('hub')
+  const [panelView, setPanelView] = useState<UserPanelView>(() =>
+    shouldStartUserPanelOnInfo() ? 'info' : 'hub',
+  )
+
+  useEffect(() => {
+    if (panelView !== 'info') return
+    const id = window.setTimeout(() => {
+      markInfoIntroSeen()
+    }, 0)
+    return () => window.clearTimeout(id)
+  }, [panelView])
 
   const handleClose = useCallback(() => {
     if (panelView === 'language') {

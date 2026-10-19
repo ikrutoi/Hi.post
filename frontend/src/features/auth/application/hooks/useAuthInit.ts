@@ -8,7 +8,13 @@ import {
   clearAuthSession,
   readAuthSession,
 } from '../../infrastructure/sessionStorage'
-import { logout, setAuth, setAuthInitialized } from '../../infrastructure/state'
+import { shouldStartUserPanelOnInfo } from '../../infrastructure/infoIntroStorage'
+import {
+  logout,
+  setAuth,
+  setAuthInitialized,
+  setUserLoginPanelOpen,
+} from '../../infrastructure/state'
 
 export const useAuthInit = () => {
   const dispatch = useAppDispatch()
@@ -17,6 +23,10 @@ export const useAuthInit = () => {
     setHttpUnauthorizedHandler(() => {
       dispatch(logout())
     })
+
+    if (shouldStartUserPanelOnInfo()) {
+      dispatch(setUserLoginPanelOpen(true))
+    }
 
     let cancelled = false
 
