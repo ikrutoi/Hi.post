@@ -35,8 +35,7 @@ import { applyFinal, clearApply, markLoaded } from '@cardphoto/infrastructure/st
 import { rebuildConfigFromMeta } from '@app/middleware/cardphotoProcessSaga'
 import type { ImageMeta } from '@cardphoto/domain/types'
 import { loadCardphotoImageMetaFromIdb } from '@cardphoto/application/helpers/loadCardphotoImageMetaFromIdb'
-import { cardImageMetaLookupIdsFromCard, cardRuntimePreviewUrlFromCard } from '@entities/card/domain/helpers'
-import { setAsset } from '@/entities/assetRegistry/infrastructure/state'
+import { cardImageMetaLookupIdsFromCard } from '@entities/card/domain/helpers'
 import { selectCardphotoIsComplete } from '@cardphoto/infrastructure/selectors'
 import {
   restoreCardtextSession,
@@ -71,19 +70,44 @@ const MIRROR_COPY_SECTION_ORDER: CardPanelSection[] = [
   'date',
 ]
 
+function trimmedUrl(url: string | null | undefined): string | null {
+  if (typeof url !== 'string') return null
+  const trimmed = url.trim()
+  return trimmed !== '' ? trimmed : null
+}
+
+function durableUrl(url: string | null | undefined): string | null {
+  const trimmed = trimmedUrl(url)
+  if (trimmed == null || trimmed.startsWith('blob:')) return null
+  return trimmed
+}
+
+/** Мини-превью берёт сначала thumbnail. Мёртвый blob: там гасит живой url. */
+function withDisplayUrl(meta: ImageMeta, url: string): ImageMeta {
+  const thumb = durableUrl(meta.thumbnail?.url) ?? url
+  return {
+    ...meta,
+    url,
+    full: {
+      ...meta.full,
+      url,
+      blob: undefined,
+    },
+    thumbnail: meta.thumbnail
+      ? { ...meta.thumbnail, url: thumb, blob: undefined }
+      : meta.thumbnail,
+  }
+}
+
 function cardphotoMetaHasDisplayUrl(meta: ImageMeta | null | undefined): boolean {
   if (meta == null) return false
-  for (const url of [meta.url, meta.full?.url, meta.thumbnail?.url]) {
-    if (typeof url !== 'string') continue
-    const trimmed = url.trim()
-    if (trimmed !== '' && !trimmed.startsWith('blob:')) return true
-  }
-  return false
+  return trimmedUrl(meta.url) != null || trimmedUrl(meta.thumbnail?.url) != null
 }
 
 /**
- * Картинка открытки корзины/истории часто без живого url в `appliedData`:
- * байты лежат в `cardphotoImages`, а пай показывает `thumbnailUrl`.
+ * Адрес для applied фабрики. Реестр и кэш центрального пая не трогаем:
+ * туда записан живой url открытки корзины, его подмена рвёт сектор пая.
+ * Старый applied сборки остаётся в mirror-backup.
  */
 function* resolveCopyCardphotoMeta(
   postcard: PostcardHydrated,
@@ -92,11 +116,27 @@ function* resolveCopyCardphotoMeta(
     postcard.card.cardphoto?.appliedData ??
     postcard.card.cardphoto?.assetData ??
     null
-  let fromIdb: ImageMeta | null = null
-  for (const id of cardImageMetaLookupIdsFromCard(
+  const lookupIds = cardImageMetaLookupIdsFromCard(
     postcard.card,
     postcard.postcard,
-  )) {
+  )
+  const root: RootState = yield select((state: RootState) => state)
+
+  let registryUrl: string | null = null
+  for (const id of lookupIds) {
+    const asset = root.assetRegistry.images[id]
+    if (!asset) continue
+    registryUrl =
+      durableUrl(asset.url) ||
+      trimmedUrl(asset.url) ||
+      durableUrl(asset.thumbUrl) ||
+      trimmedUrl(asset.thumbUrl)
+    if (registryUrl) break
+  }
+  const cached = trimmedUrl(root.card.calendarPreviewCache[postcard.card.id])
+
+  let fromIdb: ImageMeta | null = null
+  for (const id of lookupIds) {
     const loaded: ImageMeta | null = yield call(
       loadCardphotoImageMetaFromIdb,
       id,
@@ -107,29 +147,30 @@ function* resolveCopyCardphotoMeta(
     }
   }
   const merged = hydrateSessionImageMeta(persisted, fromIdb)
-  if (merged != null && cardphotoMetaHasDisplayUrl(merged)) return merged
+  const base = merged ?? persisted
+  if (base == null) return null
 
-  const preview = cardRuntimePreviewUrlFromCard(postcard.card)
-  if (
-    preview != null &&
-    !preview.startsWith('blob:') &&
-    merged != null
-  ) {
-    return {
-      ...merged,
-      url: preview,
-      full: {
-        ...merged.full,
-        url:
-          typeof merged.full?.url === 'string' &&
-          merged.full.url.trim() !== '' &&
-          !merged.full.url.startsWith('blob:')
-            ? merged.full.url
-            : preview,
-      },
-    }
+  const durable =
+    durableUrl(merged?.url) ||
+    durableUrl(merged?.full?.url) ||
+    durableUrl(merged?.thumbnail?.url) ||
+    durableUrl(registryUrl) ||
+    durableUrl(cached)
+  if (durable) return withDisplayUrl(base, durable)
+
+  const liveBlob =
+    (registryUrl?.startsWith('blob:') ? registryUrl : null) ||
+    (cached?.startsWith('blob:') ? cached : null)
+  if (liveBlob) return withDisplayUrl(base, liveBlob)
+
+  if (fromIdb != null && merged != null) {
+    const fresh =
+      trimmedUrl(merged.url) ||
+      trimmedUrl(merged.full?.url) ||
+      trimmedUrl(merged.thumbnail?.url)
+    if (fresh) return withDisplayUrl(merged, fresh)
   }
-  return merged
+  return null
 }
 
 function* stashMirrorSectionBackupIfNeeded(section: CardPanelSection): SagaIterator {
@@ -163,20 +204,6 @@ function* applyArchiveSectionFromPostcard(
       yield put(applyFinal(serializable))
       yield call(rebuildConfigFromMeta, serializable, false)
       yield put(markLoaded())
-      const displayUrl =
-        serializable.url ||
-        serializable.full?.url ||
-        serializable.thumbnail?.url ||
-        ''
-      if (serializable.id && displayUrl) {
-        yield put(
-          setAsset({
-            id: serializable.id,
-            url: displayUrl,
-            thumbUrl: serializable.thumbnail?.url || displayUrl,
-          }),
-        )
-      }
       /**
        * Edit (cardPieEdit / postcardEdit): снять session-apply после гидратации —
        * центральный CardPie в edit смотрит isComplete и сектор пустеет.

@@ -130,7 +130,21 @@ export function areAllEligibleMirrorSectionsApplied(
     postcardStatus ?? sourcePostcard?.status,
   )
   if (eligible.length === 0) return false
-  return eligible.every((section) =>
+  /**
+   * Фото гостевой открытки часто остаётся blob и в фабрику не копируется.
+   * Тогда повторный cardPieCopy всё равно снимает остальные секции.
+   */
+  const required = eligible.filter((section) => {
+    if (section !== 'cardphoto') return true
+    return isMirrorSectionAppliedToEditor(
+      section,
+      mirrorInner,
+      sourcePostcard,
+      editor,
+    )
+  })
+  if (required.length === 0) return false
+  return required.every((section) =>
     isMirrorSectionAppliedToEditor(
       section,
       mirrorInner,

@@ -113,20 +113,10 @@ import {
 } from '@cardphoto/infrastructure/selectors'
 import { prepareForRedux } from '@app/middleware/cardphotoHelpers'
 import { protectAssemblyBlobUrl } from '@app/middleware/blobUrlRevokeGuards'
-import {
-  buildCardPieInnerDataFromPostcard,
-  buildPieSectionFlagsFromPostcard,
-} from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors'
 import { RightListArchiveMiniProvider } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { resolveCardPieDualMode } from '@cardPanel/application/helpers/resolveCardPieDualMode'
-import {
-  areAllEligibleMirrorSectionsApplied,
-  isMirrorArchiveDateDisabledForOrder,
-  listMirrorSectionsEligibleForApply,
-} from '@cardPanel/application/helpers/mirrorSectionEditorSync'
-import { selectMirrorSectionEditorSnapshot } from '@cardPanel/infrastructure/selectors/mirrorSectionEditorSnapshotSelectors'
-import type { CardPanelSection } from '@cardPanel/domain/types'
+import { isMirrorArchiveDateDisabledForOrder } from '@cardPanel/application/helpers/mirrorSectionEditorSync'
 import { selectMirrorSectionBackupSections } from '@cardPanel/infrastructure/selectors/mirrorSectionBackupSelectors'
 import {
   applyArchiveSectionToEditorRequested,
@@ -207,15 +197,6 @@ import { store } from '@app/state/store'
 import { getCurrentDate } from '@shared/utils/date'
 import { clearDate } from '@date/infrastructure/state'
 
-/** Merges the mini-sections strip with the left or right CardPie under one chrome frame. */
-const CARD_PIE_COPY_ALL_SECTIONS: CardPanelSection[] = [
-  'cardphoto',
-  'cardtext',
-  'envelope',
-  'aroma',
-  'date',
-]
-
 const App = () => {
   const CALENDAR_STRIP_TAB_SESSION_KEY = 'hi.post.calendarStripTab'
   const appRef = useRef<HTMLDivElement>(null)
@@ -223,6 +204,8 @@ const App = () => {
   const formRef = useRef<HTMLDivElement>(null)
   const cardPanelRef = useRef<HTMLDivElement>(null)
   const cardPieCopyClosedByEditRef = useRef(false)
+  /** localId открытки, чьи секции сейчас скопированы в фабрику кнопкой cardPieCopy. */
+  const cardPieCopyToggleLocalIdRef = useRef<number | null>(null)
   /** date pick включён через cardPieEdit (не dateEdit строки cartBlocked). */
   const cartDatePickOwnedByCardPieEditRef = useRef(false)
   /** @deprecated prefer isCartDatePickListEntryOwned(); kept in sync for cardPieEdit effect. */
@@ -292,6 +275,7 @@ const App = () => {
 
   /** cardPieCopy toggle: revert factory backups when central archive postcard changes. */
   const resetArchiveMirrorCopyToggle = useCallback(() => {
+    cardPieCopyToggleLocalIdRef.current = null
     const backed = selectMirrorSectionBackupSections(store.getState())
     if (backed.length === 0) return
     dispatch(revertAllMirrorSectionsCopyRequested())
@@ -2528,32 +2512,11 @@ const App = () => {
       const postcard = selectCartItems(state).find((p) => p.localId === lid)
       if (postcard == null) return false
 
-      const mirrorInner = buildCardPieInnerDataFromPostcard(postcard)
-      const mirrorFlags = buildPieSectionFlagsFromPostcard(postcard)
-      const eligible = listMirrorSectionsEligibleForApply(
-        CARD_PIE_COPY_ALL_SECTIONS,
-        mirrorInner,
-        mirrorFlags,
-        postcard.status,
-      )
-      /**
-       * Toggle like peek `copy`: revert only when factory already mirrors
-       * this postcard — not when backups belong to a previous selection.
-       */
-      const shouldRevert =
-        eligible.length > 0 &&
-        areAllEligibleMirrorSectionsApplied(
-          eligible,
-          mirrorInner,
-          mirrorFlags,
-          postcard,
-          selectMirrorSectionEditorSnapshot(state),
-          postcard.status,
-        )
-
-      if (shouldRevert) {
+      if (cardPieCopyToggleLocalIdRef.current === lid) {
+        cardPieCopyToggleLocalIdRef.current = null
         dispatch(revertAllMirrorSectionsCopyRequested())
       } else {
+        cardPieCopyToggleLocalIdRef.current = lid
         /**
          * cardPieCopy writes into the factory session. Drop the dual-mode
          * freeze so the left CardPie shows the copied sections (cardtext

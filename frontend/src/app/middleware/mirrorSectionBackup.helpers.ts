@@ -3,6 +3,7 @@ import { call, put, select } from 'redux-saga/effects'
 import type { CardPanelSection } from '@cardPanel/domain/types'
 import type { MirrorSectionBackup } from '@cardPanel/domain/types/mirrorSectionBackup.types'
 import { prepareForRedux } from '@app/middleware/cardphotoHelpers'
+import { protectAssemblyBlobUrl } from './blobUrlRevokeGuards'
 import {
   applyFinal,
   clearApply,
@@ -61,11 +62,23 @@ export function* captureMirrorSectionBackup(
     case 'cardphoto': {
       const applied: ImageMeta | null = yield select(selectCardphotoAppliedData)
       const asset: ImageMeta | null = yield select(selectCardphotoAssetData)
+      const appliedData =
+        applied != null ? (prepareForRedux(applied) as ImageMeta) : null
+      const assetData =
+        asset != null ? (prepareForRedux(asset) as ImageMeta) : null
+      /**
+       * Сборка держит прежний applied, пока copied-снимок стоит текущим.
+       * Эти blob: нельзя отзывать: второй клик возвращает их в applied.
+       */
+      for (const meta of [appliedData, assetData]) {
+        protectAssemblyBlobUrl(meta?.url)
+        protectAssemblyBlobUrl(meta?.thumbnail?.url)
+        protectAssemblyBlobUrl(meta?.full?.url)
+      }
       return {
         section: 'cardphoto',
-        appliedData:
-          applied != null ? (prepareForRedux(applied) as ImageMeta) : null,
-        assetData: asset != null ? (prepareForRedux(asset) as ImageMeta) : null,
+        appliedData,
+        assetData,
       }
     }
     case 'cardtext': {
