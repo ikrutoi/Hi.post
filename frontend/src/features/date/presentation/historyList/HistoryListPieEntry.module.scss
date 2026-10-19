@@ -51,6 +51,10 @@
     }
   }
 
+  &[data-clickable='true'][data-list-source='history'] {
+    cursor: default;
+  }
+
   &[data-inactive='true'] {
     opacity: 0.55;
     filter: grayscale(1);
@@ -83,4 +87,17 @@
   :global([class*='pieOutlineOverlay']) {
     border-radius: $list-entry-radius-lg;
   }
+}
+
+.debugStatusCycle {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  z-index: 3;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
 }

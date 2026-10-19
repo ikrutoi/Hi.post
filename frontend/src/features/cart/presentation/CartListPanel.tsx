@@ -31,6 +31,8 @@ import { CartListEntry, type CartListEntryVariant } from './CartListEntry'
 import { CartHeaderSegments } from './CartHeaderSegments'
 import type { PostcardHydrated } from '@entities/postcard'
 import type { DispatchDate } from '@entities/date/domain/types'
+import { useLangSnapshot } from '@i18n/langPreference'
+import type { Lang } from '@i18n/types/lang.types'
 import { getCurrentDate } from '@shared/utils/date'
 import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
 import { formatPostcardListRecipientDetailLine } from '@date/application/helpers/formatRecipientPlanDetailLine'
@@ -71,12 +73,31 @@ type Props = {
   factoryChrome?: boolean
 }
 
-function formatDispatchDateLabel(d: DispatchDate): string {
+const CART_LIST_DATE_LOCALE: Record<Lang, string> = {
+  en: 'en-US',
+  ru: 'ru',
+  de: 'de',
+  es: 'es',
+  zh: 'zh-CN',
+  fr: 'fr',
+  ar: 'ar',
+  pt: 'pt',
+  it: 'it',
+  hi: 'hi',
+  ja: 'ja',
+  tr: 'tr',
+  ko: 'ko',
+  id: 'id',
+  uk: 'uk',
+  pl: 'pl',
+}
+
+function formatDispatchDateLabel(d: DispatchDate, lang: Lang): string {
   if (d.year === 0 && d.month === 0 && d.day === 0) {
     return '—'
   }
   const date = new Date(d.year, d.month, d.day)
-  return date.toLocaleDateString('en-US', {
+  return date.toLocaleDateString(CART_LIST_DATE_LOCALE[lang], {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -109,6 +130,7 @@ function cartPostcardsToEntries(
   segment: CartListStatusSegment,
   recipientEntries: AddressBookEntry[],
   envelopeRecipients: RecipientState[],
+  lang: Lang,
 ): CartListPanelItem[] {
   const currentDate = getCurrentDate()
   return postcards
@@ -122,7 +144,7 @@ function cartPostcardsToEntries(
         cardId: p.card.id,
         sourceDate: p.date,
         postcard: p,
-        dateLabel: formatDispatchDateLabel(p.date),
+        dateLabel: formatDispatchDateLabel(p.date, lang),
         previewUrl: cardListPreviewUrlFromCard(p.card),
         detailLine: formatPostcardListRecipientDetailLine(
           p,
@@ -191,6 +213,7 @@ export const CartListPanel: React.FC<Props> = ({
   factoryChrome = false,
 }) => {
   const dispatch = useAppDispatch()
+  const { active: activeLang } = useLangSnapshot()
   const { isMobileLayout } = useSizeFacade()
   const useFactoryChrome = factoryChrome && isMobileLayout
   const cartItems = useAppSelector(selectCartItems)
@@ -266,8 +289,16 @@ export const CartListPanel: React.FC<Props> = ({
       listSegment,
       recipientEntries,
       envelopeRecipients,
+      activeLang,
     )
-  }, [entriesProp, cartItems, listSegment, recipientEntries, envelopeRecipients])
+  }, [
+    entriesProp,
+    cartItems,
+    listSegment,
+    recipientEntries,
+    envelopeRecipients,
+    activeLang,
+  ])
 
   const entries = useMemo(() => {
     const raw = entriesProp ?? entriesFromStore

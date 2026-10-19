@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react'
-import { useAppSelector } from '@app/hooks'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { cyclePostcardDebugStatus } from '@cart/infrastructure/state'
+import { isDebugPostcardStatusCycleEnabled } from '@date/application/helpers/debugPostcardStatusCycle'
 import { useListCardPreviewUrl } from '@entities/card/application/hooks/useListCardPreviewUrl'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { selectListArchiveCardPieBundle } from '@features/cardPie/infrastructure/selectors/cardPieSelectors'
@@ -74,7 +76,12 @@ export const HistoryListPieEntry: React.FC<HistoryListPieEntryProps> = ({
     previewIsProcessed: previewAllowBlob ?? previewIsProcessed,
   })
 
+  const dispatch = useAppDispatch()
   const interactive = Boolean(onSelect)
+  const showDebugStatusCycle =
+    isDebugPostcardStatusCycleEnabled &&
+    listSource === 'history' &&
+    postcardLocalId != null
   const labelForAria = detailLine ? `${dateLabel}, ${detailLine}` : dateLabel
   const pieInner = useMemo(() => {
     const base = pieBundle?.currentData.data
@@ -110,6 +117,7 @@ export const HistoryListPieEntry: React.FC<HistoryListPieEntryProps> = ({
       data-selected={isSelected ? 'true' : undefined}
       data-inactive={variant === 'inactive' ? 'true' : undefined}
       data-clickable={interactive ? 'true' : undefined}
+      data-list-source={listSource}
       role={interactive ? 'button' : undefined}
       tabIndex={interactive ? 0 : undefined}
       aria-label={interactive ? labelForAria : undefined}
@@ -125,6 +133,18 @@ export const HistoryListPieEntry: React.FC<HistoryListPieEntryProps> = ({
           : undefined
       }
     >
+      {showDebugStatusCycle ? (
+        <button
+          type="button"
+          className={styles.debugStatusCycle}
+          aria-label="Следующий статус"
+          onClick={(e) => {
+            e.stopPropagation()
+            if (postcardLocalId == null) return
+            dispatch(cyclePostcardDebugStatus(postcardLocalId))
+          }}
+        />
+      ) : null}
       {pieInner != null && pieSections != null ? (
         <CardPie
           fillContainer
