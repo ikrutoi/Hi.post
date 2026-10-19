@@ -10,7 +10,7 @@ function numericFromPriceLine(line: string): number {
   return parseFloat(m[0].replace(',', '.')) || 0
 }
 
-/** Text after the first number (e.g. `USD` from `6.00 USD`). */
+/** Text after the first number (e.g. `USD` from `7.00 USD`). */
 function currencySuffixFromPriceLine(line: string): string {
   const m = line.match(/[\d]+(?:[.,]\d+)?/)
   if (!m) return 'USD'

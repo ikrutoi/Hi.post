@@ -1,6 +1,6 @@
 import type { Postcard } from '@entities/postcard'
 
-const DEFAULT_PLAN_PRICE_LINE = '6.00 USD'
+const DEFAULT_PLAN_PRICE_LINE = '7.00 USD'
 
 /** Строка цены для списков (CardPie, корзина, план дат). */
 export function listEntryPriceLine(postcard: Postcard | undefined): string {

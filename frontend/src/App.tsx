@@ -1278,13 +1278,32 @@ const App = () => {
     notebookStripTab,
     activeSection,
   })
+  const desktopCartArchiveListCount = useMemo(() => {
+    const segment =
+      rightArchivePiePostcardStatus === 'cartBlocked' ||
+      (rightArchivePiePostcardStatus == null &&
+        cartListStatusSegment === 'cartBlocked')
+        ? 'cartBlocked'
+        : 'cart'
+    return cartItems.filter((item) => item.status === segment).length
+  }, [rightArchivePiePostcardStatus, cartListStatusSegment, cartItems])
+  const historyArchiveListCount = useAppSelector(
+    (state) => historyListCycleLocalIds(state).length,
+  )
+  /** Одна открытка в списке: листать некуда, Next в центре пая не показываем. */
+  const singleDesktopArchivePostcard =
+    !isMobileLayout &&
+    ((rightListArchiveSource === 'cart' && desktopCartArchiveListCount <= 1) ||
+      (rightListArchiveSource === 'history' && historyArchiveListCount <= 1))
   const rightPieCenterAffordance =
     (rightListArchiveSource === 'cart' ||
       rightListArchiveSource === 'history') &&
     rightPieOnCenterClick != null
       ? rightPieShowArchiveSourceReturn
         ? ('calendar' as const)
-        : ('cycleForward' as const)
+        : singleDesktopArchivePostcard
+          ? null
+          : ('cycleForward' as const)
       : null
 
   const { cartUnderlyingPostcardCount } = useMemo(
