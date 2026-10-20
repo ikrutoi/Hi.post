@@ -4,7 +4,11 @@ import type { ImageMeta } from '@cardphoto/domain/types'
 import { cardImageMetaLookupIdsFromCard } from '@entities/card/domain/helpers'
 import { loadCardphotoImageMetaFromIdb } from '@cardphoto/application/helpers/loadCardphotoImageMetaFromIdb'
 import { postcardsAdapter } from '@db/adapters/storeAdapters/postcardsAdapter'
-import { isPostcardPendingDelete } from '@features/sync/infrastructure/postcardV2PendingSync'
+import { separateDuplicatePostcardLocalIds } from '@features/sync/domain/separateDuplicatePostcardLocalIds'
+import {
+  enqueuePostcardUpsert,
+  isPostcardPendingDelete,
+} from '@features/sync/infrastructure/postcardV2PendingSync'
 import { hydrateSessionImageMeta, prepareForRedux } from './cardphotoHelpers'
 
 const isDeadBlobUrl = (u: string | null | undefined): boolean =>
@@ -86,9 +90,16 @@ export async function readPostcardsForReduxHydrate(): Promise<{
   display: PostcardHydrated[]
 }> {
   await postcardsAdapter.purgePendingDeletes()
-  const raw = (await postcardsAdapter.getAll()).filter(
+  const stored = (await postcardsAdapter.getAll()).filter(
     (row) => !isPostcardPendingDelete(row),
   )
+  const separated = separateDuplicatePostcardLocalIds(stored)
+  for (const row of separated.changed) {
+    if (!row.id) continue
+    await postcardsAdapter.putLocal(row)
+    enqueuePostcardUpsert(row)
+  }
+  const raw = separated.rows
   const display = await refreshPostcardsCardphotoUrls(raw)
   return { raw, display }
 }
