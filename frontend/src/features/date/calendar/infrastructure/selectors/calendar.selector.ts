@@ -55,16 +55,37 @@ export const computeNotebookStripTabFromState = (
   }
 
   const activeSection = state.sectionEditorMenu.activeSection
-  if (state.cart.isActive && state.calendar.notebookStripDateOverCart) {
+  /**
+   * Явная полоса «История» не схлопывается в корзину, даже если список корзины
+   * ещё числится открытым. Иначе Next пишет выбор истории, а пай остаётся на корзине.
+   */
+  const historyStripHeld =
+    currentTab === 'history' && !state.calendar.notebookStripDateOverHistory
+  if (
+    !historyStripHeld &&
+    state.cart.isActive &&
+    state.calendar.notebookStripDateOverCart
+  ) {
     return 'date'
   }
-  if (state.cart.isActive) return 'cart'
+  if (!historyStripHeld && state.cart.isActive) return 'cart'
   if (
     activeSection === 'date' &&
     currentTab === 'cart' &&
     !state.calendar.notebookStripDateOverCart
   ) {
     return 'cart'
+  }
+  /**
+   * Календарь истории тоже живёт в секции date.
+   * Без этого клик Next ставит date и сбрасывает полосу, следующая открытка не показывается.
+   */
+  if (
+    activeSection === 'date' &&
+    currentTab === 'history' &&
+    !state.calendar.notebookStripDateOverHistory
+  ) {
+    return 'history'
   }
   if (activeSection === 'history') return 'history'
   if (
@@ -304,6 +325,16 @@ export function resolveRightListArchivePostcardLocalId(input: {
   }
   if (
     historyListPanelOpen &&
+    archivePostcardLocalIdExists(cartItems, historyListSelectedLocalId)
+  ) {
+    return historyListSelectedLocalId
+  }
+  /**
+   * Секция истории: панель дня знает только первую открытку дня.
+   * Выбор Next (historyListSelectedLocalId) важнее, иначе клик не меняет пай.
+   */
+  if (
+    historyOpenDayPanelArchiveLocalId != null &&
     archivePostcardLocalIdExists(cartItems, historyListSelectedLocalId)
   ) {
     return historyListSelectedLocalId

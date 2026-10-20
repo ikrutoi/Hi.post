@@ -147,6 +147,7 @@ export const CardPie: React.FC<CardPieProps> = ({
     notebookStripTab === 'cartdate' ||
     notebookStripTab === 'history'
   const factoryPhotoPinRef = React.useRef<string | null>(null)
+  const rightCenterPointerHandledRef = React.useRef(false)
   const handleSectorClick =
     station === 'right' && onListArchiveSectorClick != null
       ? onListArchiveSectorClick
@@ -1040,8 +1041,10 @@ export const CardPie: React.FC<CardPieProps> = ({
               return
             }
             if (station === 'right' && rightCenterActionEnabled) {
+              rightCenterPointerHandledRef.current = true
               centerArchiveCycleHint.onUserClick()
               triggerCenterPress()
+              onRightPieCenterClick?.()
             }
           }}
           onMouseDown={(e) => {
@@ -1054,9 +1057,12 @@ export const CardPie: React.FC<CardPieProps> = ({
               }
               return
             }
-            if (station === 'right') {
-              onRightPieCenterClick?.()
+            if (station !== 'right') return
+            if (rightCenterPointerHandledRef.current) {
+              rightCenterPointerHandledRef.current = false
+              return
             }
+            onRightPieCenterClick?.()
           }}
         >
           <span

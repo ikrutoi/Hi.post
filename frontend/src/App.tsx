@@ -547,6 +547,21 @@ const App = () => {
         return historyListSelectedLocalId
       }
     }
+    const historyOwnsCenterPie =
+      notebookStripTab !== 'cart' &&
+      notebookStripTab !== 'cartdate' &&
+      !listPanelOpen &&
+      !notebookStripDateOverHistory &&
+      (notebookStripTab === 'history' ||
+        historyListPanelOpen ||
+        activeSection === 'history')
+    if (
+      historyOwnsCenterPie &&
+      historyListSelectedLocalId != null &&
+      cartItems.some((item) => item.localId === historyListSelectedLocalId)
+    ) {
+      return historyListSelectedLocalId
+    }
     return resolveRightListArchivePostcardLocalIdWithPeek({
       cartListPanelOpen: listPanelOpen,
       cartListSelectedLocalId: listSelectedLocalId,
@@ -568,6 +583,8 @@ const App = () => {
     notebookStripTab,
     cartItems,
     activePieSide,
+    activeSection,
+    notebookStripDateOverHistory,
   ])
 
   const rightListArchiveSource = useMemo((): 'cart' | 'history' | null => {
@@ -920,15 +937,29 @@ const App = () => {
     setRightPieAromaPeekNoToolbar(false)
     setRightPieDatePeekNoToolbar(false)
 
-    dispatch(setNotebookStripTab('history'))
-    /** `date` + strip «История» — календарь; `history` открывает список через saga. */
-    dispatch(setActiveSection('date'))
-
+    /**
+     * Текущая открытка — та, что уже на пае.
+     * Сначала читаем её, и только потом трогаем полосу: вход в history
+     * может подставить первую открытку списка и сорвать шаг.
+     */
     const freshState = store.getState()
     const freshCardsByDateMap = selectCardsByDateMap(freshState)
     const freshCartItems = selectCartItems(freshState)
+    const displayedLocalId = readDisplayedRightListArchivePostcardLocalId(
+      freshState,
+      {
+        isMobileLayout,
+        activePieSideRight: true,
+        pinnedLocalId: rightListArchivePinnedForLeftFactory?.localId ?? null,
+      },
+    )
 
-    const activeLocalId = historyListSelectedLocalId ?? rightListArchiveLocalId
+    const activeLocalId =
+      rightListArchiveLocalId ??
+      displayedLocalId ??
+      historyListSelectedLocalId
+
+    dispatch(setNotebookStripTab('history'))
     const postcard =
       activeLocalId != null
         ? freshCartItems.find((item) => item.localId === activeLocalId)
@@ -1005,6 +1036,7 @@ const App = () => {
     historyListPanelOpen,
     historyListSelectedLocalId,
     rightListArchiveLocalId,
+    rightListArchivePinnedForLeftFactory,
     postcardStatuses,
     openDayPanelState?.dateKey,
     listRowInner,
@@ -1220,15 +1252,21 @@ const App = () => {
   ])
 
   const handleArchivePieCenterClick = useCallback(() => {
-    if (rightListArchiveSource === 'cart') {
-      handleRightPieCenterCartClick()
+    const historyCenter =
+      rightListArchiveSource === 'history' ||
+      notebookStripTab === 'history' ||
+      historyListPanelOpen
+    if (historyCenter) {
+      handleRightPieCenterHistoryClick()
       return
     }
-    if (rightListArchiveSource === 'history') {
-      handleRightPieCenterHistoryClick()
+    if (rightListArchiveSource === 'cart') {
+      handleRightPieCenterCartClick()
     }
   }, [
     rightListArchiveSource,
+    notebookStripTab,
+    historyListPanelOpen,
     handleRightPieCenterCartClick,
     handleRightPieCenterHistoryClick,
   ])
@@ -1274,18 +1312,24 @@ const App = () => {
   const historyArchiveListCount = useAppSelector(
     (state) => historyListCycleLocalIds(state).length,
   )
-  /** Одна открытка в списке: листать некуда, Next в центре пая не показываем. */
-  const singleDesktopArchivePostcard =
+  /**
+   * Одна открытка в списке: листать некуда, Next в центре пая не показываем.
+   * История — и на узком экране. Корзина — только на широком, как раньше.
+   */
+  const singleHistoryPostcard =
+    historyArchiveListCount <= 1 &&
+    (rightListArchiveSource === 'history' || historyListPanelOpen)
+  const singleDesktopCartPostcard =
     !isMobileLayout &&
-    ((rightListArchiveSource === 'cart' && desktopCartArchiveListCount <= 1) ||
-      (rightListArchiveSource === 'history' && historyArchiveListCount <= 1))
+    rightListArchiveSource === 'cart' &&
+    desktopCartArchiveListCount <= 1
   const rightPieCenterAffordance =
     (rightListArchiveSource === 'cart' ||
       rightListArchiveSource === 'history') &&
     rightPieOnCenterClick != null
       ? rightPieShowArchiveSourceReturn
         ? ('calendar' as const)
-        : singleDesktopArchivePostcard
+        : singleHistoryPostcard || singleDesktopCartPostcard
           ? null
           : ('cycleForward' as const)
       : null
