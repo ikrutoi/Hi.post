@@ -62,7 +62,6 @@ export const HistoryListRightSlot: React.FC<HistoryListRightSlotProps> = ({
           day.error.length
       })
       const historyListEntries = buildHistoryListPanelEntries({
-        cardsByDateMap,
         cartItems,
         postcardStatuses,
         recipientEntries,

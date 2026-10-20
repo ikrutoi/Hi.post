@@ -10,6 +10,7 @@ import {
   buildPieSectionFlagsFromInner,
   type CardPieInnerData,
 } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
+import type { DispatchDate } from '@entities/date/domain/types'
 import type { PostcardStatus } from '@entities/postcard'
 import type { CardPieRightListSource } from '@features/cardPie/domain/types/cardPie.types'
 import styles from './HistoryListPieEntry.module.scss'
@@ -37,6 +38,8 @@ export type HistoryListPieEntryProps = {
   previewUrl?: string | null
   previewAllowBlob?: boolean
   dateLabel: string
+  /** Дата, по которой строка уже стоит в списке. Сектор даты рисует её же. */
+  sourceDate?: DispatchDate
   detailLine?: string
   variant?: HistoryListEntryVariant
   previewStatus?: PostcardStatus
@@ -54,6 +57,7 @@ export const HistoryListPieEntry: React.FC<HistoryListPieEntryProps> = ({
   previewUrl,
   previewAllowBlob,
   dateLabel,
+  sourceDate,
   detailLine,
   variant = 'default',
   previewStatus,
@@ -84,22 +88,33 @@ export const HistoryListPieEntry: React.FC<HistoryListPieEntryProps> = ({
     postcardLocalId != null
   const labelForAria = detailLine ? `${dateLabel}, ${detailLine}` : dateLabel
   const pieInner = useMemo(() => {
+    const withSortDate = <T extends { date: DispatchDate | null; dates: DispatchDate[]; datePreviewLines: string[] }>(
+      inner: T,
+    ): T => {
+      if (sourceDate == null) return inner
+      return {
+        ...inner,
+        date: sourceDate,
+        dates: [sourceDate],
+        datePreviewLines: [String(sourceDate.day)],
+      }
+    }
     const base = pieBundle?.currentData.data
     if (base) {
-      return applyListPreviewToPieInner(base, displayUrl)
+      return withSortDate(applyListPreviewToPieInner(base, displayUrl))
     }
-    if (!displayUrl?.trim()) return null
-    return {
+    if (!displayUrl?.trim() && sourceDate == null) return null
+    return withSortDate({
       ...emptyCardPieInnerData(),
       cardphoto: {
         previewUrl: displayUrl,
         thumbUrl: null,
         factoryDisplayUrl: displayUrl,
-        isComplete: true,
+        isComplete: Boolean(displayUrl?.trim()),
         id: cardId ?? 'history-list',
       },
-    }
-  }, [pieBundle, displayUrl, cardId])
+    })
+  }, [pieBundle, displayUrl, cardId, sourceDate])
   const pieSections = useMemo(() => {
     if (pieInner == null) return null
     return buildPieSectionFlagsFromInner(

@@ -67,6 +67,18 @@ function isFilledDispatchDate(d: DispatchDate | null | undefined): boolean {
   )
 }
 
+/**
+ * Дата отправки, которую записал Apply.
+ * Старый массив `card.dates` не читаем: смена даты его не обновляет.
+ */
+export function postcardPiePrimaryDispatchDate(
+  postcard: PostcardHydrated,
+): DispatchDate | null {
+  if (isFilledDispatchDate(postcard.date)) return postcard.date
+  if (isFilledDispatchDate(postcard.card.date)) return postcard.card.date
+  return null
+}
+
 function cardtextContentForPie(card: Card): CardtextContent {
   const s = card.cardtext
   const draftBranch =
@@ -336,16 +348,9 @@ export function buildCardPieInnerDataFromPostcard(
   const recipientCount = recipientAppliedCount(recipient)
   const { senderBadgeShow, senderDisplayName, hasSenderAppliedData, sender } =
     senderMiniFromCard(card)
-  const datesFromCard = (card as Card & { dates?: DispatchDate[] }).dates
-  const dates: DispatchDate[] =
-    Array.isArray(datesFromCard) && datesFromCard.length > 0
-      ? datesFromCard
-      : isFilledDispatchDate(postcard.date)
-        ? [postcard.date]
-        : isFilledDispatchDate(card.date)
-          ? [card.date]
-          : []
-  const date = dates[0] ?? null
+  const primaryDate = postcardPiePrimaryDispatchDate(postcard)
+  const dates: DispatchDate[] = primaryDate ? [primaryDate] : []
+  const date = primaryDate
   const recipientPreviewLines = buildRecipientPreviewLines(recipient, ctx)
   const datePreviewLines = buildDatePreviewLines(dates)
 

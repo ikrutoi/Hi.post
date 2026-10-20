@@ -166,6 +166,7 @@ $list-panel-footer-band: calc(
 
 .listGrid {
   display: grid;
+  grid-auto-flow: row;
   grid-template-columns: repeat(#{$history-list-pie-cols-default}, minmax(0, 1fr));
   align-content: flex-start;
   column-gap: $history-list-pie-column-gap;

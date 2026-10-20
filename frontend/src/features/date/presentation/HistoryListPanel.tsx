@@ -72,6 +72,7 @@ const HistoryListPanelRow: React.FC<{
     previewUrl={item.previewUrl}
     previewAllowBlob={item.previewAllowBlob}
     dateLabel={item.dateLabel}
+    sourceDate={item.sourceDate}
     detailLine={item.detailLine}
     variant={item.variant}
     previewStatus={item.previewStatus}

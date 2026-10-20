@@ -23,12 +23,17 @@ function* handleCartCalendarDatePickApplied(
 
   if (target) {
     const now = Date.now()
-    /** `card.date` и `postcard.date` держим синхронно: правый CardPie / превью читают `card.date`. */
+    /**
+     * `card.date` и `postcard.date` — одна новая дата.
+     * Старый `card.dates` снимаем, иначе список истории сортирует по нему.
+     */
+    const card = { ...target.card, date: { ...date } }
+    delete (card as { dates?: unknown }).dates
     const next: PostcardHydrated = {
       ...target,
       date: { ...date },
       updatedAt: now,
-      card: { ...target.card, date: { ...date } },
+      card,
     }
 
     /**

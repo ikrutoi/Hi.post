@@ -1,18 +1,13 @@
 import type { RootState } from '@app/state'
 import type { DispatchDate } from '@entities/date/domain/types'
-import type {
-  CalendarCardItem,
-  CardCalendarIndex,
-} from '@entities/card/domain/types'
+import { cardListPreviewUrlFromCard } from '@entities/card/domain/helpers'
 import type { PostcardHydrated } from '@entities/postcard'
 import type { PostcardStatuses } from '@entities/postcard/domain/types'
 import { selectCartItems } from '@cart/infrastructure/selectors'
-import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
 import {
   selectHistoryListSortMode,
   selectPostcardStatuses,
 } from '@date/calendar/infrastructure/selectors'
-import { postcardLocalIdFromCalendarCardItem } from '@date/calendar/infrastructure/postcardLocalIdFromCalendarCardItem'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import type { RecipientState } from '@envelope/recipient/domain/types'
 import { selectRecipientEntriesState } from '@envelope/recipient/infrastructure/selectors'
@@ -24,6 +19,7 @@ import {
   formatRecipientLine,
   hasCommittedSessionRecipient,
 } from '@date/application/helpers/formatRecipientPlanDetailLine'
+import { postcardPiePrimaryDispatchDate } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import {
   sortHistoryListEntries,
   type HistoryListSortableItem,
@@ -50,7 +46,6 @@ function formatDispatchDateLabel(d: DispatchDate): string {
 }
 
 export type BuildHistoryListPanelEntriesInput = {
-  cardsByDateMap: Record<string, CardCalendarIndex>
   cartItems: readonly PostcardHydrated[]
   postcardStatuses: PostcardStatuses
   recipientEntries: readonly AddressBookEntry[]
@@ -62,7 +57,6 @@ export function buildHistoryListPanelEntries(
   input: BuildHistoryListPanelEntriesInput,
 ): HistoryListPanelEntry[] {
   const {
-    cardsByDateMap,
     cartItems,
     postcardStatuses,
     recipientEntries,
@@ -106,34 +100,29 @@ export function buildHistoryListPanelEntries(
     )
   }
 
-  const postcardItems: CalendarCardItem[] = []
-  Object.values(cardsByDateMap).forEach((day) => {
-    postcardItems.push(
-      ...day.cart,
-      ...day.ready,
-      ...day.sent,
-      ...day.delivered,
-      ...day.error,
-    )
-  })
-
   const entries: HistoryListPanelEntry[] = []
-  postcardItems.forEach((item, index) => {
-    if (item.status === 'cartBlocked') return
-    if (!postcardStatuses[item.status]) return
+  const seenLocalIds = new Set<number>()
+  for (const postcard of cartItems) {
+    if (postcard.status === 'cartBlocked' || postcard.status === 'processed') {
+      continue
+    }
+    if (!postcardStatuses[postcard.status]) continue
+    if (seenLocalIds.has(postcard.localId)) continue
+    seenLocalIds.add(postcard.localId)
+    const sourceDate = postcardPiePrimaryDispatchDate(postcard) ?? undefined
     entries.push({
-      id: `history-postcard-${item.rowKey}-${index}`,
-      cardId: item.cardId,
-      postcardLocalId: postcardLocalIdFromCalendarCardItem(item, cartItems),
-      sourceDate: item.date,
-      dateLabel: formatDispatchDateLabel(item.date),
-      previewUrl: item.previewUrl,
-      detailLine: resolveRecipientDetailLine(item.cardId),
-      previewStatus: item.status,
-      previewIsProcessed: item.isProcessed,
-      previewAllowBlob: item.previewAllowBlob,
+      id: `history-postcard-${postcard.localId}`,
+      cardId: postcard.card.id,
+      postcardLocalId: postcard.localId,
+      sourceDate,
+      dateLabel: formatDispatchDateLabel(sourceDate),
+      previewUrl: cardListPreviewUrlFromCard(postcard.card) ?? '',
+      detailLine: resolveRecipientDetailLine(postcard.card.id),
+      previewStatus: postcard.status,
+      previewIsProcessed: Boolean(postcard.card.isProcessed),
+      previewAllowBlob: false,
     })
-  })
+  }
 
   return entries
 }
@@ -142,7 +131,6 @@ export function buildHistoryListPanelEntriesFromState(
   state: RootState,
 ): HistoryListPanelEntry[] {
   return buildHistoryListPanelEntries({
-    cardsByDateMap: selectCardsByDateMap(state),
     cartItems: selectCartItems(state),
     postcardStatuses: selectPostcardStatuses(state),
     recipientEntries: selectRecipientEntriesState(state),

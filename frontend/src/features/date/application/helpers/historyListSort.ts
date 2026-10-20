@@ -4,6 +4,7 @@ import { POSTCARD_DISPATCH_DATE_FALLBACK } from '@entities/postcard'
 export type HistoryListSortableItem = {
   sourceDate?: DispatchDate
   detailLine?: string
+  postcardLocalId?: number
 }
 
 export type HistoryListSortMode = 'dateDesc' | 'dateAsc'
@@ -59,14 +60,14 @@ function isFallbackDispatchDate(d: DispatchDate): boolean {
   )
 }
 
-function dispatchDateUtcMidnightMs(d: DispatchDate): number {
-  return Date.UTC(d.year, d.month, d.day)
-}
-
-/** Раньше — меньше; без даты / fallback — в конце. */
-function compareHistoryBySourceDateChronological(
+/**
+ * Год, затем месяц, затем день. Без даты — в конце и при возрастании, и при убывании.
+ * Одинаковая дата — по localId, чтобы порядок внутри дня не прыгал.
+ */
+function compareHistoryBySourceDate(
   a: HistoryListSortableItem,
   b: HistoryListSortableItem,
+  direction: 1 | -1,
 ): number {
   const da = a.sourceDate
   const db = b.sourceDate
@@ -75,21 +76,12 @@ function compareHistoryBySourceDateChronological(
   if (aBad && bBad) return 0
   if (aBad) return 1
   if (bBad) return -1
-  return dispatchDateUtcMidnightMs(da) - dispatchDateUtcMidnightMs(db)
-}
-
-function compareByDateDesc(
-  a: HistoryListSortableItem,
-  b: HistoryListSortableItem,
-): number {
-  return -compareHistoryBySourceDateChronological(a, b)
-}
-
-function compareByDateAsc(
-  a: HistoryListSortableItem,
-  b: HistoryListSortableItem,
-): number {
-  return compareHistoryBySourceDateChronological(a, b)
+  const dateA = da as DispatchDate
+  const dateB = db as DispatchDate
+  if (dateA.year !== dateB.year) return (dateA.year - dateB.year) * direction
+  if (dateA.month !== dateB.month) return (dateA.month - dateB.month) * direction
+  if (dateA.day !== dateB.day) return (dateA.day - dateB.day) * direction
+  return (a.postcardLocalId ?? 0) - (b.postcardLocalId ?? 0)
 }
 
 export function sortHistoryListEntries<T extends HistoryListSortableItem>(
@@ -97,7 +89,8 @@ export function sortHistoryListEntries<T extends HistoryListSortableItem>(
   mode: HistoryListSortMode,
 ): T[] {
   if (entries.length <= 1) return [...entries]
-  return mode === 'dateDesc'
-    ? [...entries].sort(compareByDateDesc)
-    : [...entries].sort(compareByDateAsc)
+  const direction = mode === 'dateDesc' ? -1 : 1
+  return [...entries].sort((a, b) =>
+    compareHistoryBySourceDate(a, b, direction),
+  )
 }
