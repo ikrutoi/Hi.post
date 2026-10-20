@@ -1546,14 +1546,21 @@ const App = () => {
     prevListArchiveListContextRef.current = { localId, source }
 
     /**
-     * Apply даты меняет сегмент списка и на кадр снимает localId.
-     * Не гасить упрощённый peek: иначе снова открывается календарь.
+     * Apply даты на кадр снимает localId в той же корзине.
+     * Вернуть упрощённый peek только на этом возврате.
+     * Смена корзины на историю сюда не входит: иначе История
+     * остаётся без своего фона и с датой вместо календаря.
      */
+    const recoveringCartDateApply =
+      prev.localId == null &&
+      localId != null &&
+      source === 'cart' &&
+      (prev.source == null || prev.source === 'cart')
     if (
+      recoveringCartDateApply &&
       archivePeekEnterSection === 'date' &&
       archivePeekEnterTick !== 0 &&
       handledArchivePeekEnterTickRef.current === archivePeekEnterTick &&
-      localId != null &&
       !prevPostcardRemoved
     ) {
       setRightPieDatePeekNoToolbar(true)
