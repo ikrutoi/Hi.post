@@ -48,6 +48,14 @@ function revokeOwned(src: string) {
   }
 }
 
+/** One template left the list: drop its thumb URL. The IDB record stays. */
+export function forgetCardphotoListThumb(id: string) {
+  const entry = cache.get(id)
+  if (!entry) return
+  cache.delete(id)
+  if (entry.owned) revokeOwned(entry.src)
+}
+
 /** Drop thumbs whose templates left the inline list. */
 export function retainCardphotoListThumbCache(keepIds: ReadonlySet<string>) {
   for (const [id, entry] of cache) {

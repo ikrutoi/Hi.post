@@ -86,6 +86,13 @@ import { ImageAsset } from '@/entities/assetRegistry/domain/types'
 import { selectAssetById } from '@/entities/assetRegistry/infrastructure/selectors/assetRegistrySelectors'
 import { postcardLocalDataChanged } from '@features/sync/store/postcardSync.actions'
 import { stampCardphotoListStatus } from '@cardphoto/application/helpers/stampCardphotoListStatus'
+import { forgetCardphotoListThumb } from '@cardphoto/application/helpers/cardphotoListThumbCache'
+import {
+  holdCardphotoListBadgeUpperBound,
+  noteCardphotoInlineMembershipChanged,
+  releaseCardphotoListBadgeUpperBound,
+} from '@cardphoto/application/helpers/cardphotoInlineTemplates'
+import { syncCardphotoListBadgeFromIdb } from './cardphotoListBadgeSaga'
 import { requestArchiveSectionPeek } from '@cardPanel/infrastructure/state'
 import { selectAssemblyBranchFreeze } from '@cardPanel/infrastructure/selectors/assemblyBranchFreezeSelectors'
 import { selectMirrorSectionBackup } from '@cardPanel/infrastructure/selectors/mirrorSectionBackupSelectors'
@@ -541,7 +548,10 @@ export function* handlePromoteProcessedToInlineSaga(): SagaIterator {
   if (!hydrated) return
 
   yield put(setProcessedImage(prepareForRedux(hydrated)))
+  releaseCardphotoListBadgeUpperBound()
+  noteCardphotoInlineMembershipChanged()
   yield put(bumpCardphotoInlineTemplateList())
+  yield call(syncCardphotoListBadgeFromIdb)
   yield put(clearSessionPendingProcessedId())
   if (state.userOriginalData) {
     yield put(setOriginalUploadReminderActive(true))
@@ -591,10 +601,31 @@ export function* handleDemoteInlineTemplateSaga(): SagaIterator {
     storeAdapters.cardphotoImages.put,
     updated as ImageMeta & { id: string },
   )
+  forgetCardphotoListThumb(id)
+  noteCardphotoInlineMembershipChanged()
+  const currentBadge: number | null = yield select((s: RootState) => {
+    const raw = s.toolbar.cardphoto?.listCardphoto
+    if (raw == null || typeof raw === 'string') return null
+    const badge = (raw as { options?: { badge?: number | null } }).options
+      ?.badge
+    return typeof badge === 'number' ? badge : null
+  })
+  if (typeof currentBadge === 'number') {
+    const nextBadge = Math.max(0, currentBadge - 1)
+    holdCardphotoListBadgeUpperBound(nextBadge)
+    yield put(
+      updateToolbarIcon({
+        section: 'cardphoto',
+        key: 'listCardphoto',
+        value: { options: { badge: nextBadge > 0 ? nextBadge : null } },
+      }),
+    )
+  }
   yield put(postcardLocalDataChanged())
 
   yield put(setProcessedImage(prepareForRedux(updated)))
   yield put(bumpCardphotoInlineTemplateList())
+  yield call(syncCardphotoListBadgeFromIdb)
   /** Left the quick list, still a recoverable slot that Add reopens. */
   yield put(setSessionPendingProcessedId(id))
   if (state.userOriginalData) {
@@ -660,6 +691,7 @@ export function* handleDeleteImageSaga() {
 export function* handleClearAllCropsSaga() {
   try {
     yield put(markLoading())
+    releaseCardphotoListBadgeUpperBound()
     yield call(storeAdapters.cardphotoImages.clear)
     yield put(clearAllCrops())
     yield fork(syncToolbarContext)

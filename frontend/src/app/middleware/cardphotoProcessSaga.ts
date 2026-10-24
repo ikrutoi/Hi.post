@@ -62,8 +62,8 @@ import {
   validateImageSize,
   shouldSyncUserOriginalForState,
   persistUserOriginalRotationToIdbSaga,
-  imageMetaCanBecomeLive,
 } from '@cardphoto/application/helpers'
+import { syncCardphotoListBadgeFromIdb } from './cardphotoListBadgeSaga'
 import { openCardphotoFromMiniStripSaga } from '@cardphoto/application/helpers/openCardphotoFromMiniStrip'
 import { isCardphotoFilePickerRegistered } from '@cardphoto/application/helpers/cardphotoFilePickerBridge'
 import { setSizeCard } from '@layout/infrastructure/state'
@@ -510,24 +510,18 @@ function* watchCardphotoImageStageRect(): SagaIterator {
 
 function* refreshCardphotoListCardphotoBadge(): SagaIterator {
   try {
-    const all: ImageMeta[] = yield call(storeAdapters.cardphotoImages.getAll)
-    const n = all.filter(
-      (x) => x.status === 'inLine' && imageMetaCanBecomeLive(x),
-    ).length
-    yield put(
-      updateToolbarIcon({
-        section: 'cardphoto',
-        key: 'listCardphoto',
-        value: { options: { badge: n > 0 ? n : null } },
-      }),
-    )
+    yield call(syncCardphotoListBadgeFromIdb)
   } catch (e) {
     console.error('refreshCardphotoListCardphotoBadge', e)
   }
 }
 
 function* watchCardphotoInLineBadge(): SagaIterator {
-  yield takeEvery(
+  /**
+   * getAll reads full photo blobs and can outlive the next unstar.
+   * takeLatest drops that stale count so the badge matches the list.
+   */
+  yield takeLatest(
     [
       bumpCardphotoInlineTemplateList.type,
       hydrateEditor.type,
