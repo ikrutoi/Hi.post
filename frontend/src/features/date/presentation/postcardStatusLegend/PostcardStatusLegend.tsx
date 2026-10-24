@@ -382,7 +382,10 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
                   aria-hidden
                 >
                   <span className={clsx(styles.dot, styles.dotReady)} />
-                  <IconPostcardReady className={styles.icon} />
+                  <IconPostcardReady
+                    className={clsx(styles.icon, styles.iconReady)}
+                    style={{ scale: 1 }}
+                  />
                 </div>
               ),
             )}
@@ -402,7 +405,10 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
             >
               <span className={clsx(styles.dot, styles.dotReady)} />
               <span className={styles.iconStack}>
-                <IconPostcardReady className={styles.icon} />
+                <IconPostcardReady
+                  className={clsx(styles.icon, styles.iconReady)}
+                  style={{ scale: 1 }}
+                />
                 {statusCount('ready')}
               </span>
             </button>
@@ -438,7 +444,9 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
             >
               <span className={clsx(styles.dot, styles.dotDelivered)} />
               <span className={styles.iconStack}>
-                <IconPostcardDelivered className={styles.icon} />
+                <IconPostcardDelivered
+                  className={clsx(styles.icon, styles.iconDelivered)}
+                />
                 {statusCount('delivered')}
               </span>
             </button>
@@ -455,7 +463,10 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
             >
               <span className={clsx(styles.dot, styles.dotError)} />
               <span className={styles.iconStack}>
-                <IconPostcardError className={styles.icon} />
+                <IconPostcardError
+                  className={clsx(styles.icon, styles.iconError)}
+                  style={{ scale: 1 }}
+                />
                 {statusCount('error')}
               </span>
             </button>

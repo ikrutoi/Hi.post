@@ -5,14 +5,15 @@
 /** Calendar cart/history footer: shorter side of the glyph. */
 $calendar-cart-history-icon-min: 1.25rem;
 
+/** Отправлено: только высота стандартного холста 1280. Ширину задаёт viewBox. */
 @mixin icon-send-box($slot) {
+  flex-shrink: 0;
   width: auto;
   min-width: 0;
   max-width: none;
   height: $slot;
   min-height: $slot;
-  max-height: none;
-  aspect-ratio: 1590 / 1284;
+  max-height: $slot;
 }
 
 /** Холст postcardBlocked 1280×1440: ширина — стандартный слот, высота из холста. */
@@ -24,6 +25,27 @@ $calendar-cart-history-icon-min: 1.25rem;
   min-height: auto;
   max-height: none;
   aspect-ratio: 1280 / 1440;
+}
+
+/** Стандартный холст 1280×1280. min-width держит слот: иначе футер сжимает иконку. */
+@mixin icon-standard-box($slot) {
+  flex-shrink: 0;
+  width: $slot;
+  min-width: $slot;
+  max-width: $slot;
+  height: $slot;
+  min-height: $slot;
+  max-height: $slot;
+}
+
+/** Холст 1440×1440 при стандарте 1280: оплаченная и ошибка. */
+@mixin icon-ready-box($slot) {
+  width: calc(#{$slot} * 1440 / 1280);
+  min-width: calc(#{$slot} * 1440 / 1280);
+  max-width: none;
+  height: calc(#{$slot} * 1440 / 1280);
+  min-height: calc(#{$slot} * 1440 / 1280);
+  max-height: none;
 }
 
 /** Холст Cart 1440×1360 при стандарте 1280. */
@@ -54,6 +76,18 @@ $calendar-cart-history-icon-min: 1.25rem;
   .iconCart,
   .item svg.iconCart {
     @include icon-cart-box($calendar-cart-history-icon-min);
+  }
+
+  .iconReady,
+  .item svg.iconReady,
+  .iconError,
+  .item svg.iconError {
+    @include icon-ready-box($calendar-cart-history-icon-min);
+  }
+
+  .iconDelivered,
+  .item svg.iconDelivered {
+    @include icon-standard-box($calendar-cart-history-icon-min);
   }
 
   .iconBlocked,
@@ -116,6 +150,18 @@ $calendar-cart-history-icon-min: 1.25rem;
     .iconCart,
     .item svg.iconCart {
       @include icon-cart-box(1rem);
+    }
+
+    .iconReady,
+    .item svg.iconReady,
+    .iconError,
+    .item svg.iconError {
+      @include icon-ready-box(1rem);
+    }
+
+    .iconDelivered,
+    .item svg.iconDelivered {
+      @include icon-standard-box(1rem);
     }
 
     .iconBlocked,
@@ -189,6 +235,18 @@ $calendar-cart-history-icon-min: 1.25rem;
       @include icon-cart-box(1rem);
     }
 
+    .iconReady,
+    .item svg.iconReady,
+    .iconError,
+    .item svg.iconError {
+      @include icon-ready-box(1rem);
+    }
+
+    .iconDelivered,
+    .item svg.iconDelivered {
+      @include icon-standard-box(1rem);
+    }
+
     .iconBlocked,
     .item svg.iconBlocked {
       @include icon-blocked-box(1rem);
@@ -260,6 +318,18 @@ $calendar-cart-history-icon-min: 1.25rem;
     .iconCart,
     .item svg.iconCart {
       @include icon-cart-box(1.1rem);
+    }
+
+    .iconReady,
+    .item svg.iconReady,
+    .iconError,
+    .item svg.iconError {
+      @include icon-ready-box(1.1rem);
+    }
+
+    .iconDelivered,
+    .item svg.iconDelivered {
+      @include icon-standard-box(1.1rem);
     }
 
     .iconBlocked,
@@ -591,6 +661,18 @@ $calendar-cart-history-icon-min: 1.25rem;
       @include icon-cart-box(1rem);
     }
 
+    .iconReady,
+    .item svg.iconReady,
+    .iconError,
+    .item svg.iconError {
+      @include icon-ready-box(1rem);
+    }
+
+    .iconDelivered,
+    .item svg.iconDelivered {
+      @include icon-standard-box(1rem);
+    }
+
     .iconBlocked,
     .item svg.iconBlocked {
       @include icon-blocked-box(1rem);
@@ -646,6 +728,18 @@ $calendar-cart-history-icon-min: 1.25rem;
     .iconCart,
     .item svg.iconCart {
       @include icon-cart-box(1.125rem);
+    }
+
+    .iconReady,
+    .item svg.iconReady,
+    .iconError,
+    .item svg.iconError {
+      @include icon-ready-box(1.125rem);
+    }
+
+    .iconDelivered,
+    .item svg.iconDelivered {
+      @include icon-standard-box(1.125rem);
     }
 
     .iconBlocked,
