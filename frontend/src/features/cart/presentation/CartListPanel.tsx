@@ -25,7 +25,7 @@ import {
 } from '@cart/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { CartListStatusSegment } from '@cart/domain/types'
-import { listEntryPriceLine } from '@shared/utils/listEntryPriceLine'
+import { dispatchPriceLineForDate } from '@date/domain/dispatchPriceTable'
 import { cartListTotalDisplayFromPostcards } from '@cart/application/logic/cartListTotalDisplay'
 import { CartListEntry, type CartListEntryVariant } from './CartListEntry'
 import { CartHeaderSegments } from './CartHeaderSegments'
@@ -151,7 +151,7 @@ function cartPostcardsToEntries(
           recipientEntries,
           envelopeRecipients,
         ),
-        priceLine: listEntryPriceLine(p),
+        priceLine: dispatchPriceLineForDate(p.date),
         variant,
         previewStatus: p.status,
         previewIsProcessed: false,
@@ -184,7 +184,10 @@ const CartListPanelRow: React.FC<{
       previewUrl={item.previewUrl}
       detailLine={item.detailLine}
       priceLine={
-        hidePrice ? undefined : (item.priceLine ?? listEntryPriceLine(item.postcard))
+        hidePrice
+          ? undefined
+          : (item.priceLine ??
+            dispatchPriceLineForDate(item.sourceDate ?? item.postcard?.date))
       }
       variant={item.variant}
       previewStatus={item.previewStatus}

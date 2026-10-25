@@ -8,6 +8,7 @@ import {
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { cartCalendarDatePickApplied } from '@date/calendar/application/orchestration/notebookOrchestration.events'
 import { postcardsAdapter } from '@db/adapters/storeAdapters'
+import { dispatchPriceLineForDate } from '@date/domain/dispatchPriceTable'
 import type { PostcardHydrated } from '@entities/postcard'
 import { refreshRightSidebarBadgesFromPostcards } from './postcardCreateSaga'
 import { flushPendingV2Sync } from '@features/sync/infrastructure/postcardV2PendingSync'
@@ -32,6 +33,7 @@ function* handleCartCalendarDatePickApplied(
     const next: PostcardHydrated = {
       ...target,
       date: { ...date },
+      price: dispatchPriceLineForDate(date),
       updatedAt: now,
       card,
     }

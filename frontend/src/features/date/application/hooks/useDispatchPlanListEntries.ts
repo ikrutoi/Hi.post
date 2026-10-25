@@ -30,7 +30,8 @@ import {
   selectRecipientEntriesState,
 } from '@envelope/recipient/infrastructure/selectors'
 import type { DateListPanelItem } from '@date/presentation/DateListPanel'
-import { listEntryPriceLine } from '@shared/utils/listEntryPriceLine'
+import { dispatchPriceLineForDate } from '@date/domain/dispatchPriceTable'
+import { useDispatchPriceLine } from './useDispatchPriceLine'
 import {
   dispatchBranchKeyFromPostcard,
   dispatchDateKeyFromDispatchDate,
@@ -121,6 +122,7 @@ export function useDispatchPlanListEntries(
     showUndatedWhenAnySectionSelected = false,
   } = options
   const dispatch = useAppDispatch()
+  const editorPriceLine = useDispatchPriceLine()
   const appliedDates = useAppSelector(selectAppliedDates)
   const appliedDate =
     appliedDates.length > 0
@@ -340,7 +342,7 @@ export function useDispatchPlanListEntries(
           trimmedRecipientDetail ??
           sessionLineFallback ??
           undefined,
-        priceLine: listEntryPriceLine(fromCart),
+        priceLine: dispatchPriceLineForDate(d),
         previewUrl,
         cardId,
         previewIsProcessed: true,
@@ -509,7 +511,10 @@ export function useDispatchPlanListEntries(
             : {}),
           dateLabel: fallbackDateLabel,
           detailLine: undatedDetailLine,
-          priceLine: listEntryPriceLine(undefined),
+          priceLine:
+            fallbackDispatchDate != null
+              ? dispatchPriceLineForDate(fallbackDispatchDate)
+              : editorPriceLine,
           previewUrl: listPreviewUrl ?? undefined,
           cardId: listPreviewUrl ? 'current_session' : undefined,
           previewIsProcessed: true,
@@ -555,5 +560,6 @@ export function useDispatchPlanListEntries(
     envelopeRecipients,
     excludedDispatchBranchSet,
     recipientState,
+    editorPriceLine,
   ])
 }

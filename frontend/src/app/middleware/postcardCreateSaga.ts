@@ -80,6 +80,7 @@ import {
   postcardRefsFromCard,
   type PostcardRefs,
 } from '@entities/postcard'
+import { dispatchPriceLineForDate } from '@date/domain/dispatchPriceTable'
 import {
   buildDispatchBranchKey,
   dispatchDateKeyFromDispatchDate,
@@ -307,7 +308,9 @@ export function* createPostcardsFromEditor(): SagaIterator<boolean> {
       const postcard: PostcardHydrated = {
         id: `${appliedCardphotoId}__${postcardLocalId}`,
         localId: postcardLocalId,
-        price: '',
+        price: dispatchPriceLineForDate(
+          date ?? POSTCARD_DISPATCH_DATE_FALLBACK,
+        ),
         date: date ?? POSTCARD_DISPATCH_DATE_FALLBACK,
         createdAt: now,
         updatedAt: now,
@@ -670,7 +673,7 @@ export function* handleToggleCartForDispatchBranch(
   const postcard: PostcardHydrated = {
     id: `${appliedCardphotoId}__${postcardLocalId}`,
     localId: postcardLocalId,
-    price: '',
+    price: dispatchPriceLineForDate(date),
     date,
     createdAt: now,
     updatedAt: now,

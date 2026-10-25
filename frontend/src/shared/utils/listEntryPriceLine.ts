@@ -1,6 +1,10 @@
 import type { Postcard } from '@entities/postcard'
+import {
+  DISPATCH_PRICE_BASE_USD,
+  formatDispatchPriceLine,
+} from '@date/domain/dispatchPriceTable'
 
-const DEFAULT_PLAN_PRICE_LINE = '7.00 USD'
+const DEFAULT_PLAN_PRICE_LINE = formatDispatchPriceLine(DISPATCH_PRICE_BASE_USD)
 
 /** Строка цены для списков (CardPie, корзина, план дат). */
 export function listEntryPriceLine(postcard: Postcard | undefined): string {

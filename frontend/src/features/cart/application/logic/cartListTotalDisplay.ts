@@ -1,6 +1,7 @@
 import type { PostcardHydrated } from '@entities/postcard'
 import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
 import { getCurrentDate } from '@shared/utils/date'
+import { dispatchPriceLineForDate } from '@date/domain/dispatchPriceTable'
 import { listEntryPriceLine } from '@shared/utils/listEntryPriceLine'
 
 /** Leading amount in a list price string (aligned with row `priceLine`). */
@@ -33,7 +34,7 @@ export function cartBillablePostcards(
 export function cartListTotalNumeric(postcards: PostcardHydrated[]): number {
   let sum = 0
   for (const p of postcards) {
-    sum += numericFromPriceLine(listEntryPriceLine(p))
+    sum += numericFromPriceLine(dispatchPriceLineForDate(p.date))
   }
   return sum
 }
@@ -46,6 +47,8 @@ export function cartListTotalDisplayFromPostcards(
     return `0.00 ${currencySuffixFromPriceLine(emptyLine)}`
   }
   const sum = cartListTotalNumeric(postcards)
-  const suffix = currencySuffixFromPriceLine(listEntryPriceLine(postcards[0]))
+  const suffix = currencySuffixFromPriceLine(
+    dispatchPriceLineForDate(postcards[0].date),
+  )
   return `${sum.toFixed(2)} ${suffix}`
 }
