@@ -12,7 +12,7 @@ import { Price } from './Price'
 import styles from './AssemblyPieCornerFrame.module.scss'
 
 type AssemblyPieCornerFrameProps = {
-  /** `mini` — 50% ширины левого мини-пая, `miniMobile` — 65%. */
+  /** `mini` — 50% ширины левого мини-пая, `miniMobile` — 70%. */
   size?: 'central' | 'mini' | 'miniMobile'
   /**
    * Дата отправки этой открытки.
@@ -44,7 +44,11 @@ export const AssemblyPieCornerFrame: React.FC<AssemblyPieCornerFrameProps> = ({
         size === 'miniMobile' && styles.frameMiniMobile,
       )}
     >
-      <Price className={styles.price} amount={amount} />
+      <Price
+        className={styles.price}
+        amount={amount}
+        background={size === 'central' ? '#f9f' : '#fff'}
+      />
     </div>
   )
 }
