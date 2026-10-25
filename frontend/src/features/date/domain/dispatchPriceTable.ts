@@ -15,7 +15,7 @@ export const DISPATCH_PRICE_YEAR_COUNT = 100
  * середина спокойнее. Кривая симметрична: год N и год (101−N) дают в произведении
  * базу × потолок.
  */
-export const DISPATCH_PRICE_END_BEND = 2
+export const DISPATCH_PRICE_END_BEND = 2.95
 
 function symmetricProgress(t: number): number {
   const bend = DISPATCH_PRICE_END_BEND
