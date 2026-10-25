@@ -7,6 +7,7 @@ import React, {
   useState,
 } from 'react'
 import clsx from 'clsx'
+import { AssemblyPieCornerFrame } from '@features/cardPie/presentation/AssemblyPieCornerFrame'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { isPostcardPieAllComplete } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import {
@@ -168,12 +169,18 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
                 fillContainer
                 station="left"
                 leftPieCenterDisc
+                completeSectionWash
                 hideEmptySectorPlaceholders
                 sectorsInteractive={false}
                 pieInner={inner}
                 pieSections={sections}
                 cardphotoThumb
               />
+              {isPostcardPieAllComplete(sections) ? (
+                <AssemblyPieCornerFrame
+                  size={layout === 'desktop' ? 'mini' : 'miniMobile'}
+                />
+              ) : null}
             </button>
           ))}
         </div>

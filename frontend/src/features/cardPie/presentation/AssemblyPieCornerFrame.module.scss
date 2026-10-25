@@ -7,6 +7,27 @@
   width: 46%;
   background-color: transparent;
   pointer-events: none;
+  animation: priceAppear 0.2s ease;
+}
+
+.frameMini {
+  width: 50%;
+}
+
+.frameMiniMobile {
+  top: 0.1rem;
+  right: 0.1rem;
+  width: 65%;
+}
+
+@keyframes priceAppear {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .price {

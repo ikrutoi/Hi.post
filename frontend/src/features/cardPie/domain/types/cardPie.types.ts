@@ -44,6 +44,8 @@ export interface CardPieProps {
   hideLeftPieCenterLogo?: boolean
   /** Левый пирог: цветной круг в центре без логотипа (мини-паи). */
   leftPieCenterDisc?: boolean
+  /** Полупрозрачная заливка секторов на комплектном мини-пае. */
+  completeSectionWash?: boolean
   /** Цвет заливки центрального круга мини-пая (некомплект); по умолчанию — plan mini header fill. */
   leftPieCenterDiscColor?: string
   /** Снимок секторов вместо Redux (мини-паи строк плана отправки). */
