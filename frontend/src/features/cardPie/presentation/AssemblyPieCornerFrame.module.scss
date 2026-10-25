@@ -1,0 +1,16 @@
+.frame {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  z-index: 4;
+  box-sizing: border-box;
+  width: 46%;
+  background-color: transparent;
+  pointer-events: none;
+}
+
+.price {
+  display: block;
+  width: 100%;
+  height: auto;
+}

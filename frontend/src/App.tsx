@@ -57,6 +57,7 @@ import {
 } from './features/cart/presentation/CartListPanel'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
+import { AssemblyPieCornerFrame } from '@features/cardPie/presentation/AssemblyPieCornerFrame'
 import { useEditorPieAddCartHandler } from '@features/cardPie/application/hooks/useEditorPieAddCartHandler'
 import { EditorPieListCardPieBadgeSync } from '@features/cardPie/presentation/EditorPieListCardPieBadgeSync'
 import { DateToolbarListDateBadgeSync } from '@date/presentation/DateToolbarListDateBadgeSync'
@@ -3126,6 +3127,11 @@ function DesktopFactoryTopRow({
                 cardphotoThumb
               />
             )}
+            {!showArchivePie &&
+            !showEmptyArchive &&
+            !addressCardPiePreview.showSurface ? (
+              <AssemblyPieCornerFrame />
+            ) : null}
           </div>
           {showArchivePie ? (
             <div className={styles.desktopCentralPieToolbar}>
