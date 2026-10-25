@@ -58,6 +58,7 @@ import {
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { AssemblyPieCornerFrame } from '@features/cardPie/presentation/AssemblyPieCornerFrame'
+import { isPostcardPieAllComplete } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import { useEditorPieAddCartHandler } from '@features/cardPie/application/hooks/useEditorPieAddCartHandler'
 import { EditorPieListCardPieBadgeSync } from '@features/cardPie/presentation/EditorPieListCardPieBadgeSync'
 import { DateToolbarListDateBadgeSync } from '@date/presentation/DateToolbarListDateBadgeSync'
@@ -3129,7 +3130,8 @@ function DesktopFactoryTopRow({
             )}
             {!showArchivePie &&
             !showEmptyArchive &&
-            !addressCardPiePreview.showSurface ? (
+            !addressCardPiePreview.showSurface &&
+            isPostcardPieAllComplete(assemblyPie.sections) ? (
               <AssemblyPieCornerFrame />
             ) : null}
           </div>

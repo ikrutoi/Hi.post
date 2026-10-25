@@ -123,6 +123,7 @@ import {
 import { HistoryArchiveSlotButton } from '@date/presentation/HistoryArchiveSlotButton'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { AssemblyPieCornerFrame } from '@features/cardPie/presentation/AssemblyPieCornerFrame'
+import { isPostcardPieAllComplete } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import { useEditorPieAddCartHandler } from '@features/cardPie/application/hooks/useEditorPieAddCartHandler'
 import { resolveEditorPieAddCartPayload } from '@features/cardPie/application/helpers/resolveEditorPieAddCartPayload'
 import { useMobileCentralArchivePieGate } from '@features/cardPie/application/hooks/useMobileCentralArchivePieGate'
@@ -1370,7 +1371,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                           cardphotoThumb
                         />
                       ) : null}
-                      {mobileCentralPieDisplay === 'assembly' ? (
+                      {mobileCentralPieDisplay === 'assembly' &&
+                      isPostcardPieAllComplete(assemblyPie.sections) ? (
                         <AssemblyPieCornerFrame />
                       ) : null}
                   </div>
