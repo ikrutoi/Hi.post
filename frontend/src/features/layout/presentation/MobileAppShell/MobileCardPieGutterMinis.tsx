@@ -142,7 +142,7 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
           : { 'data-mini-gutter-chrome': chrome })}
       >
         <div ref={listRef} className={styles.mobilePieGutterMiniList}>
-          {displayPies.map(({ id, inner, sections }) => (
+          {displayPies.map(({ id, inner, sections, dispatchDate }) => (
             <button
               key={id}
               type="button"

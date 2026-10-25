@@ -1,7 +1,10 @@
 import barlowSemiBoldUrl from '@shared/assets/fonts/barlow-600.woff2?url'
+import barlowSemiCondensedUrl from '@shared/assets/fonts/barlow-semi-condensed-600-italic.woff2?url'
 import '@envelope/view/presentation/stampCountFont.scss'
+import '@shared/fonts/barlowSemiCondensed.scss'
 
 export const BARLOW_FONT = '600 16px Barlow'
+export const BARLOW_SEMI_CONDENSED_FONT = "italic 600 16px 'Barlow Semi Condensed'"
 
 function preloadFont(href: string): void {
   const preload = document.createElement('link')

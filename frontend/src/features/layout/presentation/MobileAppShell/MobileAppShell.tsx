@@ -124,6 +124,7 @@ import { HistoryArchiveSlotButton } from '@date/presentation/HistoryArchiveSlotB
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { AssemblyPieCornerFrame } from '@features/cardPie/presentation/AssemblyPieCornerFrame'
 import { isPostcardPieAllComplete } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
+import { primaryDispatchDateFromPieInner } from '@features/cardPie/domain/primaryDispatchDateFromPieInner'
 import { useEditorPieAddCartHandler } from '@features/cardPie/application/hooks/useEditorPieAddCartHandler'
 import { resolveEditorPieAddCartPayload } from '@features/cardPie/application/helpers/resolveEditorPieAddCartPayload'
 import { useMobileCentralArchivePieGate } from '@features/cardPie/application/hooks/useMobileCentralArchivePieGate'
@@ -1373,7 +1374,14 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                       ) : null}
                       {mobileCentralPieDisplay === 'assembly' &&
                       isPostcardPieAllComplete(assemblyPie.sections) ? (
-                        <AssemblyPieCornerFrame />
+                        <AssemblyPieCornerFrame
+                          dispatchDate={
+                            selectedPlanPie != null || focusedDateInner != null
+                              ? (assemblyPie.dispatchDate ??
+                                primaryDispatchDateFromPieInner(assemblyPie.inner))
+                              : undefined
+                          }
+                        />
                       ) : null}
                   </div>
                     {showMobileCentralTemplatePreviewPieToolbar ? (

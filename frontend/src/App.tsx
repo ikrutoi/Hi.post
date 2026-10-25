@@ -3132,7 +3132,14 @@ function DesktopFactoryTopRow({
             !showEmptyArchive &&
             !addressCardPiePreview.showSurface &&
             isPostcardPieAllComplete(assemblyPie.sections) ? (
-              <AssemblyPieCornerFrame />
+              <AssemblyPieCornerFrame
+                dispatchDate={
+                  selectedPlanPie != null || focusedDateInner != null
+                    ? (assemblyPie.dispatchDate ??
+                      primaryDispatchDateFromPieInner(assemblyPie.inner))
+                    : undefined
+                }
+              />
             ) : null}
           </div>
           {showArchivePie ? (

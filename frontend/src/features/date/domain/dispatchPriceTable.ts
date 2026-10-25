@@ -27,6 +27,7 @@ function symmetricProgress(t: number): number {
 /**
  * Симметричная экспонента: первый год — база, сотый — потолок.
  * Подъём круче в начале и в конце, середина между ними спокойнее.
+ * Промежуточные годы — целые доллары.
  */
 function buildDispatchPriceUsdByYear(): readonly number[] {
   const logRatio = Math.log(DISPATCH_PRICE_MAX_USD / DISPATCH_PRICE_BASE_USD)
@@ -44,7 +45,7 @@ function buildDispatchPriceUsdByYear(): readonly number[] {
     }
     const t = (year - 1) / lastIndex
     const amount = DISPATCH_PRICE_BASE_USD * Math.exp(logRatio * symmetricProgress(t))
-    rows.push(Math.round(amount * 100) / 100)
+    rows.push(Math.round(amount))
   }
 
   return rows

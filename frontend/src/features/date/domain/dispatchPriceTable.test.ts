@@ -32,11 +32,11 @@ describe('dispatch price table', () => {
     for (const year of [2, 10, 25]) {
       const early = DISPATCH_PRICE_USD_BY_YEAR[year - 1]
       const late = DISPATCH_PRICE_USD_BY_YEAR[DISPATCH_PRICE_YEAR_COUNT - year]
-      expect(Math.abs(early * late - ends) / ends).toBeLessThan(0.01)
+      expect(Math.abs(early * late - ends) / ends).toBeLessThan(0.015)
     }
 
     for (let i = 1; i < DISPATCH_PRICE_USD_BY_YEAR.length; i += 1) {
-      expect(DISPATCH_PRICE_USD_BY_YEAR[i]).toBeGreaterThanOrEqual(
+      expect(DISPATCH_PRICE_USD_BY_YEAR[i]).toBeGreaterThan(
         DISPATCH_PRICE_USD_BY_YEAR[i - 1],
       )
     }

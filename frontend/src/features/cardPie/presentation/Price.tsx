@@ -1,12 +1,58 @@
-import React, { useId } from 'react'
+import React, { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
+import { BARLOW_SEMI_CONDENSED_FONT } from '@shared/fonts/loadAppFonts'
+import '@shared/fonts/barlowSemiCondensed.scss'
+
+/** Поле цифр внутри знака. */
+const PRICE_TEXT = {
+  x: 2563,
+  y: 1092,
+  maxWidth: 2400,
+  maxFontSize: 1240,
+} as const
+
+type PriceProps = React.SVGProps<SVGSVGElement> & {
+  /** Целая сумма в долларах. */
+  amount: number
+}
 
 /**
- * Знак цены на сборке. Контур и цифры — из макета;
- * заливка фона пока черновая (`#f9f`).
+ * Знак цены на сборке. Контур из макета, сумма — Barlow Semi Condensed.
+ * Заливка фона пока черновая (`#f9f`).
  */
-export const Price = (props: React.SVGProps<SVGSVGElement>) => {
+export const Price = ({ amount, ...props }: PriceProps) => {
   const uid = useId()
   const id = (name: string) => `${uid}-${name}`
+  const label = amount.toFixed(2)
+  const textRef = useRef<SVGTextElement>(null)
+  const [fontReady, setFontReady] = useState(() =>
+    typeof document !== 'undefined'
+      ? document.fonts.check(BARLOW_SEMI_CONDENSED_FONT)
+      : false,
+  )
+  const [fontSize, setFontSize] = useState<number>(PRICE_TEXT.maxFontSize)
+
+  useEffect(() => {
+    if (fontReady) return
+    let cancelled = false
+    void document.fonts.load(BARLOW_SEMI_CONDENSED_FONT).then(() => {
+      if (!cancelled) setFontReady(true)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [fontReady])
+
+  useLayoutEffect(() => {
+    const node = textRef.current
+    if (node == null || !fontReady) return
+    node.setAttribute('font-size', String(PRICE_TEXT.maxFontSize))
+    const length = node.getComputedTextLength()
+    const fitted =
+      length > PRICE_TEXT.maxWidth
+        ? (PRICE_TEXT.maxFontSize * PRICE_TEXT.maxWidth) / length
+        : PRICE_TEXT.maxFontSize
+    setFontSize((prev) => (Math.abs(prev - fitted) < 0.5 ? prev : fitted))
+  }, [fontReady, label])
 
   return (
     <svg
@@ -33,26 +79,23 @@ export const Price = (props: React.SVGProps<SVGSVGElement>) => {
             fill="#f9f"
             d="m1592 387 7-1c30 12 60 23 99 36 42 14 95 30 147 38s104 8 165 4c60-4 128-12 191-28 62-16 118-40 167-71 48-30 88-66 112-92s32-42 36-50 4-8 16 4 37 36 65 56 60 36 96 50 77 26 121 34c44 9 92 13 149 11 56-2 120-11 180-23 61-12 117-28 191-54 75-26 167-62 214-80 46-18 46-18 46-8s0 30 8 52 24 46 46 68 50 43 86 59c37 16 81 28 131 32s107 0 173-10 143-26 181-34 38-8 34 4-12 36-16 60-4 48 0 70 12 42 28 59c16 16 40 28 79 34 38 6 90 6 150 2 61-4 129-12 163-16s34-4 20 12-42 48-68 82-50 70-64 109c-15 38-19 78-15 122 5 44 17 93 41 135s60 78 98 111c38 32 79 60 99 74s20 14-10 12c-31-2-91-6-141-2s-91 16-129 34-74 42-100 70c-26 29-42 61-53 97-10 36-14 76-10 109 4 32 17 56 23 68s6 12-21 6c-26-6-78-18-128-26s-99-12-153-12-115 4-163 16-84 32-110 54-43 46-57 76c-14 31-26 67-32 85s-6 18-26 12-60-18-106-24c-47-6-99-6-155 0-57 6-117 18-171 36s-103 42-143 68-72 55-104 91c-33 36-65 80-81 102s-16 22-38 4-66-54-111-80c-44-26-88-42-138-54s-107-20-165-22-119 2-177 14-115 32-163 52-88 40-130 64c-43 24-87 52-109 67-22 14-22 14-32-2-10-17-30-49-54-73-25-24-53-40-85-54s-68-26-114-34c-47-8-103-12-165-12-63 0-131 4-195 14-65 10-125 26-155 34s-30 8-30-16 0-73-8-113-24-72-56-100c-33-28-81-53-135-71s-115-30-185-36-151-6-191-6-40 0-28-14 36-42 60-80c24-39 48-87 60-129s12-78 0-125c-12-46-36-102-76-154-40-53-96-101-125-125-28-24-28-24 0-26 29-2 85-6 141-18s113-32 159-57c46-24 82-52 106-82 25-30 37-62 41-98 4-37 0-77-2-97s-2-20 12-15 42 15 77 22 77 11 123 13c45 2 93 2 146-1 54-3 112-9 165-20 54-11 102-27 137-47s57-44 75-74c18-29 32-63 42-92 9-29 13-53 17-80"
           />
-          <path
-            id={id('price')}
-            fill="#000"
-            d="M1577 1842c-6 1-10-1-13-5-2-3-3-8-1-15l260-886c2-6 1-9-5-8l-215 30c-4 1-7 4-8 9l1 61c0 5-2 9-5 13s-7 6-12 7l-131 19c-5 0-9-1-13-4-3-3-5-7-4-12l-3-234c0-5 1-9 4-13 4-4 8-7 13-7l575-81c5-1 9 0 13 3 3 3 5 7 5 13l3 153-3 23-262 891c-2 10-7 16-17 17z"
-          />
-          <path
-            id={id('1')}
-            fill="#000"
-            d="M2165 1765c-30 4-56-2-77-19-22-16-35-40-39-69-5-38 3-72 25-100 21-29 51-46 87-51 31-5 57 1 78 17s34 39 38 70c5 37-3 71-25 100-23 30-52 47-87 52"
-          />
-          <path
-            id={id('2')}
-            fill="#000"
-            d="M2985 1382c1 83-25 153-79 211-54 57-126 92-216 104-79 12-146 0-199-35-54-34-86-86-95-156q-1.5-12-3-39l-1-44c0-5 2-9 5-13s7-7 12-7l169-24c5-1 10 0 13 3s5 7 5 13v22l1 17c3 26 14 46 30 60 17 15 37 20 60 17 27-4 50-17 67-40s25-50 25-81l-2-145c0-4 0-5-2-5-3-1-4 0-6 3-35 36-79 58-129 65-59 8-109-1-151-27-41-26-72-65-91-118-14-28-24-60-29-98-3-20-5-41-4-62-1-49 5-97 17-144q25.5-102 99-165c48-43 109-69 183-79 64-9 118-3 164 18 45 22 80 57 103 107 1 2 2 4 2 7 20 31 33 67 39 110 1 10 2 27 4 51zm-309-252c41-6 69-31 83-76 10-27 14-62 13-105 0-12-1-29-4-51-11-75-43-108-98-100-45 6-75 36-91 90-5 25-8 55-8 91 1 22 2 37 3 46 3 21 8 39 14 53 17 40 46 57 88 52"
-          />
-          <path
-            id={id('3')}
-            fill="#000"
-            d="M3664 1085q22.5 45 30 99c1 11 2 28 4 50 0 53-9 104-26 152-23 57-57 104-105 142-47 37-103 61-168 70-63 9-120 2-169-21s-87-61-112-113c-13-27-22-58-27-90-2-18-3-36-3-55-2-58 6-110 25-155 15-40 39-73 73-100 4-4 4-7 0-11-29-18-52-42-68-72q-22.5-42-30-93q-15-114 36-207c23-47 57-86 103-117 45-31 96-51 152-59 58-8 109-3 154 14 44 18 79 47 105 88 22 31 36 69 42 113 9 63 0 126-25 187-17 35-39 64-67 88-4 5-4 9 0 11 35 17 60 44 76 79m-368-318c-7 25-10 46-10 66-1 5 0 12 1 22 3 16 7 32 15 48 17 38 46 55 85 49 40-6 68-30 84-74 8-22 12-47 11-74 0-6 0-14-2-24-2-14-5-27-10-39-7-18-19-32-34-42-16-10-34-13-54-11-20 3-37 12-52 25-16 14-27 32-34 54m185 569c10-29 15-59 13-89 0-18-1-31-2-38-2-14-6-29-13-46-17-44-47-62-90-56-42 6-71 33-85 80-10 26-14 55-13 87 1 8 2 19 4 33 2 20 6 37 11 52 8 20 20 35 35 45s33 13 54 10c21-2 38-11 53-25 15-13 26-31 33-53"
-          />
+          {fontReady ? (
+            <text
+              ref={textRef}
+              x={PRICE_TEXT.x}
+              y={PRICE_TEXT.y}
+              textAnchor="middle"
+              dominantBaseline="central"
+              fontFamily="'Barlow Semi Condensed', sans-serif"
+              fontStyle="italic"
+              fontWeight={600}
+              fontSize={fontSize}
+              fill="#000"
+              transform={`rotate(-7 ${PRICE_TEXT.x} ${PRICE_TEXT.y})`}
+            >
+              {label}
+            </text>
+          ) : null}
         </g>
       </g>
     </svg>
