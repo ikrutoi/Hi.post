@@ -55,6 +55,18 @@ const PATTERN = {
   envelope2560: { x: 2560, y: 1000 },
   aroma2560: { x: 1300, y: 2750 },
 } as const
+/**
+ * Сектор «Фото»: M10 2156 V10 h2146 l404 2550 z.
+ * Квадрат описанного прямоугольника. `objectBoundingBox` сбрасывает
+ * картинку, когда пай меняет CSS-размер (редактирование аромата
+ * раскрывает сетку плиток и сужает центральный пай).
+ */
+const PHOTO_SECTOR_IMAGE = {
+  x: 10,
+  y: 10,
+  width: 2550,
+  height: 2550,
+} as const
 
 const PIE_EMPTY_ICON_SIZE = 1440
 const PIE_EMPTY_ICON_HALF = PIE_EMPTY_ICON_SIZE / 2
@@ -454,19 +466,16 @@ export const CardPie: React.FC<CardPieProps> = ({
             {showCardphoto && photoUrl && (
               <pattern
                 id={photoFillId}
-                patternUnits="objectBoundingBox"
-                patternContentUnits="objectBoundingBox"
-                x="0"
-                y="0"
-                width="1"
-                height="1"
+                patternUnits="userSpaceOnUse"
+                width="5120"
+                height="5120"
               >
                 <image
                   href={photoUrl}
-                  x="0"
-                  y="0"
-                  width="1"
-                  height="1"
+                  x={PHOTO_SECTOR_IMAGE.x}
+                  y={PHOTO_SECTOR_IMAGE.y}
+                  width={PHOTO_SECTOR_IMAGE.width}
+                  height={PHOTO_SECTOR_IMAGE.height}
                   preserveAspectRatio="xMidYMid slice"
                 />
               </pattern>
