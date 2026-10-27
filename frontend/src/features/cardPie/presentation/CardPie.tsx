@@ -96,7 +96,6 @@ export const CardPie: React.FC<CardPieProps> = ({
   hideLeftPieCenterLogo = false,
   leftPieCenterDisc = false,
   leftPieCenterDiscColor,
-  completeSectionWash = false,
   pieInner,
   pieSections,
   hideEmptySectorPlaceholders = false,
@@ -371,8 +370,6 @@ export const CardPie: React.FC<CardPieProps> = ({
   ) : null
 
   const allSectionsFilled = isReady
-  const showCompleteSectionWash =
-    allSectionsFilled && (completeSectionWash || !leftPieCenterDisc)
   const leftDiscShowsStatus =
     station === 'left' &&
     leftPieCenterDisc &&
@@ -937,30 +934,6 @@ export const CardPie: React.FC<CardPieProps> = ({
               d="M5110 1261 2560 2560 2156 10h2954z"
               {...sectorPathProps('cardtext')}
             />
-            {showCompleteSectionWash ? (
-              <g className={styles.completeSectionWash} pointerEvents="none">
-                <path
-                  className={styles.completeWashAroma}
-                  d="M5110 5110H1261l1299-2550z"
-                />
-                <path
-                  className={styles.completeWashDate}
-                  d="M1261 5110H10V2156l2550 404z"
-                />
-                <path
-                  className={styles.completeWashEnvelope}
-                  d={PIE_ENVELOPE_SECTOR_D}
-                />
-                <path
-                  className={styles.completeWashCardphoto}
-                  d="M10 2156V10h2146l404 2550z"
-                />
-                <path
-                  className={styles.completeWashCardtext}
-                  d="M5110 1261 2560 2560 2156 10h2954z"
-                />
-              </g>
-            ) : null}
 
             {/* <path
               id="aroma-bg"

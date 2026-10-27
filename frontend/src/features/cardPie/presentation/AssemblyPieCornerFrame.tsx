@@ -12,7 +12,7 @@ import { Price } from './Price'
 import styles from './AssemblyPieCornerFrame.module.scss'
 
 type AssemblyPieCornerFrameProps = {
-  /** `mini` — 50% ширины левого мини-пая, `miniMobile` — 70%. */
+  /** `mini` — 50% ширины левого мини-пая, `miniMobile` — 80%. */
   size?: 'central' | 'mini' | 'miniMobile'
   /**
    * Дата отправки этой открытки.

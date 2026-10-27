@@ -169,7 +169,6 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
                 fillContainer
                 station="left"
                 leftPieCenterDisc
-                completeSectionWash
                 hideEmptySectorPlaceholders
                 sectorsInteractive={false}
                 pieInner={inner}

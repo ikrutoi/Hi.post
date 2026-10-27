@@ -514,13 +514,122 @@ $user-panel-header-lead-edge-mobile: iconButton.$toolbar-mobile-toolbar-key-marg
   flex-shrink: 0;
 }
 
-.infoGrid {
+.infoPager {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.infoViewport {
+  overflow: hidden;
+  width: 100%;
+  touch-action: pan-y;
+}
+
+.infoTrack {
+  display: flex;
+  width: 100%;
+  transition: transform 0.28s ease;
+}
+
+.infoPage {
   display: grid;
+  flex: 0 0 100%;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.5rem;
   width: 100%;
+  min-width: 0;
   align-items: start;
   justify-items: stretch;
+}
+
+.infoDots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.infoDot {
+  width: 0.45rem;
+  height: 0.45rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background-color: $color-section-light;
+  cursor: pointer;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+
+  &[data-active='true'] {
+    background-color: $color-font-enabled;
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.infoNav {
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.infoNavButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin: 0;
+  padding: 0;
+  border: 1px solid $color-font-enabled;
+  border-radius: 0.35rem;
+  background: transparent;
+  color: $color-font-enabled;
+  cursor: pointer;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+
+  svg {
+    width: 1.15rem;
+    height: 1.15rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.25;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  &:hover:not(:disabled) {
+    color: $color-font-blue;
+    border-color: $color-font-blue;
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+:global([data-shell-layout='desktop']) {
+  .infoDots {
+    display: none;
+  }
+
+  .infoNav {
+    display: flex;
+  }
 }
 
 .infoCell {

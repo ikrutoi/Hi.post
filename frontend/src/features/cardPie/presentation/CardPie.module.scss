@@ -251,31 +251,6 @@ $pie-center-cart-blocked-inner-stop: (
   }
 }
 
-.completeSectionWash {
-  opacity: 0.45;
-  pointer-events: none;
-}
-
-.completeWashCardphoto {
-  fill: $color-cardphoto-input;
-}
-
-.completeWashCardtext {
-  fill: $color-cardtext-input;
-}
-
-.completeWashEnvelope {
-  fill: $color-envelope-recipient-input;
-}
-
-.completeWashAroma {
-  fill: $color-aroma-input;
-}
-
-.completeWashDate {
-  fill: $color-date-input;
-}
-
 .pieOutlineOverlay {
   position: absolute;
   inset: 0;

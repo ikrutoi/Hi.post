@@ -90,7 +90,7 @@ export const Price = ({ amount, background = '#f9f', ...props }: PriceProps) => 
               dominantBaseline="central"
               fontFamily="'Barlow Semi Condensed', sans-serif"
               fontStyle="italic"
-              fontWeight={600}
+              fontWeight={700}
               fontSize={fontSize}
               fill="#000"
               transform={`rotate(-7 ${PRICE_TEXT.x} ${PRICE_TEXT.y})`}
